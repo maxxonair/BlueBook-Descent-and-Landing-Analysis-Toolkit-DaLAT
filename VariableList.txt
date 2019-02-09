@@ -1,0 +1,48 @@
+                           TrajectSim V1.02 
+
+Author: Max Braun,
+Date 26/09/16
+..............................................................................................................................
+                         Variable List (res.dat)
+------------------------------------------------------------------------------------------------------------------------------
+column / Variable [Unit]
+------------------------------------------------------------------------------------------------------------------------------
+01  time [s]
+02  longitude [rad]
+03  latitude [rad]
+04  altitude [m]
+05  velocity [m/s]
+06  flight path angle [rad]
+07  local azimuth [rad]
+08  density [kg/m³]
+09  drag force [N]
+10  lift force [N]
+11  side force [N]
+12  gravity acceleration - radial [m/s²]
+13  gravity acceleration - north/south [m/s²]
+14  gravity acceleration - average 
+15  ambient/Static Temperature [K]
+16  Mach number [-]
+17  heat capacity ratio [Si]
+18  gas constant [Si]
+19  ambient/static pressure [Pa]
+20  drag coefficient [-]
+21  lift coefficient [-]
+22  bank angle [rad]
+23  flowzone [-] (flowzone = -3- free molecular flow / -2- transitional zone / -1- continuum flow)
+24  dynamic pressure [Pa]
+25  drag coefficient parachute [-]
+26  thrust force [N]
+27  continuum flow drag coefficient [-]
+28  bank angle [rad]
+29  normalized acceleration [-] (normalized with 9.81 m/s²)
+30  EDL vehicle mass [kg]
+31  event variable (-0- initial stage / -1- thrusted descent / -2- parachute ) 
+32  ballistic coefficient [kg/m²]
+33  horizontal track [m]
+34  Surface area [m²]
+35  Fuel mass [kg]
+36  Potential Energy [J]
+37  Kinetic Energy [J]
+38  Total Energy [J]
+------------------------------------------------------------------------------------------------------------------------------
