@@ -132,4 +132,35 @@ public static double get_CdC(double h, double AoA){
 	return CdC; 
 }
 
+public static double atm_read(int variable, double altitude) {
+	double atm_read = 0;
+	int leng = ATM_DATA.size();
+	double data_x[] = new double[leng];
+	double data_y[] = new double[leng];
+	if (variable == 1){
+		for (int i = 0;i<leng;i++){
+			data_x[i] = ATM_DATA.get(i).get_altitude();
+			data_y[i] = ATM_DATA.get(i).get_density();
+			//System.out.println(leng + " | " + ATM_DATA.get(i).get_density());
+		}
+	} else if (variable == 2){
+		for (int i = 0;i<leng;i++){
+			data_x[i] = ATM_DATA.get(i).get_altitude();
+			data_y[i] = ATM_DATA.get(i).get_temperature();
+		}
+	} else if (variable == 3){
+		for (int i = 0;i<leng;i++){
+			data_x[i] = ATM_DATA.get(i).get_altitude();
+			data_y[i] = ATM_DATA.get(i).get_gasconstant();
+		}
+	} else if (variable == 4){
+		for (int i = 0;i<leng;i++){
+			data_x[i] = ATM_DATA.get(i).get_altitude();
+			data_y[i] = ATM_DATA.get(i).get_gamma();
+		}
+	}
+	atm_read = LinearInterpolate( data_x , data_y , altitude);
+	return atm_read;
+}
+
 }

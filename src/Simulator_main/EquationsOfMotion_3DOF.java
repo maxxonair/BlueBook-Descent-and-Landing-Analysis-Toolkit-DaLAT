@@ -18,6 +18,7 @@ import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
+import Controller.PID_01;
 import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
@@ -37,8 +38,13 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				{0,0,0,0},												// Venus
 		};
 
-	  
-
+	  //----------------------------------------------------------------
+	   public static double input_cmd=0;
+	   public static double tminus=0;
+	   public static double cmd_min = 0;
+	   public static double cmd_max = 20000;
+	  //----------------------------------------------------------------
+	   
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double    mu    = 0;    	// Standard gravitational constant (Mars)   [m3/s2]
 			public static double   rm    = 0;    	// Planets average radius                   [m]
@@ -129,41 +135,12 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	return yvalue;
 	}
 	
-	public static double atm_read(int variable, double altitude) {
-		double atm_read = 0;
-		int leng = ATM_DATA.size();
-		double data_x[] = new double[leng];
-		double data_y[] = new double[leng];
-		if (variable == 1){
-			for (int i = 0;i<leng;i++){
-				data_x[i] = ATM_DATA.get(i).get_altitude();
-				data_y[i] = ATM_DATA.get(i).get_density();
-				//System.out.println(leng + " | " + ATM_DATA.get(i).get_density());
-			}
-		} else if (variable == 2){
-			for (int i = 0;i<leng;i++){
-				data_x[i] = ATM_DATA.get(i).get_altitude();
-				data_y[i] = ATM_DATA.get(i).get_temperature();
-			}
-		} else if (variable == 3){
-			for (int i = 0;i<leng;i++){
-				data_x[i] = ATM_DATA.get(i).get_altitude();
-				data_y[i] = ATM_DATA.get(i).get_gasconstant();
-			}
-		} else if (variable == 4){
-			for (int i = 0;i<leng;i++){
-				data_x[i] = ATM_DATA.get(i).get_altitude();
-				data_y[i] = ATM_DATA.get(i).get_gamma();
-			}
-		}
-		atm_read = LinearInterpolate( data_x , data_y , altitude);
-		return atm_read;
-	}
 
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
     	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
-    	
+    	Thrust = PID_01.FlightController_001(input_cmd, x[2]-rm,1, cmd_max, cmd_min);
+   // 	System.out.println(input_cmd-(x[2]-rm)+" - "+(x[2]-rm)+"  -> "+Thrust/cmd_max*100);
     	//System.out.println ( gr + " " + gn + " " + omega); 
     	if (x[2]-rm>200000 || TARGET == 1){
 	    		rho = 0; 
@@ -172,18 +149,17 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    		gamma = 0 ; 
 	    		R= 0; 
 	    		Ma = 0; 
-	    		Thrust =0; 
 	       //-----------------------------------------------------------------------------------------------
 	      	  D  =  - Thrust;            // Aerodynamic drag Force [N]
 	      	  L  =        0 ;                            // Aerodynamic lift Force [N]
 	      	  Ty =        0 ;                            // Aerodynamic side Force [N]
 	      	//----------------------------------------------------------------------------------------------
     	} else {
-	    	 rho    = atm_read(1, x[2] - rm ) ;                    	             // density                         [kg/m≥]
+	    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;                    	             // density                         [kg/m≥]
 	    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         // Dynamic pressure                [Pa]
-	    	 T      = atm_read(2, x[2] - rm) ;                   		         // Temperature                     [K]
-	    	 gamma  = atm_read(4, x[2] - rm) ;              	                 //
-	    	 R      = atm_read(3,  x[2] - rm ) ;                                 // Gas Constant                    [Si]
+	    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		         // Temperature                     [K]
+	    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	                 //
+	    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                                 // Gas Constant                    [Si]
 	    	 P      = rho * R * T;
 	    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 // Mach number                     [-]
     	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             // Parachute Drag coefficient      [-]
@@ -191,7 +167,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       // Continuum flow drag coefficient [-]
 	    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    // Lift coefficient                [-]
 	    	 S 		= 4;	
-	    	 Thrust =0; // Surface area 					[m2]
 	     	//-----------------------------------------------------------------------------------------------
 	    	  D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        // Aerodynamic drag Force [N]
 	    	  L  =   qinf * S * Cl * cos( bank ) ;                            // Aerodynamic lift Force [N]
@@ -260,7 +235,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	// Position 
 	        y[0] = x0;
 	        y[1] = x1;
-	        y[2] = x2;
+	        y[2] = x2-rm;
 	// Velocity
 	        y[3] = x3;
 	        y[4] = x4;
@@ -287,7 +262,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
 	                if( t > steps.size() )
 	
-	                    steps.add(t + " " + y[0] + " " + y[1] + " " + y[2]+ " " + y[3]+ " " + y[4] + " " + y[5] + " " + rho + " " + D + " " +L + " " +Ty + " " +gr + " " +gn + " " +g_total + " " +T+ " " +Ma+ " " +cp+ " " +R+ " " +P+ " " +Cd+ " " +Cl+ " " +bank+ " " +flowzone+ " " +qinf+ " " +CdC+ " " +Thrust+ " " +Cdm+ " " +y[6]+ " " +ymo[3]/9.81+ " " +E_total);
+	                    steps.add(t + " " + y[0] + " " + y[1] + " " + y[2] + " " + y[3]+ " " + y[4] + " " + y[5] + " " + rho + " " + D + " " +L + " " +Ty + " " +gr + " " +gn + " " +g_total + " " +T+ " " +Ma+ " " +cp+ " " +R+ " " +P+ " " +Cd+ " " +Cl+ " " +bank+ " " +flowzone+ " " +qinf+ " " +CdC+ " " +Thrust+ " " +Cdm+ " " +y[6]+ " " +ymo[3]/9.81+ " " +E_total);
 	//System.out.println(steps.size()+ "   " + y[3] );
 	                if(isLast) {
 	                    try{
@@ -337,6 +312,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        dp853.addEventHandler(EventHandler,1,1.0e-3,30);
 
 	        dp853.integrate(ode, 0.0, y, t, y);
+	        tminus=t;
 
 	       System.out.println("Sucess. Integrator stop. ");      
 		}
