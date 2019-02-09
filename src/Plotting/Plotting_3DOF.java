@@ -58,7 +58,7 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
 import Model.atm_dataset;
-import Simulator_main.EquationsOfMotion;;
+import Simulator_main.EquationsOfMotion_3DOF;;
 
 public class Plotting_3DOF implements  ActionListener {
 	static //-----------------------------------------------------------------------------	
@@ -161,7 +161,7 @@ public class Plotting_3DOF implements  ActionListener {
     	MainGUI.setLayout(new BorderLayout());
 
     	// init rm:
-    	rm = EquationsOfMotion.SET_Constants(1);
+    	rm = EquationsOfMotion_3DOF.SET_Constants(1);
     	// ---------------------------------------------------------------------------------
         //           Page 04 - 3 DOF
         // ---------------------------------------------------------------------------------
