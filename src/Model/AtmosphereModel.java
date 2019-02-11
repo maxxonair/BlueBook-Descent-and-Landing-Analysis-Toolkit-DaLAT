@@ -8,6 +8,8 @@ import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
 
+import Toolbox.Tool;
+
 
 public class AtmosphereModel  {
 //-------------------------------------------------------------------------------
@@ -159,7 +161,7 @@ public static double atm_read(int variable, double altitude) {
 			data_y[i] = ATM_DATA.get(i).get_gamma();
 		}
 	}
-	atm_read = LinearInterpolate( data_x , data_y , altitude);
+	atm_read = Tool.LinearInterpolate( data_x , data_y , altitude);
 	return atm_read;
 }
 

@@ -39,6 +39,7 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
+import javax.swing.border.MatteBorder;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
@@ -58,22 +59,22 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
 import Model.atm_dataset;
-import Simulator_main.EquationsOfMotion_3DOF;;
 
 public class Plotting_3DOF implements  ActionListener {
 	static //-----------------------------------------------------------------------------	
-	String PROJECT_TITLE = "  BlueBook Simulator V1.00";
+	String PROJECT_TITLE = "  BlueBook PLOT V0.0";
     static int x_init = 1350;
     static int y_init = 810 ;
     
-    public static String Input_File = "inp.txt";
+    public static String Input_File   = "init.inp" ;		// Input: Initial state
+    public static String Input_File_2 = "env.inp"  ;  		// Input: target and environment
     
     public static double PI = 3.14159;
     
     public static int gg = 235;
-    public static Color l_c = new Color(0,0,0);    			// Label Color
-   	public static Color bc_c = new Color(255,255,255);			// Background Color
-   	public static Color w_c = new Color(gg,gg,gg);				// Box background color
+    public static Color l_c = new Color(0,0,0);    					// Label Color
+   	public static Color bc_c = new Color(255,255,255);				// Background Color
+   	public static Color w_c = new Color(gg,gg,gg);					// Box background color
    	public static Color t_c = new Color(255,255,255);				// Table background color
    	
     static DecimalFormat df = new DecimalFormat("#.#");
@@ -81,14 +82,16 @@ public class Plotting_3DOF implements  ActionListener {
     Font menufont = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
     Font labelfont_small = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     Font labelfont_verysmall = new Font("Verdana", Font.BOLD, 7);
+    Font targetfont = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     
     public static JFrame MAIN_frame;
     
     public static int INTEGRATOR = 0; 
     public static String[] Integrator_Options = { "Dormand Prince 853 Integrator", "Standard Runge Kutta Integrator" , "Gragg-Bulirsch-Stoer Integrator", "Adams-Bashforth Integrator"};
     public static String[] Target_Options = { "Earth", "Moon" ,"Mars", "Venus"};
-    public static String[] Axis_Option_NR = { "Time","Longitude", "Latitude" ,"Radius", "Velocity", "Flight Path angle", "Local Azimuth", "Density", "Drag Force", "Lift Force","Side Force", "Gravitational Acc. -radial", "Gravitational acc. -north/south", "Gravitational acc. - average", "Static temperature", "Mach", "Heat capacity ratio", "Gas constant", "Static pressure", "Cd", "Cl", "Bank angle", "Flowzone","Dynamic Pressure","Parachute Cd","Thrust Force", "Cdm","SC Mass","Normalized Deceleartion","Total Engergy"};
+    public static String[] Axis_Option_NR = { "Time","Longitude", "Latitude" ,"Altitude", "Velocity", "Flight Path angle", "Local Azimuth", "Density", "Drag Force", "Lift Force","Side Force", "Gravitational Acc. -radial", "Gravitational acc. -north/south", "Gravitational acc. - average", "Static temperature", "Mach", "Heat capacity ratio", "Gas constant", "Static pressure", "Cd", "Cl", "Bank angle", "Flowzone","Dynamic Pressure","Parachute Cd","Thrust Force", "Cdm","SC Mass","Normalized Deceleartion","Total Engergy"};
     
+   
     private static Crosshair xCrosshair_x;
     private static Crosshair yCrosshair_x;
     
@@ -99,7 +102,6 @@ public class Plotting_3DOF implements  ActionListener {
     public static JPanel P1_Plotpanel;
     public static JPanel P1_SidePanel; 
     
-    public static double rm=0;
     
     static int extx_main = 1350;
     static int exty_main = 800; 
@@ -128,7 +130,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static Crosshair xCrosshair_A3_1,xCrosshair_A3_2,xCrosshair_A3_3,xCrosshair_A3_4,yCrosshair_A3_1,yCrosshair_A3_2,yCrosshair_A3_3,yCrosshair_A3_4;
     public static boolean chartA3_fd=true; 
     
-    public static JLabel p41_inp1,p41_inp2,p41_inp3,p41_inp4,p41_inp5,p41_inp6,p41_inp7,p41_inp8;
+    public static JLabel p41_inp1,p41_inp2,p41_inp3,p41_inp4,p41_inp5,p41_inp6,p41_inp7,p41_inp8, p41_inp9;
     
     private static List<atm_dataset> Page03_storage = new ArrayList<atm_dataset>(); // |1| time |2| altitude |3| velocity
     
@@ -139,6 +141,9 @@ public class Plotting_3DOF implements  ActionListener {
         public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
         public static double G = 1.48808E-34;
         public static int TARGET; 
+        
+        public static  double RM = 0; 		// Target planet radius
+        public static int indx_target = 0;  // Target planet indx 
 
 
     	static double deg = PI/180.0; 		//Convert degrees to radians
@@ -161,7 +166,6 @@ public class Plotting_3DOF implements  ActionListener {
     	MainGUI.setLayout(new BorderLayout());
 
     	// init rm:
-    	rm = EquationsOfMotion_3DOF.SET_Constants(1);
     	// ---------------------------------------------------------------------------------
         //           Page 04 - 3 DOF
         // ---------------------------------------------------------------------------------
@@ -321,18 +325,31 @@ public class Plotting_3DOF implements  ActionListener {
         p41_inp8.setText("300");
         p41_inp8.setSize(60, 20);
        P1_SidePanel.add(p41_inp8);
+       
+       p41_inp9 = new JLabel();
+       p41_inp9.setLocation(2, uy_p41 + 25 * 9 );
+       p41_inp9.setText("");
+       p41_inp9.setSize(60, 20);
+       p41_inp9.setFont(targetfont);
+       p41_inp9.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK));
+      P1_SidePanel.add(p41_inp9);
         
 
  
         JButton StartSimulation = new JButton("Update");
-        StartSimulation.setLocation(200, uy_p41 + 25 * 0);
+        StartSimulation.setLocation(250, uy_p41 + 25 * 0);
         StartSimulation.setSize(150,25);
         StartSimulation.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
-        		  
+        		  try {
+					READ_INPUT();
+				} catch (IOException e2) {
+					// TODO Auto-generated catch block
+					e2.printStackTrace();
+				}
         	    	resultX43.removeAllSeries();
         	    	try {
-        	    	resultX43 = AddDataset_X43();
+        	    	resultX43 = AddDataset_X43(RM);
         	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
         	    		
         	    	}
@@ -518,9 +535,9 @@ public class Plotting_3DOF implements  ActionListener {
        PageX04_2.add(CPXX4, BorderLayout.CENTER);
 	
        
-
+        READ_INPUT();
         // Page 4.3
-     	CreateChart_X43();
+     	CreateChart_X43(RM);
      	CreateChart_X44();
         Page04_subtabPane.addTab("Case Definition"+"\u2713" , null, PageX04_1, null);
         //Page04_subtabPane.setMnemonicAt(0, KeyEvent.VK_1);
@@ -529,7 +546,6 @@ public class Plotting_3DOF implements  ActionListener {
         Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
-        READ_INPUT();
     		CreateChart_A01();
 
         //------------------------------------------------------------------------
@@ -585,6 +601,43 @@ try {
         	k++;
         }
         } catch (NullPointerException eNPE) { System.out.println(eNPE);}
+        //------------------------------------------------------------------
+        // Red from env.inp
+        try {
+            fstream = new FileInputStream(Input_File_2);
+} catch(IOException eIIO) { System.out.println(eIIO); } 
+      DataInputStream in2 = new DataInputStream(fstream);
+      @SuppressWarnings("resource")
+		BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
+      String strLine2;
+      k = 0;
+      try {
+      while ((strLine2 = br2.readLine()) != null )   {
+      	String[] tokens = strLine2.split(" ");
+      	InitialState = Double.parseDouble(tokens[0]);
+        if (k==0){
+        indx_target = (int) InitialState; 
+        p41_inp9.setText(Target_Options[indx_target]);
+      	} else if (k==1){
+      	RM = InitialState; 
+      	//System.out.println(RM);
+      	} else if (k==2){
+     
+      	} else if (k==3){
+     
+      	} else if (k==4){
+    
+      	} else if (k==5){
+   
+      	} else if (k==6){
+
+      	} else if (k==7){
+
+      	}
+      	k++;
+      }
+      } catch (NullPointerException eNPE) { System.out.println(eNPE);}
+        
     }
 
     public void WRITE_INPUT() throws IOException{
@@ -701,7 +754,7 @@ try {
        }
 	
 	
-	public static XYSeriesCollection AddDataset_X43() throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
+	public static XYSeriesCollection AddDataset_X43(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
         FileInputStream fstream = null;
@@ -713,8 +766,8 @@ try {
                   while ((strLine = br.readLine()) != null )   {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[4]);
-		           double y = Double.parseDouble(tokens[3])-rm;
-		          // System.out.println(x + " | " + y);
+		           double y = Double.parseDouble(tokens[3])-RM;
+		           //System.out.println(Double.parseDouble(tokens[3]) + " | " + RM + " || "+y);
 		         	xyseries10.add(x , y);
 		           }
            in.close();
@@ -744,8 +797,13 @@ try {
                   try {
 			                  while ((strLine = br.readLine()) != null )   {
 						            String[] tokens = strLine.split(" ");
-						            double xx = Double.parseDouble(tokens[x]);
-						            double yy = Double.parseDouble(tokens[y]);
+						            double xx=0; double yy=0; 
+						            if(x==3) {
+						             xx = Double.parseDouble(tokens[x])-RM; } else {
+						             xx = Double.parseDouble(tokens[x]); }
+						            if(y==3) {
+						             yy = Double.parseDouble(tokens[y])-RM;} else {
+						             yy = Double.parseDouble(tokens[y]);	 }
 						         	xyseries10.add(xx , yy);
 					           }
            in.close();
@@ -755,10 +813,10 @@ try {
        }
 	
     
-    public static void CreateChart_X43() throws IOException {
+    public static void CreateChart_X43(double RM) throws IOException {
     	//result1.removeAllSeries();
     	try {
-    	resultX43 = AddDataset_X43();
+    	resultX43 = AddDataset_X43(RM);
     	} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {
     		
     	}
@@ -947,10 +1005,10 @@ try { fstream = new FileInputStream("results.txt");  } catch(IOException eIIO) {
               while ((strLine = br.readLine()) != null )   {
 	           String[] tokens = strLine.split(" ");
 	           double x1 = Double.parseDouble(tokens[4]);
-	           double y1 = Double.parseDouble(tokens[3])-rm;
+	           double y1 = Double.parseDouble(tokens[3])-RM;
 	           
 	           double x2 = Double.parseDouble(tokens[0]);
-	           double y2 = Double.parseDouble(tokens[3])-rm;
+	           double y2 = Double.parseDouble(tokens[3])-RM;
 	          
 	           double x3 = Double.parseDouble(tokens[0]);
 	           double y3 = Double.parseDouble(tokens[5])*rad;
