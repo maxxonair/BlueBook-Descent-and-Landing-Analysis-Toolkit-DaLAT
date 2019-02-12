@@ -1,7 +1,6 @@
 package Plotting; 
 
 import java.awt.BasicStroke;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -20,13 +19,14 @@ import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -35,12 +35,13 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollPane;
 import javax.swing.JTabbedPane;
+import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.border.MatteBorder;
-
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -59,12 +60,16 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
 import Model.atm_dataset;
+import Toolbox.TextAreaOutputStream;
 
 public class Plotting_3DOF implements  ActionListener {
 	static //-----------------------------------------------------------------------------	
 	String PROJECT_TITLE = "  BlueBook PLOT V0.0";
     static int x_init = 1350;
     static int y_init = 810 ;
+    
+    public static JTextArea textArea = new JTextArea();
+    public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, ""); 
     
     public static String Input_File   = "init.inp" ;		// Input: Initial state
     public static String Input_File_2 = "env.inp"  ;  		// Input: target and environment
@@ -248,7 +253,7 @@ public class Plotting_3DOF implements  ActionListener {
         p41_linp2.setBackground(Color.white);
         p41_linp2.setForeground(Color.black);
         P1_SidePanel.add(p41_linp2);
-        JLabel p41_linp3 = new JLabel("Altitude [deg]");
+        JLabel p41_linp3 = new JLabel("Altitude [m]");
         p41_linp3.setLocation(65, uy_p41 + 50 );
         p41_linp3.setSize(250, 20);
         p41_linp3.setBackground(Color.white);
@@ -336,11 +341,12 @@ public class Plotting_3DOF implements  ActionListener {
         
 
  
-        JButton StartSimulation = new JButton("Update");
-        StartSimulation.setLocation(250, uy_p41 + 25 * 0);
-        StartSimulation.setSize(150,25);
-        StartSimulation.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) { 
+        JButton UpdateButton = new JButton("Update");
+        UpdateButton.setLocation(250, uy_p41 + 25 * 0);
+        UpdateButton.setSize(150,25);
+        UpdateButton.addActionListener(new ActionListener() { 
+        	  public void actionPerformed(ActionEvent e) {
+        		  System.out.println("Run: Update");
         		  try {
 					READ_INPUT();
 				} catch (IOException e2) {
@@ -371,22 +377,53 @@ public class Plotting_3DOF implements  ActionListener {
 									// TODO Auto-generated catch block
 									e1.printStackTrace();
 								}
-
+		        	    		System.out.println("Updated");
+        	  } 
+        	} );
+        P1_SidePanel.add(UpdateButton);
+        
+        JButton StartSimulation = new JButton("Run SIM");
+        StartSimulation.setLocation(250, uy_p41 + 25 * 2);
+        StartSimulation.setSize(150,25);
+        StartSimulation.addActionListener(new ActionListener() { 
+        	  public void actionPerformed(ActionEvent e) { 
+        		  System.out.println("Run: SIM");
+        		  ProcessBuilder pb = new ProcessBuilder("", "-jar", "SIM.jar");
+        		  String direc;
+				try {
+					direc = new File(Plotting_3DOF.class.getProtectionDomain().getCodeSource().getLocation()
+							    .toURI()).getPath();
+        		  pb.directory(new File(direc));
+        		  pb.start();
+				} catch (URISyntaxException | IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+					System.out.println("Error:  " + e1);
+				} 
         	  } 
         	} );
         P1_SidePanel.add(StartSimulation);
         
-        /*
-        JButton Testbutton = new JButton("Test");
-        Testbutton.setLocation(5, uy_p41 + 25 * 10);
-        Testbutton.setSize(150,25);
-        Testbutton.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) { 
-
-        	  } 
-        	} );
-        P1_SidePanel.add(Testbutton);
-        */
+//-----------------------------------------------------------------------------------------------
+//								Console Window        
+//-----------------------------------------------------------------------------------------------
+        JPanel JP_EnginModel = new JPanel();
+        JP_EnginModel.setSize(400,150);
+        JP_EnginModel.setLocation(5, uy_p41 + 25 * 17);
+         JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
+        //JP_EnginModel.setBackground(Color.red);
+        taOutputStream = null; 
+        taOutputStream = new TextAreaOutputStream(textArea, ""); 
+        JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JSP_EnginModel.setPreferredSize(new Dimension(400-10,150-10));
+        JSP_EnginModel.setLocation(5, 5);
+        JP_EnginModel.add(JSP_EnginModel);
+        System.setOut(new PrintStream(taOutputStream));
+        
+//-----------------------------------------------------------------------------------------------
+        P1_SidePanel.add(JP_EnginModel);
+//-----------------------------------------------------------------------------------------------
         
       
       

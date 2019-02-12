@@ -40,11 +40,10 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		};
 	   	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
 	  //----------------------------------------------------------------
-		   public static double input_cmd=0;
 		   public static double tminus=0;
 		   public static double cmd_min = 0;
 		   public static double cmd_max = 20000;
-		   public static boolean cntrl_on = false; 
+		   public static boolean cntrl_on = true; 
 	  //----------------------------------------------------------------
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
@@ -107,11 +106,17 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
     	Thrust =0 ; 
     	if(cntrl_on) {
-    	Thrust = PID_01.FlightController_001(input_cmd, x[2]-rm,1, cmd_max, cmd_min);
+    		double pgain=-100;
+    		double igain=0;
+    		double dgain=0;
+ 		    double input_cmd=0;
+ 		    double error = input_cmd - (x[2]-rm);
+    	Thrust = PID_01.FlightController_001(error,pgain,igain,dgain,1, cmd_max, cmd_min);
+		System.out.println(error + " - "+Thrust);
     	} else {
     	Thrust = 0; 
     	}
-    	System.out.println("Altitude: "+ (x[2]-rm));
+    	//System.out.println("Altitude: "+ (x[2]-rm));
     	if (x[2]-rm>200000 || TARGET == 1){
 	    		rho = 0; 
 	    		qinf= 0;
@@ -133,7 +138,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	 P      = rho * R * T;
 	    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 // Mach number                     [-]
     	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             // Parachute Drag coefficient      [-]
-    	     // Thrust = load_Thrust(x[3], qinf, Ma, x[2] - rm, Th_t1, x[6] );       // Thrust                          [N]
     	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       // Continuum flow drag coefficient [-]
 	    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    // Lift coefficient                [-]
 	    	 S 		= 4;	
