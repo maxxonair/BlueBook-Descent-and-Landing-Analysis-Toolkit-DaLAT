@@ -13,7 +13,7 @@ public class SIM implements ActionListener{
 	
    	static double[] x_init =new double[10];	
    	public static String INPUT_FILE;
-   	public static boolean eclipse_run = false;
+   	public static boolean eclipse_run = true;
     public static double PI    = 3.14159265359;                // PI                                       [-]
     public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
     public static double G = 1.48808E-34;
