@@ -62,6 +62,7 @@ import org.jfree.ui.RectangleEdge;
 
 import Model.atm_dataset;
 import Toolbox.TextAreaOutputStream;
+import Toolbox.Tool;
 
 public class Plotting_3DOF implements  ActionListener {
 	static //-----------------------------------------------------------------------------	
@@ -1102,51 +1103,6 @@ try { fstream = new FileInputStream("results.txt");  } catch(IOException eIIO) {
               } catch (NullPointerException eNPE) { System.out.println(eNPE);}
     }
     
-	public static double LinearInterpolate( double vector_x[] , double vector_y[] , double xx)
-	{
-	double yvalue=0;
-	double y1 = 0,y2 = 0,x1 = 0,x2 = 0;
-	int lines=vector_x.length;
-	if (lines == vector_y.length){
-	//............................................
-	for(int ii=lines-1;ii>0;ii--)
-	{
-	if(vector_x[ii]>xx){
-	y1 = vector_y[ii];
-	x1 = vector_x[ii];
-	}
-	}
-	//............................................
-	for(int ii=0;ii<lines-1;ii++)
-	{
-	if(vector_x[ii]<xx){
-	y2 = vector_y[ii];
-	x2 = vector_x[ii];
-	}
-	}
-	//...........................................
-	if(xx<=vector_x[0]){
-	//y1 = vector_y[0];
-	//y2 = vector_y[1];
-	//x1 = vector_x[0];
-	//x2 = vector_x[1];
-	//System.out.println("low limit reached");
-	}
-	if (xx>=vector_x[lines-1])
-	{
-	//y1 = vector_y[lines-2];
-	//y2 = vector_y[lines-1];
-	//x1 = vector_x[lines-2];
-	//x2 = vector_x[lines-1];
-	//System.out.println("high limit reached");
-	}
-    yvalue = y1 + ( y2 - y1 ) * ( xx - x1 ) / ( x2 - x1 ) ;
-	//System.out.println(xx + "----" + x1 + "|" + x2+ "|" +y1+ "|" +y2+ " -----> " +yvalue);
-	return yvalue;
-	} else {
-	return 0; 
-	}
-	}
     
 	public static double get_time(double velocity) {
 		double time = 0;
@@ -1157,7 +1113,7 @@ try { fstream = new FileInputStream("results.txt");  } catch(IOException eIIO) {
 				data_y[i] = Page03_storage.get(i).get_altitude();  // time 
 				data_x[i] = Page03_storage.get(i).get_density();   // velocity
 			}
-		time = LinearInterpolate( data_x , data_y , velocity);
+		time = Tool.LinearInterpolate( data_x , data_y , velocity);
 //System.out.println(velocity + " | " + time);
 		return time;
 	}

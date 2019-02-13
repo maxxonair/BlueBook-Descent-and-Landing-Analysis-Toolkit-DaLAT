@@ -222,6 +222,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			System.out.println("Error: Propulsion setting read failed. ISP set to zero. Propellant mass set to zero. Thrust set to zero. ");
 			PROPread =false;
 		}
+		PID_01.FlightController_001_RESET(); // Flight Controller 001 reset
 //----------------------------------------------------------------------------------------------
 		FirstOrderIntegrator dp853;
 		try {

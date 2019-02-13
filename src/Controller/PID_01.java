@@ -8,8 +8,8 @@ import java.io.InputStreamReader;
 
 public class PID_01{
 	
-	static double ERROR_Tminus;
-	static double ERROR_INTEGRATOR=0;
+	public static double ERROR_Tminus=0;
+	public static double ERROR_INTEGRAL=0;
 	static String INPUT_FILE = null; 
 	public static boolean eclipse_run = false; 
 	public static String ControllerInputFile = ".\\CTRL\\cntrl_01.inp"; 
@@ -39,6 +39,11 @@ public class PID_01{
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return readINP;
     }
+    
+    public static void FlightController_001_RESET() {
+    	ERROR_INTEGRAL=0;
+    	ERROR_Tminus=0;
+    }
 	
 	public static double FlightController_001(double ERROR, double deltat){
 		double ACT_CMD=0;							// Actuator Command
@@ -54,17 +59,19 @@ public class PID_01{
 		double cmd_max = readINP[4];
 		double cmd_min = readINP[5];
 		P_CMD = P_GAIN * ERROR;
-		I_CMD = I_GAIN*(ERROR_INTEGRATOR+ERROR);
+		ERROR_INTEGRAL = ERROR_INTEGRAL + (ERROR * deltat);
+		I_CMD = I_GAIN*(ERROR_INTEGRAL);
 		if(deltat>0) {
 		D_CMD = D_GAIN*(ERROR-ERROR_Tminus)/deltat;} else {
 		D_CMD = 0;
 		}
 		ACT_CMD=P_CMD + I_CMD + D_CMD;
 		if (ACT_CMD>cmd_max)       {
-			ACT_CMD=cmd_max;
+			ACT_CMD=cmd_max;				// Upper limit
 		} else if(ACT_CMD<cmd_min) {
-			ACT_CMD=cmd_min;
+			ACT_CMD=cmd_min;				// Lower limit
 		} 
+		ERROR_Tminus = ERROR; 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
