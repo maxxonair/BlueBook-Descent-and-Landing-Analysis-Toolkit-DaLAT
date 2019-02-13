@@ -24,6 +24,8 @@ import Controller.PID_01;
 import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
+import Toolbox.Tool;
+//import Controller.PID_01;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
@@ -39,11 +41,20 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				{0,0,0,0},												// Venus
 		};
 	   	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
+	   	public static String[] IntegratorInputPath = {".\\INP\\INTEG\\00_DormandPrince853Integrator.inp",
+	   												  ".\\INP\\INTEG\\01_ClassicalRungeKuttaIntegrator.inp",
+	   												  ".\\INP\\INTEG\\02_GraggBulirschStoerIntegrator.inp",
+	   												  ".\\INP\\INTEG\\03_AdamsBashfordIntegrator.inp"
+	   	};
+	   	public static String PropulsionInputFile = ".\\INP\\PROP\\prop.inp";
 	  //----------------------------------------------------------------
 		   public static double tminus=0;
+		   public static double tis=0;
+		   public static double val_dt=0;
+		   public static boolean switcher=true; 
 		   public static double cmd_min = 0;
 		   public static double cmd_max = 20000;
-		   public static boolean cntrl_on = true; 
+		   public static boolean cntrl_on ; 
 	  //----------------------------------------------------------------
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
@@ -69,14 +80,21 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double Ma=0;
 		    public static double T=0;
 		    public static double CdC=0;
-		    public static double ISP = 10 ; 
+		    public static double ISP = 0 ; 
 		    public static double P = 0 ;      // static pressure [Pa]
 		    public static double cp = 0;
 		    public static int flowzone=0; // Flow zone continuum - transitional - free molecular flwo
 		    public static double Cdm = 0; // Drag coefficient in contiuum flow; 
 		    public static int TARGET=0;
+		    static double Throttle_CMD=0;
+		    static double m_propellant = 0;
+		    static double M0=5000; 
+		    static double Thrust_max=0; 
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
     
+	        
+	        static boolean PROPread = false; 
+	        
 	    public int getDimension() {
 	        return 7;
 	    }
@@ -106,13 +124,19 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
     	Thrust =0 ; 
     	if(cntrl_on) {
-    		double pgain=-100;
-    		double igain=0;
-    		double dgain=0;
  		    double input_cmd=0;
  		    double error = input_cmd - (x[2]-rm);
-    	Thrust = PID_01.FlightController_001(error,pgain,igain,dgain,1, cmd_max, cmd_min);
-		System.out.println(error + " - "+Thrust);
+ 		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
+		    	if ((M0-x[6])<m_propellant && PROPread) {
+		    		Thrust = Throttle_CMD*Thrust_max ; 
+		    		//System.out.println(ISP);
+		    	} else if ((x[2]-rm)<0){
+		    		Thrust = 0;
+		    		System.out.println("Forced Setting: Thrust = off. (Negative altituce)");
+		    	} else {
+		    		Thrust = 0; // empty tanks or failed propulsion read
+		    		System.out.println("Forced Setting: Thrust = off.");
+		    	}
     	} else {
     	Thrust = 0; 
     	}
@@ -159,7 +183,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     dxdt[4] = ( x[3] / x[2] - gr/ x[3] ) * cos( x[4] ) - gn * cos( x[5] ) * sin( x[4] ) / x[3] + L / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
     dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] - Ty / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
 
-    dxdt[6] = - Thrust/(ISP*g0) ;                    // EDL vehicle mass [kg]
+    dxdt[6] = - Thrust/(ISP*g0) ;                    // vehicle mass [kg]
 }
     
 public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t){
@@ -170,28 +194,59 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
+		try {
+			double[] dbl_read = PID_01.READ_CTRL_INPUT();
+			int ctr_setting = (int) dbl_read[0];
+			if(ctr_setting==1) {
+				cntrl_on=true;
+				System.out.println("Controller 01 set ON");
+			} else {
+				cntrl_on=false;
+				System.out.println("Controller 01 set OFF");
+			}
+		} catch (IOException e3) {
+			// TODO Auto-generated catch block
+			System.out.println(e3);
+			System.out.println("Controller switch read failed -> Controller 01 OFF"); }
+		
+		double[] prop_read;
+		try {
+		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
+    	 ISP          	  = prop_read[0];
+    	 m_propellant 	  = prop_read[1];
+    	 Thrust_max 	  = prop_read[2];
+    	 M0 = x6; 
+    	 PROPread=true; 
+		} catch (IOException e) {
+			System.out.println(e);
+			System.out.println("Error: Propulsion setting read failed. ISP set to zero. Propellant mass set to zero. Thrust set to zero. ");
+			PROPread =false;
+		}
 //----------------------------------------------------------------------------------------------
 		FirstOrderIntegrator dp853;
+		try {
+			double[] IntegINP = Tool.READ_INTEGRATOR_INPUT(IntegratorInputPath[INTEGRATOR]);
 		if (INTEGRATOR == 1) {
-	         dp853 = new ClassicalRungeKuttaIntegrator(1.0E-3);
+	         dp853 = new ClassicalRungeKuttaIntegrator(IntegINP[0]);
 		} else if (INTEGRATOR == 0) {
-	         dp853 = new DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10);
+	         dp853 = new DormandPrince853Integrator(IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3]);
 		} else if (INTEGRATOR ==2){
-			double minStep = 1.0e-8;
-			double maxStep = 1.0; 
-			double scalAbsoluteTolerance = 1.0e-10;
-			double scalRelativeTolerance = 1.0e-10;
-			dp853 = new GraggBulirschStoerIntegrator( minStep,  maxStep,  scalAbsoluteTolerance,  scalRelativeTolerance);
+			dp853 = new GraggBulirschStoerIntegrator(IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3]);
 		} else if (INTEGRATOR == 3){
-			int nSteps = 100; 
-			double minStep = 1.0e-8;
-			double maxStep = 1.0; 
-			double scalAbsoluteTolerance = 1.0e-10;
-			double scalRelativeTolerance = 1.0e-10;
-			dp853 = new AdamsBashforthIntegrator( nSteps,  minStep,  maxStep,  scalAbsoluteTolerance,  scalRelativeTolerance);
+			dp853 = new AdamsBashforthIntegrator((int) IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3], IntegINP[4]);
 		} else {
 			// Default Value
-			 dp853 = new DormandPrince853Integrator(1.0e-8, 100.0, 1.0e-10, 1.0e-10);
+			System.out.println("Integrator index out of range");
+			System.out.println("Fallback to standard setting: DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10)");
+			 dp853 = new DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10);
+		}
+		} catch (IOException e2) {
+			// TODO Auto-generated catch block
+			e2.printStackTrace();
+			System.out.println(e2);
+			System.out.println("Integrator settings read failed");
+			System.out.println("Fallback to standard setting: DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10)");
+			dp853 = new DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10);
 		}
 //----------------------------------------------------------------------------------------------
 	        FirstOrderDifferentialEquations ode = new EquationsOfMotion_3DOF();
@@ -231,13 +286,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
 	                double   t = interpolator.getCurrentTime();
+	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};val_dt=Math.abs(tis-tminus);
 	                double[] y = interpolator.getInterpolatedState();
 	                double[] ymo = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
 	                if( t > steps.size() )
-	
-	                    steps.add(t + " " + y[0] + " " + y[1] + " " + y[2] + " " + y[3]+ " " + y[4] + " " + y[5] + " " + rho + " " + D + " " +L + " " +Ty + " " +gr + " " +gn + " " +g_total + " " +T+ " " +Ma+ " " +cp+ " " +R+ " " +P+ " " +Cd+ " " +Cl+ " " +bank+ " " +flowzone+ " " +qinf+ " " +CdC+ " " +Thrust+ " " +Cdm+ " " +y[6]+ " " +ymo[3]/9.81+ " " +E_total);
+	                    steps.add(t + " " + y[0] + " " + y[1] + " " + y[2] + " " + y[3]+ " " + y[4] + " " + y[5] + " " + rho + " " + D + " " +L + " " +Ty + " " +gr + " " +gn + " " +g_total + " " +T+ " " +Ma+ " " +cp+ " " +R+ " " +P+ " " +Cd+ " " +Cl+ " " +bank+ " " +flowzone+ " " +qinf+ " " +CdC+ " " +Thrust+ " " +Cdm+ " " +y[6]+ " " +ymo[3]/9.81+ " " +E_total+ " " + (Throttle_CMD*100)+ " "+ (m_propellant-(M0-y[6]))/m_propellant*100+" "+ (Thrust)+" "+(Thrust/y[6]));
 	//System.out.println(t + "  " + y[2] + "  |  " + y[3] +" | " + (t-steps.size()));
 	                if(isLast) {
 	                    try{
@@ -287,7 +342,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        dp853.addEventHandler(EventHandler,1,1.0e-3,30);
 	        dp853.integrate(ode, 0.0, y, t, y);
 
-	       System.out.println("Sucess. Integrator stop. ");      
+	       System.out.println("Success --> Integrator stop. ");      
 		}
 	
 

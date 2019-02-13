@@ -1,6 +1,12 @@
 
 package Toolbox;
 
+import java.io.BufferedReader;
+import java.io.DataInputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 public class Tool{
 	public static double LinearInterpolate( double atm_x[] , double atm_y[] , double xx)
 	{
@@ -43,6 +49,76 @@ public class Tool{
 	//System.out.println(x1 + "|" + x2+ "|" +y1+ "|" +y2+ "|" +yvalue+ "|" +lines);
 	return yvalue;
 	}
-	
+    public static double[] READ_INTEGRATOR_INPUT(String IntegratorInputFile) throws IOException{
+    double[] readINP = new double[10];
+    String INPUT_FILE = IntegratorInputFile;
+    	double InitialState = 0;
+	    FileInputStream fstream = null;
+	    try{
+	    fstream = new FileInputStream(INPUT_FILE);
+	    } catch(IOException eIO) { System.out.println(eIO);}
+        DataInputStream in = new DataInputStream(fstream);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String strLine;
+        int k = 0;
+        try {
+        while ((strLine = br.readLine()) != null )   {
+        	String[] tokens = strLine.split(" ");
+        	InitialState = Double.parseDouble(tokens[0]);
+        	readINP[k]= InitialState;
+        	k++;
+        }
+        System.out.println("READ: Integrator setup successful.");
+        } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Integrator setup read failed.");}
+        return readINP;
+    }
+    
+    public static double[] READ_PROPULSION_INPUT(String PropulsionInputFile) throws IOException{
+    double[] readINP = new double[10];
+    String INPUT_FILE = PropulsionInputFile;
+    	double InitialState = 0;
+	    FileInputStream fstream = null;
+	    try{
+	    fstream = new FileInputStream(INPUT_FILE);
+	    } catch(IOException eIO) { System.out.println(eIO);}
+        DataInputStream in = new DataInputStream(fstream);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String strLine;
+        int k = 0;
+        try {
+        while ((strLine = br.readLine()) != null )   {
+        	String[] tokens = strLine.split(" ");
+        	InitialState = Double.parseDouble(tokens[0]);
+        	readINP[k]= InitialState;
+        	k++;
+        }
+        System.out.println("READ: Propulsion setup successful.");
+        } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Propulsion setup read failed.");}
+        return readINP;
+    }
+    
+    public static double[] READ_SPACECRAFT_INPUT(String SpacecraftInputFile) throws IOException{
+    double[] readINP = new double[10];
+    String INPUT_FILE = SpacecraftInputFile;
+    	double InitialState = 0;
+	    FileInputStream fstream = null;
+	    try{
+	    fstream = new FileInputStream(INPUT_FILE);
+	    } catch(IOException eIO) { System.out.println(eIO);}
+        DataInputStream in = new DataInputStream(fstream);
+		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        String strLine;
+        int k = 0;
+        try {
+        while ((strLine = br.readLine()) != null )   {
+        	String[] tokens = strLine.split(" ");
+        	InitialState = Double.parseDouble(tokens[0]);
+        	readINP[k]= InitialState;
+        	k++;
+        }
+        System.out.println("READ: Spacecraft setup successful.");
+        } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Spacecraft setup read failed.");}
+        return readINP;
+    }
 	
 }

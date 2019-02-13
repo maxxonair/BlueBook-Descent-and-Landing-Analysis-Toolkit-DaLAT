@@ -18,6 +18,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.net.URISyntaxException;
@@ -68,11 +69,13 @@ public class Plotting_3DOF implements  ActionListener {
     static int x_init = 1350;
     static int y_init = 810 ;
     
+    public static DecimalFormat df = new DecimalFormat();
+    
     public static JTextArea textArea = new JTextArea();
     public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, ""); 
     
-    public static String Input_File   = "init.inp" ;		// Input: Initial state
-    public static String Input_File_2 = "env.inp"  ;  		// Input: target and environment
+    public static String Input_File   = ".\\INP\\init.inp" ;		// Input: Initial state
+    public static String Input_File_2 = ".\\INP\\env.inp"  ;  		// Input: target and environment
     
     public static double PI = 3.14159;
     
@@ -82,7 +85,7 @@ public class Plotting_3DOF implements  ActionListener {
    	public static Color w_c = new Color(gg,gg,gg);					// Box background color
    	public static Color t_c = new Color(255,255,255);				// Table background color
    	
-    static DecimalFormat df = new DecimalFormat("#.#");
+    static DecimalFormat decf = new DecimalFormat("#.#");
     static DecimalFormat df_X4 = new DecimalFormat("#.###");
     Font menufont = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
     Font labelfont_small = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
@@ -94,7 +97,8 @@ public class Plotting_3DOF implements  ActionListener {
     public static int INTEGRATOR = 0; 
     public static String[] Integrator_Options = { "Dormand Prince 853 Integrator", "Standard Runge Kutta Integrator" , "Gragg-Bulirsch-Stoer Integrator", "Adams-Bashforth Integrator"};
     public static String[] Target_Options = { "Earth", "Moon" ,"Mars", "Venus"};
-    public static String[] Axis_Option_NR = { "Time","Longitude", "Latitude" ,"Altitude", "Velocity", "Flight Path angle", "Local Azimuth", "Density", "Drag Force", "Lift Force","Side Force", "Gravitational Acc. -radial", "Gravitational acc. -north/south", "Gravitational acc. - average", "Static temperature", "Mach", "Heat capacity ratio", "Gas constant", "Static pressure", "Cd", "Cl", "Bank angle", "Flowzone","Dynamic Pressure","Parachute Cd","Thrust Force", "Cdm","SC Mass","Normalized Deceleartion","Total Engergy"};
+    public static String[] Axis_Option_NR = { "Time","Longitude", "Latitude" ,"Altitude", "Velocity", "Flight Path angle", "Local Azimuth", "Density", "Drag Force", "Lift Force","Side Force", "Gravitational Acc. -radial", "Gravitational acc. -north/south", "Gravitational acc. - average", "Static temperature", "Mach", "Heat capacity ratio", "Gas constant", "Static pressure", "Cd", "Cl", "Bank angle", "Flowzone","Dynamic Pressure","Parachute Cd","Thrust Force", "Cdm","SC Mass","Normalized Deceleartion","Total Engergy","Thrust CMD","Tank filling level","Thrust", "Thrust to mass"};
+    
     
    
     private static Crosshair xCrosshair_x;
@@ -103,6 +107,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static JPanel PageX04_1;
     public static JPanel PageX04_2;
     public static JPanel PageX04_3;
+    public static JPanel PageX04_4;
     
     public static JPanel P1_Plotpanel;
     public static JPanel P1_SidePanel; 
@@ -157,6 +162,7 @@ public class Plotting_3DOF implements  ActionListener {
     	static int page1_plot_y =380;
     	@SuppressWarnings("rawtypes")
 		public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
+    	
 
 		//public static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 
@@ -174,6 +180,8 @@ public class Plotting_3DOF implements  ActionListener {
     	// ---------------------------------------------------------------------------------
         //           Page 04 - 3 DOF
         // ---------------------------------------------------------------------------------
+    	decf.setMaximumFractionDigits(1);
+    	decf.setMinimumFractionDigits(1);
         //Create the menu bar.
         JMenuBar menuBar = new JMenuBar();
         //menuBar.setLocation(0, 0);
@@ -196,6 +204,12 @@ public class Plotting_3DOF implements  ActionListener {
                    public void actionPerformed(ActionEvent e) {
                 	   MAIN_frame.dispose();
                     } });
+        
+        JMenu menu_SIM = new JMenu("Sim");
+        menu_SIM.setForeground(l_c);
+        menu_SIM.setBackground(bc_c);
+        menu_SIM.setMnemonic(KeyEvent.VK_A);
+        menuBar.add(menu_SIM);
         
         JTabbedPane Page04_subtabPane = (JTabbedPane) new JTabbedPane();
         Page04_subtabPane.setPreferredSize(new Dimension(extx_main, exty_main));
@@ -221,6 +235,12 @@ public class Plotting_3DOF implements  ActionListener {
         PageX04_3.setLayout(new BorderLayout());
         PageX04_3.setBackground(bc_c);
         PageX04_3.setForeground(l_c);
+        PageX04_4 = new JPanel(); 
+        PageX04_4.setLocation(0, 0);
+        PageX04_4.setPreferredSize(new Dimension(extx_main, exty_main));
+        PageX04_4.setLayout(new BorderLayout());
+        PageX04_4.setBackground(bc_c);
+        PageX04_4.setForeground(l_c);
         
         
         
@@ -346,7 +366,7 @@ public class Plotting_3DOF implements  ActionListener {
         UpdateButton.setSize(150,25);
         UpdateButton.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) {
-        		  System.out.println("Run: Update");
+        		  System.out.println("Get Update");
         		  try {
 					READ_INPUT();
 				} catch (IOException e2) {
@@ -388,14 +408,20 @@ public class Plotting_3DOF implements  ActionListener {
         StartSimulation.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
         		  System.out.println("Run: SIM");
-        		  ProcessBuilder pb = new ProcessBuilder("", "-jar", "SIM.jar");
-        		  String direc;
+        		  //ProcessBuilder pb = new ProcessBuilder("", "-jar", "SIM.jar");
 				try {
-					direc = new File(Plotting_3DOF.class.getProtectionDomain().getCodeSource().getLocation()
-							    .toURI()).getPath();
-        		  pb.directory(new File(direc));
-        		  pb.start();
-				} catch (URISyntaxException | IOException e1) {
+					//direc = new File(Plotting_3DOF.class.getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
+					//String path = Plotting_3DOF.class.getProtectionDomain().getCodeSource().getLocation().getPath();
+					//String decodedPath = URLDecoder.decode(path, "UTF-8");
+					//System.out.println(decodedPath);
+        		    //pb.directory(new File(decodedPath));
+        		    //pb.start();
+					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
+					InputStream in = proc.getInputStream();
+					InputStream err = proc.getErrorStream();
+					System.out.println(in);
+					System.out.println(err);
+				} catch ( IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					System.out.println("Error:  " + e1);
@@ -443,7 +469,9 @@ public class Plotting_3DOF implements  ActionListener {
       p41_linp9.setForeground(Color.black);
       P1_SidePanel.add(p41_linp9);
 	  axis_chooser = new JComboBox(Axis_Option_NR);
+	  axis_chooser.setBackground(Color.white);
 	  axis_chooser2 = new JComboBox(Axis_Option_NR);
+	  axis_chooser2.setBackground(Color.white);
       axis_chooser2.setLocation(200, uy_p41 + 25 * 15);
       //axis_chooser2.setPreferredSize(new Dimension(150,25));
       axis_chooser2.setSize(150,25);
@@ -576,10 +604,9 @@ public class Plotting_3DOF implements  ActionListener {
         // Page 4.3
      	CreateChart_X43(RM);
      	CreateChart_X44();
-        Page04_subtabPane.addTab("Case Definition"+"\u2713" , null, PageX04_1, null);
-        //Page04_subtabPane.setMnemonicAt(0, KeyEvent.VK_1);
+        Page04_subtabPane.addTab("Panel" , null, PageX04_1, null);
+        Page04_subtabPane.addTab("Sim Setup"+"\u2713", null, PageX04_4, null);
         Page04_subtabPane.addTab("Map" , null, PageX04_2, null);
-       // Page04_subtabPane.setMnemonicAt(0, KeyEvent.VK_2);
         Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
@@ -619,21 +646,21 @@ try {
         	String[] tokens = strLine.split(" ");
         	InitialState = Double.parseDouble(tokens[0]);
             if (k==0){
-        		p41_inp1.setText("" + InitialState);
+        		p41_inp1.setText(decf.format(InitialState));
         	} else if (k==1){
-        		p41_inp2.setText("" + InitialState);
+        		p41_inp2.setText(decf.format( InitialState));
         	} else if (k==2){
-        		p41_inp3.setText("" + InitialState);
+        		p41_inp3.setText(decf.format( InitialState));
         	} else if (k==3){
-        		p41_inp4.setText("" + InitialState);
+        		p41_inp4.setText(decf.format(InitialState));
         	} else if (k==4){
-        		p41_inp5.setText("" + InitialState);
+        		p41_inp5.setText(decf.format(InitialState));
         	} else if (k==5){
-        		p41_inp6.setText("" + InitialState);
+        		p41_inp6.setText(decf.format(InitialState));
         	} else if (k==6){
-        		p41_inp7.setText("" + InitialState);
+        		p41_inp7.setText(decf.format(InitialState));
         	} else if (k==7){
-        		p41_inp8.setText("" + InitialState);
+        		p41_inp8.setText(decf.format(InitialState));
         	}
         	k++;
         }

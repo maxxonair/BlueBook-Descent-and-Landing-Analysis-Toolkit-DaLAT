@@ -13,7 +13,7 @@ public class SIM implements ActionListener{
 	
    	static double[] x_init =new double[10];	
    	public static String INPUT_FILE;
-   	public static boolean eclipse_run = true;
+   	public static boolean eclipse_run = false;
     public static double PI    = 3.14159265359;                // PI                                       [-]
     public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
     public static double G = 1.48808E-34;
@@ -26,8 +26,8 @@ public class SIM implements ActionListener{
     public static boolean READ_INPUT() throws IOException{
    String dir = System.getProperty("user.dir");
        	if(eclipse_run) {
-       	   	 INPUT_FILE = dir+"/LandingSim-3DOF/init.inp";} else {
-       	   	 INPUT_FILE = "init.inp";}
+       	   	 INPUT_FILE = dir+"/LandingSim-3DOF/INP/init.inp";} else {
+       	   	 INPUT_FILE = ".\\INP\\init.inp";}
     	double InitialState = 0;
     	boolean read_state = false;
 	    FileInputStream fstream = null;
