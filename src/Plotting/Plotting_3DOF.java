@@ -75,8 +75,15 @@ public class Plotting_3DOF implements  ActionListener {
     public static JTextArea textArea = new JTextArea();
     public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, ""); 
     
-    public static String Input_File   = ".\\INP\\init.inp" ;		// Input: Initial state
-    public static String Input_File_2 = ".\\INP\\env.inp"  ;  		// Input: target and environment
+    public static String Init_File   	 = "\\INP\\init.inp" ;		// Input: Initial state
+    public static String Env_File    	 = "\\INP\\env.inp"  ;  		// Input: target and environment
+    public static String RES_File        = "\\results.txt"   ; 		// Input; result file
+    public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
+    public static String Env_File_mac    = "/INP/env.inp"  ;  		// Input: target and environment
+    public static String RES_File_mac    = "/results.txt"  ;        // Input: result file 
+    
+    public static boolean ShowWorkDirectory = true; 
+    public static boolean macrun = true;
     
     public static double PI = 3.14159;
     
@@ -88,10 +95,10 @@ public class Plotting_3DOF implements  ActionListener {
    	
     static DecimalFormat decf = new DecimalFormat("#.#");
     static DecimalFormat df_X4 = new DecimalFormat("#.###");
-    Font menufont = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
-    Font labelfont_small = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
+    Font menufont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
+    Font labelfont_small     = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     Font labelfont_verysmall = new Font("Verdana", Font.BOLD, 7);
-    Font targetfont = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
+    Font targetfont          = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     
     public static JFrame MAIN_frame;
     
@@ -211,6 +218,14 @@ public class Plotting_3DOF implements  ActionListener {
     	MainGUI.setLayout(new BorderLayout());
 
     	// init rm:
+     if(ShowWorkDirectory) {System.out.println(System.getProperty("user.dir"));}
+     if(macrun) {
+    	 String dir = System.getProperty("user.dir");
+    	 Init_File = dir + Init_File_mac ;
+    	 Env_File  = dir + Env_File_mac  ; 
+    	 RES_File  = dir + RES_File_mac  ;
+    	 System.out.println(Init_File);
+     }
     	// ---------------------------------------------------------------------------------
         //           Page 04 - 3 DOF
         // ---------------------------------------------------------------------------------
@@ -676,8 +691,8 @@ public class Plotting_3DOF implements  ActionListener {
     	double InitialState = 0;
        	FileInputStream fstream = null; 
 try {
-              fstream = new FileInputStream(Input_File);
-} catch(IOException eIIO) { System.out.println(eIIO); } 
+              fstream = new FileInputStream(Init_File);
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading init.inp failed.");} 
         DataInputStream in = new DataInputStream(fstream);
         @SuppressWarnings("resource")
 		BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -710,8 +725,8 @@ try {
         //------------------------------------------------------------------
         // Red from env.inp
         try {
-            fstream = new FileInputStream(Input_File_2);
-} catch(IOException eIIO) { System.out.println(eIIO); } 
+            fstream = new FileInputStream(Env_File);
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading env.inp failed.");} 
       DataInputStream in2 = new DataInputStream(fstream);
       @SuppressWarnings("resource")
 		BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
@@ -747,7 +762,7 @@ try {
     }
 
     public void WRITE_INPUT() throws IOException{
-            File fac = new File(Input_File);
+            File fac = new File(Init_File);
             if (!fac.exists())
             {
                 fac.createNewFile();
@@ -798,14 +813,14 @@ try {
 		         BufferedImage myImage = ImageIO.read(new File(".\\MAPS\\Earth_MAP.jpg"));
 		         plot2.setBackgroundImage(myImage);  
 			  } catch(IIOException eIIO) {
-				  System.out.println(eIIO);
+				  System.out.println(eIIO);System.out.println("ERROR: Reading maps failed.");
 			  }
 		  } else if (TARGET==1){
 			  try {
 		         BufferedImage myImage = ImageIO.read(new File( ".\\MAPS\\Moon_MAP.jpg"));
 		         plot2.setBackgroundImage(myImage);  
 			  } catch(IIOException eIIO) {
-				  System.out.println(eIIO);
+				  System.out.println(eIIO);System.out.println("ERROR: Reading maps failed.");
 			  }
 		  } else if(TARGET==2){
 			  try {
@@ -813,6 +828,7 @@ try {
 		         plot2.setBackgroundImage(myImage); 
 			  } catch(IIOException eIIO) {
 				  System.out.println(eIIO);
+				  System.out.println("ERROR: Reading maps failed.");
 			  }
 		  } else if(TARGET==3){
 			  try {
@@ -820,6 +836,7 @@ try {
 		         plot2.setBackgroundImage(myImage); 
 		  } catch(IIOException eIIO) {
 			  System.out.println(eIIO);
+			  System.out.println("ERROR: Reading maps failed.");
 		  }
 		  }
     }
@@ -828,7 +845,7 @@ try {
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
             FileInputStream fstream = null;
-            		try{ fstream = new FileInputStream("results.txt");} catch(IOException eIO) { System.out.println(eIO);}
+            		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
                   DataInputStream in = new DataInputStream(fstream);
                   BufferedReader br = new BufferedReader(new InputStreamReader(in));
                   String strLine;
@@ -864,7 +881,7 @@ try {
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
         FileInputStream fstream = null;
-		try{ fstream = new FileInputStream("results.txt");} catch(IOException eIO) { System.out.println(eIO);}
+		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
                   DataInputStream in = new DataInputStream(fstream);
                   BufferedReader br = new BufferedReader(new InputStreamReader(in));
                   String strLine;
@@ -896,7 +913,7 @@ try {
 	public static XYSeriesCollection AddDataset_X44(int x, int y) throws IOException , IIOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
        			  XYSeries xyseries10 = new XYSeries("", false, true); 
                   FileInputStream fstream = null;
-          		try{ fstream = new FileInputStream("results.txt");} catch(IOException eIO) { System.out.println(eIO);}
+          		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
                   DataInputStream in = new DataInputStream(fstream);
                   BufferedReader br = new BufferedReader(new InputStreamReader(in));
                   String strLine;
@@ -1069,7 +1086,7 @@ try {
     	   try{ // Temperature
     	       	FileInputStream fstream = null; 
     	       	try {
-    	       	              fstream = new FileInputStream("results.txt");
+    	       	              fstream = new FileInputStream(RES_File);
     	       	} catch(IOException eIIO) { System.out.println(eIIO); } 
     		          DataInputStream in = new DataInputStream(fstream);
     		          BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -1111,7 +1128,7 @@ try {
        	XYSeries xyseries30 = new XYSeries("", false, true); 
        	XYSeries xyseries40 = new XYSeries("", false, true); 
        	FileInputStream fstream = null; 
-try { fstream = new FileInputStream("results.txt");  } catch(IOException eIIO) { System.out.println(eIIO); } 
+try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { System.out.println(eIIO); } 
               DataInputStream in = new DataInputStream(fstream);
               BufferedReader br = new BufferedReader(new InputStreamReader(in));
               String strLine;

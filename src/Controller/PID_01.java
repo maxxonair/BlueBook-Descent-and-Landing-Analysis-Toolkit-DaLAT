@@ -11,14 +11,14 @@ public class PID_01{
 	public static double ERROR_Tminus=0;
 	public static double ERROR_INTEGRAL=0;
 	static String INPUT_FILE = null; 
-	public static boolean eclipse_run = false; 
+	public static boolean eclipse_run = true; 
 	public static String ControllerInputFile = ".\\CTRL\\cntrl_01.inp"; 
 	
     public static double[] READ_CTRL_INPUT() throws IOException{
      double[] readINP = new double[7];
     String dir = System.getProperty("user.dir");
        	if(eclipse_run) {
-       	   	 INPUT_FILE = dir+"/LandingSim-3DOF"+ControllerInputFile;} else {
+       	   	 INPUT_FILE = dir+"/LandingSim-3DOF/CTRL/cntrl_01.inp";} else {
        	   	 INPUT_FILE = ControllerInputFile;}
     	double InitialState = 0;
 	    FileInputStream fstream = null;
@@ -36,13 +36,16 @@ public class PID_01{
         	readINP[k]= InitialState;
         	k++;
         }
+        fstream.close();
+        in.close();
+        br.close();
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return readINP;
     }
     
     public static void FlightController_001_RESET() {
-    	ERROR_INTEGRAL=0;
-    	ERROR_Tminus=0;
+    	ERROR_INTEGRAL = 0 ;
+    	ERROR_Tminus   = 0 ;
     }
 	
 	public static double FlightController_001(double ERROR, double deltat){

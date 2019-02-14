@@ -46,7 +46,16 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	   												  ".\\INP\\INTEG\\02_GraggBulirschStoerIntegrator.inp",
 	   												  ".\\INP\\INTEG\\03_AdamsBashfordIntegrator.inp"
 	   	};
-	   	public static String PropulsionInputFile = ".\\INP\\PROP\\prop.inp";
+	   	public static String[] IntegratorInputPath_mac = {"/LandingSim-3DOF/INP/INTEG/00_DormandPrince853Integrator.inp",
+					  "/LandingSim-3DOF/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
+					  "/LandingSim-3DOF/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
+					  "/LandingSim-3DOF/INP/INTEG/03_AdamsBashfordIntegrator.inp"
+};
+	   	public static String PropulsionInputFile        = ".\\INP\\PROP\\prop.inp";
+	    public static String PropulsionInputFile_mac    = "/LandingSim-3DOF/INP/PROP/prop.inp"  ;  		// Input: target and environment
+	    
+	    public static boolean ShowWorkDirectory = true; 
+	    public static boolean macrun = true;
 	  //----------------------------------------------------------------
 		   public static double tminus=0;
 		   public static double tis=0;
@@ -92,6 +101,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    static double Thrust_max=0; 
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
+		    public static double v_touchdown;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
     
 	        
@@ -131,7 +141,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	if(cntrl_on) {
  		    double input_cmd=0;
  		    double error = input_cmd - (x[2]-rm);
- 		    double v_touchdown = 5;
  		    double target_velocity = - LandingCurve.ParabolicLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
  		    error = target_velocity - x[3]*sin(x[4]);
  		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
@@ -149,7 +158,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    	} else if (x[3]<0) {
 		    		Thrust = 0;
 		    		Throttle_CMD=0;
-		    		System.out.println("Forced Setting: Thrust = off. (Negative velocity -> overshoot)");
+		    		System.out.println("Forced Setting: Thrust = off. (Negative velocity)");
 		    	} else {
 		    		Thrust = 0; // empty tanks or failed propulsion read
 		    		Throttle_CMD=0;
@@ -206,9 +215,15 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     dxdt[6] = - Thrust/(ISP*g0) ;                    // vehicle mass [kg]
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td){
 //----------------------------------------------------------------------------------------------
-		try {
+    if(ShowWorkDirectory) {System.out.println(System.getProperty("user.dir"));}
+    if(macrun) {
+   	 String dir = System.getProperty("user.dir");
+     	PropulsionInputFile = dir + PropulsionInputFile_mac;
+   	 //System.out.println(PropulsionInputFile);
+    }	
+	try {
 			SET_Constants(target);
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
@@ -236,8 +251,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
     	 ISP          	  = prop_read[0];
     	 m_propellant 	  = prop_read[1];
-    	 Thrust_max 	  = prop_read[2];
+    	 Thrust_max 	      = prop_read[2];
     	 M0 = x6; 
+    	 v_touchdown = v_td;
     	 PROPread=true; 
 		} catch (IOException e) {
 			System.out.println(e);
@@ -247,8 +263,15 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		PID_01.FlightController_001_RESET(); // Flight Controller 001 reset
 //----------------------------------------------------------------------------------------------
 		FirstOrderIntegrator dp853;
+		String IntegInput ="";
+		if(macrun){
+			String dir = System.getProperty("user.dir");
+			IntegInput = dir + IntegratorInputPath_mac[INTEGRATOR];
+		} else {
+			IntegInput = IntegratorInputPath[INTEGRATOR];
+		}
 		try {
-			double[] IntegINP = Tool.READ_INTEGRATOR_INPUT(IntegratorInputPath[INTEGRATOR]);
+			double[] IntegINP = Tool.READ_INTEGRATOR_INPUT(IntegInput);
 		if (INTEGRATOR == 1) {
 	         dp853 = new ClassicalRungeKuttaIntegrator(IntegINP[0]);
 		} else if (INTEGRATOR == 0) {
@@ -358,8 +381,15 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    try{
 	        	        	//DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
 	        	        	//Date date = new Date();
-	        	            String time = "" ;//+ dateFormat.format(date) ; 
-	                        PrintWriter writer = new PrintWriter(new File("results" + time + ".txt"), "UTF-8");
+	        	           // String time = "" ;//+ dateFormat.format(date) ; 
+	        	            String resultpath="";
+	        	            if(macrun) {
+	        	            	String dir = System.getProperty("user.dir");
+	        	            	resultpath = dir + "/LandingSim-3DOF/results.txt";
+	        	            } else {
+	        	            	resultpath = "results.txt";
+	        	            }
+	                        PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
 	                        for(String step: steps) {
 	                            writer.println(step);
 	                        }

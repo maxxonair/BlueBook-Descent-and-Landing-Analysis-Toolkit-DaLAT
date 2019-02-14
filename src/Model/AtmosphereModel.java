@@ -16,9 +16,9 @@ public class AtmosphereModel  {
 //  %
 //INPUT Files                                   %
 //  %
+	public static boolean macrun=true; 
 //-------------------------------------------------------------------------------
 public static String file_atm   = ""  ;
-
 public static String DELIMITER = ",";
 double is_value = 0 ; 
 private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
@@ -29,24 +29,28 @@ public static double PI    = 3.14159265359;                // Pi                
 public static double sigma = 1.6311e-9;     // Average collision diameter (<- check that again)
 
 public static void  Set_File_Paths(int TARGET) throws URISyntaxException{
+	String dir = System.getProperty("user.dir");
     if ( TARGET == 0)
     {
      file_atm      = ".\\ATM\\atm_EARTH.csv";
+     if(macrun){ file_atm = dir + "/LandingSim-3DOF/ATM/atm_EARTH.csv";}
     }
     if (  TARGET == 1 )
     {
          file_atm       =  ".\\ATM\\atm_MOON.csv";
+         if(macrun){ file_atm = dir + "/LandingSim-3DOF/ATM/atm_MOON.csv";}
     }
 	if (  TARGET == 2 )
 	{
 	     file_atm       = ".\\ATM\\atm_MARS.csv";
+	     if(macrun){ file_atm = dir + "/LandingSim-3DOF/ATM/atm_MARS.csv";}
 	}
 }
 
 public static List<atm_dataset> INITIALIZE_ATM_DATA(int TARGET) throws URISyntaxException{
 	Set_File_Paths( TARGET);
 	   try{ // Temperature
-		    FileInputStream fstream = new FileInputStream(file_atm);
+		          FileInputStream fstream = new FileInputStream(file_atm);
 		          DataInputStream in = new DataInputStream(fstream);
 		          BufferedReader br = new BufferedReader(new InputStreamReader(in));
 		          String strLine;
@@ -75,7 +79,9 @@ if (k==0){
 }
 		   k++;
 		   }
+		   fstream.close();
 		   in.close();
+		   br.close();
 		   }catch (Exception e){
 		     System.err.println("Error: " + e.getMessage());
 		   }

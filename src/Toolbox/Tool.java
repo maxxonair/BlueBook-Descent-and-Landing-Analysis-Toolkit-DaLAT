@@ -68,6 +68,9 @@ public class Tool{
         	readINP[k]= InitialState;
         	k++;
         }
+    		fstream.close();
+    		in.close();
+    		br.close();
         System.out.println("READ: Integrator setup successful.");
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Integrator setup read failed.");}
         return readINP;
@@ -92,6 +95,10 @@ public class Tool{
         	readINP[k]= InitialState;
         	k++;
         }
+        fstream.close();
+        in.close();
+        br.close();
+        
         System.out.println("READ: Propulsion setup successful.");
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Propulsion setup read failed.");}
         return readINP;
@@ -116,6 +123,9 @@ public class Tool{
         	readINP[k]= InitialState;
         	k++;
         }
+        fstream.close();
+        in.close();
+        br.close();
         System.out.println("READ: Spacecraft setup successful.");
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Spacecraft setup read failed.");}
         return readINP;
