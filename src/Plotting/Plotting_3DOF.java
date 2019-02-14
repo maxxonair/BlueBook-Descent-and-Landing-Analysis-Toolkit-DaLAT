@@ -98,10 +98,43 @@ public class Plotting_3DOF implements  ActionListener {
     public static int INTEGRATOR = 0; 
     public static String[] Integrator_Options = { "Dormand Prince 853 Integrator", "Standard Runge Kutta Integrator" , "Gragg-Bulirsch-Stoer Integrator", "Adams-Bashforth Integrator"};
     public static String[] Target_Options = { "Earth", "Moon" ,"Mars", "Venus"};
-    public static String[] Axis_Option_NR = { "Time","Longitude", "Latitude" ,"Altitude", "Velocity", "Flight Path angle", "Local Azimuth", "Density", "Drag Force", "Lift Force","Side Force", "Gravitational Acc. -radial", "Gravitational acc. -north/south", "Gravitational acc. - average", "Static temperature", "Mach", "Heat capacity ratio", "Gas constant", "Static pressure", "Cd", "Cl", "Bank angle", "Flowzone","Dynamic Pressure","Parachute Cd","Thrust Force", "Cdm","SC Mass","Normalized Deceleartion","Total Engergy","Thrust CMD","Tank filling level","Thrust", "Thrust to mass"};
-    
-    
-   
+    public static String[] Axis_Option_NR = { "Time [s]",
+    										  "Longitude [deg]", 
+    										  "Latitude [deg]" ,
+    										  "Altitude [m]", 
+    										  "Velocity [m/s]", 
+    										  "Flight Path angle [deg]", 
+    										  "Local Azimuth [deg]", 
+    										  "Density [kg/m3]", 
+    										  "Drag Force [N]", 
+    										  "Lift Force [N]",
+    										  "Side Force [N]", 
+    										  "Gravitational Acc. -radial [m/s]", 
+    										  "Gravitational acc. -north/south [m/s]",
+    										  "Gravitational acc. - average [m/s]", 
+    										  "Static temperature [K]", 
+    										  "Mach [-]",
+    										  "Heat capacity ratio", 
+    										  "Gas constant", 
+    										  "Static pressure [Pa]", 
+    										  "Cd [-]", 
+    										  "Cl [-]", 
+    										  "Bank angle [deg]", 
+    										  "Flowzone [-]",
+    										  "Dynamic Pressure [Pa]",
+    										  "Parachute Cd [-]",
+    										  "Thrust Force [N]", 
+    										  "Cdm [-]",
+    										  "SC Mass [kg]",
+    										  "Normalized Deceleartion [-]",
+    										  "Total Engergy [J]",
+    										  "Thrust CMD [%]",
+    										  "Tank filling level [%]",
+    										  "Thrust [N]", 
+    										  "Thrust to mass [N/kg]",
+    										  "Velocity horizontal [m/s]",
+    										  "Velocity vertical [m/s]"};
+ 
     private static Crosshair xCrosshair_x;
     private static Crosshair yCrosshair_x;
     
@@ -370,7 +403,8 @@ public class Plotting_3DOF implements  ActionListener {
         		  System.out.println("Get Update");
         		  try {
 					READ_INPUT();
-				} catch (IOException e2) {
+					SET_MAP(indx_target);
+				} catch (IOException | URISyntaxException e2) {
 					// TODO Auto-generated catch block
 					e2.printStackTrace();
 				}
@@ -612,7 +646,14 @@ public class Plotting_3DOF implements  ActionListener {
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
     		CreateChart_A01();
-
+    		try {
+				SET_MAP(indx_target);
+			} catch (URISyntaxException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+				System.out.println(e1);
+				System.out.println("ERROR: Loading map failed.");
+			}
         //------------------------------------------------------------------------
         /*
         tabbedPane.addTab("3"+"|"+"DOF" , null, mainPanelX4, null);
@@ -865,10 +906,18 @@ try {
 						            double xx=0; double yy=0; 
 						            if(x==3) {
 						             xx = Double.parseDouble(tokens[x])-RM; } else {
-						             xx = Double.parseDouble(tokens[x]); }
+						            	 String x_axis_label = String.valueOf(axis_chooser.getSelectedItem());
+						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
+						            	 if(isangle) {xx = Double.parseDouble(tokens[x])*rad;} else {
+						            		 		  xx = Double.parseDouble(tokens[x]);} 
+						            	 }
 						            if(y==3) {
 						             yy = Double.parseDouble(tokens[y])-RM;} else {
-						             yy = Double.parseDouble(tokens[y]);	 }
+						            	 String x_axis_label = String.valueOf(axis_chooser2.getSelectedItem());
+						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
+						            	 if(isangle) {yy = Double.parseDouble(tokens[y])*rad;} else {
+						             yy = Double.parseDouble(tokens[y]);	}
+						             }
 						         	xyseries10.add(xx , yy);
 					           }
            in.close();

@@ -25,7 +25,6 @@ import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
 import Toolbox.Tool;
-//import Controller.PID_01;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
@@ -106,7 +105,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    omega = DATA_MAIN[TARGET][2];		// Planets roational speed     				[rad/s]
 		    //--------------------------------------------------------------------
 		    // 			Write env.inp : 
-			 PrintWriter writer = new PrintWriter(new File("env.inp"), "UTF-8");
+			 PrintWriter writer = new PrintWriter(new File(".\\INP\\env.inp"), "UTF-8");
 			for (int i = 0; i < 6; i++) {
 				if(i==0) {
 				writer.println(""+TARGET);
@@ -127,18 +126,29 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
  		    double input_cmd=0;
  		    double error = input_cmd - (x[2]-rm);
  		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
-		    	if ((M0-x[6])<m_propellant && PROPread) {
+		    	if ((M0-x[6])<m_propellant && PROPread &&x[3]>0) {
 		    		Thrust = Throttle_CMD*Thrust_max ; 
 		    		//System.out.println(ISP);
 		    	} else if ((x[2]-rm)<0){
 		    		Thrust = 0;
-		    		System.out.println("Forced Setting: Thrust = off. (Negative altituce)");
+		    		Throttle_CMD=0;
+		    		System.out.println("Forced Setting: Thrust = off. (Negative altitude)");
+		    	} else if (PROPread==false) {
+		    		Thrust = 0;
+		    		Throttle_CMD=0;
+		    		System.out.println("Forced Setting: Thrust = off. (Propulsion-setting read failed)");
+		    	} else if (x[3]<0) {
+		    		Thrust = 0;
+		    		Throttle_CMD=0;
+		    		System.out.println("Forced Setting: Thrust = off. (Negative velocity -> overshoot)");
 		    	} else {
 		    		Thrust = 0; // empty tanks or failed propulsion read
-		    		System.out.println("Forced Setting: Thrust = off.");
+		    		Throttle_CMD=0;
+		    		System.out.println("Forced Setting: Thrust = off. (Empty tanks)");
 		    	}
     	} else {
-    	Thrust = 0; 
+    	Thrust = 0; // Controller off 
+    	Throttle_CMD=0;
     	}
     	//System.out.println("Altitude: "+ (x[2]-rm));
     	if (x[2]-rm>200000 || TARGET == 1){
@@ -186,7 +196,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     dxdt[6] = - Thrust/(ISP*g0) ;                    // vehicle mass [kg]
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write){
 //----------------------------------------------------------------------------------------------
 		try {
 			SET_Constants(target);
@@ -292,8 +302,45 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double[] ymo = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
-	                if( t > steps.size() )
-	                    steps.add(t + " " + y[0] + " " + y[1] + " " + y[2] + " " + y[3]+ " " + y[4] + " " + y[5] + " " + rho + " " + D + " " +L + " " +Ty + " " +gr + " " +gn + " " +g_total + " " +T+ " " +Ma+ " " +cp+ " " +R+ " " +P+ " " +Cd+ " " +Cl+ " " +bank+ " " +flowzone+ " " +qinf+ " " +CdC+ " " +Thrust+ " " +Cdm+ " " +y[6]+ " " +ymo[3]/9.81+ " " +E_total+ " " + (Throttle_CMD*100)+ " "+ (m_propellant-(M0-y[6]))/m_propellant*100+" "+ (Thrust)+" "+(Thrust/y[6]));
+	                //System.out.println(steps.size());
+	                //if( t > steps.size() )
+	                if( t > dt_write )
+	                    steps.add(t + " " + 
+	                    		  y[0] + " " + 
+	                    		  y[1] + " " + 
+	                    		  y[2] + " " + 
+	                    		  y[3]+ " " + 
+	                    		  y[4] + " " + 
+	                    		  y[5] + " " + 
+	                    		  rho + " " + 
+	                    		  D + " " +
+	                    		  L + " " +
+	                    		  Ty + " " +
+	                    		  gr + " " +
+	                    		  gn + " " +
+	                    		  g_total + " " +
+	                    		  T+ " " +
+	                    		  Ma+ " " +
+	                    		  cp+ " " +
+	                    		  R+ " " +
+	                    		  P+ " " +
+	                    		  Cd+ " " +
+	                    		  Cl+ " " +
+	                    		  bank+ " " +
+	                    		  flowzone+ " " +
+	                    		  qinf+ " " +
+	                    		  CdC+ " " +
+	                    		  Thrust+ " " +
+	                    		  Cdm+ " " +
+	                    		  y[6]+ " " +
+	                    		  ymo[3]/9.81+ " " +
+	                    		  E_total+ " " + 
+	                    		  (Throttle_CMD*100)+ " "+ 
+	                    		  (m_propellant-(M0-y[6]))/m_propellant*100+" "+ 
+	                    		  (Thrust)+" "+
+	                    		  (Thrust/y[6])+" "+
+	                    		  (y[3]*Math.cos(y[4]))+" "+
+	                    		  (y[3]*Math.sin(y[4])));
 	//System.out.println(t + "  " + y[2] + "  |  " + y[3] +" | " + (t-steps.size()));
 	                if(isLast) {
 	                    try{
