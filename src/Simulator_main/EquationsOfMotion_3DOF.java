@@ -25,6 +25,7 @@ import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
 import Toolbox.Tool;
+import Controller.LandingCurve;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
@@ -89,6 +90,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    static double m_propellant = 0;
 		    static double M0=5000; 
 		    static double Thrust_max=0; 
+		    public static double cntr_h_init=0;
+		    public static double cntr_v_init=0;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
     
 	        
@@ -121,10 +124,16 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
     	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
+    	//-------------------------------------------------------------------------------------------------------------------
+    	//											Flight controller 
+    	//-------------------------------------------------------------------------------------------------------------------
     	Thrust =0 ; 
     	if(cntrl_on) {
  		    double input_cmd=0;
  		    double error = input_cmd - (x[2]-rm);
+ 		    double v_touchdown = 5;
+ 		    double target_velocity = - LandingCurve.ParabolicLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
+ 		    error = target_velocity - x[3]*sin(x[4]);
  		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
 		    	if ((M0-x[6])<m_propellant && PROPread &&x[3]>0) {
 		    		Thrust = Throttle_CMD*Thrust_max ; 
@@ -150,17 +159,18 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	Thrust = 0; // Controller off 
     	Throttle_CMD=0;
     	}
+    	//-------------------------------------------------------------------------------------------------------------------
     	//System.out.println("Altitude: "+ (x[2]-rm));
     	if (x[2]-rm>200000 || TARGET == 1){
 	    		rho = 0; 
-	    		qinf= 0;
-	    		T= 0 ; 
+	    		qinf = 0;
+	    		T = 0 ; 
 	    		gamma = 0 ; 
 	    		R= 0; 
 	    		Ma = 0; 
 	       //-----------------------------------------------------------------------------------------------
-	      	  D  =  - Thrust;            // Aerodynamic drag Force [N]
-	      	  L  =        0 ;                            // Aerodynamic lift Force [N]
+	      	  D  =  - Thrust * cos(x[4]) ;            // Aerodynamic drag Force [N]
+	      	  L  =    Thrust * sin(x[4]) ;                            // Aerodynamic lift Force [N]
 	      	  Ty =        0 ;                            // Aerodynamic side Force [N]
 	      	//----------------------------------------------------------------------------------------------
     	} else {
@@ -220,6 +230,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			System.out.println("Controller switch read failed -> Controller 01 OFF"); }
 		
 		double[] prop_read;
+	    cntr_h_init=x2-rm;
+	    cntr_v_init=x3;
 		try {
 		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
     	 ISP          	  = prop_read[0];
