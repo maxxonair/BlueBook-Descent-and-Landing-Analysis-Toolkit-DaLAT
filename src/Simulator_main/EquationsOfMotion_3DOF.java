@@ -99,6 +99,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    static double m_propellant = 0;
 		    static double M0=5000; 
 		    static double Thrust_max=0; 
+		    static double Thrust_min=0;
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
 		    public static double v_touchdown;
@@ -146,6 +147,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
  		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
 		    	if ((M0-x[6])<m_propellant && PROPread &&x[3]>0) {
 		    		Thrust = Throttle_CMD*Thrust_max ; 
+		    		if(Thrust<Thrust_min) {Thrust=Thrust_min;}
 		    		//System.out.println(ISP);
 		    	} else if ((x[2]-rm)<0){
 		    		Thrust = 0;
@@ -252,6 +254,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 ISP          	  = prop_read[0];
     	 m_propellant 	  = prop_read[1];
     	 Thrust_max 	      = prop_read[2];
+    	 Thrust_min		  = prop_read[3];
     	 M0 = x6; 
     	 v_touchdown = v_td;
     	 PROPread=true; 

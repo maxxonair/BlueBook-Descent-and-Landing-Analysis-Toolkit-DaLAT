@@ -29,6 +29,7 @@ import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -188,6 +189,11 @@ public class Plotting_3DOF implements  ActionListener {
     public static boolean chartA3_fd=true; 
     
     public static JLabel p41_inp1,p41_inp2,p41_inp3,p41_inp4,p41_inp5,p41_inp6,p41_inp7,p41_inp8, p41_inp9;
+    public static JTextField p42_inp1,p42_inp2,p42_inp3,p42_inp4,p42_inp5,p42_inp6,p42_inp7,p42_inp8, p42_inp9,p42_inp10,p42_inp11,p42_inp12,p42_inp13,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
+    public static JTextField p421_inp1,p421_inp2,p421_inp3,p421_inp4,p421_inp5,p421_inp6,p421_inp7,p421_inp8,p421_inp9;
+    
+    public static JComboBox Target_chooser, Integrator_chooser;
+    
     
     private static List<atm_dataset> Page03_storage = new ArrayList<atm_dataset>(); // |1| time |2| altitude |3| velocity
     
@@ -506,10 +512,7 @@ public class Plotting_3DOF implements  ActionListener {
 //-----------------------------------------------------------------------------------------------
         P1_SidePanel.add(JP_EnginModel);
 //-----------------------------------------------------------------------------------------------
-        
-      
-      
-      
+
       JLabel p41_linp8 = new JLabel("X-Axis");
       p41_linp8.setLocation(5, uy_p41 + 25 * 14 );
       p41_linp8.setSize(150, 20);
@@ -548,9 +551,277 @@ public class Plotting_3DOF implements  ActionListener {
   	  } );
       P1_SidePanel.add(axis_chooser);
       P1_SidePanel.add(axis_chooser2);
+ //-----------------------------------------------------------------------------------------
+ // Page 4.2
+ //-----------------------------------------------------------------------------------------
+      JPanel P2_SidePanel = new JPanel();
+      P2_SidePanel.setLayout(null);
+      P2_SidePanel.setPreferredSize(new Dimension(405, exty_main+400));
+      P2_SidePanel.setBackground(bc_c);
+      P2_SidePanel.setForeground(l_c);
       
-        
-        // Page 4.2
+      JPanel P2_SidePanel1 = new JPanel();
+      P2_SidePanel1.setLayout(null);
+      P2_SidePanel1.setPreferredSize(new Dimension(405, exty_main+400));
+      P2_SidePanel1.setBackground(bc_c);
+      P2_SidePanel1.setForeground(l_c);
+      
+      JScrollPane scrollPane_P2 = new JScrollPane(P2_SidePanel);
+      scrollPane_P2.setPreferredSize(new Dimension(405, exty_main));
+      PageX04_4.add(scrollPane_P2, BorderLayout.LINE_START);
+      JScrollPane scrollPane1_P2 = new JScrollPane(P2_SidePanel1);
+      //scrollPane1_P2.setPreferredSize(new Dimension(405, exty_main));
+      PageX04_4.add(scrollPane1_P2, BorderLayout.CENTER);
+      //int uy_p41 = 10 ; 
+      JLabel p42_linp1 = new JLabel("Longitude [deg]");
+      p42_linp1.setLocation(65, uy_p41 + 25 * 0  );
+      p42_linp1.setSize(250, 20);
+      p42_linp1.setBackground(Color.white);
+      p42_linp1.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp1);
+      JLabel p42_linp2 = new JLabel("Latitude [deg]");
+      p42_linp2.setLocation(65, uy_p41 + 25 * 1 );
+      p42_linp2.setSize(250, 20);
+      p42_linp2.setBackground(Color.white);
+      p42_linp2.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp2);
+      JLabel p42_linp3 = new JLabel("Altitude [deg]");
+      p42_linp3.setLocation(65, uy_p41 + 25 * 2 );
+      p42_linp3.setSize(250, 20);
+      p42_linp3.setBackground(Color.white);
+      p42_linp3.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp3);
+      
+      JLabel p42_linp4 = new JLabel("Velocity [m/s]");
+      p42_linp4.setLocation(65, uy_p41 + 25 * 4 );
+      p42_linp4.setSize(250, 20);
+      p42_linp4.setBackground(Color.white);
+      p42_linp4.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp4);
+      JLabel p42_linp5 = new JLabel("Flight Path angle [deg]");
+      p42_linp5.setLocation(65, uy_p41 + 25 * 5);
+      p42_linp5.setSize(250, 20);
+      p42_linp5.setBackground(Color.white);
+      p42_linp5.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp5);
+      JLabel p42_linp6 = new JLabel("Azimuth [deg]");
+      p42_linp6.setLocation(65, uy_p41 + 25 * 6 );
+      p42_linp6.setSize(250, 20);
+      p42_linp6.setBackground(Color.white);
+      p42_linp6.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp6);
+      
+      JLabel p42_linp7 = new JLabel("Initial mass [kg]");
+      p42_linp7.setLocation(65, uy_p41 + 25 * 8 );
+      p42_linp7.setSize(250, 20);
+      p42_linp7.setBackground(Color.white);
+      p42_linp7.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp7);
+      JLabel p42_linp10 = new JLabel("Integration time [s]");
+      p42_linp10.setLocation(65, uy_p41 + 25 * 9 );
+      p42_linp10.setSize(250, 20);
+      p42_linp10.setBackground(Color.white);
+      p42_linp10.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp10);
+      
+      p42_inp1 = new JTextField(10);
+      p42_inp1.setLocation(2, uy_p41 + 25 * 0 );
+      p42_inp1.setText("0");
+      p42_inp1.setSize(60, 20);
+      P2_SidePanel.add(p42_inp1);
+      p42_inp2 = new JTextField(10);
+      p42_inp2.setLocation(2, uy_p41 + 25 * 1 );
+      p42_inp2.setText("0");
+      p42_inp2.setSize(60, 20);
+      P2_SidePanel.add(p42_inp2);
+       p42_inp3 = new JTextField(10);
+      p42_inp3.setLocation(2, uy_p41 + 25 * 2 );
+      p42_inp3.setText("10");
+      p42_inp3.setSize(60, 20);
+      P2_SidePanel.add(p42_inp3);
+      
+       p42_inp4 = new JTextField(10);
+      p42_inp4.setLocation(2, uy_p41 + 25 * 4 );
+      p42_inp4.setText("1");
+      p42_inp4.setSize(60, 20);
+      P2_SidePanel.add(p42_inp4);
+       p42_inp5 = new JTextField(10);
+      p42_inp5.setLocation(2, uy_p41 + 25 * 5 );
+      p42_inp5.setText("0");
+      p42_inp5.setSize(60, 20);
+      P2_SidePanel.add(p42_inp5);
+       p42_inp6 = new JTextField(10);
+      p42_inp6.setLocation(2, uy_p41 + 25 * 6 );
+      p42_inp6.setText("0");
+      p42_inp6.setSize(60, 20);
+      P2_SidePanel.add(p42_inp6);
+      
+       p42_inp7 = new JTextField(10);
+      p42_inp7.setLocation(2, uy_p41 + 25 * 8 );
+      p42_inp7.setText("300");
+      p42_inp7.setSize(60, 20);
+      P2_SidePanel.add(p42_inp7);
+      p42_inp8 = new JTextField(10);
+      p42_inp8.setLocation(2, uy_p41 + 25 * 9 );
+      p42_inp8.setText("300");
+      p42_inp8.setSize(60, 20);
+     P2_SidePanel.add(p42_inp8);
+     
+	  Target_chooser = new JComboBox(Target_Options);
+	  Target_chooser.setBackground(Color.white);
+	  Target_chooser.setLocation(2, uy_p41 + 25 * 11 );
+      //axis_chooser.setPreferredSize(new Dimension(150,25));
+	  Target_chooser.setSize(150,25);
+	  Target_chooser.setSelectedIndex(3);
+	  Target_chooser.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) {
+    		
+    	  }
+  	  } );
+	  P2_SidePanel.add(Target_chooser);
+	  
+	  Integrator_chooser = new JComboBox(Integrator_Options);
+	  Integrator_chooser.setBackground(Color.white);
+	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 13 );
+      //Integrator_chooser.setPreferredSize(new Dimension(150,25));
+	  Integrator_chooser.setSize(380,25);
+	  Integrator_chooser.setSelectedIndex(3);
+	  Integrator_chooser.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) {
+    		
+    	  }
+  	  } );
+	  P2_SidePanel.add(Integrator_chooser);
+	  
+	  // Space intended for advanced integrator settings 
+	  
+	  
+	  
+      JLabel p42_linp11 = new JLabel("Main propulsion system ISP [s]");
+      p42_linp11.setLocation(65, uy_p41 + 25 * 17 );
+      p42_linp11.setSize(300, 20);
+      p42_linp11.setBackground(Color.white);
+      p42_linp11.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp11);
+      JLabel p42_linp12 = new JLabel("Main propulsion system propellant mass [kg]");
+      p42_linp12.setLocation(65, uy_p41 + 25 * 18);
+      p42_linp12.setSize(300, 20);
+      p42_linp12.setBackground(Color.white);
+      p42_linp12.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp12);
+      JLabel p42_linp13 = new JLabel("Main propulsion system max. Thrust [N]");
+      p42_linp13.setLocation(65, uy_p41 + 25 * 19 );
+      p42_linp13.setSize(300, 20);
+      p42_linp13.setBackground(Color.white);
+      p42_linp13.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp13);
+      JLabel p42_linp14 = new JLabel("Main Propulsion system min. Thrust [N]");
+      p42_linp14.setLocation(65, uy_p41 + 25 * 20 );
+      p42_linp14.setSize(300, 20);
+      p42_linp14.setBackground(Color.white);
+      p42_linp14.setForeground(Color.black);
+      P2_SidePanel.add(p42_linp14);
+	  
+      p42_inp9 = new JTextField(10);
+     p42_inp9.setLocation(2, uy_p41 + 25 * 17 );
+     p42_inp9.setText("0");
+     p42_inp9.setSize(60, 20);
+     P2_SidePanel.add(p42_inp9);
+      p42_inp10 = new JTextField(10);
+     p42_inp10.setLocation(2, uy_p41 + 25 * 18);
+     p42_inp10.setText("0");
+     p42_inp10.setSize(60, 20);
+     P2_SidePanel.add(p42_inp10);        
+      p42_inp11 = new JTextField(10);
+     p42_inp11.setLocation(2, uy_p41 + 25 * 19 );
+     p42_inp11.setText("300");
+     p42_inp11.setSize(60, 20);
+     P2_SidePanel.add(p42_inp11);
+     p42_inp12 = new JTextField(10);
+     p42_inp12.setLocation(2, uy_p41 + 25 * 20 );
+     p42_inp12.setText("300");
+     p42_inp12.setSize(60, 20);
+    P2_SidePanel.add(p42_inp12);
+	  
+	  
+	  //-------------------------------------------- Right side 
+	  JCheckBox p421_linp0 = new JCheckBox("Controller 001 ON/OFF");
+	  p421_linp0.setLocation(2, uy_p41 + 25 * 0 );
+	  //p421_linp0.setText("0");
+	  p421_linp0.setSize(250, 20);
+	  p421_linp0.setSelected(true);
+      P2_SidePanel1.add(p421_linp0);
+	  
+      JLabel p421_linp1 = new JLabel("P Gain");
+      p421_linp1.setLocation(65, uy_p41 + 25 );
+      p421_linp1.setSize(250, 20);
+      p421_linp1.setBackground(Color.white);
+      p421_linp1.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp1);
+      JLabel p421_linp2 = new JLabel("I Gain");
+      p421_linp2.setLocation(65, uy_p41 + 50 );
+      p421_linp2.setSize(250, 20);
+      p421_linp2.setBackground(Color.white);
+      p421_linp2.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp2);
+      JLabel p421_linp3 = new JLabel("D Gain");
+      p421_linp3.setLocation(65, uy_p41 + 75 );
+      p421_linp3.setSize(250, 20);
+      p421_linp3.setBackground(Color.white);
+      p421_linp3.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp3);
+      JLabel p421_linp4 = new JLabel("Maximum Output");
+      p421_linp4.setLocation(65, uy_p41 + 100 );
+      p421_linp4.setSize(250, 20);
+      p421_linp4.setBackground(Color.white);
+      p421_linp4.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp4);
+      JLabel p421_linp5 = new JLabel("Minimum Output");
+      p421_linp5.setLocation(65, uy_p41 + 125 );
+      p421_linp5.setSize(250, 20);
+      p421_linp5.setBackground(Color.white);
+      p421_linp5.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp5);
+      JLabel p421_linp6 = new JLabel(" ");
+      p421_linp6.setLocation(65, uy_p41 + 150 );
+      p421_linp6.setSize(250, 20);
+      p421_linp6.setBackground(Color.white);
+      p421_linp6.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp6);
+	  
+      p421_inp1 = new JTextField(10);
+      p421_inp1.setLocation(2, uy_p41 + 25 * 1 );
+      p421_inp1.setText("0");
+      p421_inp1.setSize(60, 20);
+      P2_SidePanel1.add(p421_inp1);
+      p421_inp2 = new JTextField(10);
+      p421_inp2.setLocation(2, uy_p41 + 25 * 2 );
+      p421_inp2.setText("0");
+      p421_inp2.setSize(60, 20);
+      P2_SidePanel1.add(p421_inp2);
+       p421_inp3 = new JTextField(10);
+      p421_inp3.setLocation(2, uy_p41 + 25 * 3 );
+      p421_inp3.setText("10");
+      p421_inp3.setSize(60, 20);
+      P2_SidePanel1.add(p421_inp3);
+       p421_inp4 = new JTextField(10);
+      p421_inp4.setLocation(2, uy_p41 + 25 * 4 );
+      p421_inp4.setText("1");
+      p421_inp4.setSize(60, 20);
+      P2_SidePanel1.add(p421_inp4);
+       p421_inp5 = new JTextField(10);
+      p421_inp5.setLocation(2, uy_p41 + 25 * 5 );
+      p421_inp5.setText("0");
+      p421_inp5.setSize(60, 20);
+      P2_SidePanel1.add(p421_inp5);
+       p421_inp6 = new JTextField(10);
+      p421_inp6.setLocation(2, uy_p41 + 25 * 6 );
+      p421_inp6.setText("0");
+      p421_inp6.setSize(60, 20);
+      P2_SidePanel1.add(p421_inp6); 
+        //-----------------------------------------------------------------------------------------
+        // Page 4.3
+        //-----------------------------------------------------------------------------------------
 		JPanel SouthPanel = new JPanel();
 		SouthPanel.setLayout(null);
 		//mainPanelh1.setLocation(0, 0);
@@ -710,22 +981,30 @@ try {
         	InitialState = Double.parseDouble(tokens[0]);
             if (k==0){
         		p41_inp1.setText(decf.format(InitialState));
+        		p42_inp1.setText(decf.format(InitialState));
         	} else if (k==1){
         		p41_inp2.setText(decf.format( InitialState));
+        		p42_inp2.setText(decf.format( InitialState));
         	} else if (k==2){
         		p41_inp3.setText(decf.format( InitialState));
+        		p42_inp3.setText(decf.format( InitialState));
         		h_init = InitialState;
         	} else if (k==3){
         		p41_inp4.setText(decf.format(InitialState));
+        		p42_inp4.setText(decf.format(InitialState));
         		v_init = InitialState;
         	} else if (k==4){
         		p41_inp5.setText(decf.format(InitialState));
+        		p42_inp5.setText(decf.format(InitialState));
         	} else if (k==5){
         		p41_inp6.setText(decf.format(InitialState));
+        		p42_inp6.setText(decf.format(InitialState));
         	} else if (k==6){
         		p41_inp7.setText(decf.format(InitialState));
+        		p42_inp7.setText(decf.format(InitialState));
         	} else if (k==7){
         		p41_inp8.setText(decf.format(InitialState));
+        		p42_inp8.setText(decf.format(InitialState));
         } else if (k==10){
     		v_touchdown = InitialState;
     		}
