@@ -113,8 +113,18 @@ public class Plotting_3DOF implements  ActionListener {
     public static JFrame MAIN_frame;
     
     public static int INTEGRATOR = 0; 
-    public static String[] Integrator_Options = { "Dormand Prince 853 Integrator", "Standard Runge Kutta Integrator" , "Gragg-Bulirsch-Stoer Integrator", "Adams-Bashforth Integrator"};
-    public static String[] Target_Options = { "Earth", "Moon" ,"Mars", "Venus"};
+    public static String[] Integrator_Options = { "Dormand Prince 853 Integrator", 
+    												  "Standard Runge Kutta Integrator" , 
+    												  "Gragg-Bulirsch-Stoer Integrator", 
+    												  "Adams-Bashforth Integrator"};
+    public static String[] Target_Options = { "Earth", 
+    											  "Moon" ,	
+    											  "Mars", 	
+    											  "Venus"};
+    public static String[] TargetCurve_Options = { "Parabolic", 
+			  "SquareRoot" ,	
+			  "Parabolic Hover" 	
+			  };
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
     										  "Latitude [deg]" ,
@@ -200,7 +210,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static JTextField p421_inp1,p421_inp2,p421_inp3,p421_inp4,p421_inp5,p421_inp6,p421_inp7,p421_inp8,p421_inp9;
     
     @SuppressWarnings("rawtypes")
-	public static JComboBox Target_chooser, Integrator_chooser;
+	public static JComboBox Target_chooser, Integrator_chooser,TargetCurve_chooser;
     
     Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 5);
     Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 5);
@@ -886,6 +896,12 @@ public class Plotting_3DOF implements  ActionListener {
       p421_linp6.setBackground(Color.white);
       p421_linp6.setForeground(Color.black);
       P2_SidePanel1.add(p421_linp6);
+      JLabel p421_linp7 = new JLabel("Hover Altitude [m]");
+      p421_linp7.setLocation(65, uy_p41 + 25 * 9 );
+      p421_linp7.setSize(250, 20);
+      p421_linp7.setBackground(Color.white);
+      p421_linp7.setForeground(Color.black);
+      P2_SidePanel1.add(p421_linp7);
 	  
       p421_inp1 = new JTextField(10);
       p421_inp1.setLocation(2, uy_p41 + 25 * 1 );
@@ -935,6 +951,48 @@ public class Plotting_3DOF implements  ActionListener {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_INIT();}});
       P2_SidePanel1.add(p421_inp6); 
+      p421_inp7 = new JTextField(10);
+     p421_inp7.setLocation(2, uy_p41 + 25 * 9 );
+     p421_inp7.setText("0");
+     p421_inp7.setSize(60, 20);
+     p421_inp7.addActionListener(new ActionListener() {
+		  public void actionPerformed( ActionEvent e )
+		  	{ WRITE_INIT();}});
+     P2_SidePanel1.add(p421_inp7); 
+      
+	  TargetCurve_chooser = new JComboBox(TargetCurve_Options);
+	  TargetCurve_chooser.setBackground(Color.white);
+	  TargetCurve_chooser.setLocation(2, uy_p41 + 25 * 11 );
+	  TargetCurve_chooser.setSize(150,25);
+	  TargetCurve_chooser.setSelectedIndex(0);
+	  TargetCurve_chooser.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) {
+    		
+    	  }
+  	  } );
+	  TargetCurve_chooser.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			 WRITE_INIT();
+			 if(TargetCurve_chooser.getSelectedIndex()==0||TargetCurve_chooser.getSelectedIndex()==1) {
+				 p421_inp6.setEditable(false);
+				 p421_inp6.setEditable(true);
+			 } else if (TargetCurve_chooser.getSelectedIndex()==2){
+				 p421_inp6.setEditable(true);
+				 p421_inp6.setEditable(false); 
+			 }
+		}
+		  
+	  });
+	  P2_SidePanel1.add(TargetCurve_chooser);
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------
@@ -1169,6 +1227,14 @@ try {
             } else if (k==11){
             	v_touchdown = InitialState;
             	p421_inp6.setText(decf.format(InitialState));
+		    } else if (k==12) {
+		    	int Integ_indx = (int) InitialState;
+		    	TargetCurve_chooser.setSelectedIndex(Integ_indx);
+		    	if(TargetCurve_chooser.getSelectedIndex()==0||TargetCurve_chooser.getSelectedIndex()==1) {
+		    		p421_inp6.setText(decf.format(v_touchdown));
+		    	} else if (TargetCurve_chooser.getSelectedIndex()==2) {
+		    		p421_inp7.setText(decf.format(v_touchdown));
+		    	}
 		    }
         	k++;
         }
@@ -1324,7 +1390,7 @@ try {
             double r = 0;
             int rr=0;
             FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=12; i++)
+            for (int i = 0; i<=14; i++)
             {
         		if (i == 0 ){
         			r = Double.parseDouble(p42_inp1.getText()) ;
@@ -1360,8 +1426,16 @@ try {
 		            r = Double.parseDouble(p42_inp13.getText())  ; // delta-t write out
 		            wr.write(r+System.getProperty( "line.separator" ));	
 		    		} else if (i == 11 ){
+		    			if(TargetCurve_chooser.getSelectedIndex()==0||TargetCurve_chooser.getSelectedIndex()==1) {
 		            r = Double.parseDouble(p421_inp6.getText()) ; // v_touchdown
 		            wr.write(r+System.getProperty( "line.separator" ));	
+		    			} else if (TargetCurve_chooser.getSelectedIndex()==0) {
+				    r = Double.parseDouble(p421_inp7.getText()) ; // v_touchdown
+				    wr.write(r+System.getProperty( "line.separator" ));		
+		    			}
+		            } else if (i==12) {
+		            	rr = TargetCurve_chooser.getSelectedIndex();
+		            	wr.write(rr+System.getProperty( "line.separator" ));	
 		            }
 		            }               
             wr.close();

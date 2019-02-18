@@ -74,10 +74,11 @@ public class SIM implements ActionListener{
 		if(inp_read_success) { 
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
+	    	int ctrl_targetcurve = (int) x_init[12];
 	    	double rm = EquationsOfMotion_3DOF.DATA_MAIN[target][0];
 	    	//System.out.println(target+" "+ rm);
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
-			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, target, x_init[0]*deg, x_init[1]*deg, x_init[2]+rm, x_init[3], x_init[4]*deg, x_init[5]*deg, x_init[6], x_init[7], x_init[10],x_init[11]);
+			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, target, x_init[0]*deg, x_init[1]*deg, x_init[2]+rm, x_init[3], x_init[4]*deg, x_init[5]*deg, x_init[6], x_init[7], x_init[10],x_init[11],ctrl_targetcurve);
 		}else {
 			System.out.println("Reading Input file failed. Integrator Stop.");
 		}

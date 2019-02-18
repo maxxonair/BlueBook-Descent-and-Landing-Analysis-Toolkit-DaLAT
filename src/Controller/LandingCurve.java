@@ -17,6 +17,27 @@ public static double ParabolicLandingCurve(double v_init, double h_init, double 
 	TargetVelocity = Math.sqrt((h_is - b)/a);
 	return TargetVelocity; 
 }
+
+public static double SquarerootLandingCurve(double v_init, double h_init, double v_touchdown, double h_is) {
+	double TargetVelocity=0;
+	double a=0;
+	double b=0;
+	a = h_init / ( Math.sqrt(v_init) + Math.sqrt(v_touchdown));
+	b =   - a * Math.sqrt(v_touchdown); 
+	TargetVelocity = squared((h_is - b)/a);
+	return TargetVelocity; 
+}
+
+public static double Parabolic2Hover(double v_init, double h_init, double h_hover, double h_is) {
+	double TargetVelocity=0;
+	double a=0;
+	double b=0;
+	a =   (h_is-h_hover)/squared(v_init);
+	b =   h_hover; 
+	TargetVelocity = Math.sqrt((h_is - b)/a);
+	return TargetVelocity; 
+}
+
 	
 	
 }

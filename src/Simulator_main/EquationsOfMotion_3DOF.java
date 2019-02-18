@@ -105,6 +105,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
 		    public static double v_touchdown;
+		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
     
 	        
@@ -144,7 +145,14 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	if(cntrl_on) {
  		    double input_cmd=0;
  		    double error = input_cmd - (x[2]-rm);
- 		    double target_velocity = - LandingCurve.ParabolicLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
+ 		    double target_velocity=0;
+ 		    if (ctrl_curve==0) {
+ 		     target_velocity = - LandingCurve.ParabolicLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
+ 		    } else if (ctrl_curve==1) {
+ 		    	 target_velocity = - LandingCurve.SquarerootLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
+ 		    } else if (ctrl_curve==2) {
+ 		    	target_velocity = - LandingCurve.Parabolic2Hover(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
+ 		    }
  		    error = target_velocity - x[3]*sin(x[4]);
  		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
 		    	if ((M0-x[6])<m_propellant && PROPread &&x[3]>0) {
@@ -219,7 +227,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     dxdt[6] = - Thrust/(ISP*g0) ;                    // vehicle mass [kg]
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td, int ctrl_targetcurve){
 //----------------------------------------------------------------------------------------------
     if(ShowWorkDirectory) { }
     if(macrun) {
@@ -251,6 +259,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
+	    ctrl_curve=ctrl_targetcurve;
 		try {
 		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
     	 ISP          	  = prop_read[0];
