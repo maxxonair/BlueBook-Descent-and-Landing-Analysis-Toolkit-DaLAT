@@ -28,7 +28,7 @@ public class SIM implements ActionListener{
        	if(eclipse_run) {
        	   	 INPUT_FILE = dir+"/LandingSim-3DOF/INP/init.inp";} else {
        	   	 INPUT_FILE = ".\\INP\\init.inp";}
-       	System.out.println(dir);
+       	//System.out.println(dir);
     	double InitialState = 0;
     	boolean read_state = false;
 	    FileInputStream fstream = null;

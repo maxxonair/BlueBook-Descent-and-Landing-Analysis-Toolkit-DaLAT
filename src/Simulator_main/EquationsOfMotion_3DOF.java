@@ -10,6 +10,8 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.events.EventHandler;
@@ -219,7 +221,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     
 public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td){
 //----------------------------------------------------------------------------------------------
-    if(ShowWorkDirectory) {System.out.println(System.getProperty("user.dir"));}
+    if(ShowWorkDirectory) { }
     if(macrun) {
    	 String dir = System.getProperty("user.dir");
      	PropulsionInputFile = dir + PropulsionInputFile_mac;
@@ -433,7 +435,12 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        };
 	        dp853.addStepHandler(stepHandler);
 	        dp853.addEventHandler(EventHandler,1,1.0e-3,30);
+	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
+	        } catch(NoBracketingException eNBE) {
+	        	System.out.println("ERROR: Integrator failed:");
+	        	System.out.println(eNBE);
+	        }
 
 	       System.out.println("Success --> Integrator stop. ");      
 		}

@@ -1,4 +1,4 @@
-package Plotting; 
+package GUI; 
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -44,7 +44,9 @@ import javax.swing.JTabbedPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
@@ -84,10 +86,12 @@ public class Plotting_3DOF implements  ActionListener {
     public static String Env_File    	 = "\\INP\\env.inp"  ;  		// Input: target and environment
     public static String RES_File        = "\\results.txt"   ; 		// Input; result file
     public static String CTR_001_File    = "\\CTRL\\cntrl_01.inp";	// Controller 01 input file 
+    public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";	// Main propulsion system input file 
     public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
     public static String Env_File_mac    = "/INP/env.inp"  ;  		// Input: target and environment
     public static String RES_File_mac    = "/results.txt"  ;        // Input: result file 
     public static String CTR_001_File_mac= "/CTRL/cntrl_01.inp";	// Controller 01 input file 
+    public static String Prop_File_mac 	 = "/INP/PROP/prop.inp";	// Main propulsion ystem input file 
     public static boolean ShowWorkDirectory = true; 
     public static boolean macrun = true;
     
@@ -198,6 +202,11 @@ public class Plotting_3DOF implements  ActionListener {
     @SuppressWarnings("rawtypes")
 	public static JComboBox Target_chooser, Integrator_chooser;
     
+    Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 5);
+    Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 5);
+    Border Mars_border 	= BorderFactory.createLineBorder(Color.ORANGE, 5);
+    Border Venus_border = BorderFactory.createLineBorder(Color.GREEN, 5);
+    
     public static JCheckBox p421_linp0;
     
     
@@ -243,6 +252,7 @@ public class Plotting_3DOF implements  ActionListener {
     	 Env_File  = dir + Env_File_mac  ; 
     	 RES_File  = dir + RES_File_mac  ;
     	 CTR_001_File  = dir + CTR_001_File_mac  ;
+    	 Prop_File  = dir + Prop_File_mac  ;
     	 //System.out.println(Init_File);
      }
     	// ---------------------------------------------------------------------------------
@@ -323,10 +333,18 @@ public class Plotting_3DOF implements  ActionListener {
         
         P1_Plotpanel = new JPanel();
         P1_Plotpanel.setLayout(new BorderLayout());
-        P1_Plotpanel.setPreferredSize(new Dimension(900, 450));
+        P1_Plotpanel.setPreferredSize(new Dimension(900, exty_main));
         P1_Plotpanel.setBackground(bc_c);
         P1_Plotpanel.setForeground(l_c);
         PageX04_1.add(P1_Plotpanel,BorderLayout.LINE_END);
+        
+        JScrollPane scrollPane_P1 = new JScrollPane(P1_SidePanel);
+        scrollPane_P1.setPreferredSize(new Dimension(415, exty_main));
+        scrollPane_P1.getVerticalScrollBar().setUnitIncrement(16);
+        PageX04_1.add(scrollPane_P1, BorderLayout.LINE_START);
+        JScrollPane scrollPane1_P1 = new JScrollPane(P1_Plotpanel);
+        scrollPane1_P1.getVerticalScrollBar().setUnitIncrement(16);
+        PageX04_1.add(scrollPane1_P1, BorderLayout.CENTER);
         
         int uy_p41 = 10 ; 
         JLabel p41_linp1 = new JLabel("Longitude [deg]");
@@ -380,58 +398,51 @@ public class Plotting_3DOF implements  ActionListener {
         
          p41_inp1 = new JLabel();
         p41_inp1.setLocation(2, uy_p41 + 25 * 0 );
-        p41_inp1.setText("0");
         p41_inp1.setSize(60, 20);
         P1_SidePanel.add(p41_inp1);
          p41_inp2 = new JLabel();
         p41_inp2.setLocation(2, uy_p41 + 25 * 1 );
-        p41_inp2.setText("0");
         p41_inp2.setSize(60, 20);
         P1_SidePanel.add(p41_inp2);
          p41_inp3 = new JLabel();
         p41_inp3.setLocation(2, uy_p41 + 25 * 2 );
-        p41_inp3.setText("10");
         p41_inp3.setSize(60, 20);
         P1_SidePanel.add(p41_inp3);
          p41_inp4 = new JLabel();
         p41_inp4.setLocation(2, uy_p41 + 25 * 3 );
-        p41_inp4.setText("1");
         p41_inp4.setSize(60, 20);
         P1_SidePanel.add(p41_inp4);
          p41_inp5 = new JLabel();
         p41_inp5.setLocation(2, uy_p41 + 25 * 4 );
-        p41_inp5.setText("0");
         p41_inp5.setSize(60, 20);
         P1_SidePanel.add(p41_inp5);
          p41_inp6 = new JLabel();
         p41_inp6.setLocation(2, uy_p41 + 25 * 5 );
-        p41_inp6.setText("0");
         p41_inp6.setSize(60, 20);
         P1_SidePanel.add(p41_inp6);        
          p41_inp7 = new JLabel();
         p41_inp7.setLocation(2, uy_p41 + 25 * 6 );
-        p41_inp7.setText("300");
         p41_inp7.setSize(60, 20);
         P1_SidePanel.add(p41_inp7);
         p41_inp8 = new JLabel();
         p41_inp8.setLocation(2, uy_p41 + 25 * 7 );
-        p41_inp8.setText("300");
         p41_inp8.setSize(60, 20);
        P1_SidePanel.add(p41_inp8);
        
        p41_inp9 = new JLabel();
        p41_inp9.setLocation(2, uy_p41 + 25 * 9 );
        p41_inp9.setText("");
-       p41_inp9.setSize(60, 20);
+       p41_inp9.setSize(100, 40);
+       p41_inp9.setHorizontalAlignment(SwingConstants.CENTER);
+       p41_inp9.setVerticalTextPosition(JLabel.CENTER);
        p41_inp9.setFont(targetfont);
        p41_inp9.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK));
       P1_SidePanel.add(p41_inp9);
         
 
- 
         JButton UpdateButton = new JButton("Update");
         UpdateButton.setLocation(250, uy_p41 + 25 * 0);
-        UpdateButton.setSize(150,25);
+        UpdateButton.setSize(145,25);
         UpdateButton.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) {
         		  UPDATE_Page01();
@@ -440,7 +451,7 @@ public class Plotting_3DOF implements  ActionListener {
         
         JButton StartSimulation = new JButton("Run SIM");
         StartSimulation.setLocation(250, uy_p41 + 25 * 2);
-        StartSimulation.setSize(150,25);
+        StartSimulation.setSize(145,25);
         StartSimulation.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
         		  System.out.println("Run: SIM");
@@ -469,7 +480,7 @@ public class Plotting_3DOF implements  ActionListener {
 //								Console Window        
 //-----------------------------------------------------------------------------------------------
         JPanel JP_EnginModel = new JPanel();
-        JP_EnginModel.setSize(400,150);
+        JP_EnginModel.setSize(390,200);
         JP_EnginModel.setLocation(5, uy_p41 + 25 * 17);
          JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
         //JP_EnginModel.setBackground(Color.red);
@@ -477,7 +488,7 @@ public class Plotting_3DOF implements  ActionListener {
         taOutputStream = new TextAreaOutputStream(textArea, ""); 
         JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
         JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        JSP_EnginModel.setPreferredSize(new Dimension(400-10,150-10));
+        JSP_EnginModel.setPreferredSize(new Dimension(395-10,200-10));
         JSP_EnginModel.setLocation(5, 5);
         JP_EnginModel.add(JSP_EnginModel);
         System.setOut(new PrintStream(taOutputStream));
@@ -525,7 +536,7 @@ public class Plotting_3DOF implements  ActionListener {
       P1_SidePanel.add(axis_chooser);
       P1_SidePanel.add(axis_chooser2);
  //-----------------------------------------------------------------------------------------
- // Page 4.2
+ // 										Page 4.2
  //-----------------------------------------------------------------------------------------
       JPanel P2_SidePanel = new JPanel();
       P2_SidePanel.setLayout(null);
@@ -541,8 +552,10 @@ public class Plotting_3DOF implements  ActionListener {
       
       JScrollPane scrollPane_P2 = new JScrollPane(P2_SidePanel);
       scrollPane_P2.setPreferredSize(new Dimension(405, exty_main));
+      scrollPane_P2.getVerticalScrollBar().setUnitIncrement(16);
       PageX04_4.add(scrollPane_P2, BorderLayout.LINE_START);
       JScrollPane scrollPane1_P2 = new JScrollPane(P2_SidePanel1);
+      scrollPane1_P2.getVerticalScrollBar().setUnitIncrement(16);
       //scrollPane1_P2.setPreferredSize(new Dimension(405, exty_main));
       PageX04_4.add(scrollPane1_P2, BorderLayout.CENTER);
       //int uy_p41 = 10 ; 
@@ -780,43 +793,57 @@ public class Plotting_3DOF implements  ActionListener {
 	  
       p42_inp9 = new JTextField(10);
      p42_inp9.setLocation(2, uy_p41 + 25 * 17 );
-     p42_inp9.setText("0");
      p42_inp9.setSize(60, 20);
+     p42_inp9.addActionListener(new ActionListener() {
+		  public void actionPerformed( ActionEvent e )
+		  	{ WRITE_PROP();}});
      P2_SidePanel.add(p42_inp9);
       p42_inp10 = new JTextField(10);
      p42_inp10.setLocation(2, uy_p41 + 25 * 18);
-     p42_inp10.setText("0");
      p42_inp10.setSize(60, 20);
+     p42_inp10.addActionListener(new ActionListener() {
+		  public void actionPerformed( ActionEvent e )
+		  	{ WRITE_PROP();}});
      P2_SidePanel.add(p42_inp10);        
       p42_inp11 = new JTextField(10);
      p42_inp11.setLocation(2, uy_p41 + 25 * 19 );
-     p42_inp11.setText("300");
      p42_inp11.setSize(60, 20);
+     p42_inp11.addActionListener(new ActionListener() {
+		  public void actionPerformed( ActionEvent e )
+		  	{ WRITE_PROP();}});
      P2_SidePanel.add(p42_inp11);
      p42_inp12 = new JTextField(10);
-     p42_inp12.setLocation(2, uy_p41 + 25 * 20 );
-     p42_inp12.setText("300");
+     p42_inp12.setLocation(2, uy_p41 + 25 * 20 );;
      p42_inp12.setSize(60, 20);
+     p42_inp12.addActionListener(new ActionListener() {
+		  public void actionPerformed( ActionEvent e )
+		  	{ WRITE_PROP();}});
     P2_SidePanel.add(p42_inp12);
-	  
-	  
 	  //-------------------------------------------- Right side 
 	  p421_linp0 = new JCheckBox("Controller 001 ON/OFF");
 	  p421_linp0.setLocation(2, uy_p41 + 25 * 0 );
-	  //p421_linp0.setText("0");
+	  p421_linp0.setBackground(Color.green);
 	  p421_linp0.setSize(250, 20);
 	  p421_linp0.addFocusListener(new FocusListener() {
 
 		@Override
 		public void focusGained(FocusEvent arg0) {
 			// TODO Auto-generated method stub
-			
 		}
 
 		@Override
 		public void focusLost(FocusEvent arg0) {
 			// TODO Auto-generated method stub
 			 WRITE_CTRL_01();
+		}
+		  
+	  });
+	  p421_linp0.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			 if(p421_linp0.isSelected()) {p421_linp0.setBackground(Color.green);}else {p421_linp0.setBackground(Color.red);}
 		}
 		  
 	  });
@@ -1167,6 +1194,15 @@ try {
         indx_target = (int) InitialState; 
         p41_inp9.setText(Target_Options[indx_target]);
         Target_chooser.setSelectedIndex(indx_target);
+        if(indx_target==0) {
+        	p41_inp9.setBorder(Earth_border);
+        } else if(indx_target==1){
+        	p41_inp9.setBorder(Moon_border);
+        } else if(indx_target==2){
+        	p41_inp9.setBorder(Mars_border);
+        } else if(indx_target==3){
+        	p41_inp9.setBorder(Venus_border);
+        }
       	} else if (k==1){
       		RM = InitialState; 
       	//System.out.println(RM);
@@ -1229,8 +1265,47 @@ try {
     	}
     	k++;
     }
+    in3.close();
+    br3.close();
+    fstream.close();
     } catch (NullPointerException eNPE) { System.out.println(eNPE);}
-        
+    //------------------------------------------------------------------
+    // Read from PROP
+    try {
+        fstream = new FileInputStream(Prop_File);
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading env.inp failed.");} 
+  in3 = new DataInputStream(fstream);
+  @SuppressWarnings("resource")
+  BufferedReader br4 = new BufferedReader(new InputStreamReader(in3));
+  k = 0;
+  try {
+  while ((strLine3 = br4.readLine()) != null )   {
+  	String[] tokens = strLine3.split(" ");
+  	InitialState = Double.parseDouble(tokens[0]);
+    if (k==0){
+    	p42_inp9.setText(df_X4.format(InitialState)); 
+  	} else if (k==1){
+  		p42_inp10.setText(df_X4.format(InitialState)); 
+  	//System.out.println(RM);
+  	} else if (k==2){
+  		p42_inp11.setText(df_X4.format(InitialState));
+  	} else if (k==3){
+  		p42_inp12.setText(df_X4.format(InitialState)); 
+  	} else if (k==4){
+
+  	} else if (k==5){
+
+  	} else if (k==6){
+
+  	} else if (k==7){
+
+  	}
+  	k++;
+  }
+  in3.close();
+  br4.close();
+  fstream.close();
+  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
     }
 
     public void WRITE_INIT() {
@@ -1341,6 +1416,49 @@ try {
             	System.out.println(eIO);
             }
     }
+    
+    
+    public void WRITE_PROP() {
+        try {
+            File fac = new File(Prop_File);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            //System.out.println("\n----------------------------------");
+            //System.out.println("The file has been created.");
+            //System.out.println("------------------------------------");
+            double r = 0;
+            FileWriter wr = new FileWriter(fac);
+            for (int i = 0; i<=12; i++)
+            {
+        			if (i == 0 ){
+            			r = Double.parseDouble(p42_inp9.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+        			} else if (i ==1 ){
+            			r = Double.parseDouble(p42_inp10.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+        			} else if (i ==2 ){
+            			r = Double.parseDouble(p42_inp11.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+        			} else if (i ==3 ){
+            			r = Double.parseDouble(p42_inp12.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+        			} else if (i == 4 ){
+
+        			} else if (i == 5 ){
+
+            		} 
+		            }               
+            wr.close();
+            } catch (IOException eIO) {
+            	System.out.println(eIO);
+            }
+    }
+    
     public void SET_MAP(int TARGET) throws URISyntaxException, IOException{
     	final XYPlot plot2 = (XYPlot) chartX4.getPlot();
 		  if (TARGET==0){ 
@@ -1533,12 +1651,12 @@ try {
 		
 		JPanel PlotPanel_X44 = new JPanel();
 		PlotPanel_X44.setLayout(new BorderLayout());
-		PlotPanel_X44.setPreferredSize(new Dimension(900, page1_plot_y));
+		//PlotPanel_X44.setPreferredSize(new Dimension(900, page1_plot_y));
 		PlotPanel_X44.setBackground(Color.white);
 	
 		CPX44 = new ChartPanel(chartX44);
 		CPX44.setMouseWheelEnabled(true);
-		CPX44.setPreferredSize(new Dimension(900, page1_plot_y));
+		//CPX44.setPreferredSize(new Dimension(900, page1_plot_y));
 		CPX44.addChartMouseListener(new ChartMouseListener() {
 	        @Override
 	        public void chartMouseClicked(ChartMouseEvent event) {
@@ -1568,7 +1686,7 @@ try {
 	    CPX44.addOverlay(crosshairOverlay);
 	   PlotPanel_X44.add(CPX44,BorderLayout.PAGE_START);
 	    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
-	    P1_Plotpanel.add(CPX44,BorderLayout.PAGE_END);
+	    P1_Plotpanel.add(CPX44,BorderLayout.CENTER);
 		//jPanel4.validate();	
 		chartX44_fd = false;
 	}
