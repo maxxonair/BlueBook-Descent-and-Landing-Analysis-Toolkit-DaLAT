@@ -55,7 +55,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    public static String PropulsionInputFile_mac    = "/LandingSim-3DOF/INP/PROP/prop.inp"  ;  		// Input: target and environment
 	    
 	    public static boolean ShowWorkDirectory = true; 
-	    public static boolean macrun = true;
+	    public static boolean macrun = false;
 	  //----------------------------------------------------------------
 		   public static double tminus=0;
 		   public static double tis=0;

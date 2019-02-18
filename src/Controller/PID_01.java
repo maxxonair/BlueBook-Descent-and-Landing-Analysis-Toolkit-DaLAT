@@ -11,7 +11,7 @@ public class PID_01{
 	public static double ERROR_Tminus=0;
 	public static double ERROR_INTEGRAL=0;
 	static String INPUT_FILE = null; 
-	public static boolean eclipse_run = true; 
+	public static boolean eclipse_run = false; 
 	public static String ControllerInputFile = ".\\CTRL\\cntrl_01.inp"; 
 	
     public static double[] READ_CTRL_INPUT() throws IOException{

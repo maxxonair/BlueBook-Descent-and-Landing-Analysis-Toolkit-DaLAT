@@ -16,7 +16,7 @@ public class AtmosphereModel  {
 //  %
 //INPUT Files                                   %
 //  %
-	public static boolean macrun=true; 
+	public static boolean macrun=false; 
 //-------------------------------------------------------------------------------
 public static String file_atm   = ""  ;
 public static String DELIMITER = ",";
