@@ -22,7 +22,7 @@ public static double SquarerootLandingCurve(double v_init, double h_init, double
 	double TargetVelocity=0;
 	double a=0;
 	double b=0;
-	a = h_init / ( Math.sqrt(v_init) + Math.sqrt(v_touchdown));
+	a = h_init / ( Math.sqrt(v_init) - Math.sqrt(v_touchdown));
 	b =   - a * Math.sqrt(v_touchdown); 
 	TargetVelocity = squared((h_is - b)/a);
 	return TargetVelocity; 

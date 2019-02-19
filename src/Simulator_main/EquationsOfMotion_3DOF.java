@@ -26,8 +26,9 @@ import Controller.PID_01;
 import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
+import Sequence.SequenceElement;
 import Toolbox.Tool;
-import Controller.LandingCurve;
+import Controller.Flight_CTRL;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
@@ -59,13 +60,13 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    public static boolean ShowWorkDirectory = true; 
 	    public static boolean macrun = false;
 	  //----------------------------------------------------------------
-		   public static double tminus=0;
-		   public static double tis=0;
-		   public static double val_dt=0;
-		   public static boolean switcher=true; 
-		   public static double cmd_min = 0;
-		   public static double cmd_max = 20000;
-		   public static boolean cntrl_on ; 
+		    public static double tminus=0;
+		    public static double tis=0;
+		    public static double val_dt=0;
+		    public static boolean switcher=true; 
+		    public static double cmd_min = 0;
+		    public static double cmd_max = 20000;
+		    public static boolean cntrl_on ; 
 	  //----------------------------------------------------------------
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
@@ -107,8 +108,10 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double v_touchdown;
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
-    
-	        
+	    	private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
+	    	
+	        //private static List<Flight_CTRL> FlightController_LIST = new ArrayList<Flight_CTRL>(); 
+	        public static Flight_CTRL ctrl_01; 
 	        static boolean PROPread = false; 
 	        
 	    public int getDimension() {
@@ -133,89 +136,59 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			writer.close();
 		}
 
-	
-
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
+    	//-------------------------------------------------------------------------------------------------------------------
+    	//								    	Gravitational environment
+    	//-------------------------------------------------------------------------------------------------------------------
     	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
     	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
     	//-------------------------------------------------------------------------------------------------------------------
     	//											Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-    	Thrust =0 ; 
-    	if(cntrl_on) {
- 		    double input_cmd=0;
- 		    double error = input_cmd - (x[2]-rm);
- 		    double target_velocity=0;
- 		    if (ctrl_curve==0) {
- 		     target_velocity = - LandingCurve.ParabolicLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
- 		    } else if (ctrl_curve==1) {
- 		    	 target_velocity = - LandingCurve.SquarerootLandingCurve(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
- 		    } else if (ctrl_curve==2) {
- 		    	target_velocity = - LandingCurve.Parabolic2Hover(cntr_v_init, cntr_h_init, v_touchdown, x[2]-rm);
- 		    }
- 		    error = target_velocity - x[3]*sin(x[4]);
- 		    Throttle_CMD = PID_01.FlightController_001(error,val_dt);
-		    	if ((M0-x[6])<m_propellant && PROPread &&x[3]>0) {
-		    		Thrust = Throttle_CMD*Thrust_max ; 
-		    		if(Thrust<Thrust_min) {Thrust=Thrust_min;}
-		    		//System.out.println(ISP);
-		    	} else if ((x[2]-rm)<0){
-		    		Thrust = 0;
-		    		Throttle_CMD=0;
-		    		System.out.println("Forced Setting: Thrust = off. (Negative altitude)");
-		    	} else if (PROPread==false) {
-		    		Thrust = 0;
-		    		Throttle_CMD=0;
-		    		System.out.println("Forced Setting: Thrust = off. (Propulsion-setting read failed)");
-		    	} else if (x[3]<0) {
-		    		Thrust = 0;
-		    		Throttle_CMD=0;
-		    		System.out.println("Forced Setting: Thrust = off. (Negative velocity)");
-		    	} else {
-		    		Thrust = 0; // empty tanks or failed propulsion read
-		    		Throttle_CMD=0;
-		    		System.out.println("Forced Setting: Thrust = off. (Empty tanks)");
-		    	}
-    	} else {
-    	Thrust = 0; // Controller off 
-    	Throttle_CMD=0;
-    	}
+    	// Update Controller inputs:
+    	ctrl_01.Update_Flight_CTRL(true,  x[2]-rm, x[3],  x[4],  M0,  x[6],  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
+    	// Compile controller output: 
+    	Thrust        = ctrl_01.get_thrust_cmd();
+    	Throttle_CMD  = ctrl_01.get_ctrl_throttle_cmd();
     	//-------------------------------------------------------------------------------------------------------------------
-    	//System.out.println("Altitude: "+ (x[2]-rm));
-    	if (x[2]-rm>200000 || TARGET == 1){
-	    		rho = 0; 
-	    		qinf = 0;
-	    		T = 0 ; 
-	    		gamma = 0 ; 
-	    		R= 0; 
-	    		Ma = 0; 
+    	// 									Atmosphere and (external) Force Definition
+    	//-------------------------------------------------------------------------------------------------------------------
+    	if (x[2]-rm>200000 || TARGET == 1){ // In space conditions: 
+    		// Set atmosphere properties to zero: 
+	    		rho   = 0; 																// Density 							[kg/m3]
+	    		qinf  = 0;																// Dynamic pressure 				[Pa]
+	    		T     = 0 ; 															// Temperature 						[K]
+	    		gamma = 0 ; 															// Heat capacity ratio 				[-]
+	    		R	  = 0; 																// Gas constant 					[J/kgK]
+	    		Ma 	  = 0; 																// Mach number 						[-]
 	       //-----------------------------------------------------------------------------------------------
-	      	  D  =  - Thrust * cos(x[4]) ;            // Aerodynamic drag Force [N]
-	      	  L  =    Thrust * sin(x[4]) ;                            // Aerodynamic lift Force [N]
-	      	  Ty =        0 ;                            // Aerodynamic side Force [N]
+	      	  D  =  - Thrust  ;            				  								// Drag Force 						[N] --> From Thrust only
+	      	  L  =    	  0   ;                           								// Aerodynamic lift Force 			[N]
+	      	  Ty =        0   ;                           								// Aerodynamic side Force 			[N]
 	      	//----------------------------------------------------------------------------------------------
-    	} else {
-	    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;                    	             // density                         [kg/m≥]
-	    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         // Dynamic pressure                [Pa]
-	    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		         // Temperature                     [K]
-	    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	                 //
-	    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                                 // Gas Constant                    [Si]
-	    	 P      = rho * R * T;
-	    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 // Mach number                     [-]
-    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             // Parachute Drag coefficient      [-]
-    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       // Continuum flow drag coefficient [-]
-	    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    // Lift coefficient                [-]
-	    	 S 		= 4;	
+    	} else { // In atmosphere conditions (if any)
+	    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;       					// density                         [kg/m3]
+	    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         		// Dynamic pressure                [Pa]
+	    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		// Temperature                     [K]
+	    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        // Heat capacity ratio			   [-]
+	    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                        // Gas Constant                    [J/kgK]
+	    	 P      = rho * R * T;														// Ambient pressure 			   [Pa]
+	    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 		// Mach number                     [-]
+    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
+    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       		// Continuum flow drag coefficient [-]
+	    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
+	    	 S 		= 4;																// Projected surface area 		   [m2]
 	     	//-----------------------------------------------------------------------------------------------
-	    	  D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        // Aerodynamic drag Force [N]
-	    	  L  =   qinf * S * Cl * cos( bank ) ;                            // Aerodynamic lift Force [N]
-	    	  Ty =   qinf * S * Cl * sin( bank ) ;                            // Aerodynamic side Force [N]
+	    	  D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
+	    	  L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
+	    	  Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
 	    	//----------------------------------------------------------------------------------------------
-	    	  // System.out.println(x[2]+"|"+rm+"|"+(x[2]-rm)+"|"+rho+"|"+D);
 	    	  // S      =  x[6] / ( 1.55 * read_data(file_cship,1));
 	    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);
     	}
-    	
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 									Equations of Motion
+    	//-------------------------------------------------------------------------------------------------------------------	
     dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) );
     dxdt[1] = x[3] * cos( x[4] ) * cos( x[5] ) / x[2] ;
     dxdt[2] = x[3] * sin( x[4] );
@@ -227,7 +200,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     dxdt[6] = - Thrust/(ISP*g0) ;                    // vehicle mass [kg]
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td, int ctrl_targetcurve){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td, int ctrl_targetcurve, List<SequenceElement> SEQUENCE_DATA){
 //----------------------------------------------------------------------------------------------
     if(ShowWorkDirectory) { }
     if(macrun) {
@@ -241,21 +214,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-		try {
-			double[] dbl_read = PID_01.READ_CTRL_INPUT();
-			int ctr_setting = (int) dbl_read[0];
-			if(ctr_setting==1) {
-				cntrl_on=true;
-				System.out.println("Controller 01 set ON");
-			} else {
-				cntrl_on=false;
-				System.out.println("Controller 01 set OFF");
-			}
-		} catch (IOException e3) {
-			// TODO Auto-generated catch block
-			System.out.println(e3);
-			System.out.println("Controller switch read failed -> Controller 01 OFF"); }
-		
+//----------------------------------------------------------------------------------------------
+//   Read propulsion setting:	
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
@@ -264,17 +224,32 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
     	 ISP          	  = prop_read[0];
     	 m_propellant 	  = prop_read[1];
-    	 Thrust_max 	      = prop_read[2];
+    	 Thrust_max 	  = prop_read[2];
     	 Thrust_min		  = prop_read[3];
-    	 M0 = x6; 
-    	 v_touchdown = v_td;
-    	 PROPread=true; 
+    	 M0 			  = x6; 
+    	 v_touchdown 	  = v_td;
+    	 PROPread		  = true; 
 		} catch (IOException e) {
 			System.out.println(e);
 			System.out.println("Error: Propulsion setting read failed. ISP set to zero. Propellant mass set to zero. Thrust set to zero. ");
 			PROPread =false;
 		}
+//----------------------------------------------------------------------------------------------
+//					Flight controller setup	
+//----------------------------------------------------------------------------------------------
+		SEQUENCE_DATA_main = SEQUENCE_DATA;
 		PID_01.FlightController_001_RESET(); // Flight Controller 001 reset
+		int ctrl_ID = 1; 
+		ctrl_01 = new Flight_CTRL(ctrl_ID, true, x2-rm,  x3,  x4,  M0,  x6,  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
+		if(ctrl_01.get_ctrl_on()) {
+			cntrl_on=true;
+			System.out.println("Controller 01 set ON");
+		} else {
+			cntrl_on=false;
+			System.out.println("Controller 01 set OFF");
+		}
+//----------------------------------------------------------------------------------------------
+//					Integrator setup	
 //----------------------------------------------------------------------------------------------
 		FirstOrderIntegrator dp853;
 		String IntegInput ="";

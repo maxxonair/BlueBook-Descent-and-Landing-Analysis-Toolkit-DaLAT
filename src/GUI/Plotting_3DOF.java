@@ -82,16 +82,16 @@ public class Plotting_3DOF implements  ActionListener {
     public static JTextArea textArea = new JTextArea();
     public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, ""); 
     
-    public static String Init_File   	 = "\\INP\\init.inp" ;		// Input: Initial state
+    public static String Init_File   	 = "\\INP\\init.inp" ;			// Input: Initial state
     public static String Env_File    	 = "\\INP\\env.inp"  ;  		// Input: target and environment
-    public static String RES_File        = "\\results.txt"   ; 		// Input; result file
-    public static String CTR_001_File    = "\\CTRL\\cntrl_01.inp";	// Controller 01 input file 
-    public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";	// Main propulsion system input file 
+    public static String RES_File        = "\\results.txt"   ; 			// Input; result file
+    public static String CTR_001_File    = "\\CTRL\\cntrl_1.inp";		// Controller 01 input file 
+    public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";		// Main propulsion system input file 
     public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
-    public static String Env_File_mac    = "/INP/env.inp"  ;  		// Input: target and environment
-    public static String RES_File_mac    = "/results.txt"  ;        // Input: result file 
-    public static String CTR_001_File_mac= "/CTRL/cntrl_01.inp";	// Controller 01 input file 
-    public static String Prop_File_mac 	 = "/INP/PROP/prop.inp";	// Main propulsion ystem input file 
+    public static String Env_File_mac    = "/INP/env.inp"  ;  			// Input: target and environment
+    public static String RES_File_mac    = "/results.txt"  ;       	 	// Input: result file 
+    public static String CTR_001_File_mac= "/CTRL/cntrl_1.inp";		// Controller 01 input file 
+    public static String Prop_File_mac 	 = "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
     public static boolean ShowWorkDirectory = true; 
     public static boolean macrun = true;
     
@@ -121,9 +121,10 @@ public class Plotting_3DOF implements  ActionListener {
     											  "Moon" ,	
     											  "Mars", 	
     											  "Venus"};
-    public static String[] TargetCurve_Options = { "Parabolic", 
-			  "SquareRoot" ,	
-			  "Parabolic Hover" 	
+    public static String[] TargetCurve_Options = { "",						// No target curve -> continous burn
+    											   "Parabolic", 
+    											   "SquareRoot" ,	
+    											   "Parabolic Hover" 	
 			  };
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
@@ -839,6 +840,7 @@ public class Plotting_3DOF implements  ActionListener {
 		@Override
 		public void focusGained(FocusEvent arg0) {
 			// TODO Auto-generated method stub
+			 WRITE_CTRL_01();
 		}
 
 		@Override
@@ -853,6 +855,7 @@ public class Plotting_3DOF implements  ActionListener {
 		@Override
 		public void actionPerformed(ActionEvent e) {
 			// TODO Auto-generated method stub
+			WRITE_CTRL_01();
 			 if(p421_linp0.isSelected()) {p421_linp0.setBackground(Color.green);}else {p421_linp0.setBackground(Color.red);}
 		}
 		  
@@ -975,7 +978,13 @@ public class Plotting_3DOF implements  ActionListener {
 		@Override
 		public void focusGained(FocusEvent arg0) {
 			// TODO Auto-generated method stub
-			
+			 if(TargetCurve_chooser.getSelectedIndex()==0||TargetCurve_chooser.getSelectedIndex()==1) {
+				 p421_inp6.setEditable(false);
+				 p421_inp6.setEditable(true);
+			 } else if (TargetCurve_chooser.getSelectedIndex()==2){
+				 p421_inp6.setEditable(true);
+				 p421_inp6.setEditable(false); 
+			 }
 		}
 
 		@Override
@@ -1296,7 +1305,7 @@ try {
       // Read from CTRL
       try {
           fstream = new FileInputStream(CTR_001_File);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading env.inp failed.");} 
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading ctrl.inp failed.");} 
     DataInputStream in3 = new DataInputStream(fstream);
     @SuppressWarnings("resource")
 		BufferedReader br3 = new BufferedReader(new InputStreamReader(in3));
@@ -1313,6 +1322,7 @@ try {
 		} else {
 			p421_linp0.setSelected(false);
 		}
+		if(p421_linp0.isSelected()) {p421_linp0.setBackground(Color.green);}else {p421_linp0.setBackground(Color.red);}
     	} else if (k==1){
     		p421_inp1.setText(df_X4.format(InitialState)); 
     	//System.out.println(RM);
@@ -1618,7 +1628,15 @@ try {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[4]);
 		           double y = Double.parseDouble(tokens[3])-RM;
-		           double xx = LandingCurve.ParabolicLandingCurve( v_init, h_init, v_touchdown, y);
+		           double xx =0;
+		 		    if (TargetCurve_chooser.getSelectedIndex()==0) {
+		 		    	    xx =  LandingCurve.ParabolicLandingCurve(v_init, h_init,  v_touchdown, y);
+		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==1) {
+		 	 		    	xx =  LandingCurve.SquarerootLandingCurve(v_init, h_init,  v_touchdown, y);
+		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==2) {
+		 	 		    	xx =  LandingCurve.Parabolic2Hover(v_init, h_init,  v_touchdown, y);
+		 	 		    	System.out.println(xx);
+		 	 		    }
 		            xyseries11.add(x  , y);
 		         	xyseries10.add(xx , y);
 		           }
