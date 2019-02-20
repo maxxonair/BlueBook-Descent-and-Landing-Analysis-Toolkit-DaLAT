@@ -142,25 +142,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			writer.close();
 		}
 		public static void UPDATE_FlightController(Flight_CTRL NewElement){	   
-			   if (Flight_Controller.size()==0){
-				   EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
-				   System.out.println("element 0");
-			   } else {
-				boolean element_exist = false   ;
-				  for(int i=0; i<Flight_Controller.size(); i++){
-					  int ID_LIST    = Flight_Controller.get(i).get_ctrl_ID();
-					  int ID_ELEMENT = NewElement.get_ctrl_ID();
-							  if (ID_LIST == ID_ELEMENT){
-								  // item exists -> Update
-								  //Flight_Controller.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID());
-								  element_exist = true;
-							  } 
-				  }
-				if (element_exist == false ){
-					  // New item -> add to list  
-					EquationsOfMotion_3DOF.Flight_Controller.add(NewElement);
-				}	  
-			   } 
+			   if (Flight_Controller.size()==0){ EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
+			   } else {EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); } 
 		   }
 		
 		public static void INITIALIZE_FlightController() {
@@ -180,23 +163,35 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-    	if(active_sequence<SEQUENCE_DATA_main.size()) {
+    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
 			int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
 			double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
 			if(trigger_type==0) {
 					if(t>trigger_value) {active_sequence++;}
 			} else if (trigger_type==1) {
-					if( x[2]<trigger_value) {active_sequence++;}
+					if( (x[2]-rm)<trigger_value) {active_sequence++;}
 			} else if (trigger_type==2) {
 					if( x[3]<trigger_value) {active_sequence++;}
      		}
     	}
+    	System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
+    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
+    	if(sequence_type==3) { // Controlled Flight Sequence 
     	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
     	// Update Controller inputs:
 		Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  x[2]-rm, x[3],  x[4],  M0,  x[6],  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
     	// Compile controller output: 
     	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
     	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
+    	} else if (sequence_type==2) { // Continous Propulsive Flight Sequence 
+    		Thrust = Thrust_max; 
+    		Throttle_CMD = 1; 
+    	} else if (sequence_type==1) { // Coasting Sequence 
+    		Thrust = 0; 
+    		Throttle_CMD = 0;
+    	} else {
+    		System.out.println("ERROR: Sequence type out of range");
+    	}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									Atmosphere and (external) Force Definition
     	//-------------------------------------------------------------------------------------------------------------------
