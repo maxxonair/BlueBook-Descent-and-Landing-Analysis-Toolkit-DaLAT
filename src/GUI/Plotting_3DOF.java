@@ -1629,16 +1629,17 @@ try {
 		           double x = Double.parseDouble(tokens[4]);
 		           double y = Double.parseDouble(tokens[3])-RM;
 		           double xx =0;
-		 		    if (TargetCurve_chooser.getSelectedIndex()==0) {
+		 		    if (TargetCurve_chooser.getSelectedIndex()==1) {
 		 		    	    xx =  LandingCurve.ParabolicLandingCurve(v_init, h_init,  v_touchdown, y);
-		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==1) {
-		 	 		    	xx =  LandingCurve.SquarerootLandingCurve(v_init, h_init,  v_touchdown, y);
+				         	xyseries10.add(xx , y);
 		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==2) {
+		 	 		    	xx =  LandingCurve.SquarerootLandingCurve(v_init, h_init,  v_touchdown, y);
+				         	xyseries10.add(xx , y);
+		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==3) {
 		 	 		    	xx =  LandingCurve.Parabolic2Hover(v_init, h_init,  v_touchdown, y);
-		 	 		    	System.out.println(xx);
-		 	 		    }
+				         	xyseries10.add(xx , y);
+		 	 		    } 
 		            xyseries11.add(x  , y);
-		         	xyseries10.add(xx , y);
 		           }
 	       fstream.close();
 	       in.close();

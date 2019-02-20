@@ -160,15 +160,16 @@ public class Flight_CTRL{
  		    if  (ctrl_curve==0) {
 		         ContinousBurn = true;
 		    } else if (ctrl_curve==1) {
- 		         target_velocity = - LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_add, alt);
+ 		         target_velocity =  -  LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_add, alt);
  		    } else if (ctrl_curve==2) {
- 		    	 target_velocity = - LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_add, alt);
+ 		    	 target_velocity =  - LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_add, alt);
  		    } else if (ctrl_curve==3) {
- 		    	 target_velocity = - LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_add, alt);
+ 		    	 target_velocity =  -  LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_add, alt);
  		    } 
- 		   if(ContinousBurn){thrust_cmd = thrust_max;} else {
- 		    double CTRL_ERROR = target_velocity - vel;
- 		   throttle_cmd = PID_01.FlightController_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_min, cmd_max);
+ 		   if(ContinousBurn){thrust_cmd = thrust_max;throttle_cmd=cmd_max;} else {
+ 		    double CTRL_ERROR = target_velocity + vel;
+ 		   throttle_cmd = PID_01.FlightController_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
+		   // System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);
 		    	if ((m0-m)<mprop && vel>0) {
 		    		thrust_cmd = throttle_cmd*thrust_max ; 
 		    		if(thrust_cmd<thrust_min) {thrust_cmd=thrust_min;}

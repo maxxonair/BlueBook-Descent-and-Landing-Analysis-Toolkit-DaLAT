@@ -39,7 +39,7 @@ public class SIM implements ActionListener{
 				  int ID_ELEMENT = NewElement.get_sequence_ID();
 						  if (ID_LIST == ID_ELEMENT){
 							  // item exists -> Update
-							  SEQUENCE_DATA.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_start_type(),NewElement.get_trigger_end_type(), NewElement.get_trigger_start_value(),NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID());
+							  SEQUENCE_DATA.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID());
 							  element_exist = true;
 						  } 
 			  }
@@ -86,7 +86,7 @@ public class SIM implements ActionListener{
     public static String[] READ_SEQUENCE() throws IOException{
     	 String[] OUTPUT =new String[20];	
     	 String dir = System.getProperty("user.dir");
-    	 int val1=0;int val2=0;int val3=0;double val4=0;double val5=0;int val6=0;int val7=0; 
+    	 int val1=0;int val2=0;int val3=0;int val4=0;int val5=0;
        	if(eclipse_run) {
        	   	 INPUT_FILE = dir+"/LandingSim-3DOF/INP/sequence_1.inp";} else {
        	   	 INPUT_FILE = ".\\INP\\sequence_1.inp";}
@@ -95,15 +95,13 @@ public class SIM implements ActionListener{
         try {
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
-        	SequenceElement newSequenceElement = new SequenceElement( val1,  val2,  val3,  val4,  val5,  val6,  val7);
+        	SequenceElement newSequenceElement = new SequenceElement( val1,  val2,  val3,  val4,  val5);
         	int sequence_ID 			= Integer.parseInt(tokens[0]);
-        	int trigger_start_type 		= Integer.parseInt(tokens[1]);
-        	int trigger_end_type 		= Integer.parseInt(tokens[2]);
-        	double trigger_start_value 	= Double.parseDouble(tokens[3]);
-        	double trigger_end_value 	= Double.parseDouble(tokens[4]);
-        	int sequence_type		 	= Integer.parseInt(tokens[5]);
-        	int sequence_controller_ID 	= Integer.parseInt(tokens[6]);
-        	newSequenceElement.Update( sequence_ID,trigger_start_type,trigger_end_type,trigger_start_value,trigger_end_value,sequence_type,sequence_controller_ID);
+        	int trigger_end_type 		= Integer.parseInt(tokens[1]);
+        	double trigger_end_value 	= Double.parseDouble(tokens[2]);
+        	int sequence_type		 	= Integer.parseInt(tokens[3]);
+        	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
+        	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID);
             UPDATE_SequenceElements(newSequenceElement);
         }
         br.close();
@@ -113,9 +111,6 @@ public class SIM implements ActionListener{
 
     public static void main(String[] args) throws IOException {
     	READ_SEQUENCE();
-    	for(int i=0;i<SEQUENCE_DATA.size();i++) {
-    		System.out.println(SEQUENCE_DATA.get(i).get_sequence_ID());
-    	}
     	//-----------------------------------------
     	//          INTEGRATOR
     	//	0 Dormand Prince 853 Integrator

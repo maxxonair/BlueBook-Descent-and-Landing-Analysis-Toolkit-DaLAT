@@ -8,9 +8,11 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.math3.exception.MaxCountExceededException;
 import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -22,7 +24,6 @@ import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
-import Controller.PID_01;
 import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
@@ -32,6 +33,11 @@ import Controller.Flight_CTRL;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
+	//				Control variables
+	public static boolean HoverStop = false; 
+    public static boolean ShowWorkDirectory = true; 
+    public static boolean macrun = false;
+    public static boolean ctrl_callout = false; 
 	//............................................                                       .........................................
 	//
     //	                                                         Constants
@@ -43,6 +49,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
 				{0,0,0,0},												// Venus
 		};
+	   public static int[] trigger_type_translator = {0,2,3};
 	   	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
 	   	public static String[] IntegratorInputPath = {".\\INP\\INTEG\\00_DormandPrince853Integrator.inp",
 	   												  ".\\INP\\INTEG\\01_ClassicalRungeKuttaIntegrator.inp",
@@ -57,8 +64,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	   	public static String PropulsionInputFile        = ".\\INP\\PROP\\prop.inp";
 	    public static String PropulsionInputFile_mac    = "/LandingSim-3DOF/INP/PROP/prop.inp"  ;  		// Input: target and environment
 	    
-	    public static boolean ShowWorkDirectory = true; 
-	    public static boolean macrun = false;
 	  //----------------------------------------------------------------
 		    public static double tminus=0;
 		    public static double tis=0;
@@ -109,10 +114,11 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	    	private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
-	    	
+	    	private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
 	        //private static List<Flight_CTRL> FlightController_LIST = new ArrayList<Flight_CTRL>(); 
-	        public static Flight_CTRL ctrl_01; 
 	        static boolean PROPread = false; 
+	        public static int active_sequence = 0 ; 
+	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        
 	    public int getDimension() {
 	        return 7;
@@ -135,7 +141,36 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			}
 			writer.close();
 		}
-
+		public static void UPDATE_FlightController(Flight_CTRL NewElement){	   
+			   if (Flight_Controller.size()==0){
+				   EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
+				   System.out.println("element 0");
+			   } else {
+				boolean element_exist = false   ;
+				  for(int i=0; i<Flight_Controller.size(); i++){
+					  int ID_LIST    = Flight_Controller.get(i).get_ctrl_ID();
+					  int ID_ELEMENT = NewElement.get_ctrl_ID();
+							  if (ID_LIST == ID_ELEMENT){
+								  // item exists -> Update
+								  //Flight_Controller.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID());
+								  element_exist = true;
+							  } 
+				  }
+				if (element_exist == false ){
+					  // New item -> add to list  
+					EquationsOfMotion_3DOF.Flight_Controller.add(NewElement);
+				}	  
+			   } 
+		   }
+		
+		public static void INITIALIZE_FlightController() {
+			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
+				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
+				// -> Create flight controller 
+				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
+				UPDATE_FlightController(NewFlightController);
+			}
+		}
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
@@ -143,13 +178,25 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
     	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
     	//-------------------------------------------------------------------------------------------------------------------
-    	//											Flight controller 
+    	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
+    	if(active_sequence<SEQUENCE_DATA_main.size()) {
+			int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
+			double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
+			if(trigger_type==0) {
+					if(t>trigger_value) {active_sequence++;}
+			} else if (trigger_type==1) {
+					if( x[2]<trigger_value) {active_sequence++;}
+			} else if (trigger_type==2) {
+					if( x[3]<trigger_value) {active_sequence++;}
+     		}
+    	}
+    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
     	// Update Controller inputs:
-    	ctrl_01.Update_Flight_CTRL(true,  x[2]-rm, x[3],  x[4],  M0,  x[6],  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
+		Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  x[2]-rm, x[3],  x[4],  M0,  x[6],  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
     	// Compile controller output: 
-    	Thrust        = ctrl_01.get_thrust_cmd();
-    	Throttle_CMD  = ctrl_01.get_ctrl_throttle_cmd();
+    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
+    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									Atmosphere and (external) Force Definition
     	//-------------------------------------------------------------------------------------------------------------------
@@ -235,8 +282,12 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			PROPread =false;
 		}
 //----------------------------------------------------------------------------------------------
-//					Flight controller setup	
+//					Sequence Setup	
 //----------------------------------------------------------------------------------------------
+		SEQUENCE_DATA_main = SEQUENCE_DATA;
+		INITIALIZE_FlightController() ;
+
+		/*
 		SEQUENCE_DATA_main = SEQUENCE_DATA;
 		PID_01.FlightController_001_RESET(); // Flight Controller 001 reset
 		int ctrl_ID = 1; 
@@ -248,6 +299,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			cntrl_on=false;
 			System.out.println("Controller 01 set OFF");
 		}
+		*/
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -321,7 +373,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
 	                double   t = interpolator.getCurrentTime();
-	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};val_dt=Math.abs(tis-tminus);
 	                double[] y = interpolator.getInterpolatedState();
 	                double[] ymo = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
@@ -389,7 +440,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	            
 	        };
 	        
-	        EventHandler EventHandler = new EventHandler() {
+	        EventHandler EventHandler_Touchdown = new EventHandler() {
 				@Override
 				public double g(double t, double[] y) {
 					// TODO Auto-generated method stub
@@ -417,8 +468,56 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 				}
 	        	
 	        };
+	        EventHandler EventHandler_NegVelocity = new EventHandler() {
+				@Override
+				public double g(double t, double[] y) {
+					// TODO Auto-generated method stub
+					return y[3]; // Altitude = 0 -> integration stop 
+					//return 0;
+				}
+
+
+				public Action eventOccurred(double t, double[] y, boolean increasing) {
+					  return Action.STOP;
+					}
+
+
+				@Override
+				public void init(double arg0, double[] arg1, double arg2) {
+					// TODO Auto-generated method stub
+					
+				}
+
+
+				@Override
+				public void resetState(double arg0, double[] arg1) {
+					// TODO Auto-generated method stub
+					
+				}
+	        	
+	        };
+	        
+	        StepHandler StepHandler_Controller = new StepHandler() {
+
+				@Override
+				public void handleStep(StepInterpolator interpolator, boolean arg1) throws MaxCountExceededException {
+					// TODO Auto-generated method stub
+					// Generate timer for flight controller: 
+	                double   t = interpolator.getCurrentTime();
+	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};val_dt=Math.abs(tis-tminus);
+				}
+
+				@Override
+				public void init(double arg0, double[] arg1, double arg2) {
+					// TODO Auto-generated method stub
+					
+				}
+	        }	
+	        ;
 	        dp853.addStepHandler(stepHandler);
-	        dp853.addEventHandler(EventHandler,1,1.0e-3,30);
+	        dp853.addEventHandler(EventHandler_Touchdown,1,1.0e-3,30);
+	        if(HoverStop) {dp853.addEventHandler(EventHandler_NegVelocity,1,1.0e-3,30);}
+	        dp853.addStepHandler(StepHandler_Controller);
 	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
