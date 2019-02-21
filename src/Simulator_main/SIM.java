@@ -19,19 +19,18 @@ public class SIM implements ActionListener{
    	static double[] x_init =new double[20];	
    	public static String INPUT_FILE;
    	public static boolean eclipse_run = false;
-    public static double PI    = 3.14159265359;                // PI                                       [-]
-    public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
-    public static double G = 1.48808E-34;
+    public static double PI    = 3.14159265359;                 // PI                                       [-]
+    public static double kB    = 1.380650424e-23;               // Boltzmann constant                         [SI]    
+    public static double G     = 1.48808E-34;
     public static int TARGET; 
 	static double deg = PI/180.0; 		//Convert degrees to radians
 	static double rad = 180/PI; 		//Convert radians to degrees
 	
    	//System.out.println(INPUT_FILE);
-	private static List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
 	
-	public static void UPDATE_SequenceElements(SequenceElement NewElement){	   
+	public static void UPDATE_SequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
 		   if (SEQUENCE_DATA.size()==0){
-				  SIM.SEQUENCE_DATA.add(NewElement); 
+				  SEQUENCE_DATA.add(NewElement); 
 		   } else {
 			boolean element_exist = false   ;
 			  for(int i=0; i<SEQUENCE_DATA.size(); i++){
@@ -45,7 +44,7 @@ public class SIM implements ActionListener{
 			  }
 			if (element_exist == false ){
 				  // New item -> add to list  
-				SIM.SEQUENCE_DATA.add(NewElement);
+				SEQUENCE_DATA.add(NewElement);
 			}	  
 		   } 
 	   }
@@ -83,8 +82,8 @@ public class SIM implements ActionListener{
         return read_state;
     }
     
-    public static String[] READ_SEQUENCE() throws IOException{
-    	 String[] OUTPUT =new String[20];	
+    public static List<SequenceElement> READ_SEQUENCE() throws IOException{	
+    	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
     	 String dir = System.getProperty("user.dir");
     	 int val1=0;int val2=0;int val3=0;int val4=0;int val5=0;
        	if(eclipse_run) {
@@ -102,15 +101,16 @@ public class SIM implements ActionListener{
         	int sequence_type		 	= Integer.parseInt(tokens[3]);
         	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
         	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID);
-            UPDATE_SequenceElements(newSequenceElement);
+            UPDATE_SequenceElements(newSequenceElement, SEQUENCE_DATA);
         }
         br.close();
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-        return OUTPUT;
+        return SEQUENCE_DATA;
     }
 
     public static void main(String[] args) throws IOException {
-    	READ_SEQUENCE();
+    	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
+    	SEQUENCE_DATA = READ_SEQUENCE();
     	//-----------------------------------------
     	//          INTEGRATOR
     	//	0 Dormand Prince 853 Integrator

@@ -11,8 +11,6 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.commons.math3.exception.MaxCountExceededException;
 import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -23,7 +21,6 @@ import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
 import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
-
 import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
@@ -67,11 +64,17 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	  //----------------------------------------------------------------
 		    public static double tminus=0;
 		    public static double tis=0;
+		    public static double mminus=0;
+		    public static double vminus=0;
 		    public static double val_dt=0;
 		    public static boolean switcher=true; 
 		    public static double cmd_min = 0;
-		    public static double cmd_max = 20000;
+		    public static double cmd_max = 0;
 		    public static boolean cntrl_on ; 
+		    public static double acc_deltav = 0; 
+		    public static double acc_deltav2= 0;
+		    public static double twrite=0;
+		    public static double local_delta_altitude = -4000;
 	  //----------------------------------------------------------------
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
@@ -98,19 +101,19 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double T=0;
 		    public static double CdC=0;
 		    public static double ISP = 0 ; 
-		    public static double P = 0 ;      // static pressure [Pa]
-		    public static double cp = 0;
-		    public static int flowzone=0; // Flow zone continuum - transitional - free molecular flwo
-		    public static double Cdm = 0; // Drag coefficient in contiuum flow; 
-		    public static int TARGET=0;
-		    static double Throttle_CMD=0;
-		    static double m_propellant = 0;
+		    public static double P = 0 ;      			// static pressure [Pa]
+		    public static double cp = 0;				// 
+		    public static int flowzone=0; 				// Flow zone continuum - transitional - free molecular flwo
+		    public static double Cdm = 0; 				// Drag coefficient in contiuum flow; 
+		    public static int TARGET=0;					// Target body index
+		    static double Throttle_CMD=0;				// Main engine throttle command [-]
+		    static double m_propellant_init = 0;     	// Initial propellant mass [kg]
 		    static double M0=5000; 
 		    static double Thrust_max=0; 
 		    static double Thrust_min=0;
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
-		    public static double v_touchdown;
+		    public static double ctrl_add;
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	    	private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
@@ -149,8 +152,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		public static void INITIALIZE_FlightController() {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
 				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
-				// -> Create flight controller 
-				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
+				// -> Create new Flight controller 
+				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  ctrl_add,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
 				UPDATE_FlightController(NewFlightController);
 			}
 		}
@@ -167,25 +170,32 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
 			double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
 			if(trigger_type==0) {
-					if(t>trigger_value) {active_sequence++;}
+					if(t>trigger_value) {active_sequence++;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
+					cntr_v_init = x[3];
 			} else if (trigger_type==1) {
-					if( (x[2]-rm)<trigger_value) {active_sequence++;}
+					if( (x[2]-rm-local_delta_altitude)<trigger_value) {active_sequence++;}
 			} else if (trigger_type==2) {
 					if( x[3]<trigger_value) {active_sequence++;}
      		}
     	}
-    	System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
+    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
     	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
     	if(sequence_type==3) { // Controlled Flight Sequence 
     	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
     	// Update Controller inputs:
-		Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  x[2]-rm, x[3],  x[4],  M0,  x[6],  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
+    	double alt = (x[2]-rm-local_delta_altitude);
+		Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  ctrl_add,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
     	// Compile controller output: 
     	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
     	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
     	} else if (sequence_type==2) { // Continous Propulsive Flight Sequence 
-    		Thrust = Thrust_max; 
-    		Throttle_CMD = 1; 
+    		if((m_propellant_init-(M0-x[6]))>0) {
+    			Thrust = Thrust_max; 
+    			Throttle_CMD = 1; 
+    		}else { // Empty tanks
+        		Thrust = 0; 
+        		Throttle_CMD = 0; 
+    		}
     	} else if (sequence_type==1) { // Coasting Sequence 
     		Thrust = 0; 
     		Throttle_CMD = 0;
@@ -221,28 +231,30 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
 	    	 S 		= 4;																// Projected surface area 		   [m2]
 	     	//-----------------------------------------------------------------------------------------------
-	    	  D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
-	    	  L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
-	    	  Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
+	    	 D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
+	    	 L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
+	    	 Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
 	    	//----------------------------------------------------------------------------------------------
-	    	  // S      =  x[6] / ( 1.55 * read_data(file_cship,1));
-	    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);
+	    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
     	}
+    	acc_deltav = acc_deltav + ISP*g0*Math.log(mminus/x[6]);
+    	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------	
-    dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) );
-    dxdt[1] = x[3] * cos( x[4] ) * cos( x[5] ) / x[2] ;
-    dxdt[2] = x[3] * sin( x[4] );
-
-    dxdt[3] = -gr * sin( x[4] ) + gn * cos( x[5] ) * cos( x[4] ) + D / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
-    dxdt[4] = ( x[3] / x[2] - gr/ x[3] ) * cos( x[4] ) - gn * cos( x[5] ) * sin( x[4] ) / x[3] + L / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
-    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] - Ty / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
-
-    dxdt[6] = - Thrust/(ISP*g0) ;                    // vehicle mass [kg]
+    	// Position vector
+	    dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) );
+	    dxdt[1] = x[3] * cos( x[4] ) * cos( x[5] ) / x[2] ;
+	    dxdt[2] = x[3] * sin( x[4] );
+	    // Velocity vector
+	    dxdt[3] = -gr * sin( x[4] ) + gn * cos( x[5] ) * cos( x[4] ) + D / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
+	    dxdt[4] = ( x[3] / x[2] - gr/ x[3] ) * cos( x[4] ) - gn * cos( x[5] ) * sin( x[4] ) / x[3] + L / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
+	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] - Ty / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
+	    // System mass [kg]
+	    dxdt[6] = - Thrust/(ISP*g0) ;                
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double v_td, int ctrl_targetcurve, List<SequenceElement> SEQUENCE_DATA){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double cmd_add, int ctrl_targetcurve, List<SequenceElement> SEQUENCE_DATA){
 //----------------------------------------------------------------------------------------------
     if(ShowWorkDirectory) { }
     if(macrun) {
@@ -257,7 +269,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			e2.printStackTrace();
 		}
 //----------------------------------------------------------------------------------------------
-//   Read propulsion setting:	
+//   Read propulsion setting:	Propulsion/Controller INIT
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
@@ -265,11 +277,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		try {
 		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
     	 ISP          	  = prop_read[0];
-    	 m_propellant 	  = prop_read[1];
+    	 m_propellant_init= prop_read[1];
     	 Thrust_max 	  = prop_read[2];
     	 Thrust_min		  = prop_read[3];
-    	 M0 			  = x6; 
-    	 v_touchdown 	  = v_td;
+    	 M0 			  = x6  ; 
+    	 mminus			  = M0  ;
+    	 vminus			  = x3  ;
+    	 ctrl_add 	      = cmd_add;
     	 PROPread		  = true; 
 		} catch (IOException e) {
 			System.out.println(e);
@@ -281,20 +295,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //----------------------------------------------------------------------------------------------
 		SEQUENCE_DATA_main = SEQUENCE_DATA;
 		INITIALIZE_FlightController() ;
-
-		/*
-		SEQUENCE_DATA_main = SEQUENCE_DATA;
-		PID_01.FlightController_001_RESET(); // Flight Controller 001 reset
-		int ctrl_ID = 1; 
-		ctrl_01 = new Flight_CTRL(ctrl_ID, true, x2-rm,  x3,  x4,  M0,  x6,  m_propellant,  cntr_v_init,  cntr_h_init,  0,  v_touchdown,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
-		if(ctrl_01.get_ctrl_on()) {
-			cntrl_on=true;
-			System.out.println("Controller 01 set ON");
-		} else {
-			cntrl_on=false;
-			System.out.println("Controller 01 set OFF");
-		}
-		*/
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -357,7 +357,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	// S/C Mass        
 	        y[6] = x6;
 //----------------------------------------------------------------------------------------------
-	        StepHandler stepHandler = new StepHandler() {
+	        StepHandler WriteOut = new StepHandler() {
 
 	            ArrayList<String> steps = new ArrayList<String>();
 
@@ -365,19 +365,20 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 
 	            }
 	            
-
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
 	                double   t = interpolator.getCurrentTime();
-	                double[] y = interpolator.getInterpolatedState();
-	                double[] ymo = interpolator.getInterpolatedDerivatives();
+	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};if(tis!=tminus) {val_dt=Math.abs(tis-tminus);}else{val_dt=0.01;};
+	                double[] y     = interpolator.getInterpolatedState();
+	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
-	                //System.out.println(steps.size());
-	                //if( t > steps.size() )
-	                if( t > dt_write )
+	                if( t > twrite ) {
+	                	twrite = twrite + dt_write; 
 	                    steps.add(t + " " + 
 	                    		  y[0] + " " + 
 	                    		  y[1] + " " + 
+	                    		  (y[2]-rm-local_delta_altitude) + " " + 
+	                    		  (y[2]-rm)+ " " + 
 	                    		  y[2] + " " + 
 	                    		  y[3]+ " " + 
 	                    		  y[4] + " " + 
@@ -406,12 +407,15 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  ymo[3]/9.81+ " " +
 	                    		  E_total+ " " + 
 	                    		  (Throttle_CMD*100)+ " "+ 
-	                    		  (m_propellant-(M0-y[6]))/m_propellant*100+" "+ 
+	                    		  (m_propellant_init-(M0-y[6]))/m_propellant_init*100+" "+ 
 	                    		  (Thrust)+" "+
 	                    		  (Thrust/y[6])+" "+
 	                    		  (y[3]*Math.cos(y[4]))+" "+
-	                    		  (y[3]*Math.sin(y[4])));
-	//System.out.println(t + "  " + y[2] + "  |  " + y[3] +" | " + (t-steps.size()));
+	                    		  (y[3]*Math.sin(y[4]))+" "+
+	                    		  (acc_deltav)+" "+
+	                    		  active_sequence+" "
+	                    		  );
+	                }
 	                if(isLast) {
 	                    try{
 	        	        	//DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -439,7 +443,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 				@Override
 				public double g(double t, double[] y) {
 					// TODO Auto-generated method stub
-					return y[2] - rm; // Altitude = 0 -> integration stop 
+					// return y[2] - rm; // Altitude = 0 relative to mean elevation         -> integration stop 
+					return y[2] - rm - local_delta_altitude; // Altitude = 0 relative to landing site elevation -> integration stop 
 					//return 0;
 				}
 
@@ -492,32 +497,17 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        	
 	        };
 	        
-	        StepHandler StepHandler_Controller = new StepHandler() {
-
-				@Override
-				public void handleStep(StepInterpolator interpolator, boolean arg1) throws MaxCountExceededException {
-					// TODO Auto-generated method stub
-					// Generate timer for flight controller: 
-	                double   t = interpolator.getCurrentTime();
-	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};val_dt=Math.abs(tis-tminus);
-				}
-
-				@Override
-				public void init(double arg0, double[] arg1, double arg2) {
-					// TODO Auto-generated method stub
-					
-				}
-	        }	
-	        ;
-	        dp853.addStepHandler(stepHandler);
+	        dp853.addStepHandler(WriteOut);
 	        dp853.addEventHandler(EventHandler_Touchdown,1,1.0e-3,30);
 	        if(HoverStop) {dp853.addEventHandler(EventHandler_NegVelocity,1,1.0e-3,30);}
-	        dp853.addStepHandler(StepHandler_Controller);
 	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        	System.out.println("ERROR: Integrator failed:");
 	        	System.out.println(eNBE);
+	        } catch (org.apache.commons.math3.exception.NumberIsTooSmallException eMSS) {
+	        	System.out.println("ERROR: Integrator failed: Minimal stepsize reached");
+	        	System.out.println(eMSS);
 	        }
 
 	       System.out.println("Success --> Integrator stop. ");      

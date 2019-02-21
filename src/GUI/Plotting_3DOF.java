@@ -67,6 +67,8 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
 import Model.atm_dataset;
+import Sequence.SequenceElement;
+import Simulator_main.SIM;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Tool;
 import Controller.LandingCurve;
@@ -129,7 +131,9 @@ public class Plotting_3DOF implements  ActionListener {
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
     										  "Latitude [deg]" ,
-    										  "Altitude [m]", 
+    										  "Altitude ref. Landing [m]", 
+    										  "Altidue ref. mean [m]",
+    										  "Radius [m]",
     										  "Velocity [m/s]", 
     										  "Flight Path angle [deg]", 
     										  "Local Azimuth [deg]", 
@@ -161,7 +165,10 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Thrust [N]", 
     										  "Thrust to mass [N/kg]",
     										  "Velocity horizontal [m/s]",
-    										  "Velocity vertical [m/s]"};
+    										  "Velocity vertical [m/s]",
+    										  "Accumulated Delta-v [m/s]",
+    										  "Active Sequence ID [-]"
+    										  };
  
     public static double h_init;
     public static double v_init;
@@ -529,7 +536,7 @@ public class Plotting_3DOF implements  ActionListener {
       axis_chooser2.setLocation(200, uy_p41 + 25 * 15);
       //axis_chooser2.setPreferredSize(new Dimension(150,25));
       axis_chooser2.setSize(150,25);
-      axis_chooser2.setSelectedIndex(4);
+      axis_chooser2.setSelectedIndex(3);
       axis_chooser2.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
     		  Update_X44();
@@ -538,7 +545,7 @@ public class Plotting_3DOF implements  ActionListener {
       axis_chooser.setLocation(5, uy_p41 + 25 * 15);
       //axis_chooser.setPreferredSize(new Dimension(150,25));
       axis_chooser.setSize(150,25);
-      axis_chooser.setSelectedIndex(3);
+      axis_chooser.setSelectedIndex(0);
       axis_chooser.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
     		  Update_X44();
@@ -1016,13 +1023,13 @@ public class Plotting_3DOF implements  ActionListener {
         int uy2 = 10; 
 
        
-        JLabel linp21 = new JLabel("Latitude [deg]");
+        JLabel linp21 = new JLabel("Longitude [deg]");
         linp21.setLocation(425, uy2 + 0 );
         linp21.setSize(250, 20);
         linp21.setBackground(Color.white);
         linp21.setForeground(Color.black);
         SouthPanel.add(linp21);
-        JLabel linp22 = new JLabel("Longitude [deg]");
+        JLabel linp22 = new JLabel("Latitude [deg]");
         linp22.setLocation(825, uy2 + 0 );
         linp22.setSize(250, 20);
         linp22.setBackground(Color.white);
@@ -1048,7 +1055,7 @@ public class Plotting_3DOF implements  ActionListener {
         	System.out.println(" Error read for plot X40");
         }
 
-        chartX4 = ChartFactory.createScatterPlot("", "Latitude [deg]", "Longitude [deg] ", resultX40, PlotOrientation.VERTICAL, false, false, false); 
+        chartX4 = ChartFactory.createScatterPlot("", "Longitude [deg]", "Latitude [deg] ", resultX40, PlotOrientation.VERTICAL, false, false, false); 
 		XYPlot plot = (XYPlot)chartX4.getXYPlot(); 
         XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
         plot.setRenderer(0, renderer);  
@@ -1066,6 +1073,7 @@ public class Plotting_3DOF implements  ActionListener {
 
        ValueAxis domain2 = plot.getDomainAxis();
        domain2.setRange(-180, 180);
+       domain2.setInverted(false);
        // change the auto tick unit selection to integer units only...
        final NumberAxis rangeAxis2 = (NumberAxis) plot2.getRangeAxis();
        rangeAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -1110,11 +1118,10 @@ public class Plotting_3DOF implements  ActionListener {
        PageX04_2.add(CPXX4, BorderLayout.CENTER);
 	
        
-        READ_INPUT();
         // Page 4.3
      	CreateChart_X43(RM);
      	CreateChart_X44();
-        Page04_subtabPane.addTab("Panel" , null, PageX04_1, null);
+        Page04_subtabPane.addTab("Dashboard" , null, PageX04_1, null);
         Page04_subtabPane.addTab("Sim Setup"+"\u2713", null, PageX04_4, null);
         Page04_subtabPane.addTab("Map" , null, PageX04_2, null);
         Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
@@ -1617,6 +1624,8 @@ try {
 	public static DefaultTableXYDataset AddDataset_X43(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
 	   	XYSeries xyseries10 = new XYSeries("Target Trajectory", false, false); 
 	   	XYSeries xyseries11 = new XYSeries("Trajectory", false, false); 
+   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
+   	    SEQUENCE_DATA = SIM.READ_SEQUENCE();
 	    FileInputStream fstream = null;
 		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	              DataInputStream in = new DataInputStream(fstream);
@@ -1626,18 +1635,24 @@ try {
 	              try {
 	              while ((strLine = br.readLine()) != null )   {
 		           String[] tokens = strLine.split(" ");
-		           double x = Double.parseDouble(tokens[4]);
-		           double y = Double.parseDouble(tokens[3])-RM;
+		           double x = Double.parseDouble(tokens[6]);
+		           double y = Double.parseDouble(tokens[3]);
 		           double xx =0;
 		 		    if (TargetCurve_chooser.getSelectedIndex()==1) {
 		 		    	    xx =  LandingCurve.ParabolicLandingCurve(v_init, h_init,  v_touchdown, y);
+		 		    	    try {
 				         	xyseries10.add(xx , y);
+		 		    	    } catch(org.jfree.data.general.SeriesException eEXP) {System.out.println(eEXP);}
 		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==2) {
 		 	 		    	xx =  LandingCurve.SquarerootLandingCurve(v_init, h_init,  v_touchdown, y);
+		 	 		    	try {
 				         	xyseries10.add(xx , y);
+		 	 		    	 } catch(org.jfree.data.general.SeriesException eEXP) {System.out.println(eEXP);}
 		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==3) {
 		 	 		    	xx =  LandingCurve.Parabolic2Hover(v_init, h_init,  v_touchdown, y);
+		 	 		    	try {
 				         	xyseries10.add(xx , y);
+		 	 		    	 } catch(org.jfree.data.general.SeriesException eEXP) {System.out.println(eEXP);}
 		 	 		    } 
 		            xyseries11.add(x  , y);
 		           }
@@ -1657,7 +1672,8 @@ try {
 		//	System.out.println(eFNF2);
 		//}
 	    //-----------------------------------------------------------------------------------
-	    chartX43 = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", resultX43, PlotOrientation.VERTICAL, true, false, false); 
+		//chartX43 = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", resultX43, PlotOrientation.VERTICAL, true, false, false); 
+	    chartX43 = ChartFactory.createStackedXYAreaChart("", "Velocity [m/s]", "Altitude [m] ", resultX43);//("", "Velocity [m/s]", "Altitude [m] ", resultX43, PlotOrientation.VERTICAL, true, false, false); 
 		XYPlot plot = (XYPlot)chartX43.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
@@ -1805,14 +1821,14 @@ try {
 						            String[] tokens = strLine.split(" ");
 						            double xx=0; double yy=0; 
 						            if(x==3) {
-						             xx = Double.parseDouble(tokens[x])-RM; } else {
+						             xx = Double.parseDouble(tokens[x]); } else {
 						            	 String x_axis_label = String.valueOf(axis_chooser.getSelectedItem());
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
 						            	 if(isangle) {xx = Double.parseDouble(tokens[x])*rad;} else {
 						            		 		  xx = Double.parseDouble(tokens[x]);} 
 						            	 }
 						            if(y==3) {
-						             yy = Double.parseDouble(tokens[y])-RM;} else {
+						             yy = Double.parseDouble(tokens[y]);} else {
 						            	 String x_axis_label = String.valueOf(axis_chooser2.getSelectedItem());
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
 						            	 if(isangle) {yy = Double.parseDouble(tokens[y])*rad;} else {

@@ -51,4 +51,7 @@ column / Variable [Unit]
 40  Tank filling level [%]
 41  Thrust [N]
 42  Thrust to mass ratio [N/kg]
+43  Velocity horizontal [m/s] (rotating frame)
+44  Velocity vertical [m/s] (rotating frame)
+45  Accumulated delta-v [m/s]
 ------------------------------------------------------------------------------------------------------------------------------
