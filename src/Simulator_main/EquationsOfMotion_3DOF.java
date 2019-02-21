@@ -173,9 +173,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 					if(t>trigger_value) {active_sequence++;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
 					cntr_v_init = x[3];
 			} else if (trigger_type==1) {
-					if( (x[2]-rm-local_delta_altitude)<trigger_value) {active_sequence++;}
+					if( (x[2]-rm-local_delta_altitude)<trigger_value) {active_sequence++;;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
 			} else if (trigger_type==2) {
-					if( x[3]<trigger_value) {active_sequence++;}
+					if( x[3]<trigger_value) {active_sequence++;;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
      		}
     	}
     	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
@@ -510,7 +510,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        	System.out.println(eMSS);
 	        }
 
-	       System.out.println("Success --> Integrator stop. ");      
+	       System.out.println("Success --> Integrator Stop ");      
 		}
 	
 

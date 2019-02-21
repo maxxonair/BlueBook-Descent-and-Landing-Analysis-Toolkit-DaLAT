@@ -563,7 +563,7 @@ public class Plotting_3DOF implements  ActionListener {
       P2_SidePanel.setForeground(l_c);
       
       JPanel P2_SidePanel1 = new JPanel();
-      P2_SidePanel1.setLayout(null);
+      P2_SidePanel1.setLayout(new BorderLayout());
       P2_SidePanel1.setPreferredSize(new Dimension(405, exty_main+400));
       P2_SidePanel1.setBackground(bc_c);
       P2_SidePanel1.setForeground(l_c);
@@ -838,6 +838,28 @@ public class Plotting_3DOF implements  ActionListener {
 		  	{ WRITE_PROP();}});
     P2_SidePanel.add(p42_inp12);
 	  //-------------------------------------------- Right side 
+    JPanel P2_ControllerPane = new JPanel();
+    P2_ControllerPane.setLayout(null);
+    P2_ControllerPane.setPreferredSize(new Dimension((exty_main+400),290));
+    P2_ControllerPane.setBackground(bc_c);
+    P2_ControllerPane.setForeground(l_c);
+    
+    JPanel P2_SequenceMAIN = new JPanel();
+    P2_SequenceMAIN.setLayout(null);
+    P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
+    P2_SequenceMAIN.setBackground(bc_c);
+    P2_SequenceMAIN.setForeground(l_c);
+
+    JScrollPane scrollPane_Controller = new JScrollPane(P2_ControllerPane);
+    //scrollPane_Controller.setSize(405, exty_main);
+    scrollPane_Controller.getVerticalScrollBar().setUnitIncrement(16);
+    P2_SidePanel1.add(scrollPane_Controller, BorderLayout.CENTER);
+    
+    JScrollPane scrollPane_Sequence = new JScrollPane(P2_SequenceMAIN);
+    scrollPane_Sequence.setSize(305, 400);
+    scrollPane_Sequence.getVerticalScrollBar().setUnitIncrement(16);
+    P2_SidePanel1.add(scrollPane_Sequence, BorderLayout.PAGE_START);
+    
 	  p421_linp0 = new JCheckBox("Controller 001 ON/OFF");
 	  p421_linp0.setLocation(2, uy_p41 + 25 * 0 );
 	  p421_linp0.setBackground(Color.green);
@@ -868,50 +890,50 @@ public class Plotting_3DOF implements  ActionListener {
 		  
 	  });
 	  
-      P2_SidePanel1.add(p421_linp0);
+	  P2_ControllerPane.add(p421_linp0);
 	  
       JLabel p421_linp1 = new JLabel("P Gain [-]");
       p421_linp1.setLocation(65, uy_p41 + 25 * 1 );
       p421_linp1.setSize(250, 20);
       p421_linp1.setBackground(Color.white);
       p421_linp1.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp1);
+      P2_ControllerPane.add(p421_linp1);
       JLabel p421_linp2 = new JLabel("I Gain [-]");
       p421_linp2.setLocation(65, uy_p41 + 25 * 2 );
       p421_linp2.setSize(250, 20);
       p421_linp2.setBackground(Color.white);
       p421_linp2.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp2);
+      P2_ControllerPane.add(p421_linp2);
       JLabel p421_linp3 = new JLabel("D Gain [-]");
       p421_linp3.setLocation(65, uy_p41 + 25 * 3 );
       p421_linp3.setSize(250, 20);
       p421_linp3.setBackground(Color.white);
       p421_linp3.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp3);
+      P2_ControllerPane.add(p421_linp3);
       JLabel p421_linp4 = new JLabel("Maximum Output CMD [-]");
       p421_linp4.setLocation(65, uy_p41 + 25 * 5 );
       p421_linp4.setSize(250, 20);
       p421_linp4.setBackground(Color.white);
       p421_linp4.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp4);
+      P2_ControllerPane.add(p421_linp4);
       JLabel p421_linp5 = new JLabel("Minimum Output CMD [-]");
       p421_linp5.setLocation(65, uy_p41 + 25 * 6 );
       p421_linp5.setSize(250, 20);
       p421_linp5.setBackground(Color.white);
       p421_linp5.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp5);
+      P2_ControllerPane.add(p421_linp5);
       JLabel p421_linp6 = new JLabel("Touchdown velocity [m/s]");
       p421_linp6.setLocation(65, uy_p41 + 25 * 8 );
       p421_linp6.setSize(250, 20);
       p421_linp6.setBackground(Color.white);
       p421_linp6.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp6);
+      P2_ControllerPane.add(p421_linp6);
       JLabel p421_linp7 = new JLabel("Hover Altitude [m]");
       p421_linp7.setLocation(65, uy_p41 + 25 * 9 );
       p421_linp7.setSize(250, 20);
       p421_linp7.setBackground(Color.white);
       p421_linp7.setForeground(Color.black);
-      P2_SidePanel1.add(p421_linp7);
+      P2_ControllerPane.add(p421_linp7);
 	  
       p421_inp1 = new JTextField(10);
       p421_inp1.setLocation(2, uy_p41 + 25 * 1 );
@@ -920,7 +942,7 @@ public class Plotting_3DOF implements  ActionListener {
       p421_inp1.addActionListener(new ActionListener() {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_CTRL_01();}});
-      P2_SidePanel1.add(p421_inp1);
+      P2_ControllerPane.add(p421_inp1);
       p421_inp2 = new JTextField(10);
       p421_inp2.setLocation(2, uy_p41 + 25 * 2 );
       p421_inp2.setText("0");
@@ -928,7 +950,7 @@ public class Plotting_3DOF implements  ActionListener {
       p421_inp2.addActionListener(new ActionListener() {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_CTRL_01();}});
-      P2_SidePanel1.add(p421_inp2);
+      P2_ControllerPane.add(p421_inp2);
        p421_inp3 = new JTextField(10);
       p421_inp3.setLocation(2, uy_p41 + 25 * 3 );
       p421_inp3.setText("10");
@@ -936,7 +958,7 @@ public class Plotting_3DOF implements  ActionListener {
       p421_inp3.addActionListener(new ActionListener() {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_CTRL_01();}});
-      P2_SidePanel1.add(p421_inp3);
+      P2_ControllerPane.add(p421_inp3);
        p421_inp4 = new JTextField(10);
       p421_inp4.setLocation(2, uy_p41 + 25 * 5 );
       p421_inp4.setText("1");
@@ -944,7 +966,7 @@ public class Plotting_3DOF implements  ActionListener {
       p421_inp4.addActionListener(new ActionListener() {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_CTRL_01();}});
-      P2_SidePanel1.add(p421_inp4);
+      P2_ControllerPane.add(p421_inp4);
        p421_inp5 = new JTextField(10);
       p421_inp5.setLocation(2, uy_p41 + 25 * 6 );
       p421_inp5.setText("0");
@@ -952,7 +974,7 @@ public class Plotting_3DOF implements  ActionListener {
       p421_inp5.addActionListener(new ActionListener() {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_CTRL_01();}});
-      P2_SidePanel1.add(p421_inp5);
+      P2_ControllerPane.add(p421_inp5);
        p421_inp6 = new JTextField(10);
       p421_inp6.setLocation(2, uy_p41 + 25 * 8 );
       p421_inp6.setText("0");
@@ -960,7 +982,7 @@ public class Plotting_3DOF implements  ActionListener {
       p421_inp6.addActionListener(new ActionListener() {
  		  public void actionPerformed( ActionEvent e )
  		  	{ WRITE_INIT();}});
-      P2_SidePanel1.add(p421_inp6); 
+      P2_ControllerPane.add(p421_inp6); 
       p421_inp7 = new JTextField(10);
      p421_inp7.setLocation(2, uy_p41 + 25 * 9 );
      p421_inp7.setText("0");
@@ -968,7 +990,7 @@ public class Plotting_3DOF implements  ActionListener {
      p421_inp7.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_INIT();}});
-     P2_SidePanel1.add(p421_inp7); 
+     P2_ControllerPane.add(p421_inp7); 
       
 	  TargetCurve_chooser = new JComboBox(TargetCurve_Options);
 	  TargetCurve_chooser.setBackground(Color.white);
@@ -1008,7 +1030,7 @@ public class Plotting_3DOF implements  ActionListener {
 		}
 		  
 	  });
-	  P2_SidePanel1.add(TargetCurve_chooser);
+	  P2_ControllerPane.add(TargetCurve_chooser);
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------
@@ -1624,8 +1646,6 @@ try {
 	public static DefaultTableXYDataset AddDataset_X43(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
 	   	XYSeries xyseries10 = new XYSeries("Target Trajectory", false, false); 
 	   	XYSeries xyseries11 = new XYSeries("Trajectory", false, false); 
-   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
-   	    SEQUENCE_DATA = SIM.READ_SEQUENCE();
 	    FileInputStream fstream = null;
 		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	              DataInputStream in = new DataInputStream(fstream);
@@ -1664,6 +1684,17 @@ try {
 	              } catch (NullPointerException | IllegalArgumentException eNPE) { System.out.println(eNPE);}
 	    return resultX43;
 	   }
+	
+	public static double[][] FIND_ctrl_init_cond() throws IOException{
+	   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
+	   	    SEQUENCE_DATA = SIM.READ_SEQUENCE();
+	   	    double[][] INIT_CONDITIONS = new double[4][SEQUENCE_DATA.size()];
+	   	    for (int i=0;i<SEQUENCE_DATA.size();i++) {
+	   	    	
+	   	    }
+	   	    
+	   	    return INIT_CONDITIONS;
+	}
 	public static void CreateChart_X43(double RM) throws IOException {
 		//result1.removeAllSeries();
 		//try {

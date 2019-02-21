@@ -169,7 +169,7 @@ public class Flight_CTRL{
  		   if(ContinousBurn){thrust_cmd = thrust_max;throttle_cmd=cmd_max;} else {
  		    double CTRL_ERROR = target_velocity + vel;
  		   throttle_cmd = PID_01.FlightController_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
-		   // System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);
+		    //System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);
 		    	if ((m0-m)<mprop && vel>0) {
 		    		thrust_cmd = throttle_cmd*thrust_max ; 
 		    		if(thrust_cmd<thrust_min) {thrust_cmd=thrust_min;}
