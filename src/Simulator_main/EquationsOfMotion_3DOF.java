@@ -31,7 +31,7 @@ import Controller.Flight_CTRL;
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
 	//				Control variables
-	public static boolean HoverStop = false; 
+	public static boolean HoverStop = true; 
     public static boolean ShowWorkDirectory = true; 
     public static boolean macrun = false;
     public static boolean ctrl_callout = false; 
@@ -72,7 +72,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double cmd_max = 0;
 		    public static boolean cntrl_on ; 
 		    public static double acc_deltav = 0; 
-		    public static double acc_deltav2= 0;
 		    public static double twrite=0;
 		    public static double local_delta_altitude = -4000;
 	  //----------------------------------------------------------------
@@ -113,20 +112,36 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    static double Thrust_min=0;
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
-		    public static double ctrl_add;
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	    	private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
 	    	private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
-	        //private static List<Flight_CTRL> FlightController_LIST = new ArrayList<Flight_CTRL>(); 
+	    	private static ArrayList<String> CTRL_steps = new ArrayList<String>();
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
+	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
+	        public static double ctrl_alt = 0 ; 		// Active Flight Controller target altitude [m]
+	        public static double v_touchdown=0; 		// Global touchdown velocity constraint [m/s]
+	        public static boolean isFirstSequence=true;
+	        public static boolean Sequence_RES_closed=false;
+	        
+	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        
 	    public int getDimension() {
 	        return 7;
 	    }
-	    
+	    public static void SequenceWriteOut_addRow() {
+			CTRL_steps.add(SEQUENCE_DATA_main.get(active_sequence).get_sequence_ID()+ " " + 
+				   SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()+" "+
+			       SEQUENCE_DATA_main.get(active_sequence).get_sequence_controller_ID()+ " "+
+			       cntr_v_init+" "+
+			       cntr_h_init+" "+
+			       Flight_Controller.get(active_sequence).get_ctrl_vel()+" "+
+			       Flight_Controller.get(active_sequence).get_ctrl_alt()+" "+
+			       SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve()+" "
+		  );
+	    }
 		public static void SET_Constants(int TARGET) throws IOException{
 		    Lt    = DATA_MAIN[TARGET][3];    	// Average collision diameter (CO2)         [m]
 		    mu    = DATA_MAIN[TARGET][1];    	// Standard gravitational constant (Mars)   [m3/s2]
@@ -148,99 +163,153 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			   if (Flight_Controller.size()==0){ EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
 			   } else {EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); } 
 		   }
-		
 		public static void INITIALIZE_FlightController() {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
 				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
+				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
+				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				// -> Create new Flight controller 
-				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  ctrl_add,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
+				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
 				UPDATE_FlightController(NewFlightController);
 			}
 		}
+		public static void SEQUENCE_MANAGER(double t, double[] x) {
+	    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
+				int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
+				double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
+				if(isFirstSequence) {
+					cntr_v_init = x[3];
+					cntr_h_init = x[2]-rm-local_delta_altitude;
+					SequenceWriteOut_addRow();
+					isFirstSequence=false; 
+				}
+				if(trigger_type==0) {
+						if(t>trigger_value) {
+							active_sequence++;
+							cntr_v_init = x[3];
+							cntr_h_init=x[2]-rm-local_delta_altitude;
+							SequenceWriteOut_addRow();
+						}
+				} else if (trigger_type==1) {
+						if( (x[2]-rm-local_delta_altitude)<trigger_value) {
+							active_sequence++;
+							cntr_v_init = x[3];
+							cntr_h_init=x[2]-rm-local_delta_altitude;
+							SequenceWriteOut_addRow();}
+				} else if (trigger_type==2) {
+						if( x[3]<trigger_value) {
+							active_sequence++;
+							cntr_v_init = x[3];
+							cntr_h_init=x[2]-rm-local_delta_altitude;
+							SequenceWriteOut_addRow();}
+	     		}
+	    	}
+	    	if(active_sequence ==  (SEQUENCE_DATA_main.size()-1) && Sequence_RES_closed==false){
+	    		System.out.println("Write: Sequence result file ");
+	    		try {
+	            String resultpath="";
+	            if(macrun) {
+	            	String dir = System.getProperty("user.dir");
+	            	resultpath = dir + "/LandingSim-3DOF/SEQU.res";
+	            } else {
+	            	resultpath = "SEQU.res";
+	            }
+	            PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
+	            for(String step: CTRL_steps) {
+	                writer.println(step);
+	            }
+	            writer.close();
+	            Sequence_RES_closed=true; 
+	        } catch(Exception e) {};
+	    	}
+	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
+	    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
+	    	if(sequence_type==3) { // Controlled Flight Sequence 
+	    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
+	    	// Update Controller inputs:
+	    	double alt = (x[2]-rm-local_delta_altitude);
+			Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
+	    	// Compile controller output: 
+	    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
+	    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
+	    	} else if (sequence_type==2) { // Continous Propulsive Flight Sequence 
+	    		if((m_propellant_init-(M0-x[6]))>0) {
+	    			Thrust = Thrust_max; 
+	    			Throttle_CMD = 1; 
+	    		}else { // Empty tanks
+	        		Thrust = 0; 
+	        		Throttle_CMD = 0; 
+	    		}
+	    	} else if (sequence_type==1) { // Coasting Sequence 
+	    		Thrust = 0; 
+	    		Throttle_CMD = 0;
+	    	} else {
+	    		System.out.println("ERROR: Sequence type out of range");
+	    	}
+		}
+		
+		public static void GRAVITY_MANAGER(double[] x) {
+	    	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
+	    	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
+		}
+		
+		public static void ATMOSPHERE_MANAGER(double[] x) {
+	    	if (x[2]-rm>200000 || TARGET == 1){ // In space conditions: 
+	    		// Set atmosphere properties to zero: 
+		    		rho   = 0; 																// Density 							[kg/m3]
+		    		qinf  = 0;																// Dynamic pressure 				[Pa]
+		    		T     = 0 ; 															// Temperature 						[K]
+		    		gamma = 0 ; 															// Heat capacity ratio 				[-]
+		    		R	  = 0; 																// Gas constant 					[J/kgK]
+		    		Ma 	  = 0; 																// Mach number 						[-]
+		      	//----------------------------------------------------------------------------------------------
+	    	} else { // In atmosphere conditions (if any)
+		    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;       					// density                         [kg/m3]
+		    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         		// Dynamic pressure                [Pa]
+		    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		// Temperature                     [K]
+		    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        // Heat capacity ratio			   [-]
+		    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                        // Gas Constant                    [J/kgK]
+		    	 P      = rho * R * T;														// Ambient pressure 			   [Pa]
+		    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 		// Mach number                     [-]
+	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
+	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       		// Continuum flow drag coefficient [-]
+		    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
+		    	 S 		= 4;																// Projected surface area 		   [m2]
+		     	//-----------------------------------------------------------------------------------------------
+		    	 D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
+		    	 L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
+		    	 Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
+		    	//----------------------------------------------------------------------------------------------
+		    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
+	    	}
+		}
+		
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------
-    	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
-    	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
+    	GRAVITY_MANAGER(x);
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
-			int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
-			double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
-			if(trigger_type==0) {
-					if(t>trigger_value) {active_sequence++;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
-					cntr_v_init = x[3];
-			} else if (trigger_type==1) {
-					if( (x[2]-rm-local_delta_altitude)<trigger_value) {active_sequence++;;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
-			} else if (trigger_type==2) {
-					if( x[3]<trigger_value) {active_sequence++;;cntr_v_init = x[3];cntr_h_init=x[2]-rm-local_delta_altitude;}
-     		}
-    	}
-    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
-    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
-    	if(sequence_type==3) { // Controlled Flight Sequence 
-    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
-    	// Update Controller inputs:
-    	double alt = (x[2]-rm-local_delta_altitude);
-		Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  ctrl_add,  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
-    	// Compile controller output: 
-    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
-    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
-    	} else if (sequence_type==2) { // Continous Propulsive Flight Sequence 
-    		if((m_propellant_init-(M0-x[6]))>0) {
-    			Thrust = Thrust_max; 
-    			Throttle_CMD = 1; 
-    		}else { // Empty tanks
-        		Thrust = 0; 
-        		Throttle_CMD = 0; 
-    		}
-    	} else if (sequence_type==1) { // Coasting Sequence 
-    		Thrust = 0; 
-    		Throttle_CMD = 0;
-    	} else {
-    		System.out.println("ERROR: Sequence type out of range");
-    	}
+    	SEQUENCE_MANAGER(t,  x);
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									Atmosphere and (external) Force Definition
+    	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
-    	if (x[2]-rm>200000 || TARGET == 1){ // In space conditions: 
-    		// Set atmosphere properties to zero: 
-	    		rho   = 0; 																// Density 							[kg/m3]
-	    		qinf  = 0;																// Dynamic pressure 				[Pa]
-	    		T     = 0 ; 															// Temperature 						[K]
-	    		gamma = 0 ; 															// Heat capacity ratio 				[-]
-	    		R	  = 0; 																// Gas constant 					[J/kgK]
-	    		Ma 	  = 0; 																// Mach number 						[-]
-	       //-----------------------------------------------------------------------------------------------
-	      	  D  =  - Thrust  ;            				  								// Drag Force 						[N] --> From Thrust only
-	      	  L  =    	  0   ;                           								// Aerodynamic lift Force 			[N]
-	      	  Ty =        0   ;                           								// Aerodynamic side Force 			[N]
-	      	//----------------------------------------------------------------------------------------------
-    	} else { // In atmosphere conditions (if any)
-	    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;       					// density                         [kg/m3]
-	    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         		// Dynamic pressure                [Pa]
-	    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		// Temperature                     [K]
-	    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        // Heat capacity ratio			   [-]
-	    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                        // Gas Constant                    [J/kgK]
-	    	 P      = rho * R * T;														// Ambient pressure 			   [Pa]
-	    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 		// Mach number                     [-]
-    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
-    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       		// Continuum flow drag coefficient [-]
-	    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
-	    	 S 		= 4;																// Projected surface area 		   [m2]
-	     	//-----------------------------------------------------------------------------------------------
-	    	 D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
-	    	 L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
-	    	 Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
-	    	//----------------------------------------------------------------------------------------------
-	    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
-    	}
+    	ATMOSPHERE_MANAGER(x);
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 									      Force Definition
+    	//-------------------------------------------------------------------------------------------------------------------
+	   	D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
+	   	L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
+	   	Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 										Delta-v integration
+    	//-------------------------------------------------------------------------------------------------------------------
     	acc_deltav = acc_deltav + ISP*g0*Math.log(mminus/x[6]);
     	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									Equations of Motion
+    	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------	
     	// Position vector
 	    dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) );
@@ -254,7 +323,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[6] = - Thrust/(ISP*g0) ;                
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double cmd_add, int ctrl_targetcurve, List<SequenceElement> SEQUENCE_DATA){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double vel_touchdown, List<SequenceElement> SEQUENCE_DATA){
+//----------------------------------------------------------------------------------------------
+// 						Prepare integration 
 //----------------------------------------------------------------------------------------------
     if(ShowWorkDirectory) { }
     if(macrun) {
@@ -273,7 +344,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
-	    ctrl_curve=ctrl_targetcurve;
 		try {
 		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
     	 ISP          	  = prop_read[0];
@@ -283,7 +353,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 M0 			  = x6  ; 
     	 mminus			  = M0  ;
     	 vminus			  = x3  ;
-    	 ctrl_add 	      = cmd_add;
+    	 v_touchdown	  = vel_touchdown;
     	 PROPread		  = true; 
 		} catch (IOException e) {
 			System.out.println(e);
@@ -293,7 +363,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
+		Sequence_RES_closed=false;
 		SEQUENCE_DATA_main = SEQUENCE_DATA;
+		CTRL_steps.clear();
 		INITIALIZE_FlightController() ;
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
@@ -432,8 +504,10 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                        for(String step: steps) {
 	                            writer.println(step);
 	                        }
+	                        System.out.println("Write: Result file. ");
+	                        if(Sequence_RES_closed==false) {System.out.println("Warning: Sequence end not reached - SEQU.res not built");}
 	                        writer.close();
-	                    } catch(Exception e) {};
+	                    } catch(Exception e) {System.out.println("ERROR: Writing result file failed");System.out.println(e);};
 	                }
 	            }
 	            

@@ -18,6 +18,7 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,12 +89,14 @@ public class Plotting_3DOF implements  ActionListener {
     public static String Env_File    	 = "\\INP\\env.inp"  ;  		// Input: target and environment
     public static String RES_File        = "\\results.txt"   ; 			// Input; result file
     public static String CTR_001_File    = "\\CTRL\\cntrl_1.inp";		// Controller 01 input file 
-    public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";		// Main propulsion system input file 
+    public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";		// Main propulsion system input file
+    public static String SEQU_File		 = "\\SEQU.res";				// Sequence output file 
     public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
     public static String Env_File_mac    = "/INP/env.inp"  ;  			// Input: target and environment
     public static String RES_File_mac    = "/results.txt"  ;       	 	// Input: result file 
-    public static String CTR_001_File_mac= "/CTRL/cntrl_1.inp";		// Controller 01 input file 
+    public static String CTR_001_File_mac= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
     public static String Prop_File_mac 	 = "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
+    public static String SEQU_File_mac		 = "/SEQU.res";				// Sequence output file 
     public static boolean ShowWorkDirectory = true; 
     public static boolean macrun = true;
     
@@ -271,6 +274,7 @@ public class Plotting_3DOF implements  ActionListener {
     	 RES_File  = dir + RES_File_mac  ;
     	 CTR_001_File  = dir + CTR_001_File_mac  ;
     	 Prop_File  = dir + Prop_File_mac  ;
+    	 SEQU_File = dir + SEQU_File_mac; 
     	 //System.out.println(Init_File);
      }
     	// ---------------------------------------------------------------------------------
@@ -1606,7 +1610,27 @@ try {
 		  }
 		  }
     }
-    
+    public static ArrayList<String> Read_SEQU(){
+   	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
+     try {
+		BufferedReader br = new BufferedReader(new FileReader(SEQU_File));
+       String strLine;
+       while ((strLine = br.readLine()) != null )   {
+       	String[] tokens = strLine.split(" ");
+       	SEQUENCE_DATA.add(tokens[0]+" "+
+       				      tokens[1]+" "+
+       				      tokens[2]+" "+
+       				      tokens[3]+" "+
+       				      tokens[4]+" "+
+       				      tokens[5]+" "+
+       				      tokens[6]+" "+
+       				      tokens[7]+" "
+       	);
+       }
+       br.close();
+       } catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);}
+       return SEQUENCE_DATA;
+    }
 	public static XYSeriesCollection AddDataset_MAP() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
@@ -1644,6 +1668,8 @@ try {
 	
 	
 	public static DefaultTableXYDataset AddDataset_X43(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
+		ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
+		SEQUENCE_DATA = Read_SEQU();
 	   	XYSeries xyseries10 = new XYSeries("Target Trajectory", false, false); 
 	   	XYSeries xyseries11 = new XYSeries("Trajectory", false, false); 
 	    FileInputStream fstream = null;
@@ -1657,25 +1683,42 @@ try {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[6]);
 		           double y = Double.parseDouble(tokens[3]);
-		           double xx =0;
-		 		    if (TargetCurve_chooser.getSelectedIndex()==1) {
-		 		    	    xx =  LandingCurve.ParabolicLandingCurve(v_init, h_init,  v_touchdown, y);
-		 		    	    try {
-				         	xyseries10.add(xx , y);
-		 		    	    } catch(org.jfree.data.general.SeriesException eEXP) {System.out.println(eEXP);}
-		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==2) {
-		 	 		    	xx =  LandingCurve.SquarerootLandingCurve(v_init, h_init,  v_touchdown, y);
-		 	 		    	try {
-				         	xyseries10.add(xx , y);
-		 	 		    	 } catch(org.jfree.data.general.SeriesException eEXP) {System.out.println(eEXP);}
-		 	 		    } else if (TargetCurve_chooser.getSelectedIndex()==3) {
-		 	 		    	xx =  LandingCurve.Parabolic2Hover(v_init, h_init,  v_touchdown, y);
-		 	 		    	try {
-				         	xyseries10.add(xx , y);
-		 	 		    	 } catch(org.jfree.data.general.SeriesException eEXP) {System.out.println(eEXP);}
-		 	 		    } 
-		            xyseries11.add(x  , y);
+		           int active_sequence = Integer.parseInt(tokens[39]);
+		           double xx=0;
+		           String[] sequ_tokens  = SEQUENCE_DATA.get(active_sequence).split(" ");
+		           int active_sequ_type  = Integer.parseInt(sequ_tokens[1]);
+		           double ctrl_vinit 	 = Double.parseDouble(sequ_tokens[3]);
+		           double ctrl_hinit 	 = Double.parseDouble(sequ_tokens[4]);
+		           double ctrl_vel 	     = Double.parseDouble(sequ_tokens[5]);
+		           double ctrl_alt 		 = Double.parseDouble(sequ_tokens[6]);
+		           int ctrl_curve        = Integer.parseInt(sequ_tokens[7]);
+		           //System.out.println(ctrl_vinit+ " | "+ ctrl_hinit);
+		           System.out.println(active_sequence+ " | "+ ctrl_curve);
+		           if(active_sequ_type==3) { // Controlled Propulsive flight
+		    		    if  (ctrl_curve==0) {
+		    		    	xyseries10.add(x  , 0); 
+		   		        } else if (ctrl_curve==1) {
+		    		         xx =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    } else if (ctrl_curve==2) {
+		    		    	 xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		    	 System.out.println(xx+ " | "+ y);
+		    		    	 try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    } else if (ctrl_curve==3) {
+		    		    	 xx =   LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_vel, y);
+		    		    	 try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    } 
+		           } else {
+		        	   xyseries10.add(x  , 0);  
 		           }
+		           //System.out.println(xx+ " | "+ y);
+		           try { 
+		           xyseries11.add(x  , y);
+		           } catch(org.jfree.data.general.SeriesException eSE) {
+		        	   System.out.println(eSE);
+		           }
+		           }
+	              
 	       fstream.close();
 	       in.close();
 	       br.close();

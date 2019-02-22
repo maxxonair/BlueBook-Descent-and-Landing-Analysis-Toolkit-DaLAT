@@ -6,3 +6,7 @@
 - Pack charts in uniform class (inlcuding add_chart, update_chart ...)
 - Implement local elevation 
 - Fix issues with Controller target flight curve initials
+- Controller target curve: Target point 2 ("touchdown") is with velocity only half defined and does not work as in flight sequence.
+- Look at global sequence boundary definition (acc, v_td ...)
+- Added function: Save/Open results
+- Added function: Save/Open Sequence 

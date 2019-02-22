@@ -38,7 +38,7 @@ public class SIM implements ActionListener{
 				  int ID_ELEMENT = NewElement.get_sequence_ID();
 						  if (ID_LIST == ID_ELEMENT){
 							  // item exists -> Update
-							  SEQUENCE_DATA.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID());
+							  SEQUENCE_DATA.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID(), NewElement.get_ctrl_target_vel(), NewElement.get_ctrl_target_alt(), NewElement.get_ctrl_target_curve());
 							  element_exist = true;
 						  } 
 			  }
@@ -85,7 +85,7 @@ public class SIM implements ActionListener{
     public static List<SequenceElement> READ_SEQUENCE() throws IOException{	
     	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
     	 String dir = System.getProperty("user.dir");
-    	 int val1=0;int val2=0;int val3=0;int val4=0;int val5=0;
+    	 int val1=0;int val2=0;int val3=0;int val4=0;int val5=0;double val6=0; double val7=0;int val8=0;
        	if(eclipse_run) {
        	   	 INPUT_FILE = dir+"/LandingSim-3DOF/INP/sequence_1.inp";} else {
        	   	 INPUT_FILE = ".\\INP\\sequence_1.inp";}
@@ -94,13 +94,16 @@ public class SIM implements ActionListener{
         try {
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
-        	SequenceElement newSequenceElement = new SequenceElement( val1,  val2,  val3,  val4,  val5);
+        	SequenceElement newSequenceElement = new SequenceElement( val1,  val2,  val3,  val4,  val5, val6, val7, val8);
         	int sequence_ID 			= Integer.parseInt(tokens[0]);
         	int trigger_end_type 		= Integer.parseInt(tokens[1]);
         	double trigger_end_value 	= Double.parseDouble(tokens[2]);
         	int sequence_type		 	= Integer.parseInt(tokens[3]);
         	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
-        	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID);
+        	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
+        	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
+        	int ctrl_target_curve    = Integer.parseInt(tokens[7]);
+        	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID,ctrl_target_vel,ctrl_target_alt,ctrl_target_curve);
             UPDATE_SequenceElements(newSequenceElement, SEQUENCE_DATA);
         }
         br.close();
@@ -128,11 +131,23 @@ public class SIM implements ActionListener{
 		if(inp_read_success) { 
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
-	    	int ctrl_targetcurve = (int) x_init[12];
 	    	double rm = EquationsOfMotion_3DOF.DATA_MAIN[target][0];
 	    	//System.out.println(target+" "+ rm);
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
-			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, target, x_init[0]*deg, x_init[1]*deg, x_init[2]+rm, x_init[3], x_init[4]*deg, x_init[5]*deg, x_init[6], x_init[7], x_init[10],x_init[11],ctrl_targetcurve, SEQUENCE_DATA);
+			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, 				// Integrator Index 	[-]
+														target, 				// Target index 		[-]
+														x_init[0]*deg, 			// Longitude 			[rad]
+														x_init[1]*deg, 			// Latitude 			[rad]
+														x_init[2]+rm, 			// Radius 				[m]
+														x_init[3], 				// Velocity 			[m/s]
+														x_init[4]*deg, 			// Flight path angle 	[rad]
+														x_init[5]*deg, 			// Local Azimuth 		[rad]
+														x_init[6], 				// Initial S/C mass 	[kg]
+														x_init[7], 				// Maximum integ. time 	[s]
+														x_init[10],				// Write out delta time [s]
+														x_init[11],				// Touchdown velocity  	[m/s]
+														SEQUENCE_DATA			// Sequence data set	[-]
+														);
 		}else {
 			System.out.println("Reading Input file failed. Integrator Stop.");
 		}
