@@ -174,6 +174,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			}
 		}
 		public static void SEQUENCE_MANAGER(double t, double[] x) {
+			//-------------------------------------------------------------------------------------------------------------
+			// WriteOut conditions at sequence to sequence handover: 
+			//-------------------------------------------------------------------------------------------------------------
 	    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
 				int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
 				double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
@@ -204,6 +207,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 							SequenceWriteOut_addRow();}
 	     		}
 	    	}
+	    	//-------------------------------------------------------------------------------------------------------------
 	    	if(active_sequence ==  (SEQUENCE_DATA_main.size()-1) && Sequence_RES_closed==false){
 	    		System.out.println("Write: Sequence result file ");
 	    		try {
@@ -243,12 +247,22 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	} else if (sequence_type==1) { // Coasting Sequence 
 	    		Thrust = 0; 
 	    		Throttle_CMD = 0;
+	    	} else if (sequence_type==4) { // Constrained continous thrust 
+	    		double TTM_max = 5.1;
+	    		if((TTM_max * x[6])>Thrust_max) {
+	    			Thrust = Thrust_max;
+	    		} else {
+	    		Thrust = TTM_max * x[6]; }
+	    		Throttle_CMD = Thrust/Thrust_max;
 	    	} else {
 	    		System.out.println("ERROR: Sequence type out of range");
 	    	}
 		}
 		
 		public static void GRAVITY_MANAGER(double[] x) {
+			//------------------------------------------------------------------------------
+			//     simplified 2D atmosphere model (J2 only) 
+			//------------------------------------------------------------------------------
 	    	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
 	    	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
 		}
@@ -364,7 +378,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
 		Sequence_RES_closed=false;
-		SEQUENCE_DATA_main = SEQUENCE_DATA;
+		SEQUENCE_DATA_main = SEQUENCE_DATA;  // Sequence data handover
 		CTRL_steps.clear();
 		INITIALIZE_FlightController() ;
 //----------------------------------------------------------------------------------------------

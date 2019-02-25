@@ -3,6 +3,7 @@ package GUI;
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -30,7 +31,10 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
+import javax.swing.DefaultCellEditor;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
@@ -41,7 +45,9 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.JSeparator;
 import javax.swing.JTabbedPane;
+import javax.swing.JTable;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
@@ -49,6 +55,9 @@ import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.border.MatteBorder;
+import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableColumn;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -76,9 +85,9 @@ import Controller.LandingCurve;
 
 public class Plotting_3DOF implements  ActionListener {
 	static //-----------------------------------------------------------------------------	
-	String PROJECT_TITLE = "  BlueBook PLOT V0.0";
+	String PROJECT_TITLE = "  BlueBook 3DOF V0.1";
     static int x_init = 1350;
-    static int y_init = 810 ;
+    static int y_init = 860 ;
     
     public static DecimalFormat df = new DecimalFormat();
     
@@ -91,12 +100,16 @@ public class Plotting_3DOF implements  ActionListener {
     public static String CTR_001_File    = "\\CTRL\\cntrl_1.inp";		// Controller 01 input file 
     public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";		// Main propulsion system input file
     public static String SEQU_File		 = "\\SEQU.res";				// Sequence output file 
+    public static String ICON_File       = "\\lib\\BB_icon.png";		// Logo png file path 
+    public static String SEQUENCE_File   = "\\INP\\sequence_1.inp";  	// Sequence definition file 
     public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
     public static String Env_File_mac    = "/INP/env.inp"  ;  			// Input: target and environment
     public static String RES_File_mac    = "/results.txt"  ;       	 	// Input: result file 
     public static String CTR_001_File_mac= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
     public static String Prop_File_mac 	 = "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
     public static String SEQU_File_mac		 = "/SEQU.res";				// Sequence output file 
+    public static String ICON_File_mac   	 = "/lib/BB_icon.png";
+    public static String SEQUENCE_File_mac   = "/INP/sequence_1.inp"; 
     public static boolean ShowWorkDirectory = true; 
     public static boolean macrun = true;
     
@@ -114,6 +127,7 @@ public class Plotting_3DOF implements  ActionListener {
     Font labelfont_small     = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     Font labelfont_verysmall = new Font("Verdana", Font.BOLD, 7);
     Font targetfont          = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
+    Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     
     public static JFrame MAIN_frame;
     
@@ -175,38 +189,30 @@ public class Plotting_3DOF implements  ActionListener {
  
     public static double h_init;
     public static double v_init;
-    public static double v_touchdown;
-    
+    public static double v_touchdown;    
     private static Crosshair xCrosshair_x;
-    private static Crosshair yCrosshair_x;
-    
+    private static Crosshair yCrosshair_x;   
     public static JPanel PageX04_1;
     public static JPanel PageX04_2;
     public static JPanel PageX04_3;
-    public static JPanel PageX04_4;
-    
+    public static JPanel PageX04_4;   
     public static JPanel P1_Plotpanel;
-    public static JPanel P1_SidePanel; 
-    
-    
+    public static JPanel P1_SidePanel;        
     static int extx_main = 1350;
-    static int exty_main = 800; 
-    
+    static int exty_main = 800;     
     static JFreeChart chartX4;
 	static JFreeChart chartX43;
 	static boolean chartX43_fd = true;	
 	static DefaultTableXYDataset resultX43 = new DefaultTableXYDataset();
 	static ChartPanel CPX43;
     private static Crosshair xCrosshair_X43;
-    private static Crosshair yCrosshair_X43;
-    
+    private static Crosshair yCrosshair_X43;    
 	static JFreeChart chartX44;
 	static boolean chartX44_fd = true;	
 	static XYSeriesCollection resultX44 = new XYSeriesCollection();
 	static ChartPanel CPX44;
     private static Crosshair xCrosshair_X44;
-    private static Crosshair yCrosshair_X44;
-    
+    private static Crosshair yCrosshair_X44;    
     static public JFreeChart chartA3_1,chartA3_2,chartA3_3,chartA3_4; 
     public static ChartPanel CP_A31,CP_A32,CP_A33,CP_A34;
     public static XYSeriesCollection result11_A3_1 = new XYSeriesCollection();
@@ -214,11 +220,46 @@ public class Plotting_3DOF implements  ActionListener {
     public static XYSeriesCollection result11_A3_3 = new XYSeriesCollection();
     public static XYSeriesCollection result11_A3_4 = new XYSeriesCollection();
     public static Crosshair xCrosshair_A3_1,xCrosshair_A3_2,xCrosshair_A3_3,xCrosshair_A3_4,yCrosshair_A3_1,yCrosshair_A3_2,yCrosshair_A3_3,yCrosshair_A3_4;
-    public static boolean chartA3_fd=true; 
-    
+    public static boolean chartA3_fd=true;     
     public static JLabel p41_inp1,p41_inp2,p41_inp3,p41_inp4,p41_inp5,p41_inp6,p41_inp7,p41_inp8, p41_inp9;
     public static JTextField p42_inp1,p42_inp2,p42_inp3,p42_inp4,p42_inp5,p42_inp6,p42_inp7,p42_inp8, p42_inp9,p42_inp10,p42_inp11,p42_inp12,p42_inp13,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField p421_inp1,p421_inp2,p421_inp3,p421_inp4,p421_inp5,p421_inp6,p421_inp7,p421_inp8,p421_inp9;
+    
+	 static String[] columns3 = {"ID", 
+			 					 "Sequence END type", 
+			 					 "Sequence END value", 
+			 					 "Sequence type", 
+			 					 "Sequence FC",
+			 					 "FC target velocity", 
+			 					 "FC target altitude", 
+			 					 "FC target curve"};
+	 static int c3 = 8;
+	 static Object[] row3 = new Object[c3];
+	 static DefaultTableModel model3;
+	 static JTable table3;
+		@SuppressWarnings("rawtypes")
+		public static JComboBox SequenceENDTypeCombobox = new JComboBox();
+		@SuppressWarnings("rawtypes")
+		public static JComboBox SequenceTypeCombobox = new JComboBox();
+		@SuppressWarnings("rawtypes")
+		public static JComboBox SequenceFCCombobox = new JComboBox();
+		@SuppressWarnings("rawtypes")
+		public static JComboBox FCTargetCurveCombobox = new JComboBox();
+		
+		public static String[] SequenceENDType = {"Time [s]",
+												  "Altitude [m]",
+												  "Velocity [m/s]"
+		};
+		public static String[] SequenceType = {"Coasting (No Thrust)",
+											   "Continous (unregulated) Thrust",
+											   "Controlled Thrust (FC ON)",
+											   "Constrained Thrust (FC OFF)"
+		};
+		public static String[] SequenceFC = { "Flight Controller 1"};
+		public static String[] FCTargetCurve = {"Parabolic Velocity-Altitude",
+												"SquareRoot Velocity-Altitude",
+												"Hover Parabolic entry"
+		};
     
     @SuppressWarnings("rawtypes")
 	public static JComboBox Target_chooser, Integrator_chooser,TargetCurve_chooser;
@@ -238,7 +279,7 @@ public class Plotting_3DOF implements  ActionListener {
 
        // public static double PI    = 3.14159265359;                // PI                                       [-]
         public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
-        public static double G = 1.48808E-34;
+        public static double G     = 1.48808E-34;
         public static int TARGET; 
         
         public static  double RM = 0; 		// Target planet radius
@@ -275,6 +316,8 @@ public class Plotting_3DOF implements  ActionListener {
     	 CTR_001_File  = dir + CTR_001_File_mac  ;
     	 Prop_File  = dir + Prop_File_mac  ;
     	 SEQU_File = dir + SEQU_File_mac; 
+    	 ICON_File = dir + ICON_File_mac; 
+    	 SEQUENCE_File = dir +SEQUENCE_File_mac; 
     	 //System.out.println(Init_File);
      }
     	// ---------------------------------------------------------------------------------
@@ -462,21 +505,21 @@ public class Plotting_3DOF implements  ActionListener {
       P1_SidePanel.add(p41_inp9);
         
 
-        JButton UpdateButton = new JButton("Update");
-        UpdateButton.setLocation(250, uy_p41 + 25 * 0);
-        UpdateButton.setSize(145,25);
-        UpdateButton.addActionListener(new ActionListener() { 
+        JButton ButtonUpdate = new JButton("Update");
+        ButtonUpdate.setLocation(250, uy_p41 + 25 * 0);
+        ButtonUpdate.setSize(145,25);
+        ButtonUpdate.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) {
         		  UPDATE_Page01();
         	}} );
-        P1_SidePanel.add(UpdateButton);
+        P1_SidePanel.add(ButtonUpdate);
         
-        JButton StartSimulation = new JButton("Run SIM");
-        StartSimulation.setLocation(250, uy_p41 + 25 * 2);
-        StartSimulation.setSize(145,25);
-        StartSimulation.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) { 
-        		  System.out.println("Run: SIM");
+        JButton Button_RunSimulation = new JButton("Run Simulation");
+        Button_RunSimulation.setLocation(250, uy_p41 + 25 * 7);
+        Button_RunSimulation.setSize(145,25);
+        Button_RunSimulation.addActionListener(new ActionListener() { 
+        	  public void actionPerformed(ActionEvent e) {
+        		  System.out.println("Action: RUN SIMULATION");
 				try {
 					String line;
 					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
@@ -494,10 +537,9 @@ public class Plotting_3DOF implements  ActionListener {
 					e1.printStackTrace();
 					System.out.println("Error:  " + e1);
 				} 
-        	  } 
-        	} );
-        P1_SidePanel.add(StartSimulation);
-        
+        	}} );
+        P1_SidePanel.add(Button_RunSimulation);
+ 
 //-----------------------------------------------------------------------------------------------
 //								Console Window        
 //-----------------------------------------------------------------------------------------------
@@ -580,66 +622,89 @@ public class Plotting_3DOF implements  ActionListener {
       scrollPane1_P2.getVerticalScrollBar().setUnitIncrement(16);
       //scrollPane1_P2.setPreferredSize(new Dimension(405, exty_main));
       PageX04_4.add(scrollPane1_P2, BorderLayout.CENTER);
-      //int uy_p41 = 10 ; 
-      JLabel p42_linp1 = new JLabel("Longitude [deg]");
-      p42_linp1.setLocation(65, uy_p41 + 25 * 0  );
-      p42_linp1.setSize(250, 20);
-      p42_linp1.setBackground(Color.white);
-      p42_linp1.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp1);
-      JLabel p42_linp2 = new JLabel("Latitude [deg]");
-      p42_linp2.setLocation(65, uy_p41 + 25 * 1 );
-      p42_linp2.setSize(250, 20);
-      p42_linp2.setBackground(Color.white);
-      p42_linp2.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp2);
-      JLabel p42_linp3 = new JLabel("Altitude [deg]");
-      p42_linp3.setLocation(65, uy_p41 + 25 * 2 );
-      p42_linp3.setSize(250, 20);
-      p42_linp3.setBackground(Color.white);
-      p42_linp3.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp3);
+      //int uy_p41 = 10 ;
+      JLabel LABEL_InitState = new JLabel("Initial State");
+      LABEL_InitState.setLocation(5, uy_p41 + 25 * 0  );
+      LABEL_InitState.setSize(250, 20);
+      LABEL_InitState.setBackground(Color.white);
+      LABEL_InitState.setForeground(Color.black);
+      LABEL_InitState.setFont(HeadlineFont);
+      LABEL_InitState.setHorizontalAlignment(0);
+      P2_SidePanel.add(LABEL_InitState);
+      JLabel LABEL_longitude = new JLabel("Longitude [deg]");
+      LABEL_longitude.setLocation(65, uy_p41 + 25 * 1  );
+      LABEL_longitude.setSize(250, 20);
+      LABEL_longitude.setBackground(Color.white);
+      LABEL_longitude.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_longitude);
+      JLabel LABEL_latitude = new JLabel("Latitude [deg]");
+      LABEL_latitude.setLocation(65, uy_p41 + 25 * 2 );
+      LABEL_latitude.setSize(250, 20);
+      LABEL_latitude.setBackground(Color.white);
+      LABEL_latitude.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_latitude);
+      JLabel LABEL_altitude = new JLabel("Altitude [deg]");
+      LABEL_altitude.setLocation(65, uy_p41 + 25 * 3 );
+      LABEL_altitude.setSize(250, 20);
+      LABEL_altitude.setBackground(Color.white);
+      LABEL_altitude.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_altitude);
       
-      JLabel p42_linp4 = new JLabel("Velocity [m/s]");
-      p42_linp4.setLocation(65, uy_p41 + 25 * 4 );
-      p42_linp4.setSize(250, 20);
-      p42_linp4.setBackground(Color.white);
-      p42_linp4.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp4);
-      JLabel p42_linp5 = new JLabel("Flight Path angle [deg]");
-      p42_linp5.setLocation(65, uy_p41 + 25 * 5);
-      p42_linp5.setSize(250, 20);
-      p42_linp5.setBackground(Color.white);
-      p42_linp5.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp5);
-      JLabel p42_linp6 = new JLabel("Azimuth [deg]");
-      p42_linp6.setLocation(65, uy_p41 + 25 * 6 );
-      p42_linp6.setSize(250, 20);
-      p42_linp6.setBackground(Color.white);
-      p42_linp6.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp6);
+      JLabel LABEL_velocity = new JLabel("Velocity [m/s]");
+      LABEL_velocity.setLocation(65, uy_p41 + 25 * 5 );
+      LABEL_velocity.setSize(250, 20);
+      LABEL_velocity.setBackground(Color.white);
+      LABEL_velocity.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_velocity);
+      JLabel LABEL_fpa = new JLabel("Flight Path angle [deg]");
+      LABEL_fpa.setLocation(65, uy_p41 + 25 * 6);
+      LABEL_fpa.setSize(250, 20);
+      LABEL_fpa.setBackground(Color.white);
+      LABEL_fpa.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_fpa);
+      JLabel LABEL_azimuth = new JLabel("Azimuth [deg]");
+      LABEL_azimuth.setLocation(65, uy_p41 + 25 * 7 );
+      LABEL_azimuth.setSize(250, 20);
+      LABEL_azimuth.setBackground(Color.white);
+      LABEL_azimuth.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_azimuth);
       
-      JLabel p42_linp7 = new JLabel("Initial mass [kg]");
-      p42_linp7.setLocation(65, uy_p41 + 25 * 8 );
-      p42_linp7.setSize(250, 20);
-      p42_linp7.setBackground(Color.white);
-      p42_linp7.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp7);
-      JLabel p42_linp10 = new JLabel("Integration time [s]");
-      p42_linp10.setLocation(65, uy_p41 + 25 * 9 );
-      p42_linp10.setSize(250, 20);
-      p42_linp10.setBackground(Color.white);
-      p42_linp10.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp10);
-      JLabel p42_linp15 = new JLabel("Write time step [s]");
-      p42_linp15.setLocation(65, uy_p41 + 25 * 10 );
-      p42_linp15.setSize(250, 20);
-      p42_linp15.setBackground(Color.white);
-      p42_linp15.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp15);
+      JSeparator Separator_Page2_1 = new JSeparator();
+      Separator_Page2_1.setLocation(0, uy_p41 + 27 * 8 );
+      Separator_Page2_1.setSize(400, 1);
+      Separator_Page2_1.setBackground(Color.black);
+      Separator_Page2_1.setForeground(Color.black);
+      P2_SidePanel.add(Separator_Page2_1);
+      
+      JLabel LABEL_Minit = new JLabel("Initial mass [kg]");
+      LABEL_Minit.setLocation(65, uy_p41 + 25 * 17 );
+      LABEL_Minit.setSize(250, 20);
+      LABEL_Minit.setBackground(Color.white);
+      LABEL_Minit.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_Minit);
+      JLabel LABEL_integtime = new JLabel("Integration time [s]");
+      LABEL_integtime.setLocation(65, uy_p41 + 25 * 10 );
+      LABEL_integtime.setSize(250, 20);
+      LABEL_integtime.setBackground(Color.white);
+      LABEL_integtime.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_integtime);
+      JLabel LABEL_writetime = new JLabel("Write time step [s]");
+      LABEL_writetime.setLocation(65, uy_p41 + 25 * 11 );
+      LABEL_writetime.setSize(250, 20);
+      LABEL_writetime.setBackground(Color.white);
+      LABEL_writetime.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_writetime);
+      JLabel LABEL_IntegSetting = new JLabel("Integrator Settings");
+      LABEL_IntegSetting.setLocation(5, uy_p41 + 25 * 9 );
+      LABEL_IntegSetting.setSize(250, 20);
+      LABEL_IntegSetting.setBackground(Color.white);
+      LABEL_IntegSetting.setForeground(Color.black);
+      LABEL_IntegSetting.setFont(HeadlineFont);
+      LABEL_IntegSetting.setHorizontalAlignment(0);
+      P2_SidePanel.add(LABEL_IntegSetting);
       
       p42_inp1 = new JTextField(10);
-      p42_inp1.setLocation(2, uy_p41 + 25 * 0 );
+      p42_inp1.setLocation(2, uy_p41 + 25 * 1 );
       p42_inp1.setSize(60, 20);
       p42_inp1.addActionListener(new ActionListener() {
     		  public void actionPerformed( ActionEvent e )
@@ -650,7 +715,7 @@ public class Plotting_3DOF implements  ActionListener {
 
       P2_SidePanel.add(p42_inp1);
       p42_inp2 = new JTextField(10);
-      p42_inp2.setLocation(2, uy_p41 + 25 * 1 );
+      p42_inp2.setLocation(2, uy_p41 + 25 * 2 );
       p42_inp2.setSize(60, 20);
       p42_inp2.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -660,7 +725,7 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
       P2_SidePanel.add(p42_inp2);
        p42_inp3 = new JTextField(10);
-      p42_inp3.setLocation(2, uy_p41 + 25 * 2 );
+      p42_inp3.setLocation(2, uy_p41 + 25 * 3 );
       p42_inp3.setSize(60, 20);
       p42_inp3.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -671,7 +736,7 @@ public class Plotting_3DOF implements  ActionListener {
       P2_SidePanel.add(p42_inp3);
       
        p42_inp4 = new JTextField(10);
-      p42_inp4.setLocation(2, uy_p41 + 25 * 4 );
+      p42_inp4.setLocation(2, uy_p41 + 25 * 5 );
       p42_inp4.setText("1");
       p42_inp4.setSize(60, 20);
       p42_inp4.addActionListener(new ActionListener() {
@@ -682,7 +747,7 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
       P2_SidePanel.add(p42_inp4);
        p42_inp5 = new JTextField(10);
-      p42_inp5.setLocation(2, uy_p41 + 25 * 5 );
+      p42_inp5.setLocation(2, uy_p41 + 25 * 6 );
       p42_inp5.setText("0");
       p42_inp5.setSize(60, 20);
       p42_inp5.addActionListener(new ActionListener() {
@@ -693,7 +758,7 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
       P2_SidePanel.add(p42_inp5);
        p42_inp6 = new JTextField(10);
-      p42_inp6.setLocation(2, uy_p41 + 25 * 6 );
+      p42_inp6.setLocation(2, uy_p41 + 25 * 7 );
       p42_inp6.setSize(60, 20);
       p42_inp6.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -704,7 +769,7 @@ public class Plotting_3DOF implements  ActionListener {
       P2_SidePanel.add(p42_inp6);
       
        p42_inp7 = new JTextField(10);
-      p42_inp7.setLocation(2, uy_p41 + 25 * 8 );
+      p42_inp7.setLocation(2, uy_p41 + 25 * 17 );
       p42_inp7.setSize(60, 20);
       p42_inp7.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -714,7 +779,7 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
       P2_SidePanel.add(p42_inp7);
       p42_inp8 = new JTextField(10);
-      p42_inp8.setLocation(2, uy_p41 + 25 * 9 );
+      p42_inp8.setLocation(2, uy_p41 + 25 * 10 );
       p42_inp8.setSize(60, 20);
       p42_inp8.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -724,7 +789,7 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
      P2_SidePanel.add(p42_inp8);
      p42_inp13 = new JTextField(10);
-     p42_inp13.setLocation(2, uy_p41 + 25 * 10 );
+     p42_inp13.setLocation(2, uy_p41 + 25 * 11 );
      p42_inp13.setSize(60, 20);
      p42_inp13.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -735,7 +800,7 @@ public class Plotting_3DOF implements  ActionListener {
 
 	  Target_chooser = new JComboBox(Target_Options);
 	  Target_chooser.setBackground(Color.white);
-	  Target_chooser.setLocation(2, uy_p41 + 25 * 11 );
+	  Target_chooser.setLocation(2, uy_p41 + 25 * 12 );
 	  Target_chooser.setSize(150,25);
 	  Target_chooser.setSelectedIndex(3);
 	  Target_chooser.addActionListener(new ActionListener() { 
@@ -762,7 +827,7 @@ public class Plotting_3DOF implements  ActionListener {
 	  
 	  Integrator_chooser = new JComboBox(Integrator_Options);
 	  Integrator_chooser.setBackground(Color.white);
-	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 13 );
+	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 14 );
 	  Integrator_chooser.setSize(380,25);
 	  Integrator_chooser.setSelectedIndex(3);
 	  Integrator_chooser.addActionListener(new ActionListener() { 
@@ -786,56 +851,71 @@ public class Plotting_3DOF implements  ActionListener {
 	  });
 	  P2_SidePanel.add(Integrator_chooser);
 	  
+      JSeparator Separator_Page2_2 = new JSeparator();
+      Separator_Page2_2.setLocation(0, uy_p41 + 26 * 15 );
+      Separator_Page2_2.setSize(400, 1);
+      Separator_Page2_2.setBackground(Color.black);
+      Separator_Page2_2.setForeground(Color.black);
+      P2_SidePanel.add(Separator_Page2_2);
+	  
 	  // Space intended for advanced integrator settings 
+      JLabel LABEL_SpaceCraftSettings = new JLabel("Spacecraft Settings");
+      LABEL_SpaceCraftSettings.setLocation(5, uy_p41 + 25 * 16  );
+      LABEL_SpaceCraftSettings.setSize(250, 20);
+      LABEL_SpaceCraftSettings.setBackground(Color.white);
+      LABEL_SpaceCraftSettings.setForeground(Color.black);
+      LABEL_SpaceCraftSettings.setFont(HeadlineFont);
+      LABEL_SpaceCraftSettings.setHorizontalAlignment(0);
+      P2_SidePanel.add(LABEL_SpaceCraftSettings);
 
-      JLabel p42_linp11 = new JLabel("Main propulsion system ISP [s]");
-      p42_linp11.setLocation(65, uy_p41 + 25 * 17 );
-      p42_linp11.setSize(300, 20);
-      p42_linp11.setBackground(Color.white);
-      p42_linp11.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp11);
-      JLabel p42_linp12 = new JLabel("Main propulsion system propellant mass [kg]");
-      p42_linp12.setLocation(65, uy_p41 + 25 * 18);
-      p42_linp12.setSize(300, 20);
-      p42_linp12.setBackground(Color.white);
-      p42_linp12.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp12);
-      JLabel p42_linp13 = new JLabel("Main propulsion system max. Thrust [N]");
-      p42_linp13.setLocation(65, uy_p41 + 25 * 19 );
-      p42_linp13.setSize(300, 20);
-      p42_linp13.setBackground(Color.white);
-      p42_linp13.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp13);
-      JLabel p42_linp14 = new JLabel("Main Propulsion system min. Thrust [N]");
-      p42_linp14.setLocation(65, uy_p41 + 25 * 20 );
-      p42_linp14.setSize(300, 20);
-      p42_linp14.setBackground(Color.white);
-      p42_linp14.setForeground(Color.black);
-      P2_SidePanel.add(p42_linp14);
+      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
+      LABEL_ME_ISP.setLocation(65, uy_p41 + 25 * 18 );
+      LABEL_ME_ISP.setSize(300, 20);
+      LABEL_ME_ISP.setBackground(Color.white);
+      LABEL_ME_ISP.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_ME_ISP);
+      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
+      LABEL_ME_PropMass.setLocation(65, uy_p41 + 25 * 19);
+      LABEL_ME_PropMass.setSize(300, 20);
+      LABEL_ME_PropMass.setBackground(Color.white);
+      LABEL_ME_PropMass.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_ME_PropMass);
+      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
+      LABEL_ME_Thrust_max.setLocation(65, uy_p41 + 25 * 20 );
+      LABEL_ME_Thrust_max.setSize(300, 20);
+      LABEL_ME_Thrust_max.setBackground(Color.white);
+      LABEL_ME_Thrust_max.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_ME_Thrust_max);
+      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
+      LABEL_ME_Thrust_min.setLocation(65, uy_p41 + 25 * 21 );
+      LABEL_ME_Thrust_min.setSize(300, 20);
+      LABEL_ME_Thrust_min.setBackground(Color.white);
+      LABEL_ME_Thrust_min.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_ME_Thrust_min);
 	  
       p42_inp9 = new JTextField(10);
-     p42_inp9.setLocation(2, uy_p41 + 25 * 17 );
+     p42_inp9.setLocation(2, uy_p41 + 25 * 18 );
      p42_inp9.setSize(60, 20);
      p42_inp9.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_PROP();}});
      P2_SidePanel.add(p42_inp9);
       p42_inp10 = new JTextField(10);
-     p42_inp10.setLocation(2, uy_p41 + 25 * 18);
+     p42_inp10.setLocation(2, uy_p41 + 25 * 19);
      p42_inp10.setSize(60, 20);
      p42_inp10.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_PROP();}});
      P2_SidePanel.add(p42_inp10);        
       p42_inp11 = new JTextField(10);
-     p42_inp11.setLocation(2, uy_p41 + 25 * 19 );
+     p42_inp11.setLocation(2, uy_p41 + 25 * 20 );
      p42_inp11.setSize(60, 20);
      p42_inp11.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_PROP();}});
      P2_SidePanel.add(p42_inp11);
      p42_inp12 = new JTextField(10);
-     p42_inp12.setLocation(2, uy_p41 + 25 * 20 );;
+     p42_inp12.setLocation(2, uy_p41 + 25 * 21 );;
      p42_inp12.setSize(60, 20);
      p42_inp12.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -849,8 +929,8 @@ public class Plotting_3DOF implements  ActionListener {
     P2_ControllerPane.setForeground(l_c);
     
     JPanel P2_SequenceMAIN = new JPanel();
-    P2_SequenceMAIN.setLayout(null);
-    P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
+    P2_SequenceMAIN.setLayout(new BorderLayout());
+   // P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
     P2_SequenceMAIN.setBackground(bc_c);
     P2_SequenceMAIN.setForeground(l_c);
 
@@ -859,10 +939,252 @@ public class Plotting_3DOF implements  ActionListener {
     scrollPane_Controller.getVerticalScrollBar().setUnitIncrement(16);
     P2_SidePanel1.add(scrollPane_Controller, BorderLayout.CENTER);
     
-    JScrollPane scrollPane_Sequence = new JScrollPane(P2_SequenceMAIN);
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //                  Sequence table 
+    //-----------------------------------------------------------------------------------------------------------------------------
+    table3 = new JTable(){
+   	 
+    	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		@Override
+    	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+            Component comp = super.prepareRenderer(renderer, row, col);
+            Object value = getModel().getValueAt(row, col);
+          //  JTextField textfield= super.getComponent();
+            try {
+            	if (value.equals(""+SequenceType[2])) {
+                    comp.setBackground(Color.orange);
+                    comp.setForeground(Color.black);
+            	} else if (value.equals(""+SequenceType[0])) {
+                    comp.setBackground(Color.white);
+                    comp.setForeground(Color.black);
+            	} else if (value.equals(""+SequenceType[1])) {
+                    comp.setBackground(Color.blue);
+                    comp.setForeground(Color.white);
+            	} else if (value.equals(""+SequenceType[3])) {
+                    comp.setBackground(Color.green);
+                    comp.setForeground(Color.black);
+            	} else {
+                    comp.setBackground(Color.white);
+                    comp.setForeground(Color.black);
+            	}         
+            } catch (NullPointerException e) {
+            	
+            }
+           // comp.setFont(table_font);
+            
+            return comp;
+        }
+    };
+   // table3.setFont(table_font);
+    
+	Action action3 = new AbstractAction()
+    {
+        /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+		public void actionPerformed(ActionEvent e)
+        { WriteSequenceINP();}
+    };
+    @SuppressWarnings("unused")
+	TableCellListener tcl3 = new TableCellListener(table3, action3);
+    model3 = new DefaultTableModel(){
+
+		private static final long serialVersionUID = 1L;
+
+		@Override
+        public boolean isCellEditable(int row, int column) {
+           //all cells false
+			if (column == 0 ){
+				return false;
+			} else {
+				return true; 
+			}
+        }
+    }; 
+    model3.setColumnIdentifiers(columns3);
+    table3.setModel(model3);
+    table3.setBackground(Color.white);
+    int tablewidth3 = 900;
+    int tableheight3 = 400;
+  // ((JTable) table3).setFillsViewportHeight(true);
+    table3.setBackground(Color.white);
+    table3.setForeground(Color.black);
+    table3.setSize(tablewidth3, tableheight3);
+    table3.getTableHeader().setReorderingAllowed(false);
+    table3.setRowHeight(45);
+    
+   // table3.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+
+	    TableColumn SequID_colum   			 = table3.getColumnModel().getColumn(0);
+	    TableColumn SequENDTypeColumn 	     = table3.getColumnModel().getColumn(1);
+	    TableColumn SequENDValColumn  		 = table3.getColumnModel().getColumn(2);
+	    TableColumn SequTypeColumn 	   		 = table3.getColumnModel().getColumn(3);
+	    TableColumn SequenceFCColumn 	  	 = table3.getColumnModel().getColumn(4);
+	    TableColumn FCvelColumn 	   		 = table3.getColumnModel().getColumn(5);
+	    TableColumn FCaltColumn	   			 = table3.getColumnModel().getColumn(6);
+	    TableColumn FCtargetCurveColumn    	 = table3.getColumnModel().getColumn(7);
+
+	    SequID_colum.setPreferredWidth(50);
+	    SequENDTypeColumn.setPreferredWidth(100);
+	    SequENDValColumn.setPreferredWidth(100);
+	    SequTypeColumn.setPreferredWidth(180);
+	    SequenceFCColumn.setPreferredWidth(180);
+	    FCvelColumn.setPreferredWidth(150);
+	    FCaltColumn.setPreferredWidth(150);
+	    FCtargetCurveColumn.setPreferredWidth(150); 
+    
+    table3.getTableHeader().setBackground(Color.white);
+    table3.getTableHeader().setForeground(Color.black);
+    
+    SequenceENDTypeCombobox.setBackground(Color.white);
+    try {
+    for (int i=0;i<SequenceENDType.length;i++) {
+    	SequenceENDTypeCombobox.addItem(SequenceENDType[i]);
+    }
+    } catch(NullPointerException eNPE) {
+    	System.out.println(eNPE);
+    }
+    SequENDTypeColumn.setCellEditor(new DefaultCellEditor(SequenceENDTypeCombobox));
+    
+    SequenceTypeCombobox.setBackground(Color.white);
+    try {
+    for (int i=0;i<SequenceType.length;i++) {
+    	SequenceTypeCombobox.addItem(SequenceType[i]);
+    }
+    } catch(NullPointerException eNPE) {
+    	System.out.println(eNPE);
+    }
+    SequTypeColumn.setCellEditor(new DefaultCellEditor(SequenceTypeCombobox));
+    
+    SequenceFCCombobox.setBackground(Color.white);
+    try {
+    for (int i=0;i<SequenceFC.length;i++) {
+    	SequenceFCCombobox.addItem(SequenceFC[i]);
+    }
+    } catch(NullPointerException eNPE) {
+    	System.out.println(eNPE);
+    }
+    SequenceFCColumn.setCellEditor(new DefaultCellEditor(SequenceFCCombobox));
+    
+    FCTargetCurveCombobox.setBackground(Color.white);
+    try {
+    for (int i=0;i<FCTargetCurve.length;i++) {
+    	FCTargetCurveCombobox.addItem(FCTargetCurve[i]);
+    }
+    } catch(NullPointerException eNPE) {
+    	System.out.println(eNPE);
+    }
+    FCtargetCurveColumn.setCellEditor(new DefaultCellEditor(FCTargetCurveCombobox));
+    
+    JScrollPane spTable3 = new JScrollPane(table3,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    spTable3.getVerticalScrollBar().setBackground(Color.white);
+    spTable3.getHorizontalScrollBar().setBackground(Color.white);
+    spTable3.setBackground(Color.white);
+    spTable3.setSize(tablewidth3,tableheight3);
+    spTable3.setOpaque(false);
+    P2_SequenceMAIN.add(spTable3, BorderLayout.PAGE_START);
+    
+    JPanel SequenceControlPanel = new JPanel();
+    SequenceControlPanel.setLayout(null);
+    SequenceControlPanel.setPreferredSize(new Dimension(400, 60));
+    SequenceControlPanel.setBackground(Color.white);
+    SequenceControlPanel.setForeground(l_c);
+    P2_SequenceMAIN.add(SequenceControlPanel, BorderLayout.PAGE_END);
+
+    JButton BUTTON_AddSequence = new JButton("Add Sequence");
+    BUTTON_AddSequence.setLocation(5, 5);
+    BUTTON_AddSequence.setSize(145,25);
+    BUTTON_AddSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  AddSequence();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_AddSequence);
+    JButton BUTTON_DeleteSequence = new JButton("Delete Sequence");
+    BUTTON_DeleteSequence.setLocation(5, 32);
+    BUTTON_DeleteSequence.setSize(145,25);
+    BUTTON_DeleteSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  DeleteSequence();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_DeleteSequence);
+    
+    JButton BUTTON_UpSequence = new JButton("Sequence Up");
+    BUTTON_UpSequence.setLocation(155, 5);
+    BUTTON_UpSequence.setSize(145,25);
+    BUTTON_UpSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  UpSequence();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_UpSequence);
+    JButton BUTTON_DownSequence = new JButton("Sequence down");
+    BUTTON_DownSequence.setLocation(155, 32);
+    BUTTON_DownSequence.setSize(145,25);
+    BUTTON_DownSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  DownSequence();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_DownSequence);
+    JButton BUTTON_AddFC = new JButton("Add Flight Controller");
+    BUTTON_AddFC.setLocation(325, 32);
+    BUTTON_AddFC.setSize(145,25);
+    BUTTON_AddFC.setEnabled(false);
+    BUTTON_AddFC.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  
+    	  } } );
+    SequenceControlPanel.add(BUTTON_AddFC);
+    
+    JButton BUTTON_ImportFC = new JButton("Import Flight Controller");
+    BUTTON_ImportFC.setLocation(475, 5);
+    BUTTON_ImportFC.setSize(145,25);
+    BUTTON_ImportFC.setEnabled(false);
+    BUTTON_ImportFC.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  
+    	  } } );
+    SequenceControlPanel.add(BUTTON_ImportFC);
+    
+    JButton BUTTON_ExportFC = new JButton("Export Flight Controller");
+    BUTTON_ExportFC.setLocation(475, 32);
+    BUTTON_ExportFC.setSize(145,25);
+    BUTTON_ExportFC.setEnabled(false);
+    BUTTON_ExportFC.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  
+    	  } } );
+    SequenceControlPanel.add(BUTTON_ExportFC);
+    
+    JButton BUTTON_ImportSequence = new JButton("Import Sequence");
+    BUTTON_ImportSequence.setLocation(625, 5);
+    BUTTON_ImportSequence.setSize(145,25);
+    BUTTON_ImportSequence.setEnabled(false);
+    BUTTON_ImportSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  
+    	  } } );
+    SequenceControlPanel.add(BUTTON_ImportSequence);
+    
+    JButton BUTTON_ExportSequence = new JButton("Export Sequence");
+    BUTTON_ExportSequence.setLocation(625, 32);
+    BUTTON_ExportSequence.setSize(145,25);
+    BUTTON_ExportSequence.setEnabled(false);
+    BUTTON_ExportSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  
+    	  } } );
+    SequenceControlPanel.add(BUTTON_ExportSequence);
+    
+  //-----------------------------------------------------------------------------------------------------------------------------
+    JScrollPane scrollPane_Sequence = new JScrollPane(P2_SequenceMAIN,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     scrollPane_Sequence.setSize(305, 400);
     scrollPane_Sequence.getVerticalScrollBar().setUnitIncrement(16);
-    P2_SidePanel1.add(scrollPane_Sequence, BorderLayout.PAGE_START);
+    P2_SidePanel1.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
     
 	  p421_linp0 = new JCheckBox("Controller 001 ON/OFF");
 	  p421_linp0.setLocation(2, uy_p41 + 25 * 0 );
@@ -896,48 +1218,48 @@ public class Plotting_3DOF implements  ActionListener {
 	  
 	  P2_ControllerPane.add(p421_linp0);
 	  
-      JLabel p421_linp1 = new JLabel("P Gain [-]");
-      p421_linp1.setLocation(65, uy_p41 + 25 * 1 );
-      p421_linp1.setSize(250, 20);
-      p421_linp1.setBackground(Color.white);
-      p421_linp1.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp1);
-      JLabel p421_linp2 = new JLabel("I Gain [-]");
-      p421_linp2.setLocation(65, uy_p41 + 25 * 2 );
-      p421_linp2.setSize(250, 20);
-      p421_linp2.setBackground(Color.white);
-      p421_linp2.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp2);
-      JLabel p421_linp3 = new JLabel("D Gain [-]");
-      p421_linp3.setLocation(65, uy_p41 + 25 * 3 );
-      p421_linp3.setSize(250, 20);
-      p421_linp3.setBackground(Color.white);
-      p421_linp3.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp3);
-      JLabel p421_linp4 = new JLabel("Maximum Output CMD [-]");
-      p421_linp4.setLocation(65, uy_p41 + 25 * 5 );
-      p421_linp4.setSize(250, 20);
-      p421_linp4.setBackground(Color.white);
-      p421_linp4.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp4);
-      JLabel p421_linp5 = new JLabel("Minimum Output CMD [-]");
-      p421_linp5.setLocation(65, uy_p41 + 25 * 6 );
-      p421_linp5.setSize(250, 20);
-      p421_linp5.setBackground(Color.white);
-      p421_linp5.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp5);
-      JLabel p421_linp6 = new JLabel("Touchdown velocity [m/s]");
-      p421_linp6.setLocation(65, uy_p41 + 25 * 8 );
-      p421_linp6.setSize(250, 20);
-      p421_linp6.setBackground(Color.white);
-      p421_linp6.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp6);
-      JLabel p421_linp7 = new JLabel("Hover Altitude [m]");
-      p421_linp7.setLocation(65, uy_p41 + 25 * 9 );
-      p421_linp7.setSize(250, 20);
-      p421_linp7.setBackground(Color.white);
-      p421_linp7.setForeground(Color.black);
-      P2_ControllerPane.add(p421_linp7);
+      JLabel LABEL_ctrl_PGAIN = new JLabel("P Gain [-]");
+      LABEL_ctrl_PGAIN.setLocation(65, uy_p41 + 25 * 1 );
+      LABEL_ctrl_PGAIN.setSize(250, 20);
+      LABEL_ctrl_PGAIN.setBackground(Color.white);
+      LABEL_ctrl_PGAIN.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_PGAIN);
+      JLabel LABEL_ctrl_IGAIN = new JLabel("I Gain [-]");
+      LABEL_ctrl_IGAIN.setLocation(65, uy_p41 + 25 * 2 );
+      LABEL_ctrl_IGAIN.setSize(250, 20);
+      LABEL_ctrl_IGAIN.setBackground(Color.white);
+      LABEL_ctrl_IGAIN.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_IGAIN);
+      JLabel LABEL_ctrl_DGAIN = new JLabel("D Gain [-]");
+      LABEL_ctrl_DGAIN.setLocation(65, uy_p41 + 25 * 3 );
+      LABEL_ctrl_DGAIN.setSize(250, 20);
+      LABEL_ctrl_DGAIN.setBackground(Color.white);
+      LABEL_ctrl_DGAIN.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_DGAIN);
+      JLabel LABEL_ctrl_max = new JLabel("Maximum Output CMD [-]");
+      LABEL_ctrl_max.setLocation(65, uy_p41 + 25 * 5 );
+      LABEL_ctrl_max.setSize(250, 20);
+      LABEL_ctrl_max.setBackground(Color.white);
+      LABEL_ctrl_max.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_max);
+      JLabel LABEL_ctrl_min = new JLabel("Minimum Output CMD [-]");
+      LABEL_ctrl_min.setLocation(65, uy_p41 + 25 * 6 );
+      LABEL_ctrl_min.setSize(250, 20);
+      LABEL_ctrl_min.setBackground(Color.white);
+      LABEL_ctrl_min.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_min);
+      JLabel LABEL_ctrl_add = new JLabel("Touchdown velocity [m/s]");
+      LABEL_ctrl_add.setLocation(65, uy_p41 + 25 * 8 );
+      LABEL_ctrl_add.setSize(250, 20);
+      LABEL_ctrl_add.setBackground(Color.white);
+      LABEL_ctrl_add.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_add);
+      JLabel LABEL_ctrl_add2 = new JLabel("Hover Altitude [m]");
+      LABEL_ctrl_add2.setLocation(65, uy_p41 + 25 * 9 );
+      LABEL_ctrl_add2.setSize(250, 20);
+      LABEL_ctrl_add2.setBackground(Color.white);
+      LABEL_ctrl_add2.setForeground(Color.black);
+      P2_ControllerPane.add(LABEL_ctrl_add2);
 	  
       p421_inp1 = new JTextField(10);
       p421_inp1.setLocation(2, uy_p41 + 25 * 1 );
@@ -1148,7 +1470,7 @@ public class Plotting_3DOF implements  ActionListener {
      	CreateChart_X43(RM);
      	CreateChart_X44();
         Page04_subtabPane.addTab("Dashboard" , null, PageX04_1, null);
-        Page04_subtabPane.addTab("Sim Setup"+"\u2713", null, PageX04_4, null);
+        Page04_subtabPane.addTab("Simulation Setup"+"\u2713", null, PageX04_4, null);
         Page04_subtabPane.addTab("Map" , null, PageX04_2, null);
         Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         MainGUI.add(Page04_subtabPane);
@@ -1164,6 +1486,7 @@ public class Plotting_3DOF implements  ActionListener {
 			}
         //------------------------------------------------------------------------
     		UPDATE_Page01();
+    		READ_SEQUENCE();
         /*
         tabbedPane.addTab("3"+"|"+"DOF" , null, mainPanelX4, null);
         tabbedPane.setMnemonicAt(0, KeyEvent.VK_4);
@@ -1180,6 +1503,101 @@ public class Plotting_3DOF implements  ActionListener {
     public void actionPerformed(ActionEvent e)  {
     	
     }
+    
+    public static void AddSequence() {
+    	int NumberOfSequences = model3.getRowCount();
+    	row3[0] = ""+NumberOfSequences;
+    	row3[1] = ""+SequenceENDType[0];
+    	row3[2] = "0";
+    	row3[3] = ""+SequenceType[0];
+    	row3[4] = ""+SequenceFC[0];
+    	row3[5] = "1";
+    	row3[6] = "1";
+    	row3[7] = ""+FCTargetCurve[0];	
+    	model3.addRow(row3);
+    	
+    	for(int i=0;i<model3.getRowCount();i++) {model3.setValueAt(""+i,i, 0);}
+    }
+    
+    public static void DeleteSequence() {
+    	int j = table3.getSelectedRow();
+    	if (j >= 0){model3.removeRow(j);}
+    	for(int i=0;i<model3.getRowCount();i++) {model3.setValueAt(""+i,i, 0);}
+    }
+    
+    public static void UpSequence() {
+        int[] rows2 = table3.getSelectedRows();
+        model3.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]-1);
+        table3.setRowSelectionInterval(rows2[0]-1, rows2[rows2.length-1]-1);
+        for(int i=0;i<model3.getRowCount();i++) {model3.setValueAt(""+i,i, 0);}
+    }
+    
+    public static void DownSequence() {
+        int[] rows2 = table3.getSelectedRows();
+        model3.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]+1);
+        table3.setRowSelectionInterval(rows2[0]+1, rows2[rows2.length-1]+1);
+        for(int i=0;i<model3.getRowCount();i++) {model3.setValueAt(""+i,i, 0);}
+    }
+    public static void WriteSequenceINP() {
+            try {
+                File fac = new File(SEQUENCE_File);
+                if (!fac.exists())
+                {
+                    fac.createNewFile();
+                } else {
+                	fac.delete();
+                	fac.createNewFile();
+                }
+                //System.out.println("\n----------------------------------");
+                //System.out.println("The file has been created.");
+                //System.out.println("------------------------------------");
+                FileWriter wr = new FileWriter(fac);
+                for (int i=0; i<model3.getRowCount(); i++)
+                {
+            			String row ="";
+            			for(int j=0;j<model3.getColumnCount();j++) {
+            				if(j==0) {
+            					String val =  (String) model3.getValueAt(i, j);
+            					row = row + val + " ";
+            				}  else if(j==1) {
+            					String str_val =  (String) model3.getValueAt(i, j);
+            					int val = 0 ; 
+            					for(int k=0;k<SequenceENDType.length;k++) { if(str_val.equals(SequenceENDType[k])){val=k;} }
+            					row = row + val + " ";
+            				} else if(j==2) {
+            					String val =  (String) model3.getValueAt(i, j);
+            					row = row + val + " ";
+            				} else if(j==3) {
+            					String str_val =  (String) model3.getValueAt(i, j);
+            					int val = 0 ; 
+            					for(int k=0;k<SequenceType.length;k++) { if(str_val.equals(SequenceType[k])){val=k+1;} }
+            					row = row + val + " ";
+            				} else if(j==4) {
+            					String str_val =  (String) model3.getValueAt(i, j);
+            					int val = 0 ; 
+            					for(int k=0;k<SequenceFC.length;k++) { if(str_val.equals(SequenceFC[k])){val=k+1;} }
+            					row = row + val + " ";
+            				} else if(j==5) {
+            					String val =  (String) model3.getValueAt(i, j);
+            					row = row + val + " ";
+            				} else if(j==6) {
+            					String val =  (String) model3.getValueAt(i, j);
+            					row = row + val + " ";
+            				} else if(j==7) {
+            					String str_val =  (String) model3.getValueAt(i, j);
+            					int val = 0 ; 
+            					for(int k=0;k<FCTargetCurve.length;k++) { if(str_val.equals(FCTargetCurve[k])){val=k+1;} }
+            					row = row + val + " ";
+            				} 
+            		   }
+            			wr.write(row+System.getProperty( "line.separator" ));
+                }
+                wr.close(); 
+            } catch (IOException eIO){
+            	System.out.println(eIO);
+            }
+    }
+
     
     public void UPDATE_Page01(){
 		  try {
@@ -1216,7 +1634,35 @@ public class Plotting_3DOF implements  ActionListener {
       	    		System.out.println("Updated");
 	  } 
 
+    public static void READ_SEQUENCE() throws IOException{	
+		BufferedReader br = new BufferedReader(new FileReader(SEQUENCE_File));
+       String strLine;
+       try {
+       while ((strLine = br.readLine()) != null )   {
+       	String[] tokens = strLine.split(" ");
+       	int sequence_ID 			= Integer.parseInt(tokens[0]);
+       	int trigger_end_type 		= Integer.parseInt(tokens[1]);
+       	double trigger_end_value 	= Double.parseDouble(tokens[2]);
+       	int sequence_type		 	= Integer.parseInt(tokens[3]);
+       	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
+       	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
+       	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
+       	int ctrl_target_curve       = Integer.parseInt(tokens[7]);
+    	row3[0] = ""+sequence_ID;
+    	row3[1] = ""+SequenceENDType[trigger_end_type];
+    	row3[2] = ""+trigger_end_value;
+    	row3[3] = ""+SequenceType[sequence_type-1];
+    	row3[4] = ""+SequenceFC[sequence_controller_ID-1];
+    	row3[5] = ""+ctrl_target_vel;
+    	row3[6] = ""+ctrl_target_alt;
+    	row3[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
+    	model3.addRow(row3);
+    	for(int i=0;i<model3.getRowCount();i++) {model3.setValueAt(""+i,i, 0);}
+       }
+       br.close();
+       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
 
+   }
     public void READ_INPUT() throws IOException{
     	double InitialState = 0;
        	FileInputStream fstream = null; 
@@ -1693,7 +2139,7 @@ try {
 		           double ctrl_alt 		 = Double.parseDouble(sequ_tokens[6]);
 		           int ctrl_curve        = Integer.parseInt(sequ_tokens[7]);
 		           //System.out.println(ctrl_vinit+ " | "+ ctrl_hinit);
-		           System.out.println(active_sequence+ " | "+ ctrl_curve);
+		          // System.out.println(active_sequence+ " | "+ ctrl_curve);
 		           if(active_sequ_type==3) { // Controlled Propulsive flight
 		    		    if  (ctrl_curve==0) {
 		    		    	xyseries10.add(x  , 0); 
@@ -1702,7 +2148,7 @@ try {
 		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_curve==2) {
 		    		    	 xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
-		    		    	 System.out.println(xx+ " | "+ y);
+		    		    	 //System.out.println(xx+ " | "+ y);
 		    		    	 try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_curve==3) {
 		    		    	 xx =   LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_vel, y);
@@ -2347,12 +2793,12 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
         //frame.setSize(x_init, y_init);
         MAIN_frame.setVisible(true);
         MAIN_frame.setLocationRelativeTo(null);
-        // File myfile = new File(Plotting_3DOF.class.getProtectionDomain().getCodeSource().getLocation().toURI().getPath());
-        // String filePath = myfile.getAbsolutePath();
-        // BufferedImage myImage = ImageIO.read(new File(filePath + "\\lib\\icon.jpg"));
-        // MAIN_frame.setIconImage(myImage);
-        // new FormResize();
-        
+         try {
+         BufferedImage myImage = ImageIO.read(new File(ICON_File));
+         MAIN_frame.setIconImage(myImage);  
+         }catch(IIOException eIIO) {
+        	 System.out.println(eIIO);
+         }
     }
     
     public static void main(String[] args) throws IOException {
