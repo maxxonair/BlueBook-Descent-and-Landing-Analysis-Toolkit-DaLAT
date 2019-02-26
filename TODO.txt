@@ -2,11 +2,9 @@
 
 - Import LOLA local elevation data to generate local altitude values and ground clearance
 - Add output variables (ground track [m], 
-- Add function create_sequence, create_controller, delete_controller, import/export_sequence
+- Add function create_controller, delete_controller, import/export_sequence
 - Pack charts in uniform class (inlcuding add_chart, update_chart ...)
-- Implement local elevation 
-- Fix issues with Controller target flight curve initials
-- Controller target curve: Target point 2 ("touchdown") is with velocity only half defined and does not work as in flight sequence.
-- Look at global sequence boundary definition (acc, v_td ...)
+- Fully implement local elevation 
 - Added function: Save/Open results
-- Added function: Save/Open Sequence 
+- Added function: Save/Open Sequence
+- Page one add indicators : total propellant used, residual propellant, total delta-v provided 

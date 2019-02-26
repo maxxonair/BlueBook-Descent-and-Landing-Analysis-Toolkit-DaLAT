@@ -224,6 +224,9 @@ public class Plotting_3DOF implements  ActionListener {
     public static JLabel p41_inp1,p41_inp2,p41_inp3,p41_inp4,p41_inp5,p41_inp6,p41_inp7,p41_inp8, p41_inp9;
     public static JTextField p42_inp1,p42_inp2,p42_inp3,p42_inp4,p42_inp5,p42_inp6,p42_inp7,p42_inp8, p42_inp9,p42_inp10,p42_inp11,p42_inp12,p42_inp13,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField p421_inp1,p421_inp2,p421_inp3,p421_inp4,p421_inp5,p421_inp6,p421_inp7,p421_inp8,p421_inp9;
+    public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP;
+
+    
     
 	 static String[] columns3 = {"ID", 
 			 					 "Sequence END type", 
@@ -504,6 +507,56 @@ public class Plotting_3DOF implements  ActionListener {
        p41_inp9.setBorder(new MatteBorder(1, 1, 1, 1, Color.BLACK));
       P1_SidePanel.add(p41_inp9);
         
+      
+      JLabel LABEL_VTOUCHDOWN = new JLabel("Touchdown velocity [m/s]");
+      LABEL_VTOUCHDOWN.setLocation(55, uy_p41 + 285  + 25 *0 );
+      LABEL_VTOUCHDOWN.setSize(200, 20);
+      LABEL_VTOUCHDOWN.setBackground(Color.black);
+      LABEL_VTOUCHDOWN.setForeground(Color.black);
+      P1_SidePanel.add(LABEL_VTOUCHDOWN);
+      JLabel LABEL_DELTAV = new JLabel("Total D-V [m/s]");
+      LABEL_DELTAV.setLocation(55, uy_p41 + 285 + 25 *1 );
+      LABEL_DELTAV.setSize(200, 20);
+      LABEL_DELTAV.setBackground(Color.black);
+      LABEL_DELTAV.setForeground(Color.black);
+      P1_SidePanel.add(LABEL_DELTAV);
+      JLabel LABEL_PROPPERC = new JLabel("Used Propellant [kg]");
+      LABEL_PROPPERC.setLocation(270, uy_p41 + 285 + 25 *0 );
+      LABEL_PROPPERC.setSize(200, 20);
+      LABEL_PROPPERC.setBackground(Color.black);
+      LABEL_PROPPERC.setForeground(Color.black);
+      P1_SidePanel.add(LABEL_PROPPERC);
+      JLabel LABEL_RESPROP = new JLabel("Residual Propellant [%]");
+      LABEL_RESPROP.setLocation(270, uy_p41 + 285 + 25 *1 );
+      LABEL_RESPROP.setSize(200, 20);
+      LABEL_RESPROP.setBackground(Color.black);
+      LABEL_RESPROP.setForeground(Color.black);
+      P1_SidePanel.add(LABEL_RESPROP);
+      
+       INDICATOR_VTOUCHDOWN = new JLabel("");
+      INDICATOR_VTOUCHDOWN.setLocation(5, uy_p41 + 285  + 25 *0 );
+      INDICATOR_VTOUCHDOWN.setSize(50, 20);
+      INDICATOR_VTOUCHDOWN.setBackground(Color.black);
+      INDICATOR_VTOUCHDOWN.setForeground(Color.black);
+      P1_SidePanel.add(INDICATOR_VTOUCHDOWN);
+       INDICATOR_DELTAV = new JLabel("");
+      INDICATOR_DELTAV.setLocation(5, uy_p41 + 285 + 25 *1 );
+      INDICATOR_DELTAV.setSize(50, 20);
+      INDICATOR_DELTAV.setBackground(Color.black);
+      INDICATOR_DELTAV.setForeground(Color.black);
+      P1_SidePanel.add(INDICATOR_DELTAV);
+       INDICATOR_PROPPERC = new JLabel("");
+      INDICATOR_PROPPERC.setLocation(235, uy_p41 + 285 + 25 *0 );
+      INDICATOR_PROPPERC.setSize(30, 20);
+      INDICATOR_PROPPERC.setBackground(Color.black);
+      INDICATOR_PROPPERC.setForeground(Color.black);
+      P1_SidePanel.add(INDICATOR_PROPPERC);
+       INDICATOR_RESPROP = new JLabel("");
+      INDICATOR_RESPROP.setLocation(235, uy_p41 + 285 + 25 *1 );
+      INDICATOR_RESPROP.setSize(30, 20);
+      INDICATOR_RESPROP.setBackground(Color.black);
+      INDICATOR_RESPROP.setForeground(Color.black);
+      P1_SidePanel.add(INDICATOR_RESPROP);
 
         JButton ButtonUpdate = new JButton("Update");
         ButtonUpdate.setLocation(250, uy_p41 + 25 * 0);
@@ -2131,6 +2184,10 @@ try {
 		           double y = Double.parseDouble(tokens[3]);
 		           int active_sequence = Integer.parseInt(tokens[39]);
 		           double xx=0;
+		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
+		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[38])));
+		           INDICATOR_PROPPERC.setText("-"); 
+		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[33])));
 		           String[] sequ_tokens  = SEQUENCE_DATA.get(active_sequence).split(" ");
 		           int active_sequ_type  = Integer.parseInt(sequ_tokens[1]);
 		           double ctrl_vinit 	 = Double.parseDouble(sequ_tokens[3]);
