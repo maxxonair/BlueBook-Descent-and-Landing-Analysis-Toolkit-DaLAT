@@ -8,3 +8,4 @@
 - Added function: Save/Open results
 - Added function: Save/Open Sequence
 - Page one add indicators : total propellant used, residual propellant, total delta-v provided 
+- Integrator stop from input 

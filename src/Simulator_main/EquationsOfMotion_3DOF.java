@@ -27,6 +27,7 @@ import Model.atm_dataset;
 import Sequence.SequenceElement;
 import Toolbox.Tool;
 import Controller.Flight_CTRL;
+import Controller.LandingCurve;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
@@ -42,10 +43,11 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	//----------------------------------------------------------------------------------------------------------------------------
 	   public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
 				{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
-				{1737000,4903E9,2.661861E-6,320},						// Moon (Earth)
+				{1737400,4903E9,2.661861E-6,320},						// Moon (Earth)
 				{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
 				{0,0,0,0},												// Venus
 		};
+	   public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 	   public static int[] trigger_type_translator = {0,2,3};
 	   	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
 	   	public static String[] IntegratorInputPath = {".\\INP\\INTEG\\00_DormandPrince853Integrator.inp",
@@ -124,8 +126,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        public static double v_touchdown=0; 		// Global touchdown velocity constraint [m/s]
 	        public static boolean isFirstSequence=true;
 	        public static boolean Sequence_RES_closed=false;
-	        
-	        
+	        public static double groundtrack = 0; 
+	        public static double phimin=0;
+	        public static double tetamin=0;
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        
 	    public int getDimension() {
@@ -248,7 +251,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    		Thrust = 0; 
 	    		Throttle_CMD = 0;
 	    	} else if (sequence_type==4) { // Constrained continous thrust 
-	    		double TTM_max = 5.1;
+	    		double TTM_max = 5.2;
 	    		if((TTM_max * x[6])>Thrust_max) {
 	    			Thrust = Thrust_max;
 	    		} else {
@@ -323,6 +326,19 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	acc_deltav = acc_deltav + ISP*g0*Math.log(mminus/x[6]);
     	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
+    	// 										Delta-v integration
+    	//-------------------------------------------------------------------------------------------------------------------
+    	double r=1737400;
+    	double phi=x[0];
+    	double theta = x[1];
+;    	double dphi = Math.abs(phi-phimin);
+    	double dtheta = Math.abs(theta-tetamin); 
+    	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
+    	System.out.println(ds);
+    	groundtrack = groundtrack + ds;
+    	phimin=phi;
+    	tetamin=theta; 
+    	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------	
     	// Position vector
@@ -374,6 +390,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			System.out.println("Error: Propulsion setting read failed. ISP set to zero. Propellant mass set to zero. Thrust set to zero. ");
 			PROPread =false;
 		}
+    	 phimin=x0;
+    	 tetamin=x1;
+    	 groundtrack=0;
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -499,7 +518,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (y[3]*Math.cos(y[4]))+" "+
 	                    		  (y[3]*Math.sin(y[4]))+" "+
 	                    		  (acc_deltav)+" "+
-	                    		  active_sequence+" "
+	                    		  active_sequence+" "+
+	                    		  (groundtrack/1000)+" "
 	                    		  );
 	                }
 	                if(isLast) {
