@@ -147,9 +147,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    }
 		public static void SET_Constants(int TARGET) throws IOException{
 		    Lt    = DATA_MAIN[TARGET][3];    	// Average collision diameter (CO2)         [m]
-		    mu    = DATA_MAIN[TARGET][1];    	// Standard gravitational constant (Mars)   [m3/s2]
-		    rm    = DATA_MAIN[TARGET][0];    	// Planets average radius                   [m]
-		    omega = DATA_MAIN[TARGET][2];		// Planets roational speed     				[rad/s]
+		    mu    = DATA_MAIN[TARGET][1];    	// Standard gravitational constant          []
+		    rm    = DATA_MAIN[TARGET][0];    	// Planets mean radius                      [m]
+		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     				[rad/s]
 		    //--------------------------------------------------------------------
 		    // 			Write env.inp : 
 			 PrintWriter writer = new PrintWriter(new File(".\\INP\\env.inp"), "UTF-8");
@@ -334,7 +334,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 ;    	double dphi = Math.abs(phi-phimin);
     	double dtheta = Math.abs(theta-tetamin); 
     	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
-    	System.out.println(ds);
+    	//System.out.println(ds);
     	groundtrack = groundtrack + ds;
     	phimin=phi;
     	tetamin=theta; 
