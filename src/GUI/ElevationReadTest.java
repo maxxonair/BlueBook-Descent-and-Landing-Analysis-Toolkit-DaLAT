@@ -5,6 +5,7 @@ import java.awt.Dimension;
 import java.awt.GridBagLayout;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -14,6 +15,9 @@ import java.util.Scanner;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 
 @SuppressWarnings("unused")
 public class ElevationReadTest{
@@ -74,11 +78,11 @@ public class ElevationReadTest{
 		    inputStream = new FileInputStream(path);
 		    sc = new Scanner(inputStream, "UTF-8");
 		    while (sc.hasNextLine() && TargetNOTReached) {
-		        String line = sc.nextLine();
-		        @SuppressWarnings("unused")
-				String[] tokens = line.split(",");
-		        columns = tokens.length; 
+		        sc.nextLine();
 		        if(latitude_indx==k) {
+		        	String line = sc.nextLine();
+		        	String[] tokens = line.split(",");
+		        	 columns = tokens.length; 
 		        	ELEVATION = Double.parseDouble(tokens[longitude_indx]);
 		        	System.out.println(latitude_indx+"|"+longitude_indx+"|"+ELEVATION);
 		        	TargetNOTReached=false;
@@ -104,6 +108,41 @@ public class ElevationReadTest{
 		}
 		return ELEVATION;
 	}
+	
+	public static double ApacheScanner(String InputFile, double longitude, double latitude) throws IOException {
+		double ELEVATION=0;
+		File Input = new File(InputFile);
+		int resolution = 4;
+		int latitude_indx = (int) ((90-latitude)*resolution+1);
+		int longitude_indx = (int) (longitude*resolution+1);
+		FileInputStream inputStream = null;
+		Scanner sc  = null;
+		String path = InputFile;
+		boolean TargetNOTReached=true; 
+		k =0;
+		LineIterator it = FileUtils.lineIterator(Input, "UTF-8");
+		try {
+		    while (it.hasNext()) {
+		        String line = it.nextLine();
+		        if(latitude_indx==k) {
+		        	String[] tokens = line.split(",");
+		        	 columns = tokens.length; 
+		        	ELEVATION = Double.parseDouble(tokens[longitude_indx]);
+		        	System.out.println(latitude_indx+"|"+longitude_indx+"|"+ELEVATION);
+		        	TargetNOTReached=false;
+		        	return ELEVATION;
+		        }
+				long endTime   = System.nanoTime();
+				long totalTime = endTime - startTime;
+				double  totalTime_sec = (double) (totalTime * 1E-9);
+				if(totalTime_sec>max_runtime) {System.out.println("Break");break;}
+				k++;
+		    }
+		} finally {
+		    LineIterator.closeQuietly(it);
+		}
+		return ELEVATION; 
+	}
 	public static void BinaryScanTest(String InputFile) throws IOException {
 		Path path = Paths.get(InputFile);
 		byte[] fileContents =  Files.readAllBytes(path);
@@ -120,7 +159,8 @@ public class ElevationReadTest{
 	    	 Elevation_File2 = dir + Elevation_File2_mac ;
 	     }
 		try {
-			GetLocalElevation(Elevation_File,135,-65);
+			//GetLocalElevation(Elevation_File,135,-65);
+			ApacheScanner(Elevation_File,135,-65);
 			//BinaryScanTest(Elevation_File);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

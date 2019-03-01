@@ -145,7 +145,7 @@ public class SIM implements ActionListener{
 														x_init[6], 				// Initial S/C mass 	[kg]
 														x_init[7], 				// Maximum integ. time 	[s]
 														x_init[10],				// Write out delta time [s]
-														x_init[11],				// Touchdown velocity  	[m/s]
+														x_init[11],				// Reference Elevation  [m]
 														SEQUENCE_DATA			// Sequence data set	[-]
 														);
 		}else {

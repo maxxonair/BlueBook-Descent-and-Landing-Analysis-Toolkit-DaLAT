@@ -31,13 +31,14 @@ public class Flight_CTRL{
 	private double D_GAIN;			// controller d-gain			[-]
 	private double cmd_min;			// controller output cmd min	[-]
 	private double cmd_max;			// controller output cmd max    [-]
-	
+	private double CTRL_ERROR;		// controller Errror			[ ]
+	//-----------------------------------------------------------------------------
 	static String INPUT_FILE = null; 
 	public static boolean eclipse_run = false; 
 	public static String ControllerInputFile_1 = ".\\CTRL\\cntrl_";
     public static String ControllerInputFile_2 = ".inp"; 
 	public static String ControllerInputFile; 
-	
+	//-----------------------------------------------------------------------------
 	public Flight_CTRL(int ctrl_ID, boolean ctrl_on, double alt, double vel, double fpa, double m0, double m, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit, double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, double throttle_cmd, double thrust_cmd, int ctrl_curve, double ctrl_dt, double P_GAIN, double I_GAIN, double D_GAIN, double cmd_min, double cmd_max) {
 		this.ctrl_ID	  = ctrl_ID;
 		this.ctrl_on 	  = ctrl_on;
@@ -161,34 +162,37 @@ public class Flight_CTRL{
 	public double get_thrust_cmd(){
     	if(ctrl_on) {
  		    double target_velocity=0;
- 		    boolean ContinousBurn = false;
+ 		    boolean ContinuousBurn = false;
  		    if  (ctrl_curve==0) {
-		         ContinousBurn = true;
+		         ContinuousBurn = true;
 		    } else if (ctrl_curve==1) {
- 		         target_velocity =  -  LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
+ 		         target_velocity =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } else if (ctrl_curve==2) {
- 		    	 target_velocity =  - LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
+ 		    	 target_velocity =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } else if (ctrl_curve==3) {
- 		    	 target_velocity =  -  LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_vel, alt);
+ 		    	 target_velocity =   LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_vel, alt);
  		    } 
- 		   if(ContinousBurn){thrust_cmd = thrust_max;throttle_cmd=cmd_max;} else {
- 		    double CTRL_ERROR = target_velocity + vel;
+ 		   if(ContinuousBurn){thrust_cmd = thrust_max;throttle_cmd=cmd_max;} else {
+ 		     CTRL_ERROR = vel - target_velocity ;
+ 		    //System.out.println(alt);
  		   throttle_cmd = PID_01.FlightController_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
-		    //System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);
+ 		   if(Double.isNaN(throttle_cmd)) {System.out.println("Controller Error: Returned NaN.-> Controller OFF"); throttle_cmd=0;}
+ 		//   if(1400<alt && alt<1500) {System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);}
 		    	if ((m0-m)<mprop && vel>0) {
 		    		thrust_cmd = throttle_cmd*thrust_max ; 
 		    		if(thrust_cmd<thrust_min) {thrust_cmd=thrust_min;}
+		    		if(thrust_cmd>thrust_max) {thrust_cmd=thrust_max;}
 		    	} else if (alt<0){
-		    		thrust_cmd = 0;
-		    		throttle_cmd=0;
+		    		thrust_cmd   = 0;
+		    		throttle_cmd = 0;
 		    		System.out.println("CTRL "+ctrl_ID+" Forced Setting: Thrust = off. (Negative altitude)");
 		    	} else if (vel<0) {
-		    		thrust_cmd = 0;
-		    		throttle_cmd=0;
+		    		thrust_cmd   = 0;
+		    		throttle_cmd = 0;
 		    		System.out.println("CTRL "+ctrl_ID+" Forced Setting: Thrust = off. (Negative velocity)");
 		    	} else {
-		    		thrust_cmd = 0; // empty tanks or failed propulsion read
-		    		throttle_cmd=0;
+		    		thrust_cmd   = 0; // empty tanks or failed propulsion read
+		    		throttle_cmd = 0;
 		    		System.out.println("CTRL "+ctrl_ID+" Forced Setting: Thrust = off. (Empty tanks)");
 		    	}
  		   }
@@ -203,6 +207,9 @@ public class Flight_CTRL{
 	}
 	public double get_ctrl_dt() {
 		return ctrl_dt; 
+	}
+	public double get_CTRL_ERROR() {
+		return CTRL_ERROR;
 	}
 	public void Update_Flight_CTRL(boolean ctrl_on, double alt, double vel, double fpa, double m0, double m, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit,  double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, int ctrl_curve, double ctrl_dt) {
 		this.ctrl_on = ctrl_on;

@@ -1,5 +1,13 @@
 package GUI; 
-
+//-----------------------------------------------------------------------------------------------------------------------------------------
+//															BlueBook GUI
+//
+//   Version 0.1 ALPHA
+//
+//   Author: M. Braun
+// 	 Date: 01/03/2019
+//
+//-----------------------------------------------------------------------------------------------------------------------------------------
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
 import java.awt.Color;
@@ -28,13 +36,14 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintStream;
+import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
-
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -63,6 +72,8 @@ import javax.swing.border.Border;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.LineIterator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -111,10 +122,16 @@ public class Plotting_3DOF implements  ActionListener {
     public static String SEQU_File		 = "\\SEQU.res";				// Sequence output file 
     public static String ICON_File       = "\\lib\\BB_icon.png";		// Logo png file path 
     public static String SEQUENCE_File   = "\\INP\\sequence_1.inp";  	// Sequence definition file 
-	public static String Elevation_File_RES4 		= "\\ELEVATION\\LOLA_4.csv";
-	public static String Elevation_File_RES16 		= "\\ELEVATION\\LOLA_16.csv";
-	public static String Elevation_File_RES4_mac 	= "/ELEVATION/LOLA_4.csv";
-	public static String Elevation_File_RES16_mac 	= "/ELEVATION/LOLA_16.csv";
+    public static String LOCALELEVATIONFILE = "\\LocalElevation.inp";   //
+	public static String Elevation_File_RES4 		= "\\ELEVATION\\LRO_4.csv";
+	public static String Elevation_File_RES16 		= "\\ELEVATION\\LRO_16.csv";
+	public static String Elevation_File_RES64 		= "\\ELEVATION\\LRO_64.csv";
+	public static String Elevation_File_RES128 		= "\\ELEVATION\\LRO_128.csv";
+	public static String Elevation_File_RES4_mac 	= "/ELEVATION/LRO_4.csv";
+	public static String Elevation_File_RES16_mac 	= "/ELEVATION/LRO_16.csv";
+	public static String Elevation_File_RES64_mac 	= "/ELEVATION/LRO_16.csv";
+	public static String Elevation_File_RES128_mac 	= "/ELEVATION/LRO_128.csv";
+	public static String LOCALELEVATIONFILE_mac = "/LocalElevation.inp";   //
     public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
     public static String Env_File_mac    = "/INP/env.inp"  ;  			// Input: target and environment
     public static String RES_File_mac    = "/results.txt"  ;       	 	// Input: result file 
@@ -210,8 +227,13 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Velocity vertical [m/s]",
     										  "Accumulated Delta-v [m/s]",
     										  "Active Sequence ID [-]",
-    										  "Groundtrack [km]"
+    										  "Groundtrack [km]",
+    										  "CNTRL Error [m/s]"
     										  };
+    public static String[] LocalElevation_Resolution = { "4", 
+			  "16" , 
+			  "64", 
+			  "128"};
     public static double h_init;
     public static double v_init;
     public static double v_touchdown;
@@ -227,6 +249,7 @@ public class Plotting_3DOF implements  ActionListener {
 	static boolean Chart_MercatorMap4_fd = true;
 	static boolean CHART_P1_DashBoardOverviewChart_fd = true;
     public static JTextArea textArea = new JTextArea();
+    public static JFrame frame_CreateLocalElevationFile;
     public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, "");     
     private static Crosshair xCrosshair_x;
     private static Crosshair yCrosshair_x; 
@@ -263,7 +286,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static XYSeriesCollection result11_A3_4 = new XYSeriesCollection();
     public static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG, INDICATOR_LAT,INDICATOR_LONG,INDICATOR_ALT,INDICATOR_VEL,INDICATOR_FPA,INDICATOR_AZI,INDICATOR_M0,INDICATOR_INTEGTIME, INDICATOR_TARGET;
     public static JTextField INPUT_LONG,INPUT_LAT,INPUT_ALT,INPUT_VEL,INPUT_FPA,INPUT_AZI,INPUT_M0,INPUT_INTEGTIME, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
-    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN;
+    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP;
 	public static String[] COLUMS_SEQUENCE = {"ID", 
 			 					 "Sequence END type", 
@@ -335,6 +358,9 @@ public class Plotting_3DOF implements  ActionListener {
     	 SEQUENCE_File = dir +SEQUENCE_File_mac; 
     	 Elevation_File_RES4 = dir + Elevation_File_RES4_mac ;
     	 Elevation_File_RES16 = dir + Elevation_File_RES16_mac ;
+    	 Elevation_File_RES64 = dir + Elevation_File_RES64_mac ;
+    	 Elevation_File_RES128 = dir + Elevation_File_RES128_mac ;
+    	 LOCALELEVATIONFILE = dir + LOCALELEVATIONFILE_mac; 
     	 //System.out.println(Init_File);
         }
     	// ---------------------------------------------------------------------------------
@@ -407,6 +433,50 @@ public class Plotting_3DOF implements  ActionListener {
         menuItem_SimSettings.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
                 	
+                    } });
+        
+        JMenu menu_PostProcessing = new JMenu("PostProcessing");
+        menu_PostProcessing.setForeground(l_c);
+        menu_PostProcessing.setBackground(bc_c);
+        menu_PostProcessing.setMnemonic(KeyEvent.VK_A);
+        menuBar.add(menu_PostProcessing);
+        
+        JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Local Elevation File               "); 
+        menuItem_CreateLocalElevation.setForeground(Color.black);
+        menuItem_CreateLocalElevation.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_PostProcessing.add(menuItem_CreateLocalElevation);
+        menuItem_CreateLocalElevation.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   
+	                   frame_CreateLocalElevationFile = new JFrame(PROJECT_TITLE);
+		               	
+	                   //Create and set up the content pane.
+	                   Plotting_3DOF demo = new Plotting_3DOF();
+	                   try {
+	                	   frame_CreateLocalElevationFile.setContentPane(demo.WINDOW_CreateLocalElevationFile());
+	                	  // frame_SEMR_NewEntry.pack();
+	                   } catch (IOException e1) {
+						// TODO Auto-generated catch block
+	                	   e1.printStackTrace();
+	                   } catch (SQLException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+	                  // frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	                   frame_CreateLocalElevationFile.setSize(330, 90);
+	                   frame_CreateLocalElevationFile.setVisible(true);
+	                   frame_CreateLocalElevationFile.setResizable(false);
+	                   frame_CreateLocalElevationFile.setLocationRelativeTo(null);
+	                   try {
+	                       BufferedImage myImage = ImageIO.read(new File(ICON_File));
+	                       frame_CreateLocalElevationFile.setIconImage(myImage);  
+	                       }catch(IIOException eIIO) {
+	                      	 System.out.println(eIIO);
+	                       } catch (IOException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
                     } });
         
         JTabbedPane Page04_subtabPane = (JTabbedPane) new JTabbedPane();
@@ -559,10 +629,16 @@ public class Plotting_3DOF implements  ActionListener {
         INDICATOR_INTEGTIME.setSize(60, 20);
        P1_SidePanel.add(INDICATOR_INTEGTIME);
        
+       JLabel LABEL_TARGET = new JLabel("Target Body:");
+       LABEL_TARGET.setLocation(5, uy_p41 + 25 * 9  );
+       LABEL_TARGET.setSize(250, 20);
+       LABEL_TARGET.setBackground(Color.white);
+       LABEL_TARGET.setForeground(Color.black);
+       P1_SidePanel.add(LABEL_TARGET);
        INDICATOR_TARGET = new JLabel();
-       INDICATOR_TARGET.setLocation(2, uy_p41 + 25 * 9 );
+       INDICATOR_TARGET.setLocation(2, uy_p41 + 25 * 10 );
        INDICATOR_TARGET.setText("");
-       INDICATOR_TARGET.setSize(100, 40);
+       INDICATOR_TARGET.setSize(100, 25);
        INDICATOR_TARGET.setHorizontalAlignment(SwingConstants.CENTER);
        INDICATOR_TARGET.setVerticalTextPosition(JLabel.CENTER);
        INDICATOR_TARGET.setFont(targetfont);
@@ -698,9 +774,9 @@ public class Plotting_3DOF implements  ActionListener {
 	  axis_chooser.setBackground(Color.white);
 	  axis_chooser2 = new JComboBox(Axis_Option_NR);
 	  axis_chooser2.setBackground(Color.white);
-      axis_chooser2.setLocation(200, uy_p41 + 25 * 15);
+      axis_chooser2.setLocation(210, uy_p41 + 25 * 15);
       //axis_chooser2.setPreferredSize(new Dimension(150,25));
-      axis_chooser2.setSize(150,25);
+      axis_chooser2.setSize(180,25);
       axis_chooser2.setSelectedIndex(3);
       axis_chooser2.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
@@ -709,7 +785,7 @@ public class Plotting_3DOF implements  ActionListener {
   	  } );
       axis_chooser.setLocation(5, uy_p41 + 25 * 15);
       //axis_chooser.setPreferredSize(new Dimension(150,25));
-      axis_chooser.setSize(150,25);
+      axis_chooser.setSize(180,25);
       axis_chooser.setSelectedIndex(0);
       axis_chooser.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
@@ -768,6 +844,13 @@ public class Plotting_3DOF implements  ActionListener {
       LABEL_altitude.setBackground(Color.white);
       LABEL_altitude.setForeground(Color.black);
       P2_SidePanel.add(LABEL_altitude);
+      
+      JLabel LABEL_referenceelevation = new JLabel("Ref. Elevation [m]");
+      LABEL_referenceelevation.setLocation(275, uy_p41 + 25 * 3 );
+      LABEL_referenceelevation.setSize(250, 20);
+      LABEL_referenceelevation.setBackground(Color.white);
+      LABEL_referenceelevation.setForeground(Color.black);
+      P2_SidePanel.add(LABEL_referenceelevation);
       
       JLabel LABEL_velocity = new JLabel("Velocity [m/s]");
       LABEL_velocity.setLocation(65, uy_p41 + 25 * 5 );
@@ -845,7 +928,17 @@ public class Plotting_3DOF implements  ActionListener {
 			  WRITE_INIT();
 			  INPUT_ALT.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
 		}});
-      P2_SidePanel.add(INPUT_ALT);      
+      P2_SidePanel.add(INPUT_ALT);   
+      INPUT_REFELEV = new JTextField(10);
+      INPUT_REFELEV.setLocation(210, uy_p41 + 25 * 3 );
+      INPUT_REFELEV.setSize(60, 20);
+      INPUT_REFELEV.addActionListener(new ActionListener() {
+		  public void actionPerformed( ActionEvent e )
+		  	{ 
+			  WRITE_INIT();
+			  INPUT_REFELEV.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
+		}});
+      P2_SidePanel.add(INPUT_REFELEV); 
       INPUT_VEL = new JTextField(10);
       INPUT_VEL.setLocation(2, uy_p41 + 25 * 5 );
       INPUT_VEL.setText("1");
@@ -898,6 +991,12 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
     P2_SidePanel.add(INPUT_WRITETIME);
 
+    JLabel LABEL_TARGETBODY = new JLabel("Target Body");
+    LABEL_TARGETBODY.setLocation(163, uy_p41 + 25 * 12   );
+    LABEL_TARGETBODY.setSize(150, 20);
+    LABEL_TARGETBODY.setBackground(Color.white);
+    LABEL_TARGETBODY.setForeground(Color.black);
+    P2_SidePanel.add(LABEL_TARGETBODY);
 	  Target_chooser = new JComboBox(Target_Options);
 	  Target_chooser.setBackground(Color.white);
 	  Target_chooser.setLocation(2, uy_p41 + 25 * 12 );
@@ -974,25 +1073,25 @@ public class Plotting_3DOF implements  ActionListener {
       LABEL_Minit.setForeground(Color.black);
       P2_SidePanel.add(LABEL_Minit);
       JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
-      LABEL_ME_ISP.setLocation(65, uy_p41 + 25 * 18 );
+      LABEL_ME_ISP.setLocation(65, uy_p41 + 25 * 20 );
       LABEL_ME_ISP.setSize(300, 20);
       LABEL_ME_ISP.setBackground(Color.white);
       LABEL_ME_ISP.setForeground(Color.black);
       P2_SidePanel.add(LABEL_ME_ISP);
       JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
-      LABEL_ME_PropMass.setLocation(65, uy_p41 + 25 * 19);
+      LABEL_ME_PropMass.setLocation(65, uy_p41 + 25 * 21);
       LABEL_ME_PropMass.setSize(300, 20);
       LABEL_ME_PropMass.setBackground(Color.white);
       LABEL_ME_PropMass.setForeground(Color.black);
       P2_SidePanel.add(LABEL_ME_PropMass);
       JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
-      LABEL_ME_Thrust_max.setLocation(65, uy_p41 + 25 * 20 );
+      LABEL_ME_Thrust_max.setLocation(65, uy_p41 + 25 * 22 );
       LABEL_ME_Thrust_max.setSize(300, 20);
       LABEL_ME_Thrust_max.setBackground(Color.white);
       LABEL_ME_Thrust_max.setForeground(Color.black);
       P2_SidePanel.add(LABEL_ME_Thrust_max);
       JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
-      LABEL_ME_Thrust_min.setLocation(65, uy_p41 + 25 * 21 );
+      LABEL_ME_Thrust_min.setLocation(65, uy_p41 + 25 * 23 );
       LABEL_ME_Thrust_min.setSize(300, 20);
       LABEL_ME_Thrust_min.setBackground(Color.white);
       LABEL_ME_Thrust_min.setForeground(Color.black);
@@ -1011,28 +1110,28 @@ public class Plotting_3DOF implements  ActionListener {
 		}});
       P2_SidePanel.add(INPUT_M0);
       INPUT_ISP = new JTextField(10);
-      INPUT_ISP.setLocation(2, uy_p41 + 25 * 18 );
+      INPUT_ISP.setLocation(2, uy_p41 + 25 * 20 );
       INPUT_ISP.setSize(60, 20);
       INPUT_ISP.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_PROP();}});
      P2_SidePanel.add(INPUT_ISP);
      INPUT_PROPMASS = new JTextField(10);
-     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 19);
+     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 21);
      INPUT_PROPMASS.setSize(60, 20);
      INPUT_PROPMASS.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_PROP();}});
      P2_SidePanel.add(INPUT_PROPMASS);        
      INPUT_THRUSTMAX = new JTextField(10);
-     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 20 );
+     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 22 );
      INPUT_THRUSTMAX.setSize(60, 20);
      INPUT_THRUSTMAX.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
 		  	{ WRITE_PROP();}});
      P2_SidePanel.add(INPUT_THRUSTMAX);
      INPUT_THRUSTMIN = new JTextField(10);
-     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 21 );;
+     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 23 );;
      INPUT_THRUSTMIN.setSize(60, 20);
      INPUT_THRUSTMIN.addActionListener(new ActionListener() {
 		  public void actionPerformed( ActionEvent e )
@@ -1704,7 +1803,7 @@ try {
             } else if (k==10){
             	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
             } else if (k==11){
-            	v_touchdown = InitialState;
+            	INPUT_REFELEV.setText(decf.format(InitialState));  // Reference Elevation
 		    } else if (k==12) {
 
 		    }
@@ -1900,7 +1999,8 @@ try {
 		            r = Double.parseDouble(INPUT_WRITETIME.getText())  ; // delta-t write out
 		            wr.write(r+System.getProperty( "line.separator" ));	
 		    		} else if (i == 11 ){
-
+			            r = Double.parseDouble(INPUT_REFELEV.getText())  ; // Reference elevation
+			            wr.write(r+System.getProperty( "line.separator" ));	
 		            } else if (i==12) {
 	
 		            }
@@ -2325,21 +2425,23 @@ try {
        	@SuppressWarnings("unused")
 		Random rand = new Random();
             FileInputStream fstream = null;
-            		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+            FileInputStream fstream_LocalElev=null; 
+            		try{ fstream = new FileInputStream(RES_File);fstream_LocalElev = new FileInputStream(LOCALELEVATIONFILE);} catch(IOException eIO) { System.out.println(eIO);}
                   DataInputStream in = new DataInputStream(fstream);
+                  DataInputStream in2 = new DataInputStream(fstream_LocalElev);
                   BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                  BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
                   String strLine;
+                  String strLine_2;
                   try {
                   while ((strLine = br.readLine()) != null )   {
+                   strLine_2 =  br2.readLine();
 		           String[] tokens = strLine.split(" ");
+		           String[] tokens2 = strLine_2.split(" ");
 		           double y = Double.parseDouble(tokens[4]);     			 // Altitude 	[m]
 		           double x = Double.parseDouble(tokens[40]);	 			 // Groundtrack [m]
-		           double longitude = Double.parseDouble(tokens[1])*rad;     // Longitude 	[deg]
-		           double latitude  = Double.parseDouble(tokens[2])*rad;     // Latitude 	[deg]
 		           xyseries_FlightPath.add(x,y);
-		           double local_elevation = -1000 + rand.nextInt(500);   // Example to show variation with random
-		           //double local_elevation = GetLocalElevation(Elevation_File_RES4, longitude, latitude);
-		           //System.out.println(local_elevation);
+		           double local_elevation = Double.parseDouble(tokens2[0]);
 		           xyseries_Elevation.add(x,local_elevation);
 		           xyseries_Delta.add(x,y-local_elevation);
                   }
@@ -2355,18 +2457,9 @@ try {
 	public static void CreateChart_GroundClearance() throws IOException{
 		ResultSet_GroundClearance_FlightPath.removeAllSeries();
 		ResultSet_GroundClearance_Elevation.removeAllSeries();
-		long startTime = System.nanoTime();
 		 try {
 			 ResultSet_GroundClearance_FlightPath = AddDataset_GroundClearance(); 
-		        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {
-		        	System.out.println(" Error read for plot X40");
-		        }
-			long endTime   = System.nanoTime();
-			long totalTime = endTime - startTime;
-			double  totalTime_sec = (double) (totalTime * 1E-9);
-			//double  totalTime_min = (double) totalTime_sec/60;
-			System.out.println("Runtime: "+totalTime_sec+" seconds");
-
+		        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {System.out.println(" Error read for plot X40");}
 		        Chart_GroundClearance = ChartFactory.createXYAreaChart("", "Ground Track [km]", "Altitude/Elevation [m] ", ResultSet_GroundClearance_FlightPath, PlotOrientation.VERTICAL, true, false, false); 
 				XYPlot plot = (XYPlot)Chart_GroundClearance.getXYPlot(); 
 				StackedXYAreaRenderer renderer_Area = new StackedXYAreaRenderer( );
@@ -2572,6 +2665,55 @@ try {
         innerPanel.setPreferredSize(new Dimension(size, size));
         container.revalidate();
     }
+	
+	public static void CreateLocalElevationFile(int Resolution) throws IOException {
+        FileInputStream fstream = null;
+        ArrayList<String> steps = new ArrayList<String>();
+        String Elevation_File="";
+        if(Resolution==4) {
+        	Elevation_File = Elevation_File_RES4;
+        } else if (Resolution==16) {
+        	Elevation_File = Elevation_File_RES16;
+        } else if (Resolution==64) {
+        	Elevation_File = Elevation_File_RES64;
+        } else if (Resolution==128) {
+        	Elevation_File = Elevation_File_RES128;
+        }
+		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+      DataInputStream in = new DataInputStream(fstream);
+      BufferedReader br = new BufferedReader(new InputStreamReader(in));
+      String strLine;
+      try {
+      while ((strLine = br.readLine()) != null )   {
+       String[] tokens = strLine.split(" ");
+       double longitude = Double.parseDouble(tokens[1])*rad;     // Longitude 	[deg]
+       double latitude  = Double.parseDouble(tokens[2])*rad;     // Latitude 	[deg]
+       double local_elevation = GetLocalElevation(Elevation_File, longitude, latitude);
+       //System.out.println(local_elevation);
+       steps.add(local_elevation+" ");
+      }
+      String resultpath="";
+      if(macrun) {
+      	String dir = System.getProperty("user.dir");
+      	//resultpath = dir + "/LandingSim-3DOF/LocalElevation.inp";
+      	resultpath = dir + "/LocalElevation.inp";
+      } else {
+      	resultpath = "LocalElevation.inp";
+      }
+      PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
+      for(String step: steps) {
+          writer.println(step);
+      }
+      System.out.println("Write: Local Elevation File. ");
+
+		writer.close();
+		in.close();
+		br.close();
+		fstream.close();
+      } catch(NullPointerException eNPI) { System.out.print(eNPI); }
+		
+	}
+	@SuppressWarnings("resource")
 	public static double GetLocalElevation(String InputFile, double longitude, double latitude) throws IOException {
 		double ELEVATION = 0;
 		int resolution = 4;
@@ -2584,15 +2726,18 @@ try {
 		double max_runtime = 2; 
 		long startTime = System.nanoTime();
 		boolean TargetNOTReached=true; 
+		File Input = new File(InputFile);
 		try {
 		    inputStream = new FileInputStream(path);
-		    sc = new Scanner(inputStream, "UTF-8");
-		    while (sc.hasNextLine() && TargetNOTReached) {
-		        String line = sc.nextLine();
+		    LineIterator it = FileUtils.lineIterator(Input, "UTF-8");
+		  //  sc = new Scanner(inputStream, "UTF-8");
+		    while (it.hasNext() && TargetNOTReached) {
+		        String line = it.nextLine();
 		        if(latitude_indx==k) {
 					String[] tokens = line.split(",");
 		        	ELEVATION = Double.parseDouble(tokens[longitude_indx]);
 		        	TargetNOTReached=false;
+		        	it.close();
 		        	return ELEVATION;
 		        }
 				long endTime   = System.nanoTime();
@@ -2602,9 +2747,11 @@ try {
 				k++;
 		    }
 		    // note that Scanner suppresses exceptions
+		    /*
 		    if (sc.ioException() != null) {
 		        throw sc.ioException();
-		    }
+		    } */
+		    it.close();
 		} finally {
 		    if (inputStream != null) {
 		        inputStream.close();
@@ -2615,7 +2762,64 @@ try {
 		}
 		return ELEVATION;
 	}
-	
+    public JPanel WINDOW_CreateLocalElevationFile() throws IOException, SQLException{
+    	//---------------------------------------------------
+    	// 				Data Select 
+    	//---------------------------------------------------
+    	// data_select == 1 => Export Requirements
+    	// data_select == 2 => Export Change Log
+    	//---------------------------------------------------
+	   	JPanel MainGUI = new JPanel();
+	   	MainGUI = new JPanel();
+	   	//MainGUI.setLayout(new BorderLayout());
+	   	MainGUI.setLayout(null);
+	   	MainGUI.setBackground(Color.white);	
+   		int extx = 370;
+   		int exty = 400;
+	  //----------------------------------------------------------------
+   		
+        JLabel Title = new JLabel("Select Resolution: ");
+        Title.setLocation(5, 2 );
+        Title.setSize(250, 15);
+        Title.setBackground(Color.white);
+        Title.setForeground(Color.black);
+        MainGUI.add(Title);
+        
+	  	  @SuppressWarnings({ "rawtypes", "unchecked" })
+		JComboBox ResolutionChooser = new JComboBox(LocalElevation_Resolution);
+	  	ResolutionChooser.setLocation(30,20);
+	  	ResolutionChooser.setSize(230,25);
+	  	ResolutionChooser.setSelectedIndex(0);
+	  	ResolutionChooser.setBorder(BorderFactory.createLineBorder(Color.black));
+	  	ResolutionChooser.addActionListener(new ActionListener() { 
+	    	  public void actionPerformed(ActionEvent e) {
+	    		  // Get selected File Resolution from ResolutionChooser:
+	    		  int Resoltuion = Integer.parseInt((String) ResolutionChooser.getSelectedItem());
+	    		  // Create Elevation File:
+              	try {
+						CreateLocalElevationFile(Resoltuion);
+					} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+              	// Update Ground Clearance Chart with generated data:
+              	ResultSet_GroundClearance_FlightPath.removeAllSeries();
+        		ResultSet_GroundClearance_Elevation.removeAllSeries();
+       		 try {
+       			 ResultSet_GroundClearance_FlightPath = AddDataset_GroundClearance(); 
+       		        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {System.out.println(" Error read for plot X40");} catch (IOException e1) {
+						// TODO Auto-generated catch block
+						e1.printStackTrace();
+					}
+       		 // Dispose frame
+       		frame_CreateLocalElevationFile.dispose();
+	    	  }});
+			  	  MainGUI.add(ResolutionChooser); 
+	   	//----------------------------------------------------------------
+	    //MainGUI.setOpaque(true);
+        MainGUI.setSize(extx,exty);
+	    return MainGUI;
+    }
 	public static List<atm_dataset> INITIALIZE_Page03_storage_DATA() throws URISyntaxException{
     	   try{ // Temperature
     	       	FileInputStream fstream = null; 

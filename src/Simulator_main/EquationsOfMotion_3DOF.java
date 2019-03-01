@@ -30,26 +30,31 @@ import Controller.Flight_CTRL;
 import Controller.LandingCurve;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
-	//----------------------------------------------------------------------------------------------------------------------------
-	//				Control variables
-	public static boolean HoverStop = true; 
-    public static boolean ShowWorkDirectory = true; 
-    public static boolean macrun = false;
-    public static boolean ctrl_callout = false; 
-	//............................................                                       .........................................
-	//
-    //	                                                         Constants
-	//
-	//----------------------------------------------------------------------------------------------------------------------------
-	   public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
+		//----------------------------------------------------------------------------------------------------------------------------
+		//				Control variables
+		public static boolean HoverStop = true; 
+	    public static boolean ShowWorkDirectory = true; 
+	    public static boolean macrun = false;
+	    public static boolean ctrl_callout = false; 
+		//............................................                                       .........................................
+		//
+	    //	                                                         Constants
+		//
+		//----------------------------------------------------------------------------------------------------------------------------
+	    public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
 				{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
 				{1737400,4903E9,2.661861E-6,320},						// Moon (Earth)
 				{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
 				{0,0,0,0},												// Venus
-		};
-	   public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
-	   public static int[] trigger_type_translator = {0,2,3};
-	   	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
+		 };
+	    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
+	    public static int[] trigger_type_translator = {0,2,3};
+	    	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
+		//............................................                                       .........................................
+		//
+	    //	                                                         File Paths
+		//
+		//----------------------------------------------------------------------------------------------------------------------------
 	   	public static String[] IntegratorInputPath = {".\\INP\\INTEG\\00_DormandPrince853Integrator.inp",
 	   												  ".\\INP\\INTEG\\01_ClassicalRungeKuttaIntegrator.inp",
 	   												  ".\\INP\\INTEG\\02_GraggBulirschStoerIntegrator.inp",
@@ -59,11 +64,15 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 					  "/LandingSim-3DOF/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
 					  "/LandingSim-3DOF/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
 					  "/LandingSim-3DOF/INP/INTEG/03_AdamsBashfordIntegrator.inp"
-};
+	   					};
 	   	public static String PropulsionInputFile        = ".\\INP\\PROP\\prop.inp";
 	    public static String PropulsionInputFile_mac    = "/LandingSim-3DOF/INP/PROP/prop.inp"  ;  		// Input: target and environment
 	    
-	  //----------------------------------------------------------------
+		//............................................                                       .........................................
+		//
+	    //	                                             Simulator public variables
+		//
+		//----------------------------------------------------------------------------------------------------------------------------
 		    public static double tminus=0;
 		    public static double tis=0;
 		    public static double mminus=0;
@@ -75,8 +84,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static boolean cntrl_on ; 
 		    public static double acc_deltav = 0; 
 		    public static double twrite=0;
-		    public static double local_delta_altitude = -4000;
-	  //----------------------------------------------------------------
+		    public static double ref_ELEVATION = 0;
+	 	//----------------------------------------------------------------
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
 			public static double rm    = 0;    	    // Planets average radius                   [m]
@@ -109,7 +118,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static int TARGET=0;					// Target body index
 		    static double Throttle_CMD=0;				// Main engine throttle command [-]
 		    static double m_propellant_init = 0;     	// Initial propellant mass [kg]
-		    static double M0=5000; 
+		    static double M0=0; 
 		    static double Thrust_max=0; 
 		    static double Thrust_min=0;
 		    public static double cntr_h_init=0;
@@ -130,7 +139,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        public static double phimin=0;
 	        public static double tetamin=0;
 	        static DecimalFormat decf = new DecimalFormat("###.#");
-	        
+	      //----------------------------------------------------------------------------------------------------------------------------
 	    public int getDimension() {
 	        return 7;
 	    }
@@ -178,14 +187,14 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		}
 		public static void SEQUENCE_MANAGER(double t, double[] x) {
 			//-------------------------------------------------------------------------------------------------------------
-			// WriteOut conditions at sequence to sequence handover: 
+			//		 WriteOut conditions at sequence to sequence handover: 
 			//-------------------------------------------------------------------------------------------------------------
 	    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
 				int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
 				double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
 				if(isFirstSequence) {
 					cntr_v_init = x[3];
-					cntr_h_init = x[2]-rm-local_delta_altitude;
+					cntr_h_init = x[2]-rm-ref_ELEVATION;
 					SequenceWriteOut_addRow();
 					isFirstSequence=false; 
 				}
@@ -193,25 +202,29 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 						if(t>trigger_value) {
 							active_sequence++;
 							cntr_v_init = x[3];
-							cntr_h_init=x[2]-rm-local_delta_altitude;
+							cntr_h_init = x[2]-rm-ref_ELEVATION;
 							SequenceWriteOut_addRow();
 						}
 				} else if (trigger_type==1) {
-						if( (x[2]-rm-local_delta_altitude)<trigger_value) {
+						if( (x[2]-rm-ref_ELEVATION)<trigger_value) {
 							active_sequence++;
 							cntr_v_init = x[3];
-							cntr_h_init=x[2]-rm-local_delta_altitude;
+							cntr_h_init = x[2]-rm-ref_ELEVATION;
 							SequenceWriteOut_addRow();}
 				} else if (trigger_type==2) {
 						if( x[3]<trigger_value) {
 							active_sequence++;
 							cntr_v_init = x[3];
-							cntr_h_init=x[2]-rm-local_delta_altitude;
+							cntr_h_init = x[2]-rm-ref_ELEVATION;
 							SequenceWriteOut_addRow();}
 	     		}
 	    	}
 	    	//-------------------------------------------------------------------------------------------------------------
+	    	//                   Last Sequence reached -> write SEQU.res
+	    	//-------------------------------------------------------------------------------------------------------------
 	    	if(active_sequence ==  (SEQUENCE_DATA_main.size()-1) && Sequence_RES_closed==false){
+				cntr_v_init = x[3];
+				cntr_h_init = x[2]-rm-ref_ELEVATION;
 	    		System.out.println("Write: Sequence result file ");
 	    		try {
 	            String resultpath="";
@@ -232,31 +245,43 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
 	    	if(sequence_type==3) { // Controlled Flight Sequence 
-	    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
-	    	// Update Controller inputs:
-	    	double alt = (x[2]-rm-local_delta_altitude);
-			Flight_Controller.get(active_sequence).Update_Flight_CTRL(true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  ctrl_curve,  val_dt) ;
-	    	// Compile controller output: 
-	    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
-	    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
-	    	} else if (sequence_type==2) { // Continous Propulsive Flight Sequence 
-	    		if((m_propellant_init-(M0-x[6]))>0) {
-	    			Thrust = Thrust_max; 
-	    			Throttle_CMD = 1; 
-	    		}else { // Empty tanks
-	        		Thrust = 0; 
-	        		Throttle_CMD = 0; 
-	    		}
+			    	//-------------------------------------------------------------------------------------------------------------	
+			    	//                          Flight Controller ON - Controlled Fight Sequence
+			    	//-------------------------------------------------------------------------------------------------------------
+			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
+			    	// Update Controller inputs:
+			    	double alt = (x[2]-rm-ref_ELEVATION);
+					Flight_Controller.get(active_sequence).Update_Flight_CTRL( true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
+			    	// Compile controller output: 
+			    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
+			    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
+	    	} else if (sequence_type==2) { // Continuous propulsive Flight Sequence 
+			    	//-------------------------------------------------------------------------------------------------------------	
+			    	//                          Flight Controller OFF - Uncontrolled/continuous thrust
+			    	//-------------------------------------------------------------------------------------------------------------
+		    		if((m_propellant_init-(M0-x[6]))>0) {
+		    			Thrust = Thrust_max; 
+		    			Throttle_CMD = 1; 
+		    		}else { // Empty tanks
+		        		Thrust = 0; 
+		        		Throttle_CMD = 0; 
+		    		}
 	    	} else if (sequence_type==1) { // Coasting Sequence 
-	    		Thrust = 0; 
-	    		Throttle_CMD = 0;
-	    	} else if (sequence_type==4) { // Constrained continous thrust 
-	    		double TTM_max = 5.2;
-	    		if((TTM_max * x[6])>Thrust_max) {
-	    			Thrust = Thrust_max;
-	    		} else {
-	    		Thrust = TTM_max * x[6]; }
-	    		Throttle_CMD = Thrust/Thrust_max;
+			    	//-------------------------------------------------------------------------------------------------------------	
+			    	//                          Flight Controller OFF - Coasting - Thrust OFF
+			    	//-------------------------------------------------------------------------------------------------------------
+		    		Thrust = 0; 
+		    		Throttle_CMD = 0;
+	    	} else if (sequence_type==4) { // Constrained continuous thrust 
+			    	//-------------------------------------------------------------------------------------------------------------	
+			    	//                          Flight Controller OFF - Uncontrolled/Constrained, continuous thrust
+			    	//-------------------------------------------------------------------------------------------------------------
+		    		double TTM_max = 5.0;
+		    		if((TTM_max * x[6])>Thrust_max) {
+		    			Thrust = Thrust_max;
+		    		} else {
+		    			Thrust = TTM_max * x[6]; }
+		    			Throttle_CMD = Thrust/Thrust_max;
 	    	} else {
 	    		System.out.println("ERROR: Sequence type out of range");
 	    	}
@@ -315,11 +340,15 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	ATMOSPHERE_MANAGER(x);
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									      Force Definition
+    	// 					    Force Definition - Aerodynamik Forces | Kinematic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
 	   	D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
 	   	L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
 	   	Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 					    Force Definition  | BodyFixed Frame |
+    	//-------------------------------------------------------------------------------------------------------------------
+//System.out.println((x[2]-rm-ref_ELEVATION)+" | "+x[3] + " | "+ Thrust + " | "+ (m_propellant_init-(M0-x[6]))/m_propellant_init*100);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
@@ -353,7 +382,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[6] = - Thrust/(ISP*g0) ;                
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double vel_touchdown, List<SequenceElement> SEQUENCE_DATA){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -383,7 +412,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 M0 			  = x6  ; 
     	 mminus			  = M0  ;
     	 vminus			  = x3  ;
-    	 v_touchdown	  = vel_touchdown;
+    	 v_touchdown	  = 0   ;
     	 PROPread		  = true; 
 		} catch (IOException e) {
 			System.out.println(e);
@@ -393,6 +422,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 phimin=x0;
     	 tetamin=x1;
     	 groundtrack=0;
+    	 ref_ELEVATION =  reference_elevation;
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -477,12 +507,17 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
+	                double CTRL_Error =0;
+	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
+	                CTRL_Error=Flight_Controller.get(active_sequence).get_CTRL_ERROR();
+	                }
+	                
 	                if( t > twrite ) {
 	                	twrite = twrite + dt_write; 
 	                    steps.add(t + " " + 
 	                    		  y[0] + " " + 
 	                    		  y[1] + " " + 
-	                    		  (y[2]-rm-local_delta_altitude) + " " + 
+	                    		  (y[2]-rm-ref_ELEVATION) + " " + 
 	                    		  (y[2]-rm)+ " " + 
 	                    		  y[2] + " " + 
 	                    		  y[3]+ " " + 
@@ -519,7 +554,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (y[3]*Math.sin(y[4]))+" "+
 	                    		  (acc_deltav)+" "+
 	                    		  active_sequence+" "+
-	                    		  (groundtrack/1000)+" "
+	                    		  (groundtrack/1000)+" "+
+	                    		  CTRL_Error+" "
 	                    		  );
 	                }
 	                if(isLast) {
@@ -552,7 +588,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 				public double g(double t, double[] y) {
 					// TODO Auto-generated method stub
 					// return y[2] - rm; // Altitude = 0 relative to mean elevation         -> integration stop 
-					return y[2] - rm - local_delta_altitude; // Altitude = 0 relative to landing site elevation -> integration stop 
+					return y[2] - rm - ref_ELEVATION; // Altitude = 0 relative to landing site elevation -> integration stop 
 					//return 0;
 				}
 
