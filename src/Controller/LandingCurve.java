@@ -15,7 +15,8 @@ public static double ParabolicLandingCurve(double v_init, double h_init, double 
 	double h_init_star = h_init - ctrl_alt; 
 	double v_init_star = v_init - ctrl_vel;
 	double a =   h_init_star/squared(v_init_star); 
-	double v_target_star = Math.sqrt(h_is/a);
+	double h_is_star = h_is - ctrl_alt;
+	double v_target_star = Math.sqrt(h_is_star/a);
 	TargetVelocity = v_target_star + ctrl_vel;
 	return TargetVelocity; 
 }
@@ -27,7 +28,8 @@ public static double SquarerootLandingCurve(double v_init, double h_init, double
 	double v_init_star = v_init - ctrl_vel; 
 	double h_init_star = h_init - ctrl_alt; 
 	double a =   h_init_star/Math.sqrt(v_init_star); 
-	double v_target_star = squared(h_is/a);
+	double h_is_star = h_is - ctrl_alt;
+	double v_target_star = squared(h_is_star/a);
 	TargetVelocity = v_target_star + ctrl_vel;
 	return TargetVelocity; 
 }

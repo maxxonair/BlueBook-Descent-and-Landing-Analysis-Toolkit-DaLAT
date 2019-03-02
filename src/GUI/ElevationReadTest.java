@@ -106,6 +106,7 @@ public class ElevationReadTest{
 		return ELEVATION;
 	}
 	
+	@SuppressWarnings("deprecation")
 	public static double ApacheScanner(String InputFile, double longitude, double latitude) throws IOException {
 		double ELEVATION=0;
 		File Input = new File(InputFile);
@@ -150,16 +151,15 @@ public class ElevationReadTest{
 	
 	public static void main(String[] args)  {
 		 //startTime = System.nanoTime();
-	     if(macrun) {
 	    	 String dir = java.lang.System.getProperty("user.dir");
 	    	 String dir2 = System.getenv("user.dir");
 	    	 System.out.println(dir);
-	    	 Elevation_File = dir + Elevation_File_mac ;
-	    	 Elevation_File2 = dir + Elevation_File2_mac ;
+	    	 Elevation_File = dir + Elevation_File ;
+	    	 Elevation_File2 = dir + Elevation_File2 ;
 	    	 Path currentRelativePath = Paths.get("");
 	    	 String s = currentRelativePath.toAbsolutePath().toString();
 	    	 System.out.println("Current relative path is: " + s);
-	     }
+	     
 	     /*
 		try {
 			//GetLocalElevation(Elevation_File,135,-65);
