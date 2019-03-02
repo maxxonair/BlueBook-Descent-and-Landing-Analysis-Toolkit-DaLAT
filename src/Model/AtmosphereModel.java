@@ -16,7 +16,6 @@ public class AtmosphereModel  {
 //  %
 //INPUT Files                                   %
 //  %
-	public static boolean macrun=false; 
 //-------------------------------------------------------------------------------
 public static String file_atm   = ""  ;
 public static String DELIMITER = ",";
@@ -30,21 +29,12 @@ public static double sigma = 1.6311e-9;     // Average collision diameter (<- ch
 
 public static void  Set_File_Paths(int TARGET) throws URISyntaxException{
 	String dir = System.getProperty("user.dir");
-    if ( TARGET == 0)
-    {
-     file_atm      = ".\\ATM\\atm_EARTH.csv";
-     if(macrun){ file_atm = dir + "/LandingSim-3DOF/ATM/atm_EARTH.csv";}
-    }
-    if (  TARGET == 1 )
-    {
-         file_atm       =  ".\\ATM\\atm_MOON.csv";
-         if(macrun){ file_atm = dir + "/LandingSim-3DOF/ATM/atm_MOON.csv";}
-    }
-	if (  TARGET == 2 )
-	{
-	     file_atm       = ".\\ATM\\atm_MARS.csv";
-	     if(macrun){ file_atm = dir + "/LandingSim-3DOF/ATM/atm_MARS.csv";}
-	}
+    if ( TARGET == 0){
+    	file_atm = dir + "/ATM/atm_EARTH.csv";}
+    if (  TARGET == 1 ){
+    file_atm = dir + "/ATM/atm_MOON.csv";}
+	if (  TARGET == 2 ){
+	file_atm = dir + "/LandingSim-3DOF/ATM/atm_MARS.csv";}
 }
 
 public static List<atm_dataset> INITIALIZE_ATM_DATA(int TARGET) throws URISyntaxException{

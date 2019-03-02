@@ -34,8 +34,7 @@ public class Flight_CTRL{
 	private double CTRL_ERROR;		// controller Errror			[ ]
 	//-----------------------------------------------------------------------------
 	static String INPUT_FILE = null; 
-	public static boolean eclipse_run = false; 
-	public static String ControllerInputFile_1 = ".\\CTRL\\cntrl_";
+	public static String ControllerInputFile_1 = "/CTRL/cntrl_";
     public static String ControllerInputFile_2 = ".inp"; 
 	public static String ControllerInputFile; 
 	//-----------------------------------------------------------------------------
@@ -83,10 +82,8 @@ public class Flight_CTRL{
 	
     public static double[] READ_CTRL_INPUT(String Controller_ID) throws IOException{
         double[] readINP = new double[20];
-       String dir = System.getProperty("user.dir");
-          	if(eclipse_run) {
-          	   	 INPUT_FILE = dir+"/LandingSim-3DOF/CTRL/cntrl_"+Controller_ID+".inp";} else {
-          	   	 INPUT_FILE = ""+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;}
+        String dir = System.getProperty("user.dir");
+        INPUT_FILE = dir+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;
        	double InitialState = 0;
    	    FileInputStream fstream = null;
        	try {

@@ -22,11 +22,8 @@ import org.apache.commons.io.LineIterator;
 @SuppressWarnings("unused")
 public class ElevationReadTest{
 	
-	public static String Elevation_File = "\\ELEVATION\\LOLA_4.csv";
-	public static String Elevation_File_mac = "/ELEVATION/LOLA_4.csv";
-	public static String Elevation_File2 = "\\ELEVATION\\LOLA.csv";
-	public static String Elevation_File2_mac = "/ELEVATION/LOLA.res4";
-	public static boolean macrun = true; 
+	public static String Elevation_File = "/ELEVATION/LOLA_4.csv";
+	public static String Elevation_File2 = "/ELEVATION/LOLA.csv";
 	public static long startTime;
 	public static long k =0;
 	public static double max_runtime = 2; 
@@ -152,20 +149,27 @@ public class ElevationReadTest{
 	}
 	
 	public static void main(String[] args)  {
-		 startTime = System.nanoTime();
+		 //startTime = System.nanoTime();
 	     if(macrun) {
-	    	 String dir = System.getProperty("user.dir");
+	    	 String dir = java.lang.System.getProperty("user.dir");
+	    	 String dir2 = System.getenv("user.dir");
+	    	 System.out.println(dir);
 	    	 Elevation_File = dir + Elevation_File_mac ;
 	    	 Elevation_File2 = dir + Elevation_File2_mac ;
+	    	 Path currentRelativePath = Paths.get("");
+	    	 String s = currentRelativePath.toAbsolutePath().toString();
+	    	 System.out.println("Current relative path is: " + s);
 	     }
+	     /*
 		try {
 			//GetLocalElevation(Elevation_File,135,-65);
-			ApacheScanner(Elevation_File,135,-65);
+			//ApacheScanner(Elevation_File,135,-65);
 			//BinaryScanTest(Elevation_File);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e);
 		}
+		
 		long endTime   = System.nanoTime();
 		long totalTime = endTime - startTime;
 		double  totalTime_sec = (double) (totalTime * 1E-9);
@@ -175,6 +179,7 @@ public class ElevationReadTest{
 		//System.out.println(" "+(double) ((double) k/1000)+" thousand lines read");
 		System.out.println(" "+(double) ((double) k/1)+"  lines read");
 		System.out.println(" "+(double) ((double) columns/1)+"  columns per line read");
+		*/
 	}
 	
 

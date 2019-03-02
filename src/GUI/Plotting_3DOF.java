@@ -114,6 +114,7 @@ public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Relative File Paths
     //-----------------------------------------------------------------------------------------------------------------------------------------
+    /*
     public static String Init_File   	 = "\\INP\\init.inp" ;			// Input: Initial state
     public static String Env_File    	 = "\\INP\\env.inp"  ;  		// Input: target and environment
     public static String RES_File        = "\\results.txt"   ; 			// Input; result file
@@ -127,21 +128,30 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String Elevation_File_RES16 		= "\\ELEVATION\\LRO_16.csv";
 	public static String Elevation_File_RES64 		= "\\ELEVATION\\LRO_64.csv";
 	public static String Elevation_File_RES128 		= "\\ELEVATION\\LRO_128.csv";
-	public static String Elevation_File_RES4_mac 	= "/ELEVATION/LRO_4.csv";
-	public static String Elevation_File_RES16_mac 	= "/ELEVATION/LRO_16.csv";
-	public static String Elevation_File_RES64_mac 	= "/ELEVATION/LRO_16.csv";
-	public static String Elevation_File_RES128_mac 	= "/ELEVATION/LRO_128.csv";
-	public static String LOCALELEVATIONFILE_mac = "/LocalElevation.inp";   //
-    public static String Init_File_mac   = "/INP/init.inp" ;		    // Input: Initial state
-    public static String Env_File_mac    = "/INP/env.inp"  ;  			// Input: target and environment
-    public static String RES_File_mac    = "/results.txt"  ;       	 	// Input: result file 
-    public static String CTR_001_File_mac= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
-    public static String Prop_File_mac 	 = "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
-    public static String SEQU_File_mac		 = "/SEQU.res";				// Sequence output file 
-    public static String ICON_File_mac   	 = "/lib/BB_icon.png";
-    public static String SEQUENCE_File_mac   = "/INP/sequence_1.inp"; 
-    public static boolean ShowWorkDirectory = true; 
-    public static boolean macrun = true;
+	public static String MAP_EARTH					= "\\MAPS\\Earth_MAP.jpg";
+	public static String MAP_MOON					= "\\MAPS\\Moon_MAP.jpg";
+	public static String MAP_VENUS					= "\\MAPS\\Venus_MAP.jpg";
+	public static String MAP_MARS					= "\\MAPS\\Mars_MAP.jpg";
+	public static String MAP_SOUTHPOLE_MOON			= "\\MAPS\\Moon_South_Pole.jpg";
+	*/
+	public static String Elevation_File_RES4 	= "/ELEVATION/LRO_4.csv";
+	public static String Elevation_File_RES16	= "/ELEVATION/LRO_16.csv";
+	public static String Elevation_File_RES64 	= "/ELEVATION/LRO_16.csv";
+	public static String Elevation_File_RES128 	= "/ELEVATION/LRO_128.csv";
+	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   //
+    public static String Init_File   			= "/INP/init.inp" ;		    // Input: Initial state
+    public static String Env_File    			= "/INP/env.inp"  ;  			// Input: target and environment
+    public static String RES_File    			= "/results.txt"  ;       	 	// Input: result file 
+    public static String CTR_001_File			= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
+    public static String Prop_File 	 			= "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
+    public static String SEQU_File		 		= "/SEQU.res";				// Sequence output file 
+    public static String ICON_File   	 		= "/lib/BB_icon.png";
+    public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
+	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
+	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
+	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
+	public static String MAP_MARS				= "/MAPS/Mars_MAP.jpg";
+	public static String MAP_SOUTHPOLE_MOON		= "/MAPS/Moon_South_Pole.jpg";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -343,29 +353,31 @@ public class Plotting_3DOF implements  ActionListener {
     	MainGUI = new JPanel();
     	MainGUI.setBackground(bc_c);
     	MainGUI.setLayout(new BorderLayout());
-
-    	// init rm:
-     if(ShowWorkDirectory) {}
-     if(macrun) {
+    	//---------------------------------------------------------------------------------------
+    	//                Initialize paths from relative to abolute file paths
+    	//---------------------------------------------------------------------------------------
     	 String dir = System.getProperty("user.dir");
-    	 Init_File = dir + Init_File_mac ;
-    	 Env_File  = dir + Env_File_mac  ; 
-    	 RES_File  = dir + RES_File_mac  ;
-    	 CTR_001_File  = dir + CTR_001_File_mac  ;
-    	 Prop_File  = dir + Prop_File_mac  ;
-    	 SEQU_File = dir + SEQU_File_mac; 
-    	 ICON_File = dir + ICON_File_mac; 
-    	 SEQUENCE_File = dir +SEQUENCE_File_mac; 
-    	 Elevation_File_RES4 = dir + Elevation_File_RES4_mac ;
-    	 Elevation_File_RES16 = dir + Elevation_File_RES16_mac ;
-    	 Elevation_File_RES64 = dir + Elevation_File_RES64_mac ;
-    	 Elevation_File_RES128 = dir + Elevation_File_RES128_mac ;
-    	 LOCALELEVATIONFILE = dir + LOCALELEVATIONFILE_mac; 
-    	 //System.out.println(Init_File);
-        }
+    	 Init_File = dir + Init_File ;
+    	 Env_File  = dir + Env_File  ; 
+    	 RES_File  = dir + RES_File  ;
+    	 CTR_001_File  = dir + CTR_001_File  ;
+    	 Prop_File  = dir + Prop_File  ;
+    	 SEQU_File = dir + SEQU_File; 
+    	 ICON_File = dir + ICON_File; 
+    	 SEQUENCE_File = dir +SEQUENCE_File; 
+    	 Elevation_File_RES4 = dir + Elevation_File_RES4 ;
+    	 Elevation_File_RES16 = dir + Elevation_File_RES16 ;
+    	 Elevation_File_RES64 = dir + Elevation_File_RES64 ;
+    	 Elevation_File_RES128 = dir + Elevation_File_RES128 ;
+    	 LOCALELEVATIONFILE = dir + LOCALELEVATIONFILE;
+    	 MAP_MARS = dir + MAP_MARS;
+    	 MAP_EARTH = dir + MAP_EARTH;
+    	 MAP_MOON = dir + MAP_MOON;
+    	 MAP_VENUS = dir + MAP_VENUS;
+    	 MAP_SOUTHPOLE_MOON = dir + MAP_SOUTHPOLE_MOON;
     	// ---------------------------------------------------------------------------------
-        //           Page 04 - 3 DOF
-        // ---------------------------------------------------------------------------------
+    //       The following function contains all GUI elements of the main window
+    // ---------------------------------------------------------------------------------
     	decf.setMaximumFractionDigits(1);
     	decf.setMinimumFractionDigits(1);
         //Create the menu bar.
@@ -738,9 +750,16 @@ public class Plotting_3DOF implements  ActionListener {
 //-----------------------------------------------------------------------------------------------
 //								Console Window        
 //-----------------------------------------------------------------------------------------------
+        JLabel LABEL_CONSOLE = new JLabel("Console:");
+        LABEL_CONSOLE.setLocation(5, uy_p41 + 25 *17 );
+        LABEL_CONSOLE.setSize(200, 20);
+        LABEL_CONSOLE.setBackground(Color.black);
+        LABEL_CONSOLE.setForeground(Color.black);
+        P1_SidePanel.add(LABEL_CONSOLE);
+        
         JPanel JP_EnginModel = new JPanel();
         JP_EnginModel.setSize(390,200);
-        JP_EnginModel.setLocation(5, uy_p41 + 25 * 17);
+        JP_EnginModel.setLocation(5, uy_p41 + 25 * 18);
          JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
         //JP_EnginModel.setBackground(Color.red);
         taOutputStream = null; 
@@ -750,8 +769,7 @@ public class Plotting_3DOF implements  ActionListener {
         JSP_EnginModel.setPreferredSize(new Dimension(395-10,200-10));
         JSP_EnginModel.setLocation(5, 5);
         JP_EnginModel.add(JSP_EnginModel);
-        System.setOut(new PrintStream(taOutputStream));
-        
+        System.setOut(new PrintStream(taOutputStream));       
 //-----------------------------------------------------------------------------------------------
         P1_SidePanel.add(JP_EnginModel);
 //-----------------------------------------------------------------------------------------------
@@ -1242,7 +1260,7 @@ public class Plotting_3DOF implements  ActionListener {
 	    TableColumn SequENDValColumn  		 = TABLE_SEQUENCE.getColumnModel().getColumn(2);
 	    TableColumn SequTypeColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(3);
 	    TableColumn SequenceFCColumn 	  	 = TABLE_SEQUENCE.getColumnModel().getColumn(4);
-	    TableColumn FCvelColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
+	    TableColumn FCvelColumn 	   		 	 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
 	    TableColumn FCaltColumn	   			 = TABLE_SEQUENCE.getColumnModel().getColumn(6);
 	    TableColumn FCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(7);
 
@@ -2386,15 +2404,15 @@ try {
 		final PolarPlot plot_polar = (PolarPlot) chart_PolarMap.getPlot();
 		  if (TARGET==0){ 
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(".\\MAPS\\Earth_MAP.jpg"));
+		         BufferedImage myImage = ImageIO.read(new File(MAP_EARTH));
 		         plot2.setBackgroundImage(myImage);  
 			  } catch(IIOException eIIO) {
 				  System.out.println(eIIO);System.out.println("ERROR: Reading maps failed.");
 			  }
 		  } else if (TARGET==1){
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File( ".\\MAPS\\Moon_MAP.jpg"));
-		         BufferedImage myImage_Polar = ImageIO.read(new File(".\\MAPS\\Moon_South_Pole.jpg"));
+		         BufferedImage myImage = ImageIO.read(new File(MAP_MOON));
+		         BufferedImage myImage_Polar = ImageIO.read(new File(MAP_SOUTHPOLE_MOON));
 		         plot2.setBackgroundImage(myImage);  
 		         plot_polar.setBackgroundImage(myImage_Polar);
 			  } catch(IIOException eIIO) {
@@ -2402,7 +2420,7 @@ try {
 			  }
 		  } else if(TARGET==2){
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(".\\MAPS\\Mars_MAP.jpg"));
+		         BufferedImage myImage = ImageIO.read(new File(MAP_MARS));
 		         plot2.setBackgroundImage(myImage); 
 			  } catch(IIOException eIIO) {
 				  System.out.println(eIIO);
@@ -2410,7 +2428,7 @@ try {
 			  }
 		  } else if(TARGET==3){
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(".\\MAPS\\Venus_MAP.jpg"));
+		         BufferedImage myImage = ImageIO.read(new File(MAP_VENUS));
 		         plot2.setBackgroundImage(myImage); 
 		  } catch(IIOException eIIO) {
 			  System.out.println(eIIO);
@@ -2692,14 +2710,9 @@ try {
        //System.out.println(local_elevation);
        steps.add(local_elevation+" ");
       }
-      String resultpath="";
-      if(macrun) {
+      	String resultpath="";
       	String dir = System.getProperty("user.dir");
-      	//resultpath = dir + "/LandingSim-3DOF/LocalElevation.inp";
       	resultpath = dir + "/LocalElevation.inp";
-      } else {
-      	resultpath = "LocalElevation.inp";
-      }
       PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
       for(String step: steps) {
           writer.println(step);

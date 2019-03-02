@@ -33,8 +33,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 		//				Control variables
 		public static boolean HoverStop = true; 
-	    public static boolean ShowWorkDirectory = true; 
-	    public static boolean macrun = false;
 	    public static boolean ctrl_callout = false; 
 		//............................................                                       .........................................
 		//
@@ -55,18 +53,12 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    //	                                                         File Paths
 		//
 		//----------------------------------------------------------------------------------------------------------------------------
-	   	public static String[] IntegratorInputPath = {".\\INP\\INTEG\\00_DormandPrince853Integrator.inp",
-	   												  ".\\INP\\INTEG\\01_ClassicalRungeKuttaIntegrator.inp",
-	   												  ".\\INP\\INTEG\\02_GraggBulirschStoerIntegrator.inp",
-	   												  ".\\INP\\INTEG\\03_AdamsBashfordIntegrator.inp"
-	   	};
-	   	public static String[] IntegratorInputPath_mac = {"/LandingSim-3DOF/INP/INTEG/00_DormandPrince853Integrator.inp",
-					  "/LandingSim-3DOF/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
-					  "/LandingSim-3DOF/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
-					  "/LandingSim-3DOF/INP/INTEG/03_AdamsBashfordIntegrator.inp"
+	   	public static String[] IntegratorInputPath = {"/INP/INTEG/00_DormandPrince853Integrator.inp",
+					  "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
+					  "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
+					  "/INP/INTEG/03_AdamsBashfordIntegrator.inp"
 	   					};
-	   	public static String PropulsionInputFile        = ".\\INP\\PROP\\prop.inp";
-	    public static String PropulsionInputFile_mac    = "/LandingSim-3DOF/INP/PROP/prop.inp"  ;  		// Input: target and environment
+	    public static String PropulsionInputFile    = "/INP/PROP/prop.inp"  ;  		// Input: target and environment
 	    
 		//............................................                                       .........................................
 		//
@@ -125,9 +117,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double cntr_v_init=0;
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
-	    	private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
-	    	private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
-	    	private static ArrayList<String> CTRL_steps = new ArrayList<String>();
+	        private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
+	    		private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
+	    		private static ArrayList<String> CTRL_steps = new ArrayList<String>();
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
 	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
@@ -161,7 +153,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     				[rad/s]
 		    //--------------------------------------------------------------------
 		    // 			Write env.inp : 
-			 PrintWriter writer = new PrintWriter(new File(".\\INP\\env.inp"), "UTF-8");
+		    /*
+			 PrintWriter writer = new PrintWriter(new File("/INP/env.inp"), "UTF-8");
 			for (int i = 0; i < 6; i++) {
 				if(i==0) {
 				writer.println(""+TARGET);
@@ -170,6 +163,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				}
 			}
 			writer.close();
+			*/
 		}
 		public static void UPDATE_FlightController(Flight_CTRL NewElement){	   
 			   if (Flight_Controller.size()==0){ EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
@@ -228,12 +222,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    		System.out.println("Write: Sequence result file ");
 	    		try {
 	            String resultpath="";
-	            if(macrun) {
 	            	String dir = System.getProperty("user.dir");
-	            	resultpath = dir + "/LandingSim-3DOF/SEQU.res";
-	            } else {
-	            	resultpath = "SEQU.res";
-	            }
+	            	resultpath = dir + "/SEQU.res";
 	            PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
 	            for(String step: CTRL_steps) {
 	                writer.println(step);
@@ -386,12 +376,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
-    if(ShowWorkDirectory) { }
-    if(macrun) {
+
    	 String dir = System.getProperty("user.dir");
-     	PropulsionInputFile = dir + PropulsionInputFile_mac;
-   	 //System.out.println(PropulsionInputFile);
-    }	
+     PropulsionInputFile = dir + PropulsionInputFile;
 	try {
 			SET_Constants(target);
 		} catch (IOException e2) {
@@ -435,12 +422,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //----------------------------------------------------------------------------------------------
 		FirstOrderIntegrator dp853;
 		String IntegInput ="";
-		if(macrun){
-			String dir = System.getProperty("user.dir");
-			IntegInput = dir + IntegratorInputPath_mac[INTEGRATOR];
-		} else {
-			IntegInput = IntegratorInputPath[INTEGRATOR];
-		}
+			//String dir = System.getProperty("user.dir");
+			IntegInput = dir + IntegratorInputPath[INTEGRATOR];
 		try {
 			double[] IntegINP = Tool.READ_INTEGRATOR_INPUT(IntegInput);
 		if (INTEGRATOR == 1) {
@@ -564,12 +547,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        	        	//Date date = new Date();
 	        	           // String time = "" ;//+ dateFormat.format(date) ; 
 	        	            String resultpath="";
-	        	            if(macrun) {
 	        	            	String dir = System.getProperty("user.dir");
-	        	            	resultpath = dir + "/LandingSim-3DOF/results.txt";
-	        	            } else {
-	        	            	resultpath = "results.txt";
-	        	            }
+	        	            	resultpath = dir + "/results.txt";
 	                        PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
 	                        for(String step: steps) {
 	                            writer.println(step);
