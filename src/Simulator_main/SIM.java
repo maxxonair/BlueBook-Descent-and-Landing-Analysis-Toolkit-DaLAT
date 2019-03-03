@@ -100,12 +100,16 @@ public class SIM implements ActionListener{
         	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID,ctrl_target_vel,ctrl_target_alt,ctrl_target_curve);
             UPDATE_SequenceElements(newSequenceElement, SEQUENCE_DATA);
         }
+        System.out.println("READ: Sequence setup sucessful.");
         br.close();
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return SEQUENCE_DATA;
     }
 
     public static void main(String[] args) throws IOException {
+    	System.out.println("Simulation started");
+    	System.out.println("Start READ :");
+    	System.out.println("------------------------------------------");
     	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
     	SEQUENCE_DATA = READ_SEQUENCE();
     	//-----------------------------------------
@@ -143,7 +147,7 @@ public class SIM implements ActionListener{
 														SEQUENCE_DATA			// Sequence data set	[-]
 														);
 		}else {
-			System.out.println("Reading Input file failed. Integrator Stop.");
+			System.out.println("Reading Input file failed -> Forced Integrator Stop.");
 		}
     }
 

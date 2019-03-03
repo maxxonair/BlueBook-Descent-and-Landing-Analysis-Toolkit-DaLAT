@@ -7,31 +7,31 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Flight_CTRL{
-	private int     ctrl_ID;		// Controller ID				[-]
-	private boolean ctrl_on;		// Switch on/off (ctrl)			[true/false]
-	private double  alt; 			// Altitude 					[m]
-	private double  vel;	 		// velocity 					[m/s]
-	private double  fpa;			// flight path angel 			[rad]
-	private double  m0;				// Initial mass 				[kg]
+	private int     ctrl_ID;			// Controller ID					[-]
+	private boolean ctrl_on;			// Switch on/off (ctrl)			[true/false]
+	private double  alt; 			// Altitude 						[m]
+	private double  vel;	 			// velocity 						[m/s]
+	private double  fpa;				// flight path angel 			[rad]
+	private double  m0;				// Initial mass 					[kg]
 	private double  m;				// Actual mass 					[kg]
 	private double mprop;			// Propellant mass              [kg]
 	private double ctrl_vinit;		// Controller initial velocity 	[m/s]
 	private double ctrl_hinit;		// Controller initial altitude 	[m]
 	private double ctrl_tinit;		// Controller initial time 	   	[s]
 	private double ctrl_vel;  		// Additional target velocity 	[m/s]
-	private double ctrl_alt;		// Additional target altitude 	[m]
+	private double ctrl_alt;		    // Additional target altitude 	[m]
 	private double thrust_max;		// Maximum Thrust 			   	[N]
 	private double thrust_min;		// Minimum Thrust 			   	[N]
-	private double throttle_cmd;	// Controller throttle command	[-]
+	private double throttle_cmd;	    // Controller throttle command	[-]
 	private double thrust_cmd;      // Controller thrust command 	[N]
 	private int    ctrl_curve;		// Control curve 				[-]
 	private double ctrl_dt;			// Delta-t controller			[s]
-	private double P_GAIN; 			// controller p-gain			[-]
-	private double I_GAIN;			// controller i-gain		    [-]
-	private double D_GAIN;			// controller d-gain			[-]
-	private double cmd_min;			// controller output cmd min	[-]
+	private double P_GAIN; 			// controller p-gain				[-]
+	private double I_GAIN;			// controller i-gain		   		[-]
+	private double D_GAIN;			// controller d-gain				[-]
+	private double cmd_min;			// controller output cmd min		[-]
 	private double cmd_max;			// controller output cmd max    [-]
-	private double CTRL_ERROR;		// controller Errror			[ ]
+	private double CTRL_ERROR;		// controller Errror				[ ]
 	//-----------------------------------------------------------------------------
 	static String INPUT_FILE = null; 
 	public static String ControllerInputFile_1 = "/CTRL/cntrl_";
@@ -172,7 +172,7 @@ public class Flight_CTRL{
  		   if(ContinuousBurn){thrust_cmd = thrust_max;throttle_cmd=cmd_max;} else {
  		     CTRL_ERROR = vel - target_velocity ;
  		    //System.out.println(alt);
- 		   throttle_cmd = PID_01.FlightController_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
+ 		   throttle_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
  		   if(Double.isNaN(throttle_cmd)) {System.out.println("Controller Error: Returned NaN.-> Controller OFF"); throttle_cmd=0;}
  		//   if(1400<alt && alt<1500) {System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);}
 		    	if ((m0-m)<mprop && vel>0) {

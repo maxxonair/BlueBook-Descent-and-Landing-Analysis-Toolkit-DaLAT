@@ -108,11 +108,11 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static int flowzone=0; 				// Flow zone continuum - transitional - free molecular flwo
 		    public static double Cdm = 0; 				// Drag coefficient in contiuum flow; 
 		    public static int TARGET=0;					// Target body index
-		    static double Throttle_CMD=0;				// Main engine throttle command [-]
-		    static double m_propellant_init = 0;     	// Initial propellant mass [kg]
-		    static double M0=0; 
-		    static double Thrust_max=0; 
-		    static double Thrust_min=0;
+		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
+		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
+		    public static double M0=0; 
+		    public static double Thrust_max=0; 
+		    public static double Thrust_min=0;
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
 		    public static int ctrl_curve;
@@ -131,6 +131,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        public static double phimin=0;
 	        public static double tetamin=0;
 	        static DecimalFormat decf = new DecimalFormat("###.#");
+	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
 	    public int getDimension() {
 	        return 7;
@@ -345,12 +346,12 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	acc_deltav = acc_deltav + ISP*g0*Math.log(mminus/x[6]);
     	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 										Delta-v integration
+    	// 										  Ground track 
     	//-------------------------------------------------------------------------------------------------------------------
-    	double r=1737400;
+    	double r=1737400;  // <-- reference radius for projection ( needs to be adapted) 
     	double phi=x[0];
     	double theta = x[1];
-;    	double dphi = Math.abs(phi-phimin);
+;   double dphi = Math.abs(phi-phimin);
     	double dtheta = Math.abs(theta-tetamin); 
     	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
     	//System.out.println(ds);
@@ -573,6 +574,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 
 
 				public Action eventOccurred(double t, double[] y, boolean increasing) {
+					System.out.println("Elevation 0 reached. Forced stop.");
 					  return Action.STOP;
 					}
 
@@ -619,7 +621,12 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 				}
 	        	
 	        };
-	        
+	        System.out.println("------------------------------------------");
+	        System.out.println("READ successful");
+	        System.out.println("Initialization succesful");
+	        System.out.println("Integrator start");
+	        System.out.println("------------------------------------------");
+	        long startTime = System.nanoTime();
 	        dp853.addStepHandler(WriteOut);
 	        dp853.addEventHandler(EventHandler_Touchdown,1,1.0e-3,30);
 	        if(HoverStop) {dp853.addEventHandler(EventHandler_NegVelocity,1,1.0e-3,30);}
@@ -632,9 +639,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        	System.out.println("ERROR: Integrator failed: Minimal stepsize reached");
 	        	System.out.println(eMSS);
 	        }
-
-	       System.out.println("Success --> Integrator Stop ");      
+			long endTime   = System.nanoTime();
+			long totalTime = endTime - startTime;
+			double  totalTime_sec = (double) (totalTime * 1E-9);
+			//double  totalTime_min = (double) totalTime_sec/60;
+			System.out.println("Runtime: "+totalTime_sec+" seconds");
+	        System.out.println("Integration successful --> No Errors ");   
+	        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
+	       
 		}
-	
-
 }
