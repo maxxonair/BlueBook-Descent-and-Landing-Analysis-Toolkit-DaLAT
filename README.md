@@ -1,5 +1,10 @@
-# LandingSim-3DOF
-Landing Sim including PID controller unit
+# BlueBook-DaLAT-3DoF
 
-This project is intended to explore the value of simplified PID controller to sketch a planetary descent and landing manoeuvre. 
-The controller unit will be integrated in a simplified 3 degree of freedom simulation. 
+BlueBook Descent and Landing Analysis Tool 
+03/03/2019
+
+- 3 degree of freedom integrator designed for landing analysis on any planetary bodies, with and without atmoshpere. 
+- Able to be customized to various problems 
+- Integrated controller to simulate simplified landings
+- Integrated gravity model
+- Integrated atmosphere model
