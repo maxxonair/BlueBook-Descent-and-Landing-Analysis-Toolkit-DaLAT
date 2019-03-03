@@ -107,33 +107,13 @@ public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
-	static String PROJECT_TITLE = "  BlueBook 3DOF V0.1";
+	static String PROJECT_TITLE = "  BlueBook DaLAT-3DoF  V0.1 ALPHA";
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Relative File Paths
     //-----------------------------------------------------------------------------------------------------------------------------------------
-    /*
-    public static String Init_File   	 = "\\INP\\init.inp" ;			// Input: Initial state
-    public static String Env_File    	 = "\\INP\\env.inp"  ;  		// Input: target and environment
-    public static String RES_File        = "\\results.txt"   ; 			// Input; result file
-    public static String CTR_001_File    = "\\CTRL\\cntrl_1.inp";		// Controller 01 input file 
-    public static String Prop_File   	 = "\\INP\\PROP\\prop.inp";		// Main propulsion system input file
-    public static String SEQU_File		 = "\\SEQU.res";				// Sequence output file 
-    public static String ICON_File       = "\\lib\\BB_icon.png";		// Logo png file path 
-    public static String SEQUENCE_File   = "\\INP\\sequence_1.inp";  	// Sequence definition file 
-    public static String LOCALELEVATIONFILE = "\\LocalElevation.inp";   //
-	public static String Elevation_File_RES4 		= "\\ELEVATION\\LRO_4.csv";
-	public static String Elevation_File_RES16 		= "\\ELEVATION\\LRO_16.csv";
-	public static String Elevation_File_RES64 		= "\\ELEVATION\\LRO_64.csv";
-	public static String Elevation_File_RES128 		= "\\ELEVATION\\LRO_128.csv";
-	public static String MAP_EARTH					= "\\MAPS\\Earth_MAP.jpg";
-	public static String MAP_MOON					= "\\MAPS\\Moon_MAP.jpg";
-	public static String MAP_VENUS					= "\\MAPS\\Venus_MAP.jpg";
-	public static String MAP_MARS					= "\\MAPS\\Mars_MAP.jpg";
-	public static String MAP_SOUTHPOLE_MOON			= "\\MAPS\\Moon_South_Pole.jpg";
-	*/
 	public static String Elevation_File_RES4 	= "/ELEVATION/LRO_4.csv";
 	public static String Elevation_File_RES16	= "/ELEVATION/LRO_16.csv";
 	public static String Elevation_File_RES64 	= "/ELEVATION/LRO_16.csv";
@@ -195,7 +175,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static String[] TargetCurve_Options = { "",						// No target curve -> continous burn
     											   "Parabolic", 
     											   "SquareRoot" ,	
-    											   "Parabolic Hover" 	
+    											   "Linear" 	
 			  };
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
@@ -354,7 +334,7 @@ public class Plotting_3DOF implements  ActionListener {
     	MainGUI.setBackground(bc_c);
     	MainGUI.setLayout(new BorderLayout());
     	//---------------------------------------------------------------------------------------
-    	//                Initialize paths from relative to abolute file paths
+    	//                Initialize paths from relative to absolute file paths
     	//---------------------------------------------------------------------------------------
     	 String dir = System.getProperty("user.dir");
     	 Init_File = dir + Init_File ;
@@ -1223,7 +1203,7 @@ public class Plotting_3DOF implements  ActionListener {
 		private static final long serialVersionUID = 1L;
 
 		public void actionPerformed(ActionEvent e)
-        { WriteSequenceINP();}
+        {WriteSequenceINP();}
     };
     @SuppressWarnings("unused")
 	TableCellListener tcl3 = new TableCellListener(TABLE_SEQUENCE, action3);
@@ -1624,12 +1604,16 @@ public class Plotting_3DOF implements  ActionListener {
     	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
     	
     	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
+    	
+    	WriteSequenceINP();
     }
     
     public static void DeleteSequence() {
     	int j = TABLE_SEQUENCE.getSelectedRow();
     	if (j >= 0){MODEL_SEQUENCE.removeRow(j);}
     	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
+    	
+    	WriteSequenceINP();
     }
     
     public static void UpSequence() {
@@ -1637,6 +1621,8 @@ public class Plotting_3DOF implements  ActionListener {
         MODEL_SEQUENCE.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]-1);
         TABLE_SEQUENCE.setRowSelectionInterval(rows2[0]-1, rows2[rows2.length-1]-1);
         for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
+        
+        WriteSequenceINP();
     }
     
     public static void DownSequence() {
@@ -1644,6 +1630,8 @@ public class Plotting_3DOF implements  ActionListener {
         MODEL_SEQUENCE.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]+1);
         TABLE_SEQUENCE.setRowSelectionInterval(rows2[0]+1, rows2[rows2.length-1]+1);
         for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
+        
+        WriteSequenceINP();
     }
     public static void WriteSequenceINP() {
             try {
@@ -2190,10 +2178,10 @@ try {
 		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_curve==2) {
 		    		    	 xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
-		    		    	 try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_curve==3) {
-		    		    	 xx =   LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_vel, y);
-		    		    	 try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    	 xx =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } 
 		           } else {
 		        	   xyseries10.add(x  , 0);  

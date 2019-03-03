@@ -160,6 +160,9 @@ public class Flight_CTRL{
     	if(ctrl_on) {
  		    double target_velocity=0;
  		    boolean ContinuousBurn = false;
+ 		    //------------------------------------------------------------------------------------------------------------------
+ 		    //									Select Reference Landing Path 
+ 		    //------------------------------------------------------------------------------------------------------------------
  		    if  (ctrl_curve==0) {
 		         ContinuousBurn = true;
 		    } else if (ctrl_curve==1) {
@@ -167,12 +170,19 @@ public class Flight_CTRL{
  		    } else if (ctrl_curve==2) {
  		    	 target_velocity =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } else if (ctrl_curve==3) {
- 		    	 target_velocity =   LandingCurve.Parabolic2Hover(ctrl_vinit, ctrl_hinit, ctrl_vel, alt);
+ 		    	 target_velocity =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } 
+ 		    //------------------------------------------------------------------------------------------------------------------
+ 		    //									No Reference Landing curve set -> Continuous burn 
+ 		    //------------------------------------------------------------------------------------------------------------------
  		   if(ContinuousBurn){thrust_cmd = thrust_max;throttle_cmd=cmd_max;} else {
+ 	 		//------------------------------------------------------------------------------------------------------------------
+ 	 		//									No Reference Lanidng curve set -> Continuous burn 
+ 	 		//------------------------------------------------------------------------------------------------------------------
  		     CTRL_ERROR = vel - target_velocity ;
- 		    //System.out.println(alt);
- 		   throttle_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
+ 		    // Select Controller and compute output command: 
+ 		     throttle_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
+ 		    // Check if controller provides usable values: 
  		   if(Double.isNaN(throttle_cmd)) {System.out.println("Controller Error: Returned NaN.-> Controller OFF"); throttle_cmd=0;}
  		//   if(1400<alt && alt<1500) {System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);}
 		    	if ((m0-m)<mprop && vel>0) {

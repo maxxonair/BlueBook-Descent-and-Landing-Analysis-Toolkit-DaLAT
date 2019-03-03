@@ -47,7 +47,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		 };
 	    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 	    public static int[] trigger_type_translator = {0,2,3};
-	    	public static String[] str_target = {"Earth","Moon","Mars", "Venus"};
+	    	public static String[] str_target = {"Earth","Moon","Mars","Venus"};
 		//............................................                                       .........................................
 		//
 	    //	                                                         File Paths
@@ -182,7 +182,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		}
 		public static void SEQUENCE_MANAGER(double t, double[] x) {
 			//-------------------------------------------------------------------------------------------------------------
-			//		 WriteOut conditions at sequence to sequence handover: 
+			//		 WriteOut conditions at sequence to sequence hand-over: 
 			//-------------------------------------------------------------------------------------------------------------
 	    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
 				int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
@@ -348,7 +348,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										  Ground track 
     	//-------------------------------------------------------------------------------------------------------------------
-    	double r=1737400;  // <-- reference radius for projection ( needs to be adapted) 
+    	double r=rm;  // <-- reference radius for projection. Current projection set for mean radius 
     	double phi=x[0];
     	double theta = x[1];
 ;   double dphi = Math.abs(phi-phimin);
@@ -392,16 +392,16 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
 		try {
-		prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
-    	 ISP          	  = prop_read[0];
-    	 m_propellant_init= prop_read[1];
-    	 Thrust_max 	  = prop_read[2];
-    	 Thrust_min		  = prop_read[3];
-    	 M0 			  = x6  ; 
-    	 mminus			  = M0  ;
-    	 vminus			  = x3  ;
-    	 v_touchdown	  = 0   ;
-    	 PROPread		  = true; 
+		 prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
+	    	 ISP          	  = prop_read[0];
+	    	 m_propellant_init= prop_read[1];
+	    	 Thrust_max 	  = prop_read[2];
+	    	 Thrust_min		  = prop_read[3];
+	    	 M0 			  = x6  ; 
+	    	 mminus			  = M0  ;
+	    	 vminus			  = x3  ;
+	    	 v_touchdown	  = 0   ;
+	    	 PROPread		  = true; 
 		} catch (IOException e) {
 			System.out.println(e);
 			System.out.println("Error: Propulsion setting read failed. ISP set to zero. Propellant mass set to zero. Thrust set to zero. ");
@@ -603,6 +603,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 
 
 				public Action eventOccurred(double t, double[] y, boolean increasing) {
+					System.out.println("Velocity 0 reached. Forced stop.");
 					  return Action.STOP;
 					}
 
