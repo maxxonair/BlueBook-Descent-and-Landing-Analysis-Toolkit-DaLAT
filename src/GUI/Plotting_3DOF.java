@@ -108,6 +108,7 @@ import Sequence.SequenceElement;
 import Simulator_main.SIM;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Tool;
+import javax.swing.JFileChooser;
 import Controller.LandingCurve;
 
 public class Plotting_3DOF implements  ActionListener {
@@ -149,6 +150,10 @@ public class Plotting_3DOF implements  ActionListener {
     public static int indx_target = 0;  // Target planet indx 
 	static double deg = PI/180.0; 		//Convert degrees to radians
 	static double rad = 180/PI; 		//Convert radians to degrees
+	
+	public static String BB_delimiter = " ";
+	public static String CurrentWorkfile_Name = "";
+	public static File CurrentWorkfile_Path = new File("");
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //											Styles, Fonts, Colors
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -393,7 +398,7 @@ public class Plotting_3DOF implements  ActionListener {
                 	   
                     } });
         menu_BlueBook.addSeparator();
-        JMenuItem menuItem_Import = new JMenuItem("Import Simulation                  "); 
+        JMenuItem menuItem_Import = new JMenuItem("Simulation Setup Open                 "); 
         menuItem_Import.setForeground(Color.gray);
         menuItem_Import.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -402,14 +407,14 @@ public class Plotting_3DOF implements  ActionListener {
                    public void actionPerformed(ActionEvent e) {
                 	   
                     } });
-        JMenuItem menuItem_Export = new JMenuItem("Export Simulation                  "); 
+        JMenuItem menuItem_Export = new JMenuItem("Results save as                "); 
         menuItem_Export.setForeground(Color.gray);
         menuItem_Export.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_Export);
         menuItem_Export.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	   
+
                     } });
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Exit = new JMenuItem("Exit                  "); 
@@ -443,27 +448,53 @@ public class Plotting_3DOF implements  ActionListener {
         menu_PreProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PreProcessing);
         
-        JMenuItem menuItem_ImportScenario = new JMenuItem("Import Scenario              "); 
+        JMenuItem menuItem_ImportScenario = new JMenuItem("Simulation Setup Open               "); 
         menuItem_ImportScenario.setForeground(Color.gray);
         menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ImportScenario);
         menuItem_ImportScenario.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	   
+                      	File myfile;
+   	        			myfile = new File(dir+"/CASES");
+   		            	JFileChooser fileChooser = new JFileChooser(myfile);
+   		           	if (fileChooser.showOpenDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
+   	                File file = fileChooser.getSelectedFile() ;
+   	                String filePath = file.getAbsolutePath();
+   	                filePath = filePath.replaceAll(".DaLAT", "");
+                       file = new File(filePath + ".DaLAT");
+               		   CurrentWorkfile_Path = file;
+                       CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
+                       MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
+                       IMPORT_Case();
+   					System.out.println("File "+CurrentWorkfile_Name+" opened.");
 
                 	   Page04_subtabPane.setSelectedIndex(1);
                     } });
-        JMenuItem menuItem_ExportScenario = new JMenuItem("Export Scenario              "); 
+        JMenuItem menuItem_ExportScenario = new JMenuItem("Simulation Setup Save as              "); 
         menuItem_ExportScenario.setForeground(Color.gray);
         menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ExportScenario);
         menuItem_ExportScenario.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   
-
-					
+                   public void actionPerformed(ActionEvent e) {                	   
+                   	File myfile;
+	        			myfile = new File(dir+"/CASES");
+		            	JFileChooser fileChooser = new JFileChooser(myfile);
+		           	if (fileChooser.showSaveDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
+	                File file = fileChooser.getSelectedFile() ;
+	                String filePath = file.getAbsolutePath();
+	                filePath = filePath.replaceAll(".DaLAT", "");
+                    file = new File(filePath + ".DaLAT");
+            		    CurrentWorkfile_Path = file;
+                    CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
+                    MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
+                    try {
+						EXPORT_Case();
+					} catch (FileNotFoundException e1) {
+							System.out.println("File Not Found.");
+					}
+					System.out.println("File "+CurrentWorkfile_Name+" saved.");
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PostProcessing = new JMenu("PostProcessing");
@@ -2194,8 +2225,40 @@ try {
 	   	    
 	   	    return INIT_CONDITIONS;
 	}
-
-
+public static void IMPORT_Case() {
+	
+}
+public static void EXPORT_Case() throws FileNotFoundException {
+	if ( CurrentWorkfile_Name.isEmpty()==false) {
+    	//File myfile = myfile_opened;
+    	//String filePath = myfile.getAbsolutePath();
+        File file = CurrentWorkfile_Path ; //new File(filePath + "\\" + myfile_name);
+        PrintWriter os;
+		os = new PrintWriter(file);
+		//String head_line = Minit.getText() + BB_delimiter + Mpayload.getText() + BB_delimiter + cd_tf1.getText() + BB_delimiter + BoilOff_TF.getText() + BB_delimiter + FuelMar_TF.getText() + BB_delimiter + cbMenuItem_BO.isSelected() + BB_delimiter + cbMenuItem_SL.isSelected() + BB_delimiter + cbMenuItem_MAR.isSelected() + BB_delimiter;   
+		//os.print(head_line);
+		//os.println("");
+    	for (int i = 0; i < 12; i++) {  // 					init.inp
+    		os.print("|DELTAV|" + BB_delimiter);
+    	    for (int col = 0; col < 1; col++) {
+    	    	double WriteValue=0;
+    	        os.print(WriteValue);
+    	        os.print(BB_delimiter);
+    	    }
+    	    os.println("");
+    	}
+    	for (int i = 0; i < 10; i++) {  // 					prop.inp
+    		os.print("|PL|" + BB_delimiter);
+    	    for (int col = 0; col < 1; col++) {
+    	    	double WriteValue=0;
+    	        os.print(WriteValue);
+    	        os.print(BB_delimiter);
+    	    }
+    	    os.println("");
+    	}
+        os.close();
+		}
+}
 	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
 		ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
 		SEQUENCE_DATA = Read_SEQU();
