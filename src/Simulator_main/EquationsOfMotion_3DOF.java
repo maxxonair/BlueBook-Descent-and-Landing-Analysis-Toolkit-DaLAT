@@ -32,8 +32,10 @@ import Controller.LandingCurve;
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 		//				Control variables
+		//----------------------------------------------------------------------------------------------------------------------------
 		public static boolean HoverStop = true; 
 	    public static boolean ctrl_callout = false; 
+	    public static boolean ascent_switch = false;
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -130,6 +132,14 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        public static double groundtrack = 0; 
 	        public static double phimin=0;
 	        public static double tetamin=0;
+	        
+	        public static double elevationangle; 
+	        public static double const_tzer0=0;
+	        public static boolean const_isFirst =true; 
+	        
+	        
+	        public static double TTM_max = 5.0;
+	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
@@ -250,6 +260,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller OFF - Uncontrolled/continuous thrust
 			    	//-------------------------------------------------------------------------------------------------------------
+	    		elevationangle = 0.0;
 		    		if((m_propellant_init-(M0-x[6]))>0) {
 		    			Thrust = Thrust_max; 
 		    			Throttle_CMD = 1; 
@@ -267,11 +278,16 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller OFF - Uncontrolled/Constrained, continuous thrust
 			    	//-------------------------------------------------------------------------------------------------------------
-		    		double TTM_max = 5.0;
+	    		    if(const_isFirst){const_tzer0=t;}
+	    		   // double tsequence = (double) (t-const_tzer0);
+
 		    		if((TTM_max * x[6])>Thrust_max) {
 		    			Thrust = Thrust_max;
 		    		} else {
-		    			Thrust = TTM_max * x[6]; }
+		    			Thrust = TTM_max * x[6]; 
+		    		}
+		    		
+	    		elevationangle = 0.0032;
 		    			Throttle_CMD = Thrust/Thrust_max;
 	    	} else {
 	    		System.out.println("ERROR: Sequence type out of range");
@@ -333,9 +349,15 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamik Forces | Kinematic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-	   	D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
+    	if(ascent_switch) {
+    	D  = - qinf * S * Cd  + Thrust *Math.cos(elevationangle) ;     			    // Aerodynamic drag Force 		   [N]
+	   	L  =   qinf * S * Cl * cos( bank ) + Thrust * Math.sin(elevationangle) ;    // Aerodynamic lift Force 		   [N]
+	   	Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
+    	} else {
+    	D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]	
 	   	L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
 	   	Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
+    	}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition  | BodyFixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
@@ -643,8 +665,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			long endTime   = System.nanoTime();
 			long totalTime = endTime - startTime;
 			double  totalTime_sec = (double) (totalTime * 1E-9);
-			//double  totalTime_min = (double) totalTime_sec/60;
-			System.out.println("Runtime: "+totalTime_sec+" seconds");
 	        System.out.println("Integration successful --> No Errors ");   
 	        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
 	       

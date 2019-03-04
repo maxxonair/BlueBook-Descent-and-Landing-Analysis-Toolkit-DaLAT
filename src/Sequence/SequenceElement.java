@@ -9,6 +9,7 @@ public class SequenceElement{
 	private double  ctrl_target_vel ;
 	private double  ctrl_target_alt; 
 	private int 	ctrl_target_curve;
+	private double  tzero; 
 	
 	public SequenceElement(int sequence_ID, int trigger_end_type, double trigger_end_value, int sequence_type, int sequence_controller_ID, double ctrl_target_vel, double ctrl_target_alt, int ctrl_target_curve) {
 		this.sequence_ID 			= sequence_ID;
@@ -30,7 +31,7 @@ public class SequenceElement{
 		this.sequence_controller_ID = sequence_controller_ID; 
 		this.ctrl_target_vel 		= ctrl_target_vel;
 		this.ctrl_target_alt 		= ctrl_target_alt;
-		this.ctrl_target_curve		=ctrl_target_curve;
+		this.ctrl_target_curve		= ctrl_target_curve;
 	}
 	
 	public int  get_sequence_ID() {

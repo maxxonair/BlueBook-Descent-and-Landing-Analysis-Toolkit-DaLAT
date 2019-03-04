@@ -14,17 +14,21 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.GridBagLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
@@ -61,6 +65,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
+import javax.swing.JSplitPane;
 import javax.swing.JTabbedPane;
 import javax.swing.JTable;
 import javax.swing.JTextArea;
@@ -69,6 +74,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
@@ -120,7 +127,6 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String Elevation_File_RES128 	= "/ELEVATION/LRO_128.csv";
 	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   //
     public static String Init_File   			= "/INP/init.inp" ;		    // Input: Initial state
-    public static String Env_File    			= "/INP/env.inp"  ;  			// Input: target and environment
     public static String RES_File    			= "/results.txt"  ;       	 	// Input: result file 
     public static String CTR_001_File			= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
@@ -254,7 +260,8 @@ public class Plotting_3DOF implements  ActionListener {
     public static JPanel PolarMapContainer; 
     public static JPanel PageX04_GroundClearance; 
     public static JPanel P1_Plotpanel;
-    public static JPanel P1_SidePanel;            
+    public static JPanel P1_SidePanel; 
+    public static JSplitPane SplitPane_Page1_Charts; 
     static JFreeChart Chart_MercatorMap;
     static JFreeChart Chart_GroundClearance;
 	static JFreeChart CHART_P1_DashBoardOverviewChart;
@@ -338,7 +345,6 @@ public class Plotting_3DOF implements  ActionListener {
     	//---------------------------------------------------------------------------------------
     	 String dir = System.getProperty("user.dir");
     	 Init_File = dir + Init_File ;
-    	 Env_File  = dir + Env_File  ; 
     	 RES_File  = dir + RES_File  ;
     	 CTR_001_File  = dir + CTR_001_File  ;
     	 Prop_File  = dir + Prop_File  ;
@@ -367,6 +373,10 @@ public class Plotting_3DOF implements  ActionListener {
         menuBar.setPreferredSize(new Dimension(1200, 20));
         MainGUI.add(menuBar, BorderLayout.NORTH);
 
+        JTabbedPane Page04_subtabPane = (JTabbedPane) new JTabbedPane();
+        Page04_subtabPane.setPreferredSize(new Dimension(extx_main, exty_main));
+        Page04_subtabPane.setBackground(bc_c);
+        Page04_subtabPane.setForeground(l_c);
         //Build the first menu.
         JMenu menu_BlueBook = new JMenu("BlueBook");
         menu_BlueBook.setForeground(l_c);
@@ -411,7 +421,7 @@ public class Plotting_3DOF implements  ActionListener {
                    public void actionPerformed(ActionEvent e) {
                 	   MAIN_frame.dispose();
                     } });
-        
+        //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_SIM = new JMenu("Simulation");
         menu_SIM.setForeground(l_c);
         menu_SIM.setBackground(bc_c);
@@ -426,7 +436,36 @@ public class Plotting_3DOF implements  ActionListener {
                    public void actionPerformed(ActionEvent e) {
                 	
                     } });
+        //--------------------------------------------------------------------------------------------------------------------------------
+        JMenu menu_PreProcessing = new JMenu("PreProcessing");
+        menu_PreProcessing.setForeground(l_c);
+        menu_PreProcessing.setBackground(bc_c);
+        menu_PreProcessing.setMnemonic(KeyEvent.VK_A);
+        menuBar.add(menu_PreProcessing);
         
+        JMenuItem menuItem_ImportScenario = new JMenuItem("Import Scenario              "); 
+        menuItem_ImportScenario.setForeground(Color.gray);
+        menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_PreProcessing.add(menuItem_ImportScenario);
+        menuItem_ImportScenario.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   
+
+                	   Page04_subtabPane.setSelectedIndex(1);
+                    } });
+        JMenuItem menuItem_ExportScenario = new JMenuItem("Export Scenario              "); 
+        menuItem_ExportScenario.setForeground(Color.gray);
+        menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_PreProcessing.add(menuItem_ExportScenario);
+        menuItem_ExportScenario.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   
+
+					
+                    } });
+        //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PostProcessing = new JMenu("PostProcessing");
         menu_PostProcessing.setForeground(l_c);
         menu_PostProcessing.setBackground(bc_c);
@@ -470,11 +509,7 @@ public class Plotting_3DOF implements  ActionListener {
 							e1.printStackTrace();
 						}
                     } });
-        
-        JTabbedPane Page04_subtabPane = (JTabbedPane) new JTabbedPane();
-        Page04_subtabPane.setPreferredSize(new Dimension(extx_main, exty_main));
-        Page04_subtabPane.setBackground(bc_c);
-        Page04_subtabPane.setForeground(l_c);
+
 
         PageX04_Dashboard = new JPanel();
         PageX04_Dashboard.setLocation(0, 0);
@@ -512,10 +547,8 @@ public class Plotting_3DOF implements  ActionListener {
         PageX04_GroundClearance.setLayout(new BorderLayout());
         PageX04_GroundClearance.setBackground(bc_c);
         PageX04_GroundClearance.setForeground(l_c);
-        
-        
+
         // Page 4.1
-        
         P1_SidePanel = new JPanel();
         P1_SidePanel.setLayout(null);
         P1_SidePanel.setPreferredSize(new Dimension(405, exty_main));
@@ -527,8 +560,71 @@ public class Plotting_3DOF implements  ActionListener {
         P1_Plotpanel.setLayout(new BorderLayout());
         P1_Plotpanel.setPreferredSize(new Dimension(900, exty_main));
         P1_Plotpanel.setBackground(bc_c);
-        P1_Plotpanel.setForeground(l_c);
+        P1_Plotpanel.setForeground(Color.white);
         PageX04_Dashboard.add(P1_Plotpanel,BorderLayout.LINE_END);
+        
+        SplitPane_Page1_Charts = new JSplitPane();
+       	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
+       	SplitPane_Page1_Charts.setOrientation(JSplitPane.VERTICAL_SPLIT );
+       	SplitPane_Page1_Charts.setDividerLocation(0.5);
+       //	SplitPane_Page1_Charts.setForeground(Color.black);
+       //	SplitPane_Page1_Charts.setBackground(Color.gray);
+       	SplitPane_Page1_Charts.setDividerSize(3);
+       	SplitPane_Page1_Charts.setUI(new BasicSplitPaneUI() {
+               @SuppressWarnings("serial")
+   			public BasicSplitPaneDivider createDefaultDivider() {
+               return new BasicSplitPaneDivider(this) {
+                   @SuppressWarnings("unused")
+   				public void setBorder( Border b) {
+                   }
+
+                   @Override
+                       public void paint(Graphics g) {
+                       g.setColor(Color.gray);
+                       g.fillRect(0, 0, getSize().width, getSize().height);
+                           super.paint(g);
+                       }
+               };
+               }
+           });
+
+       	SplitPane_Page1_Charts.addComponentListener(new ComponentListener(){
+
+   			@Override
+   			public void componentHidden(ComponentEvent arg0) {
+   				// TODO Auto-generated method stub
+   				
+   			}
+
+   			@Override
+   			public void componentMoved(ComponentEvent arg0) {
+   				// TODO Auto-generated method stub
+   				//System.out.println("Line moved");	
+   				
+   			}
+
+   			@Override
+   			public void componentResized(ComponentEvent arg0) {
+   				// TODO Auto-generated method stub
+
+   			}
+
+   			@Override
+   			public void componentShown(ComponentEvent arg0) {
+   				// TODO Auto-generated method stub
+   				
+   			}
+       
+       	});
+       	SplitPane_Page1_Charts.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, 
+    		    new PropertyChangeListener() {
+    		        @Override
+    		        public void propertyChange(PropertyChangeEvent pce) {
+
+    		        }
+    		});
+       	SplitPane_Page1_Charts.setDividerLocation(500);
+       	P1_Plotpanel.add(SplitPane_Page1_Charts, BorderLayout.CENTER);
         
         JScrollPane scrollPane_P1 = new JScrollPane(P1_SidePanel);
         scrollPane_P1.setPreferredSize(new Dimension(415, exty_main));
@@ -836,7 +932,7 @@ public class Plotting_3DOF implements  ActionListener {
       LABEL_latitude.setBackground(Color.white);
       LABEL_latitude.setForeground(Color.black);
       P2_SidePanel.add(LABEL_latitude);
-      JLabel LABEL_altitude = new JLabel("Altitude [deg]");
+      JLabel LABEL_altitude = new JLabel("Altitude [m]");
       LABEL_altitude.setLocation(65, uy_p41 + 25 * 3 );
       LABEL_altitude.setSize(250, 20);
       LABEL_altitude.setBackground(Color.white);
@@ -1240,7 +1336,7 @@ public class Plotting_3DOF implements  ActionListener {
 	    TableColumn SequENDValColumn  		 = TABLE_SEQUENCE.getColumnModel().getColumn(2);
 	    TableColumn SequTypeColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(3);
 	    TableColumn SequenceFCColumn 	  	 = TABLE_SEQUENCE.getColumnModel().getColumn(4);
-	    TableColumn FCvelColumn 	   		 	 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
+	    TableColumn FCvelColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
 	    TableColumn FCaltColumn	   			 = TABLE_SEQUENCE.getColumnModel().getColumn(6);
 	    TableColumn FCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(7);
 
@@ -1559,7 +1655,7 @@ public class Plotting_3DOF implements  ActionListener {
         Page04_subtabPane.addTab("Map" , null, PageX04_Map, null);
         Page04_subtabPane.addTab("Polar Map" , null, PageX04_PolarMap, null);
         Page04_subtabPane.addTab("GroundClearance" , null, PageX04_GroundClearance, null);
-        Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
+        //Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
     		CreateChart_A01();
@@ -1805,7 +1901,18 @@ try {
         		Integrator_chooser.setSelectedIndex(Integ_indx);
             } else if (k==9){
         		int Target_indx = (int) InitialState;
+        		indx_target = (int) InitialState; 
+        		INDICATOR_TARGET.setText(Target_Options[indx_target]);
         		Target_chooser.setSelectedIndex(Target_indx);
+                if(indx_target==0) {
+                	INDICATOR_TARGET.setBorder(Earth_border);
+                } else if(indx_target==1){
+                	INDICATOR_TARGET.setBorder(Moon_border);
+                } else if(indx_target==2){
+                	INDICATOR_TARGET.setBorder(Mars_border);
+                } else if(indx_target==3){
+                	INDICATOR_TARGET.setBorder(Venus_border);
+                }
             } else if (k==10){
             	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
             } else if (k==11){
@@ -1819,56 +1926,6 @@ try {
         br.close();
         fstream.close();
         } catch (NullPointerException eNPE) { System.out.println(eNPE);}
-        //------------------------------------------------------------------
-        // Read from env.inp
-        try {
-            fstream = new FileInputStream(Env_File);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading env.inp failed.");} 
-      DataInputStream in2 = new DataInputStream(fstream);
-      @SuppressWarnings("resource")
-		BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
-      String strLine2;
-      k = 0;
-      try {
-      while ((strLine2 = br2.readLine()) != null )   {
-      	String[] tokens = strLine2.split(" ");
-      	InitialState = Double.parseDouble(tokens[0]);
-        if (k==0){
-        indx_target = (int) InitialState; 
-        INDICATOR_TARGET.setText(Target_Options[indx_target]);
-        Target_chooser.setSelectedIndex(indx_target);
-        if(indx_target==0) {
-        	INDICATOR_TARGET.setBorder(Earth_border);
-        } else if(indx_target==1){
-        	INDICATOR_TARGET.setBorder(Moon_border);
-        } else if(indx_target==2){
-        	INDICATOR_TARGET.setBorder(Mars_border);
-        } else if(indx_target==3){
-        	INDICATOR_TARGET.setBorder(Venus_border);
-        }
-      	} else if (k==1){
-      		RM = InitialState; 
-      	//System.out.println(RM);
-      	} else if (k==2){
-      	
-      	} else if (k==3){
-      		
-      	} else if (k==4){
-      		
-      	} else if (k==5){
-      	
-      	} else if (k==6){
-
-      	} else if (k==7){
-
-      	}
-      	k++;
-      }
-      in2.close();
-      br2.close();
-      fstream.close();
-      } catch (NullPointerException eNPE) { System.out.println(eNPE);}
-      
       //------------------------------------------------------------------
       // Read from CTRL
       try {
@@ -2161,13 +2218,18 @@ try {
 		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[38])));
 		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[29])))); 
 		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[33])));
+		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrl_curve=0;
+		           try {
 		           String[] sequ_tokens  = SEQUENCE_DATA.get(active_sequence).split(" ");
-		           int active_sequ_type  = Integer.parseInt(sequ_tokens[1]);
-		           double ctrl_vinit 	 = Double.parseDouble(sequ_tokens[3]);
-		           double ctrl_hinit 	 = Double.parseDouble(sequ_tokens[4]);
-		           double ctrl_vel 	     = Double.parseDouble(sequ_tokens[5]);
-		           double ctrl_alt 		 = Double.parseDouble(sequ_tokens[6]);
-		           int ctrl_curve        = Integer.parseInt(sequ_tokens[7]);
+		            active_sequ_type  = Integer.parseInt(sequ_tokens[1]);
+		            ctrl_vinit 	 = Double.parseDouble(sequ_tokens[3]);
+		            ctrl_hinit 	 = Double.parseDouble(sequ_tokens[4]);
+		            ctrl_vel 	     = Double.parseDouble(sequ_tokens[5]);
+		            ctrl_alt 		 = Double.parseDouble(sequ_tokens[6]);
+		            ctrl_curve        = Integer.parseInt(sequ_tokens[7]);
+		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
+		        	   System.out.println(eIOBE);
+		           }
 		           //System.out.println(ctrl_vinit+ " | "+ ctrl_hinit);
 		          // System.out.println(active_sequence+ " | "+ ctrl_curve);
 		           if(active_sequ_type==3) { // Controlled Propulsive flight
@@ -2184,7 +2246,11 @@ try {
 		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } 
 		           } else {
+		        	   try {
 		        	   xyseries10.add(x  , 0);  
+		        	   } catch(org.jfree.data.general.SeriesException eSE) {
+		        		   System.out.println(eSE);
+		        	   }
 		           }
 		           //System.out.println(xx+ " | "+ y);
 		           try { 
@@ -2270,7 +2336,8 @@ try {
 	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart);
 	    ChartPanel_DashBoardOverviewChart.addOverlay(crosshairOverlay);
 	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart,BorderLayout.PAGE_START);
-	    P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
+	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
+	   SplitPane_Page1_Charts.add(ChartPanel_DashBoardOverviewChart, JSplitPane.TOP);
 	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
 		//jPanel4.validate();	
 		CHART_P1_DashBoardOverviewChart_fd = false;
@@ -2342,7 +2409,8 @@ try {
 	    ChartPanel_DashBoardFlexibleChart.addOverlay(crosshairOverlay);
 	   PlotPanel_X44.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.PAGE_START);
 	    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
-	    P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
+	    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
+	    SplitPane_Page1_Charts.add(ChartPanel_DashBoardFlexibleChart, JSplitPane.BOTTOM);
 		//jPanel4.validate();	
 		Chart_MercatorMap4_fd = false;
 	}
@@ -2446,10 +2514,18 @@ try {
 		           String[] tokens2 = strLine_2.split(" ");
 		           double y = Double.parseDouble(tokens[4]);     			 // Altitude 	[m]
 		           double x = Double.parseDouble(tokens[40]);	 			 // Groundtrack [m]
+		           try{
 		           xyseries_FlightPath.add(x,y);
+		           } catch ( org.jfree.data.general.SeriesException eSE){
+		        	  System.out.println(eSE); 
+		           }
+		           try{
 		           double local_elevation = Double.parseDouble(tokens2[0]);
 		           xyseries_Elevation.add(x,local_elevation);
 		           xyseries_Delta.add(x,y-local_elevation);
+		           } catch ( org.jfree.data.general.SeriesException eSE){
+		        	  System.out.println(eSE); 
+		           }
                   }
            in.close();
            br.close();
@@ -3251,9 +3327,11 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
         MAIN_frame.setLocationRelativeTo(null);
         MAIN_frame.setExtendedState( MAIN_frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
         MAIN_frame.setVisible(true);
+        BufferedImage myImage = null;
          try {
-         BufferedImage myImage = ImageIO.read(new File(ICON_File));
-         MAIN_frame.setIconImage(myImage);  
+         myImage = ImageIO.read(new File(ICON_File));
+        // MAIN_frame.setIconImage(myImage);  
+         MAIN_frame.setIconImage(myImage);
          }catch(IIOException eIIO) {
         	 System.out.println(eIIO);
          }
