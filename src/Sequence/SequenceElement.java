@@ -1,16 +1,15 @@
 package Sequence;
 
 public class SequenceElement{
-	private int 	sequence_ID;
-	private int 	trigger_end_type;
-	private double 	trigger_end_value;
-	private int 	sequence_type;
-	private int 	sequence_controller_ID; 
-	private double  ctrl_target_vel ;
-	private double  ctrl_target_alt; 
-	private int 	ctrl_target_curve;
-	private double  tzero; 
-	
+	private int 	sequence_ID;			// Sequence ID 							[-]
+	private int 	trigger_end_type;		// Sequence end type 					[-]
+	private double 	trigger_end_value;		// Sequence end value 					[-]
+	private int 	sequence_type;			// Sequence Type 						[-]
+	private int 	sequence_controller_ID; // Sequence FC ID 						[-]
+	private double  ctrl_target_vel ;		// FC target velocity at sequence end 	[m/s]
+	private double  ctrl_target_alt; 		// FC target altitude at sequence end 	[m]
+	private int 	ctrl_target_curve;		// FC target curve 						[-]
+
 	public SequenceElement(int sequence_ID, int trigger_end_type, double trigger_end_value, int sequence_type, int sequence_controller_ID, double ctrl_target_vel, double ctrl_target_alt, int ctrl_target_curve) {
 		this.sequence_ID 			= sequence_ID;
 		this.trigger_end_type 		= trigger_end_type;

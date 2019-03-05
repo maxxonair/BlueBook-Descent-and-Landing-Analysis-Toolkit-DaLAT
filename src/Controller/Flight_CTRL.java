@@ -32,6 +32,10 @@ public class Flight_CTRL{
 	private double cmd_min;			// controller output cmd min		[-]
 	private double cmd_max;			// controller output cmd max    [-]
 	private double CTRL_ERROR;		// controller Errror				[ ]
+	private double CTRL_TIME;		// controller Time 					[s]
+	
+	private double  tzero; 					// Sequence Time 						[s]
+	private boolean tswitch =true;          // Time switch to start controller time [s]
 	//-----------------------------------------------------------------------------
 	static String INPUT_FILE = null; 
 	public static String ControllerInputFile_1 = "/CTRL/cntrl_";
@@ -218,6 +222,9 @@ public class Flight_CTRL{
 	public double get_CTRL_ERROR() {
 		return CTRL_ERROR;
 	}
+	public double get_CTRL_TIME() {
+		return CTRL_TIME; 
+	}
 	public void Update_Flight_CTRL(boolean ctrl_on, double alt, double vel, double fpa, double m0, double m, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit,  double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, int ctrl_curve, double ctrl_dt) {
 		this.ctrl_on = ctrl_on;
 		this.alt = alt;
@@ -235,6 +242,8 @@ public class Flight_CTRL{
 		this.thrust_min   = thrust_min;
 		this.ctrl_curve   = ctrl_curve; 
 		this.ctrl_dt	  = ctrl_dt; 
+		if(ctrl_tinit!=-1&&tswitch) {tzero=ctrl_tinit;tswitch=false;}
+		CTRL_TIME = ctrl_tinit-tzero; 
 	}
 	public void set_ctrl_on(boolean NewValue){
 		ctrl_on = NewValue;

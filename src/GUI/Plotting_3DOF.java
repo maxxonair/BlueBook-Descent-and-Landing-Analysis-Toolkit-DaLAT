@@ -1,8 +1,8 @@
 package GUI; 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-//															BlueBook GUI
+//															BlueBook DaLAT GUI
 //
-//   Version 0.1 ALPHA
+//   Descent and Landing Analysis Toolkit  - Version 0.1 ALPHA
 //
 //   Author: M. Braun
 // 	 Date: 01/03/2019
@@ -229,7 +229,8 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Accumulated Delta-v [m/s]",
     										  "Active Sequence ID [-]",
     										  "Groundtrack [km]",
-    										  "CNTRL Error [m/s]"
+    										  "CNTRL Error [m/s]",
+    										  "CNTRL Time [s]"
     										  };
     public static String[] LocalElevation_Resolution = { "4", 
 			  "16" , 
@@ -398,7 +399,7 @@ public class Plotting_3DOF implements  ActionListener {
                 	   
                     } });
         menu_BlueBook.addSeparator();
-        JMenuItem menuItem_Import = new JMenuItem("Simulation Setup Open                 "); 
+        JMenuItem menuItem_Import = new JMenuItem("                "); 
         menuItem_Import.setForeground(Color.gray);
         menuItem_Import.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -408,13 +409,25 @@ public class Plotting_3DOF implements  ActionListener {
                 	   
                     } });
         JMenuItem menuItem_Export = new JMenuItem("Results save as                "); 
-        menuItem_Export.setForeground(Color.gray);
+        menuItem_Export.setForeground(Color.black);
         menuItem_Export.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_Export);
         menuItem_Export.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-
+                     	File myfile;
+  	        			myfile = new File(dir+"/RESULTS");
+  		            	JFileChooser fileChooser = new JFileChooser(myfile);
+	  		           	if (fileChooser.showOpenDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
+	  	                File file = fileChooser.getSelectedFile() ;
+	  	                String filePath = file.getAbsolutePath();
+	  	                filePath = filePath.replaceAll(".DaLAT", "");
+	  	                File source = new File(RES_File);
+	  	                File dest = new File(filePath+".DaLAT");
+                	   try {
+                	       FileUtils.copyFile(source, dest);
+                	   } catch (IOException eIO) {System.out.println(eIO);}
+                	   System.out.println("Result file "+file.getName()+" saved.");
                     } });
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Exit = new JMenuItem("Exit                  "); 
@@ -449,7 +462,7 @@ public class Plotting_3DOF implements  ActionListener {
         menuBar.add(menu_PreProcessing);
         
         JMenuItem menuItem_ImportScenario = new JMenuItem("Simulation Setup Open               "); 
-        menuItem_ImportScenario.setForeground(Color.gray);
+        menuItem_ImportScenario.setForeground(Color.black);
         menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ImportScenario);
@@ -466,13 +479,13 @@ public class Plotting_3DOF implements  ActionListener {
                		   CurrentWorkfile_Path = file;
                        CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
                        MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
-                       IMPORT_Case();
+                       try {IMPORT_Case();} catch (IOException e1) {System.out.println(e1);}
    					System.out.println("File "+CurrentWorkfile_Name+" opened.");
 
                 	   Page04_subtabPane.setSelectedIndex(1);
                     } });
         JMenuItem menuItem_ExportScenario = new JMenuItem("Simulation Setup Save as              "); 
-        menuItem_ExportScenario.setForeground(Color.gray);
+        menuItem_ExportScenario.setForeground(Color.black);
         menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ExportScenario);
@@ -1463,6 +1476,14 @@ public class Plotting_3DOF implements  ActionListener {
     		  UpSequence();
     	  } } );
     SequenceControlPanel.add(BUTTON_UpSequence);
+    JButton BUTTON_RemoveAllSequence = new JButton("Remove All");
+    BUTTON_RemoveAllSequence.setLocation(325, 5);
+    BUTTON_RemoveAllSequence.setSize(145,25);
+    BUTTON_RemoveAllSequence.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  DeleteAllSequence();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_RemoveAllSequence);
     JButton BUTTON_DownSequence = new JButton("Sequence down");
     BUTTON_DownSequence.setLocation(155, 32);
     BUTTON_DownSequence.setSize(145,25);
@@ -1740,6 +1761,10 @@ public class Plotting_3DOF implements  ActionListener {
     	if (j >= 0){MODEL_SEQUENCE.removeRow(j);}
     	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
     	
+    	WriteSequenceINP();
+    }
+    public static void DeleteAllSequence() {
+    	for(int j=MODEL_SEQUENCE.getRowCount()-1;j>=0;j--) {MODEL_SEQUENCE.removeRow(j);}
     	WriteSequenceINP();
     }
     
@@ -2041,7 +2066,7 @@ try {
   } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
     }
 
-    public void WRITE_INIT() {
+    public static void WRITE_INIT() {
         try {
             File fac = new File(Init_File);
             if (!fac.exists())
@@ -2153,7 +2178,7 @@ try {
     }
     
     
-    public void WRITE_PROP() {
+    public static void WRITE_PROP() {
         try {
             File fac = new File(Prop_File);
             if (!fac.exists())
@@ -2225,39 +2250,132 @@ try {
 	   	    
 	   	    return INIT_CONDITIONS;
 	}
-public static void IMPORT_Case() {
-	
+public static void IMPORT_Case() throws IOException {
+	BufferedReader br = new BufferedReader(new FileReader(CurrentWorkfile_Path));
+	DeleteAllSequence();
+    String strLine;
+    int indx_init=0;
+    int indx_prop=0;
+    int data_column=2;              // Data column of one column data files [-]
+    @SuppressWarnings("unused")
+	int k = 0 ; 
+    while ((strLine = br.readLine()) != null )   {
+    	String[] tokens = strLine.split(" ");
+    	if(tokens[0].equals("|INIT|")) {
+				            if (indx_init==0){INPUT_LONG.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				  	 } else if (indx_init==1){INPUT_LAT.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==2){INPUT_ALT.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==3){INPUT_VEL.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==4){INPUT_FPA.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==5){INPUT_AZI.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==6){INPUT_M0.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==7){INPUT_INTEGTIME.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				 	 } else if (indx_init==8){Integrator_chooser.setSelectedIndex(Integer.parseInt(tokens[data_column]));
+				     } else if (indx_init==9){Target_chooser.setSelectedIndex(Integer.parseInt(tokens[data_column]));
+				     } else if (indx_init==10){INPUT_WRITETIME.setText(decf.format(Double.parseDouble(tokens[data_column])));
+				     } else if (indx_init==11){INPUT_REFELEV.setText(decf.format(Double.parseDouble(tokens[data_column])));
+					 } 				     
+        indx_init++;
+    	} else if(tokens[0].equals("|PROP|")) {
+			            if (indx_prop==0){INPUT_ISP.setText(decf.format(Double.parseDouble(tokens[data_column])));
+			  	 } else if (indx_prop==1){INPUT_PROPMASS.setText(decf.format(Double.parseDouble(tokens[data_column])));
+			 	 } else if (indx_prop==2){INPUT_THRUSTMAX.setText(decf.format(Double.parseDouble(tokens[data_column])));
+			 	 } else if (indx_prop==3){INPUT_THRUSTMIN.setText(decf.format(Double.parseDouble(tokens[data_column])));
+			 	 } 			     
+		indx_prop++;
+	    }  else if(tokens[0].equals("|SEQU|")) {
+			       	int sequence_ID 			= Integer.parseInt(tokens[1]);
+			       	int trigger_end_type 		= Integer.parseInt(tokens[2]);
+			       	double trigger_end_value 	= Double.parseDouble(tokens[3]);
+			       	int sequence_type		 	= Integer.parseInt(tokens[4]);
+			       	int sequence_controller_ID 	= Integer.parseInt(tokens[5]);
+			       	double ctrl_target_vel      = Double.parseDouble(tokens[6]);
+			       	double ctrl_target_alt 		= Double.parseDouble(tokens[7]);
+			       	int ctrl_target_curve       = Integer.parseInt(tokens[8]);
+			    	ROW_SEQUENCE[0] = ""+sequence_ID;
+			    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
+			    	ROW_SEQUENCE[2] = ""+trigger_end_value;
+			    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
+			    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
+			    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
+			    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
+			    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
+			    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
+			    	WriteSequenceINP();
+	    }
+    k++;
+    }
+    WRITE_INIT();
+    WRITE_PROP();
+    br.close();
 }
 public static void EXPORT_Case() throws FileNotFoundException {
 	if ( CurrentWorkfile_Name.isEmpty()==false) {
-    	//File myfile = myfile_opened;
-    	//String filePath = myfile.getAbsolutePath();
-        File file = CurrentWorkfile_Path ; //new File(filePath + "\\" + myfile_name);
+        File file = CurrentWorkfile_Path ; 
         PrintWriter os;
 		os = new PrintWriter(file);
-		//String head_line = Minit.getText() + BB_delimiter + Mpayload.getText() + BB_delimiter + cd_tf1.getText() + BB_delimiter + BoilOff_TF.getText() + BB_delimiter + FuelMar_TF.getText() + BB_delimiter + cbMenuItem_BO.isSelected() + BB_delimiter + cbMenuItem_SL.isSelected() + BB_delimiter + cbMenuItem_MAR.isSelected() + BB_delimiter;   
-		//os.print(head_line);
-		//os.println("");
+	
     	for (int i = 0; i < 12; i++) {  // 					init.inp
-    		os.print("|DELTAV|" + BB_delimiter);
-    	    for (int col = 0; col < 1; col++) {
-    	    	double WriteValue=0;
-    	        os.print(WriteValue);
-    	        os.print(BB_delimiter);
-    	    }
-    	    os.println("");
+        os.print("|INIT|" + BB_delimiter);
+                       if (i==0){os.print("|LONGITUDE[DEG]|"+ BB_delimiter+INPUT_LONG.getText());
+            	} else if (i==1){os.print("|LATITUDE[DEG]|"+ BB_delimiter+INPUT_LAT.getText());
+            	} else if (i==2){os.print("|ALTITUDE[m]|"+ BB_delimiter+INPUT_ALT.getText());
+            	} else if (i==3){os.print("|VELOCITY[m/s]|"+ BB_delimiter+INPUT_VEL.getText());
+            	} else if (i==4){os.print("|FPA[DEG]|"+ BB_delimiter+INPUT_FPA.getText());
+            	} else if (i==5){os.print("|AZIMUTH[DEG]|"+ BB_delimiter+INPUT_AZI.getText());
+            	} else if (i==6){os.print("|INITMASS[kg]|"+ BB_delimiter+INPUT_M0.getText());
+            	} else if (i==7){os.print("|INTEGTIME[s]|"+ BB_delimiter+INPUT_INTEGTIME.getText());
+            	} else if (i==8){os.print("|INTEG[-]|"+ BB_delimiter+Integrator_chooser.getSelectedIndex());
+                } else if (i==9){os.print("|TARGET[-]|"+ BB_delimiter+Target_chooser.getSelectedIndex());
+                } else if (i==10){os.print("|WRITET[s]|"+ BB_delimiter+INPUT_WRITETIME.getText());
+                } else if (i==11){os.print("|REFELEVEVATION[m]|"+ BB_delimiter+INPUT_REFELEV.getText());
+    		    } 
+                os.print(BB_delimiter);
+    	os.println("");
     	}
+    	
     	for (int i = 0; i < 10; i++) {  // 					prop.inp
-    		os.print("|PL|" + BB_delimiter);
-    	    for (int col = 0; col < 1; col++) {
-    	    	double WriteValue=0;
-    	        os.print(WriteValue);
-    	        os.print(BB_delimiter);
+    		os.print("|PROP|" + BB_delimiter);
+		               if (i==0){os.print("|ISP[s]|"+ BB_delimiter+INPUT_ISP.getText());
+		     	} else if (i==1){os.print("|PROPMASS[kg]|"+ BB_delimiter+INPUT_PROPMASS.getText());
+		     	} else if (i==2){os.print("|THRUSTMAX[N]|"+ BB_delimiter+INPUT_THRUSTMAX.getText());
+		     	} else if (i==3){os.print("|THRUSTMIN[N]|"+ BB_delimiter+INPUT_THRUSTMIN.getText());
+		     	} else if (i==4){
+		     	} else if (i==5){
+		    	}
+	        os.println("");
+    	}
+    	for (int row = 0; row < MODEL_SEQUENCE.getRowCount(); row++) {  // 					Sequence.inp
+    		os.print("|SEQU|" + BB_delimiter);
+    	    for (int col = 0; col < MODEL_SEQUENCE.getColumnCount(); col++) {
+    	    	if (col==1) {
+    	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+    	    		int val=0;
+    	    		for(int k=0;k<SequenceENDType.length;k++) {if(str_val.equals(SequenceENDType[k])){val=k;}}
+    	    		os.print(val+ BB_delimiter);
+    	    	} else if (col==3) {
+    	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+    	    		int val=0;
+    	    		for(int k=0;k<SequenceType.length;k++) {if(str_val.equals(SequenceType[k])){val=k+1;}}
+    	    		os.print(val+ BB_delimiter);
+    	    	} else if (col==4) {
+    	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+    	    		int val=0;
+    	    		for(int k=0;k<SequenceFC.length;k++) {if(str_val.equals(SequenceFC[k])){val=k+1;}}
+    	    		os.print(val+ BB_delimiter);
+    	    	} else if (col==7) {
+    	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+    	    		int val=0;
+    	    		for(int k=0;k<FCTargetCurve.length;k++) {if(str_val.equals(FCTargetCurve[k])){val=k+1;}}
+    	    		os.print(val+ BB_delimiter);
+    	    	} else {
+		        os.print(MODEL_SEQUENCE.getValueAt(row, col)+ BB_delimiter);
+    	    	}
     	    }
     	    os.println("");
     	}
-        os.close();
-		}
+       os.close();
+	}
 }
 	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
 		ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();

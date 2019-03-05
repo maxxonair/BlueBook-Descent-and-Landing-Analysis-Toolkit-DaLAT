@@ -161,20 +161,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    Lt    = DATA_MAIN[TARGET][3];    	// Average collision diameter (CO2)         [m]
 		    mu    = DATA_MAIN[TARGET][1];    	// Standard gravitational constant          []
 		    rm    = DATA_MAIN[TARGET][0];    	// Planets mean radius                      [m]
-		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     				[rad/s]
-		    //--------------------------------------------------------------------
-		    // 			Write env.inp : 
-		    /*
-			 PrintWriter writer = new PrintWriter(new File("/INP/env.inp"), "UTF-8");
-			for (int i = 0; i < 6; i++) {
-				if(i==0) {
-				writer.println(""+TARGET);
-				} else if (i<5){
-				writer.println(""+DATA_MAIN[TARGET][i-1]);
-				}
-			}
-			writer.close();
-			*/
+		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     		    [rad/s]
 		}
 		public static void UPDATE_FlightController(Flight_CTRL NewElement){	   
 			   if (Flight_Controller.size()==0){ EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
@@ -186,7 +173,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				// -> Create new Flight controller 
-				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
+				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
 				UPDATE_FlightController(NewFlightController);
 			}
 		}
@@ -204,7 +191,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 					isFirstSequence=false; 
 				}
 				if(trigger_type==0) {
-						if(t>trigger_value) {
+						if(Flight_Controller.get(active_sequence).get_CTRL_TIME()>trigger_value) {
 							active_sequence++;
 							cntr_v_init = x[3];
 							cntr_h_init = x[2]-rm-ref_ELEVATION;
@@ -245,14 +232,15 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	}
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
+	    	Flight_Controller.get(active_sequence).Update_Flight_CTRL( true, (x[2]-rm-ref_ELEVATION), x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	if(sequence_type==3) { // Controlled Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller ON - Controlled Fight Sequence
 			    	//-------------------------------------------------------------------------------------------------------------
 			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
 			    	// Update Controller inputs:
-			    	double alt = (x[2]-rm-ref_ELEVATION);
-					Flight_Controller.get(active_sequence).Update_Flight_CTRL( true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  0,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
+			    	//double alt = (x[2]-rm-ref_ELEVATION);
+					//Flight_Controller.get(active_sequence).Update_Flight_CTRL( true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 			    	// Compile controller output: 
 			    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
 			    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
@@ -514,10 +502,11 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
 	                double CTRL_Error =0;
+	                double CTRL_Time =0;
 	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
 	                CTRL_Error=Flight_Controller.get(active_sequence).get_CTRL_ERROR();
 	                }
-	                
+	                CTRL_Time=Flight_Controller.get(active_sequence).get_CTRL_TIME();
 	                if( t > twrite ) {
 	                	twrite = twrite + dt_write; 
 	                    steps.add(t + " " + 
@@ -561,7 +550,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (acc_deltav)+" "+
 	                    		  active_sequence+" "+
 	                    		  (groundtrack/1000)+" "+
-	                    		  CTRL_Error+" "
+	                    		  CTRL_Error+" "+
+	                    		  CTRL_Time+" "
 	                    		  );
 	                }
 	                if(isLast) {
