@@ -241,7 +241,6 @@ public class Plotting_3DOF implements  ActionListener {
     public static double v_touchdown;
 	public static double Propellant_Mass=0;
 	public static double M0;
-
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												GUI Elements
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -323,7 +322,7 @@ public class Plotting_3DOF implements  ActionListener {
 											   "Controlled Thrust (FC ON)",
 											   "Constrained Thrust (FC OFF)"
 		};
-		public static String[] SequenceFC = { "Flight Controller 1"};
+		public static String[] SequenceFC    = { "Flight Controller 1"};
 		public static String[] FCTargetCurve = {"Parabolic Velocity-Altitude",
 												"SquareRoot Velocity-Altitude",
 												"Hover Parabolic entry"
@@ -3490,32 +3489,22 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		return time;
 	}
     
-	private static void createAndShowGUI() throws IOException, URISyntaxException{
-
+	private static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(false);
         MAIN_frame = new JFrame("" + PROJECT_TITLE);
-        //frame.setLayout(BB_BL);
-        //Create and set up the content pane.
         Plotting_3DOF demo = new Plotting_3DOF();
         JPanel tp = demo.createContentPane();
         tp.setPreferredSize(new java.awt.Dimension(x_init, y_init));
-        //frame.setContentPane(demo.createContentPane());
-        
         MAIN_frame.add(tp, BorderLayout.CENTER);
         MAIN_frame.pack();
         MAIN_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        //frame.setSize(x_init, y_init);
         MAIN_frame.setLocationRelativeTo(null);
-        MAIN_frame.setExtendedState( MAIN_frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
+        MAIN_frame.setExtendedState(MAIN_frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
         MAIN_frame.setVisible(true);
-        BufferedImage myImage = null;
          try {
-         myImage = ImageIO.read(new File(ICON_File));
-        // MAIN_frame.setIconImage(myImage);  
-         MAIN_frame.setIconImage(myImage);
-         }catch(IIOException eIIO) {
-        	 System.out.println(eIIO);
-         }
+        	BufferedImage myImage = ImageIO.read(new File(ICON_File)); 
+        	MAIN_frame.setIconImage(myImage);
+         }catch(IIOException eIIO) {System.out.println(eIIO);}         
     }
     
     public static void main(String[] args) throws IOException {
@@ -3523,10 +3512,7 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
             public void run() {
                 try {
 					createAndShowGUI();
-				} catch (IOException | URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				} catch (IOException  e) {System.out.println(e);}
             }
         });
     }

@@ -120,6 +120,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	        private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
+	        private static List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
 	    		private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
 	    		private static ArrayList<String> CTRL_steps = new ArrayList<String>();
 	        static boolean PROPread = false; 
@@ -380,7 +381,11 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[4] = ( x[3] / x[2] - gr/ x[3] ) * cos( x[4] ) - gn * cos( x[5] ) * sin( x[4] ) / x[3] + L / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
 	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] - Ty / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
 	    // System mass [kg]
-	    dxdt[6] = - Thrust/(ISP*g0) ;                
+	    dxdt[6] = - Thrust/(ISP*g0) ;   
+	    
+	    for(int i=0;i<STOP_Handler.size();i++) {
+	    	STOP_Handler.get(i).Update_StopCondition(val_is);
+	    }
 }
     
 public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA){
@@ -639,10 +644,18 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        System.out.println("Initialization succesful");
 	        System.out.println("Integrator start");
 	        System.out.println("------------------------------------------");
+
+	        StopCondition cond = new StopCondition((y[2] - rm - ref_ELEVATION),0);
+	        STOP_Handler.add(cond);
+	        StopCondition cond2 = new StopCondition(y[3],0);
+	        STOP_Handler.add(cond2);
 	        long startTime = System.nanoTime();
 	        dp853.addStepHandler(WriteOut);
-	        dp853.addEventHandler(EventHandler_Touchdown,1,1.0e-3,30);
-	        if(HoverStop) {dp853.addEventHandler(EventHandler_NegVelocity,1,1.0e-3,30);}
+	       // dp853.addEventHandler(EventHandler_Touchdown,1,1.0e-3,30);
+	       // if(HoverStop) {dp853.addEventHandler(EventHandler_NegVelocity,1,1.0e-3,30);}
+	        for(int i=0;i<STOP_Handler.size();i++) {
+	        	dp853.addEventHandler(STOP_Handler.get(i).get_StopHandler(),1,1.0e-3,30);
+	        }
 	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
