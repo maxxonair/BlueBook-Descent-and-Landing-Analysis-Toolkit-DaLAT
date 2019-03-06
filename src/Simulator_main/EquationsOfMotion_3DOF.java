@@ -14,7 +14,6 @@ import java.util.List;
 import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
-import org.apache.commons.math3.ode.events.EventHandler;
 import org.apache.commons.math3.ode.nonstiff.AdamsBashforthIntegrator;
 import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
@@ -121,8 +120,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	        private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
 	        private static List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
-	    		private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
-	    		private static ArrayList<String> CTRL_steps = new ArrayList<String>();
+	    	private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
+	    	private static ArrayList<String> CTRL_steps = new ArrayList<String>();
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
 	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
@@ -168,13 +167,13 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			   if (Flight_Controller.size()==0){ EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
 			   } else {EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); } 
 		   }
-		public static void INITIALIZE_FlightController() {
+		public static void INITIALIZE_FlightController(double[]x) {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
 				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
 				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				// -> Create new Flight controller 
-				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, 0,  0,  0,  0,  0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0);
+				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController(NewFlightController);
 			}
 		}
@@ -233,7 +232,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	}
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
-	    	Flight_Controller.get(active_sequence).Update_Flight_CTRL( true, (x[2]-rm-ref_ELEVATION), x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
+	    	Flight_Controller.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	if(sequence_type==3) { // Controlled Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller ON - Controlled Fight Sequence
@@ -269,14 +268,15 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			    	//-------------------------------------------------------------------------------------------------------------
 	    		    if(const_isFirst){const_tzer0=t;}
 	    		   // double tsequence = (double) (t-const_tzer0);
-
+/*
 		    		if((TTM_max * x[6])>Thrust_max) {
 		    			Thrust = Thrust_max;
 		    		} else {
 		    			Thrust = TTM_max * x[6]; 
 		    		}
-		    		
-	    		elevationangle = 0.0032;
+		    		*/
+	    		    	elevationangle =  Flight_Controller.get(active_sequence).get_ctrl_vel();
+	    				Thrust = Thrust_max;
 		    			Throttle_CMD = Thrust/Thrust_max;
 	    	} else {
 	    		System.out.println("ERROR: Sequence type out of range");
@@ -348,7 +348,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	   	Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
     	}
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    Force Definition  | BodyFixed Frame |
+    	// 					    		Force Definition  | BodyFixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
 //System.out.println((x[2]-rm-ref_ELEVATION)+" | "+x[3] + " | "+ Thrust + " | "+ (m_propellant_init-(M0-x[6]))/m_propellant_init*100);
     	//-------------------------------------------------------------------------------------------------------------------
@@ -382,17 +382,16 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] - Ty / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
 	    // System mass [kg]
 	    dxdt[6] = - Thrust/(ISP*g0) ;   
-	    
-	    for(int i=0;i<STOP_Handler.size();i++) {
-	    	STOP_Handler.get(i).Update_StopCondition(val_is);
-	    }
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 								hah Update Event handler
+    	//-------------------------------------------------------------------------------------------------------------------
+	    for(int i=0;i<STOP_Handler.size();i++) {STOP_Handler.get(i).Update_StopCondition(t, x);}
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
-
    	 String dir = System.getProperty("user.dir");
      PropulsionInputFile = dir + PropulsionInputFile;
 	try {
@@ -403,6 +402,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		}
 //----------------------------------------------------------------------------------------------
 //   Read propulsion setting:	Propulsion/Controller INIT
+	if(ThrustSwitch==1) {ascent_switch=true;System.out.println("Ascent mode set");}else {ascent_switch=false;System.out.println("Descent mode set");}
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
@@ -432,7 +432,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		Sequence_RES_closed=false;
 		SEQUENCE_DATA_main = SEQUENCE_DATA;  // Sequence data handover
 		CTRL_steps.clear();
-		INITIALIZE_FlightController() ;
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -490,6 +489,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        y[5] = x5;
 	// S/C Mass        
 	        y[6] = x6;
+			INITIALIZE_FlightController(y) ;
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
 
@@ -579,83 +579,16 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	            }
 	            
 	        };
-	        
-	        EventHandler EventHandler_Touchdown = new EventHandler() {
-				@Override
-				public double g(double t, double[] y) {
-					// TODO Auto-generated method stub
-					// return y[2] - rm; // Altitude = 0 relative to mean elevation         -> integration stop 
-					return y[2] - rm - ref_ELEVATION; // Altitude = 0 relative to landing site elevation -> integration stop 
-					//return 0;
-				}
 
-
-				public Action eventOccurred(double t, double[] y, boolean increasing) {
-					System.out.println("Elevation 0 reached. Forced stop.");
-					  return Action.STOP;
-					}
-
-
-				@Override
-				public void init(double arg0, double[] arg1, double arg2) {
-					// TODO Auto-generated method stub
-					
-				}
-
-
-				@Override
-				public void resetState(double arg0, double[] arg1) {
-					// TODO Auto-generated method stub
-					
-				}
-	        	
-	        };
-	        EventHandler EventHandler_NegVelocity = new EventHandler() {
-				@Override
-				public double g(double t, double[] y) {
-					// TODO Auto-generated method stub
-					return y[3]; // Altitude = 0 -> integration stop 
-					//return 0;
-				}
-
-
-				public Action eventOccurred(double t, double[] y, boolean increasing) {
-					System.out.println("Velocity 0 reached. Forced stop.");
-					  return Action.STOP;
-					}
-
-
-				@Override
-				public void init(double arg0, double[] arg1, double arg2) {
-					// TODO Auto-generated method stub
-					
-				}
-
-
-				@Override
-				public void resetState(double arg0, double[] arg1) {
-					// TODO Auto-generated method stub
-					
-				}
-	        	
-	        };
 	        System.out.println("------------------------------------------");
 	        System.out.println("READ successful");
 	        System.out.println("Initialization succesful");
+	        for(int i=0;i<Event_Handler.size();i++) {dp853.addEventHandler(Event_Handler.get(0).get_StopHandler(),1,1.0e-3,30);}
+	        System.out.println(""+Event_Handler.size()+" Event Handler added.");
+	        dp853.addStepHandler(WriteOut);
 	        System.out.println("Integrator start");
 	        System.out.println("------------------------------------------");
-
-	        StopCondition cond = new StopCondition((y[2] - rm - ref_ELEVATION),0);
-	        STOP_Handler.add(cond);
-	        StopCondition cond2 = new StopCondition(y[3],0);
-	        STOP_Handler.add(cond2);
-	        long startTime = System.nanoTime();
-	        dp853.addStepHandler(WriteOut);
-	       // dp853.addEventHandler(EventHandler_Touchdown,1,1.0e-3,30);
-	       // if(HoverStop) {dp853.addEventHandler(EventHandler_NegVelocity,1,1.0e-3,30);}
-	        for(int i=0;i<STOP_Handler.size();i++) {
-	        	dp853.addEventHandler(STOP_Handler.get(i).get_StopHandler(),1,1.0e-3,30);
-	        }
+	        long startTime   = System.nanoTime();
 	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {

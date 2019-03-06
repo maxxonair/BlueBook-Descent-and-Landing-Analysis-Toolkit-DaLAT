@@ -105,6 +105,28 @@ public class SIM implements ActionListener{
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return SEQUENCE_DATA;
     }
+    
+    public static List<StopCondition> READ_EventHandler(double rm, double refElevation) throws IOException{
+         	 List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
+		   	 String dir = System.getProperty("user.dir");
+      	   	 INPUT_FILE = dir+"/INP/eventhandler.inp";
+      	   	 BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
+      	   	 String strLine;
+       try { 
+	       while ((strLine = br.readLine()) != null )   {
+	       	String[] tokens = strLine.split(" ");
+	    	int event_type 			= Integer.parseInt(tokens[0]);
+	    	double event_value 		= Double.parseDouble(tokens[1]);
+	    	if (event_type==3) {STOP_Handler.add(new StopCondition((rm + refElevation + event_value),event_type)); }
+	    	else			   {STOP_Handler.add(new StopCondition(event_value,event_type)); 	}
+	       }
+	       for(int i=0;i<STOP_Handler.size();i++) {
+	    	   STOP_Handler.get(i).create_StopHandler();
+	       }
+       }catch(NullPointerException eNPE) { System.out.println(eNPE);}
+       br.close();
+       return STOP_Handler; 
+    }
 
     public static void main(String[] args) throws IOException {
     	System.out.println("Simulation started");
@@ -130,21 +152,24 @@ public class SIM implements ActionListener{
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
 	    	double rm = EquationsOfMotion_3DOF.DATA_MAIN[target][0];
+	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	//System.out.println(target+" "+ rm);
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
-			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 	[-]
-														target, 				 // Target index 		[-]
-														x_init[0]*deg, 			 // Longitude 			[rad]
-														x_init[1]*deg, 			 // Latitude 			[rad]
-														x_init[2]+x_init[11]+rm, // Radius 				[m]
-														x_init[3], 				 // Velocity 			[m/s]
-														x_init[4]*deg, 			 // Flight path angle 	[rad]
-														x_init[5]*deg, 			 // Local Azimuth 		[rad]
-														x_init[6], 				 // Initial S/C mass 	[kg]
-														x_init[7], 			   	 // Maximum integ. time 	[s]
-														x_init[10],				 // Write out delta time [s]
-														x_init[11],				 // Reference Elevation  [m]
-														SEQUENCE_DATA			 // Sequence data set	[-]
+			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 					 [-]
+														target, 				 // Target index 						 [-]
+														x_init[0]*deg, 			 // Longitude 							 [rad]
+														x_init[1]*deg, 			 // Latitude 							 [rad]
+														x_init[2]+x_init[11]+rm, // Radius 								 [m]
+														x_init[3], 				 // Velocity 							 [m/s]
+														x_init[4]*deg, 			 // Flight path angle 					 [rad]
+														x_init[5]*deg, 			 // Local Azimuth 						 [rad]
+														x_init[6], 				 // Initial S/C mass 					 [kg]
+														x_init[7], 			   	 // Maximum integ. time 				 [s]
+														x_init[10],				 // Write out delta time 				 [s]
+														x_init[11],				 // Reference Elevation  				 [m]
+														SEQUENCE_DATA,			 // Sequence data set					 [-]
+												  (int) x_init[12],				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
+														STOP_Handler			 // Event Handler 						 [-]
 														);
 		}else {
 			System.out.println("Reading Input file failed -> Forced Integrator Stop.");

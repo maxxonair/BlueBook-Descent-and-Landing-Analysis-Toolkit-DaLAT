@@ -8,10 +8,10 @@ import java.io.InputStreamReader;
 
 public class Flight_CTRL{
 	private int     ctrl_ID;			// Controller ID					[-]
-	private boolean ctrl_on;			// Switch on/off (ctrl)			[true/false]
+	private boolean ctrl_on;		// Switch on/off (ctrl)			[true/false]
 	private double  alt; 			// Altitude 						[m]
-	private double  vel;	 			// velocity 						[m/s]
-	private double  fpa;				// flight path angel 			[rad]
+	private double  vel;	 	    // velocity 						[m/s]
+	private double  fpa;		    // flight path angel 			[rad]
 	private double  m0;				// Initial mass 					[kg]
 	private double  m;				// Actual mass 					[kg]
 	private double mprop;			// Propellant mass              [kg]
@@ -19,10 +19,10 @@ public class Flight_CTRL{
 	private double ctrl_hinit;		// Controller initial altitude 	[m]
 	private double ctrl_tinit;		// Controller initial time 	   	[s]
 	private double ctrl_vel;  		// Additional target velocity 	[m/s]
-	private double ctrl_alt;		    // Additional target altitude 	[m]
+	private double ctrl_alt;		// Additional target altitude 	[m]
 	private double thrust_max;		// Maximum Thrust 			   	[N]
 	private double thrust_min;		// Minimum Thrust 			   	[N]
-	private double throttle_cmd;	    // Controller throttle command	[-]
+	private double throttle_cmd;	// Controller throttle command	[-]
 	private double thrust_cmd;      // Controller thrust command 	[N]
 	private int    ctrl_curve;		// Control curve 				[-]
 	private double ctrl_dt;			// Delta-t controller			[s]
@@ -33,6 +33,10 @@ public class Flight_CTRL{
 	private double cmd_max;			// controller output cmd max    [-]
 	private double CTRL_ERROR;		// controller Errror				[ ]
 	private double CTRL_TIME;		// controller Time 					[s]
+	private double rm;				// Mean Radius						[m]
+	private double refElev;			// Reference Elevation				[m]
+	
+	private double tvc_cmd;			// thrust vector angle cmd			[rad] 
 	
 	private double  tzero; 					// Sequence Time 						[s]
 	private boolean tswitch =true;          // Time switch to start controller time [s]
@@ -42,14 +46,14 @@ public class Flight_CTRL{
     public static String ControllerInputFile_2 = ".inp"; 
 	public static String ControllerInputFile; 
 	//-----------------------------------------------------------------------------
-	public Flight_CTRL(int ctrl_ID, boolean ctrl_on, double alt, double vel, double fpa, double m0, double m, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit, double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, double throttle_cmd, double thrust_cmd, int ctrl_curve, double ctrl_dt, double P_GAIN, double I_GAIN, double D_GAIN, double cmd_min, double cmd_max) {
+	public Flight_CTRL(int ctrl_ID, boolean ctrl_on, double[] x, double m0, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit, double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, double throttle_cmd, double thrust_cmd, int ctrl_curve, double ctrl_dt, double P_GAIN, double I_GAIN, double D_GAIN, double cmd_min, double cmd_max, double rm, double refElev) {
 		this.ctrl_ID	  = ctrl_ID;
 		this.ctrl_on 	  = ctrl_on;
-		this.alt 		  = alt;
-		this.vel 		  = vel;
-		this.fpa 		  = fpa;
+		this.alt 		  = x[2]-rm+refElev;
+		this.vel 		  = x[3];
+		this.fpa 		  = x[4];
 		this.m0  		  = m0;
-		this.m   		  = m;
+		this.m   		  = x[6];
 		this.mprop        = mprop; 
 		this.ctrl_vinit   = ctrl_vinit;
 		this.ctrl_hinit   = ctrl_hinit;
@@ -67,6 +71,8 @@ public class Flight_CTRL{
 		this.D_GAIN       = D_GAIN;
 		this.cmd_min      = cmd_min;
 		this.cmd_max      = cmd_min; 
+		this.rm			  = rm;
+		this.refElev	  = refElev; 
 		
 		double[] readINP;
 		try {
@@ -213,6 +219,12 @@ public class Flight_CTRL{
     	}
 		return thrust_cmd;
 	}
+	public double get_TVC_cmd(){
+    	if(ctrl_on) {
+    		
+    	}
+    	return tvc_cmd; 
+	}
 	public int get_ctrl_curve() {
 		return ctrl_curve; 
 	}
@@ -225,13 +237,13 @@ public class Flight_CTRL{
 	public double get_CTRL_TIME() {
 		return CTRL_TIME; 
 	}
-	public void Update_Flight_CTRL(boolean ctrl_on, double alt, double vel, double fpa, double m0, double m, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit,  double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, int ctrl_curve, double ctrl_dt) {
+	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double m0,  double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit,  double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, int ctrl_curve, double ctrl_dt) {
 		this.ctrl_on = ctrl_on;
-		this.alt = alt;
-		this.vel = vel;
-		this.fpa = fpa;
+		this.alt = x[2]-rm+refElev;
+		this.vel = x[3];
+		this.fpa = x[4];
 		this.m0  = m0;
-		this.m   = m;
+		this.m   = x[6];
 		this.mprop= mprop; 
 		this.ctrl_vinit   = ctrl_vinit;
 		this.ctrl_hinit   = ctrl_hinit;
