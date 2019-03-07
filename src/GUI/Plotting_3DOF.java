@@ -346,7 +346,8 @@ public class Plotting_3DOF implements  ActionListener {
 		public static String[] SequenceType = {"Coasting (No Thrust)",
 											   "Continous (unregulated) Thrust",
 											   "Controlled Thrust (FC ON)",
-											   "Constrained Thrust (FC OFF)"
+											   "Constrained Thrust (FC OFF)",
+											   "TVC Turn (FC OFF"
 		};
 		public static String[] SequenceFC    = { "Flight Controller 1"};
 		public static String[] FCTargetCurve = {"Parabolic Velocity-Altitude",

@@ -264,24 +264,26 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    		Throttle_CMD = 0;
 	    	} else if (sequence_type==4) { // Constrained continuous thrust 
 			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//                          Flight Controller OFF - Uncontrolled/Constrained, continuous thrust
+			    	//                Flight Controller OFF - Uncontrolled/Constrained, continuous thrust TTM constraint
 			    	//-------------------------------------------------------------------------------------------------------------
 	    		    if(const_isFirst){const_tzer0=t;}
-	    		   // double tsequence = (double) (t-const_tzer0);
-/*
 		    		if((TTM_max * x[6])>Thrust_max) {
 		    			Thrust = Thrust_max;
 		    		} else {
 		    			Thrust = TTM_max * x[6]; 
 		    		}
-		    		*/
-	    		    	elevationangle =  Flight_Controller.get(active_sequence).get_ctrl_vel();
-	    				Thrust = Thrust_max;
 		    			Throttle_CMD = Thrust/Thrust_max;
-	    	} else {
-	    		System.out.println("ERROR: Sequence type out of range");
-	    	}
+	    	} else if (sequence_type==5) {
+			    	//-------------------------------------------------------------------------------------------------------------	
+			    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
+			    	//-------------------------------------------------------------------------------------------------------------
+    		    if(const_isFirst){const_tzer0=t;}
+		    	elevationangle =  Flight_Controller.get(active_sequence).get_ctrl_vel();
+				Thrust = Thrust_max;
+    			    Throttle_CMD = Thrust/Thrust_max;	
+	    	} else { System.out.println("ERROR: Sequence type out of range");}
 		}
+		
 		
 		public static void GRAVITY_MANAGER(double[] x) {
 			//------------------------------------------------------------------------------
@@ -583,7 +585,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        System.out.println("------------------------------------------");
 	        System.out.println("READ successful");
 	        System.out.println("Initialization succesful");
-	        for(int i=0;i<Event_Handler.size();i++) {dp853.addEventHandler(Event_Handler.get(0).get_StopHandler(),1,1.0e-3,30);}
+	        for(int i=0;i<Event_Handler.size();i++) {dp853.addEventHandler(Event_Handler.get(i).get_StopHandler(),1,1.0e-3,30);}
 	        System.out.println(""+Event_Handler.size()+" Event Handler added.");
 	        dp853.addStepHandler(WriteOut);
 	        System.out.println("Integrator start");
