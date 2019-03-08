@@ -141,6 +141,7 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
 	public static String MAP_MARS				= "/MAPS/Mars_MAP.jpg";
 	public static String MAP_SOUTHPOLE_MOON		= "/MAPS/Moon_South_Pole.jpg";
+	public static String EventHandler_File		= "/INP/eventhandler.inp";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -198,6 +199,10 @@ public class Plotting_3DOF implements  ActionListener {
     											   "SquareRoot" ,	
     											   "Linear" 	
 			  };
+    public static String[] TargetCurve_Options_TVC = { "",						// No target curve -> continous burn
+			   "SquareRoot" ,	
+			   "Linear" 	
+};
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
     										  "Latitude [deg]" ,
@@ -320,10 +325,14 @@ public class Plotting_3DOF implements  ActionListener {
 			 					 "Sequence END type", 
 			 					 "Sequence END value", 
 			 					 "Sequence type", 
-			 					 "Sequence FC",
-			 					 "FC target velocity", 
-			 					 "FC target altitude", 
-			 					 "FC target curve"};
+			 					 "Sequence Thrust level FC",
+			 					 "Tl-FC target velocity", 
+			 					 "Tl-FC target altitude", 
+			 					 "Tl-FC target curve",
+			 					 "Sequence TVC FC",
+			 					 "TVC-FC target velocity", 
+			 					 "TVC-FC target altitude", 
+			 					 "TVC-FC target curve"};
 	public static String[] COLUMS_EventHandler = {"Event Type",
 												  "Event Value"
 	};
@@ -347,6 +356,10 @@ public class Plotting_3DOF implements  ActionListener {
 		public static JComboBox SequenceFCCombobox = new JComboBox();
 		@SuppressWarnings("rawtypes")
 		public static JComboBox FCTargetCurveCombobox = new JComboBox();
+		@SuppressWarnings("rawtypes")
+		public static JComboBox SequenceTVCFCCombobox = new JComboBox();
+		@SuppressWarnings("rawtypes")
+		public static JComboBox TVCFCTargetCurveCombobox = new JComboBox();
 	    @SuppressWarnings("rawtypes")
 		public static JComboBox Target_chooser, Integrator_chooser,TargetCurve_chooser,ThrustSwitch_chooser;
 		
@@ -365,7 +378,9 @@ public class Plotting_3DOF implements  ActionListener {
 												"SquareRoot Velocity-Altitude",
 												"Hover Parabolic entry"
 		};
-    
+		public static String[] SequenceTVCFC    = { "Flight Controller 1" , "Flight Controller 2"};
+		
+		
     Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
     Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 1);
     Border Mars_border 	= BorderFactory.createLineBorder(Color.ORANGE, 1);
@@ -404,6 +419,7 @@ public class Plotting_3DOF implements  ActionListener {
     	 MAP_MOON = dir + MAP_MOON;
     	 MAP_VENUS = dir + MAP_VENUS;
     	 MAP_SOUTHPOLE_MOON = dir + MAP_SOUTHPOLE_MOON;
+    	 EventHandler_File = dir + EventHandler_File;
     	// ---------------------------------------------------------------------------------
     //       The following function contains all GUI elements of the main window
     // ---------------------------------------------------------------------------------
@@ -922,7 +938,7 @@ public class Plotting_3DOF implements  ActionListener {
         taOutputStream = null; 
         taOutputStream = new TextAreaOutputStream(textArea, ""); 
         JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-        JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         JSP_EnginModel.setPreferredSize(new Dimension(395-10,200-10));
         JSP_EnginModel.setLocation(5, 5);
         JP_EnginModel.add(JSP_EnginModel);
@@ -1466,6 +1482,7 @@ public class Plotting_3DOF implements  ActionListener {
 	        {// Action
 				  WRITE_INIT();	
 				  WRITE_EventHandler();
+				  System.out.println("write eventhandler file.");
 	        }
 	    };
 	    @SuppressWarnings("unused")
@@ -1539,8 +1556,9 @@ public class Plotting_3DOF implements  ActionListener {
         BUTTON_AddEventHandler.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
         	    	ROW_EventHandler[0] = ""+EventHandler_Type[1];
-        	    	ROW_EventHandler[1] = "";
+        	    	ROW_EventHandler[1] = "0";
         	    	MODEL_EventHandler.addRow(ROW_EventHandler); 
+        	    	WRITE_EventHandler();
         	  } } );
         IntegratorInputPanel.add(BUTTON_AddEventHandler);
         
@@ -1553,7 +1571,10 @@ public class Plotting_3DOF implements  ActionListener {
         BUTTON_DeleteEventHandler.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
         	    	int j = TABLE_EventHandler.getSelectedRow();
+        	    	if(j!=0) { // Time stopper set by default -> cannot be deleted 
         	    	if (j >= 0){MODEL_EventHandler.removeRow(j);}
+        	    	}
+        	    	WRITE_EventHandler();
         	  } } );
         IntegratorInputPanel.add(BUTTON_DeleteEventHandler);
 
@@ -1777,12 +1798,13 @@ public class Plotting_3DOF implements  ActionListener {
     MODEL_SEQUENCE.setColumnIdentifiers(COLUMS_SEQUENCE);
     TABLE_SEQUENCE.setModel(MODEL_SEQUENCE);
     TABLE_SEQUENCE.setBackground(Color.white);
-    int tablewidth3 = 900;
-    int tableheight3 = 400;
+   // int tablewidth3 = 900;
+   // int tableheight3 = 400;
   // ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
     TABLE_SEQUENCE.setBackground(Color.white);
     TABLE_SEQUENCE.setForeground(Color.black);
-    TABLE_SEQUENCE.setSize(tablewidth3, tableheight3);
+    //TABLE_SEQUENCE.setPreferredSize(new Dimension(tablewidth3, tableheight3));
+    //TABLE_SEQUENCE.setSize(tablewidth3, tableheight3);
     TABLE_SEQUENCE.getTableHeader().setReorderingAllowed(false);
     TABLE_SEQUENCE.setRowHeight(45);
     
@@ -1793,18 +1815,32 @@ public class Plotting_3DOF implements  ActionListener {
 	    TableColumn SequENDValColumn  		 = TABLE_SEQUENCE.getColumnModel().getColumn(2);
 	    TableColumn SequTypeColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(3);
 	    TableColumn SequenceFCColumn 	  	 = TABLE_SEQUENCE.getColumnModel().getColumn(4);
-	    TableColumn FCvelColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
+	    TableColumn FCvelColumn 	   		     = TABLE_SEQUENCE.getColumnModel().getColumn(5);
 	    TableColumn FCaltColumn	   			 = TABLE_SEQUENCE.getColumnModel().getColumn(6);
 	    TableColumn FCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(7);
+	    
+	    TableColumn TVCFCColumn    	 			 = TABLE_SEQUENCE.getColumnModel().getColumn(8);
+	    TableColumn TVCFCxColumn    	 			 = TABLE_SEQUENCE.getColumnModel().getColumn(9);
+	    TableColumn TVCFCyColumn    	 			 = TABLE_SEQUENCE.getColumnModel().getColumn(10);
+	    TableColumn TVCFCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(11);
 
+	    
+	    TABLE_SEQUENCE.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 	    SequID_colum.setPreferredWidth(50);
 	    SequENDTypeColumn.setPreferredWidth(100);
 	    SequENDValColumn.setPreferredWidth(100);
-	    SequTypeColumn.setPreferredWidth(180);
-	    SequenceFCColumn.setPreferredWidth(180);
-	    FCvelColumn.setPreferredWidth(150);
-	    FCaltColumn.setPreferredWidth(150);
+	    SequTypeColumn.setPreferredWidth(200);
+	    SequenceFCColumn.setPreferredWidth(150);
+	    FCvelColumn.setPreferredWidth(130);
+	    FCaltColumn.setPreferredWidth(130);
 	    FCtargetCurveColumn.setPreferredWidth(150); 
+	    
+	    TVCFCColumn.setPreferredWidth(150);
+	    TVCFCxColumn.setPreferredWidth(130);
+	    TVCFCyColumn.setPreferredWidth(130);
+	    TVCFCtargetCurveColumn.setPreferredWidth(150); 
+	    
+	    ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
     
     TABLE_SEQUENCE.getTableHeader().setBackground(Color.white);
     TABLE_SEQUENCE.getTableHeader().setForeground(Color.black);
@@ -1849,12 +1885,33 @@ public class Plotting_3DOF implements  ActionListener {
     }
     FCtargetCurveColumn.setCellEditor(new DefaultCellEditor(FCTargetCurveCombobox));
     
+    SequenceTVCFCCombobox.setBackground(Color.white);
+    try {
+    for (int i=0;i<SequenceTVCFC.length;i++) {
+    	SequenceTVCFCCombobox.addItem(SequenceTVCFC[i]);
+    }
+    } catch(NullPointerException eNPE) {
+    	System.out.println(eNPE);
+    }
+    TVCFCColumn.setCellEditor(new DefaultCellEditor(SequenceTVCFCCombobox));
+    
+    TVCFCTargetCurveCombobox.setBackground(Color.white);
+    try {
+    for (int i=0;i<TargetCurve_Options_TVC.length;i++) {
+    	TVCFCTargetCurveCombobox.addItem(TargetCurve_Options_TVC[i]);
+    }
+    } catch(NullPointerException eNPE) {
+    	System.out.println(eNPE);
+    }
+    TVCFCtargetCurveColumn.setCellEditor(new DefaultCellEditor(TVCFCTargetCurveCombobox));
+    
     JScrollPane TABLE_SEQUENCE_ScrollPane = new JScrollPane(TABLE_SEQUENCE,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+    //TABLE_SEQUENCE_ScrollPane.setLayout(null);
     TABLE_SEQUENCE_ScrollPane.getVerticalScrollBar().setBackground(Color.white);
     TABLE_SEQUENCE_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
     TABLE_SEQUENCE_ScrollPane.setBackground(Color.white);
-    TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
-    TABLE_SEQUENCE_ScrollPane.setOpaque(false);
+    //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
+    //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
     P2_SequenceMAIN.add(TABLE_SEQUENCE_ScrollPane, BorderLayout.PAGE_START);
     
     JPanel SequenceControlPanel = new JPanel();
@@ -2182,18 +2239,21 @@ public class Plotting_3DOF implements  ActionListener {
     
     public static void AddSequence() {
     	int NumberOfSequences = MODEL_SEQUENCE.getRowCount();
-    	ROW_SEQUENCE[0] = ""+NumberOfSequences;
-    	ROW_SEQUENCE[1] = ""+SequenceENDType[0];
-    	ROW_SEQUENCE[2] = "0";
-    	ROW_SEQUENCE[3] = ""+SequenceType[0];
-    	ROW_SEQUENCE[4] = ""+SequenceFC[0];
-    	ROW_SEQUENCE[5] = "1";
-    	ROW_SEQUENCE[6] = "1";
-    	ROW_SEQUENCE[7] = ""+FCTargetCurve[0];	
+    	ROW_SEQUENCE[0]  = ""+NumberOfSequences;
+    	ROW_SEQUENCE[1]  = ""+SequenceENDType[0];
+    	ROW_SEQUENCE[2]  = "0";
+    	ROW_SEQUENCE[3]  = ""+SequenceType[0];
+    	ROW_SEQUENCE[4]  = ""+SequenceFC[0];
+    	ROW_SEQUENCE[5]  = "1";
+    	ROW_SEQUENCE[6]  = "1";
+    	ROW_SEQUENCE[7]  = ""+FCTargetCurve[0];	
+    	ROW_SEQUENCE[8]  = ""+SequenceTVCFC[1];
+    	ROW_SEQUENCE[9]  = "1";
+    	ROW_SEQUENCE[10] = "1";
+    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[0];	
     	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
     	
-    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
-    	
+    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}    	
     	WriteSequenceINP();
     }
     
@@ -2276,6 +2336,9 @@ public class Plotting_3DOF implements  ActionListener {
             					int val = 0 ; 
             					for(int k=0;k<FCTargetCurve.length;k++) { if(str_val.equals(FCTargetCurve[k])){val=k+1;} }
             					row = row + val + " ";
+            				} else if(j==6) {
+            					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+            					row = row + val + " ";
             				} 
             		   }
             			wr.write(row+System.getProperty( "line.separator" ));
@@ -2336,6 +2399,16 @@ public class Plotting_3DOF implements  ActionListener {
        	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
        	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
        	int ctrl_target_curve       = Integer.parseInt(tokens[7]);
+       	try {
+       	int TVCsequence_controller_ID = Integer.parseInt(tokens[8]);
+       	double ctrl_target_x_TVC      = Double.parseDouble(tokens[9]);
+       	double ctrl_target_y_TVC 		= Double.parseDouble(tokens[10]);
+       	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
+	    	ROW_SEQUENCE[8] = ""+SequenceTVCFC[TVCsequence_controller_ID-1];
+	    	ROW_SEQUENCE[9] = ""+ctrl_target_x_TVC;
+	    	ROW_SEQUENCE[10] = ""+ctrl_target_y_TVC;
+	    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
+       	} catch(java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
     	ROW_SEQUENCE[0] = ""+sequence_ID;
     	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
     	ROW_SEQUENCE[2] = ""+trigger_end_value;
@@ -2343,7 +2416,7 @@ public class Plotting_3DOF implements  ActionListener {
     	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
     	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
     	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
-    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
+    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];		
     	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
     	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
        }
@@ -2622,7 +2695,27 @@ try {
     }
     
     public static void   WRITE_EventHandler() {
-    	
+        try {
+            File fac = new File(EventHandler_File);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            //-----------------------------------------------------
+            FileWriter wr = new FileWriter(fac);
+            for (int i=0; i<MODEL_EventHandler.getRowCount(); i++){
+	            	int EventType =0;
+		            	for(int j=0;j<EventHandler_Type.length;j++) {
+		            		if(MODEL_EventHandler.getValueAt(i, 0).equals(EventHandler_Type[j])) {EventType =j;}
+		            	}
+	            	double EventValue = Double.parseDouble((String) MODEL_EventHandler.getValueAt(i, 1));
+	            	wr.write(EventType+BB_delimiter+EventValue+BB_delimiter+System.getProperty( "line.separator" ));	
+			}               
+	            wr.close();
+            } catch (IOException eIO) {System.out.println(eIO);}
     }
     
     public static void WRITE_PROP() {

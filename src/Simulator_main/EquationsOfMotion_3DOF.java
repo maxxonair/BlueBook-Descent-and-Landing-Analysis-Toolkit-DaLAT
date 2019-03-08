@@ -25,7 +25,8 @@ import Model.GravityModel;
 import Model.atm_dataset;
 import Sequence.SequenceElement;
 import Toolbox.Tool;
-import Controller.Flight_CTRL;
+import Controller.Flight_CTRL_ThrustMagnitude;
+import Controller.Flight_CTRL_PitchCntrl;
 import Controller.LandingCurve;
 
 public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
@@ -120,8 +121,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	        private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
 	        private static List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
-	    	private static List<Flight_CTRL> Flight_Controller = new ArrayList<Flight_CTRL>(); 
-	    	private static ArrayList<String> CTRL_steps = new ArrayList<String>();
+	        private static List<Flight_CTRL_ThrustMagnitude> Flight_CTRL_ThrustMagnitude = new ArrayList<Flight_CTRL_ThrustMagnitude>(); 
+	        private static List<Flight_CTRL_PitchCntrl> Flight_CTRL_PitchCntrl = new ArrayList<Flight_CTRL_PitchCntrl>(); 
+	        private static ArrayList<String> CTRL_steps = new ArrayList<String>();
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
 	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
@@ -152,8 +154,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			       SEQUENCE_DATA_main.get(active_sequence).get_sequence_controller_ID()+ " "+
 			       cntr_v_init+" "+
 			       cntr_h_init+" "+
-			       Flight_Controller.get(active_sequence).get_ctrl_vel()+" "+
-			       Flight_Controller.get(active_sequence).get_ctrl_alt()+" "+
+			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_vel()+" "+
+			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_alt()+" "+
 			       SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve()+" "
 		  );
 	    }
@@ -163,9 +165,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    rm    = DATA_MAIN[TARGET][0];    	// Planets mean radius                      [m]
 		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     		    [rad/s]
 		}
-		public static void UPDATE_FlightController(Flight_CTRL NewElement){	   
-			   if (Flight_Controller.size()==0){ EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); 
-			   } else {EquationsOfMotion_3DOF.Flight_Controller.add(NewElement); } 
+		public static void UPDATE_FlightController_ThrustMagnitude(Flight_CTRL_ThrustMagnitude NewElement){	   
+			   if (Flight_CTRL_ThrustMagnitude.size()==0){ EquationsOfMotion_3DOF.Flight_CTRL_ThrustMagnitude.add(NewElement); 
+			   } else {EquationsOfMotion_3DOF.Flight_CTRL_ThrustMagnitude.add(NewElement); } 
 		   }
 		public static void INITIALIZE_FlightController(double[]x) {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
@@ -173,8 +175,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				// -> Create new Flight controller 
-				Flight_CTRL NewFlightController = new Flight_CTRL(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
-				UPDATE_FlightController(NewFlightController);
+				 Flight_CTRL_ThrustMagnitude NewFlightController = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
+				UPDATE_FlightController_ThrustMagnitude(NewFlightController);
 			}
 		}
 		public static void SEQUENCE_MANAGER(double t, double[] x) {
@@ -191,7 +193,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 					isFirstSequence=false; 
 				}
 				if(trigger_type==0) {
-						if(Flight_Controller.get(active_sequence).get_CTRL_TIME()>trigger_value) {
+						if(Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME()>trigger_value) {
 							active_sequence++;
 							cntr_v_init = x[3];
 							cntr_h_init = x[2]-rm-ref_ELEVATION;
@@ -232,18 +234,14 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	}
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
-	    	Flight_Controller.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
+	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	if(sequence_type==3) { // Controlled Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller ON - Controlled Fight Sequence
 			    	//-------------------------------------------------------------------------------------------------------------
-			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_Controller.get(active_sequence).get_ctrl_ID() +" set ON");}
-			    	// Update Controller inputs:
-			    	//double alt = (x[2]-rm-ref_ELEVATION);
-					//Flight_Controller.get(active_sequence).Update_Flight_CTRL( true,  alt, x[3],  x[4],  M0,  x[6],  m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
-			    	// Compile controller output: 
-			    	Thrust        = Flight_Controller.get(active_sequence).get_thrust_cmd();
-			    	Throttle_CMD  = Flight_Controller.get(active_sequence).get_ctrl_throttle_cmd();
+			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_ID() +" set ON");}
+			    	Thrust        = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_thrust_cmd();
+			    	Throttle_CMD  = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_throttle_cmd();
 	    	} else if (sequence_type==2) { // Continuous propulsive Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller OFF - Uncontrolled/continuous thrust
@@ -278,7 +276,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
 			    	//-------------------------------------------------------------------------------------------------------------
     		    if(const_isFirst){const_tzer0=t;}
-		    	elevationangle =  Flight_Controller.get(active_sequence).get_ctrl_vel();
+		    	elevationangle =  Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_vel();
 				Thrust = Thrust_max;
     			    Throttle_CMD = Thrust/Thrust_max;	
 	    	} else { System.out.println("ERROR: Sequence type out of range");}
@@ -511,9 +509,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double CTRL_Error =0;
 	                double CTRL_Time =0;
 	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
-	                CTRL_Error=Flight_Controller.get(active_sequence).get_CTRL_ERROR();
+	                CTRL_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
 	                }
-	                CTRL_Time=Flight_Controller.get(active_sequence).get_CTRL_TIME();
+	                CTRL_Time=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
 	                if( t > twrite ) {
 	                	twrite = twrite + dt_write; 
 	                    steps.add(t + " " + 

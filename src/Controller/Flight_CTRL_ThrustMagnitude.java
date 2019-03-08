@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-public class Flight_CTRL{
+public class Flight_CTRL_ThrustMagnitude{
 	private int     ctrl_ID;			// Controller ID					[-]
 	private boolean ctrl_on;			// Switch on/off (ctrl)			[true/false]
 	private double  alt; 			// Altitude 						[m]
@@ -36,8 +36,6 @@ public class Flight_CTRL{
 	private double rm;				// Mean Radius					[m]
 	private double refElev;			// Reference Elevation			[m]
 	
-	private double tvc_cmd;			// thrust vector angle cmd			[rad] 
-	
 	private double  tzero; 					// Sequence Time 						[s]
 	private boolean tswitch =true;          // Time switch to start controller time [s]
 	//-----------------------------------------------------------------------------
@@ -46,7 +44,7 @@ public class Flight_CTRL{
     public static String ControllerInputFile_2 = ".inp"; 
 	public static String ControllerInputFile; 
 	//-----------------------------------------------------------------------------
-	public Flight_CTRL(int ctrl_ID, boolean ctrl_on, double[] x, double m0, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit, double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, double throttle_cmd, double thrust_cmd, int ctrl_curve, double ctrl_dt, double P_GAIN, double I_GAIN, double D_GAIN, double cmd_min, double cmd_max, double rm, double refElev) {
+	public Flight_CTRL_ThrustMagnitude(int ctrl_ID, boolean ctrl_on, double[] x, double m0, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit, double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, double throttle_cmd, double thrust_cmd, int ctrl_curve, double ctrl_dt, double P_GAIN, double I_GAIN, double D_GAIN, double cmd_min, double cmd_max, double rm, double refElev) {
 		this.ctrl_ID	  = ctrl_ID;
 		this.ctrl_on 	  = ctrl_on;
 		this.alt 		  = x[2]-rm-refElev;
@@ -218,12 +216,6 @@ public class Flight_CTRL{
     		throttle_cmd=0;
     	}
 		return thrust_cmd;
-	}
-	public double get_TVC_cmd(){
-    	if(ctrl_on) {
-    		
-    	}
-    	return tvc_cmd; 
 	}
 	public int get_ctrl_curve() {
 		return ctrl_curve; 
