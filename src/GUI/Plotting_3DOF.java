@@ -44,7 +44,9 @@ import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.sql.SQLException;
 import java.text.DecimalFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
@@ -151,6 +153,13 @@ public class Plotting_3DOF implements  ActionListener {
 	static double deg = PI/180.0; 		//Convert degrees to radians
 	static double rad = 180/PI; 		//Convert radians to degrees
 	
+    public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
+			{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
+			{1737400,4903E9,2.661861E-6,320},						// Moon (Earth)
+			{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
+			{0,0,0,0},												// Venus
+	 };
+	
 	public static String BB_delimiter = " ";
 	public static String CurrentWorkfile_Name = "";
 	public static File CurrentWorkfile_Path = new File("");
@@ -165,6 +174,7 @@ public class Plotting_3DOF implements  ActionListener {
    	
     static DecimalFormat decf = new DecimalFormat("#.#");
     static DecimalFormat df_X4 = new DecimalFormat("#####.###");
+    static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
     static Font menufont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
     static Font labelfont_small     = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     static Font labelfont_verysmall = new Font("Verdana", Font.BOLD, 7);
@@ -302,6 +312,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG, INDICATOR_LAT,INDICATOR_LONG,INDICATOR_ALT,INDICATOR_VEL,INDICATOR_FPA,INDICATOR_AZI,INDICATOR_M0,INDICATOR_INTEGTIME, INDICATOR_TARGET;
     public static JTextField INPUT_LONG_Is,INPUT_LAT_Is,INPUT_ALT_Is,INPUT_VEL_Is,INPUT_FPA_Is,INPUT_AZI_Is;   // Input vector inertial Frame / spherical coordinates -> Is
     public static JTextField INPUT_LONG_Rs,INPUT_LAT_Rs,INPUT_ALT_Rs,INPUT_VEL_Rs,INPUT_FPA_Rs,INPUT_AZI_Rs;   // Input vector rotating Frame / spherical coordinates -> Rs
+    public static JTextField INPUT_TIME; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP;
@@ -347,7 +358,7 @@ public class Plotting_3DOF implements  ActionListener {
 											   "Continous (unregulated) Thrust",
 											   "Controlled Thrust (FC ON)",
 											   "Constrained Thrust (FC OFF)",
-											   "TVC Turn (FC OFF"
+											   "TVC Turn (FC OFF)"
 		};
 		public static String[] SequenceFC    = { "Flight Controller 1"};
 		public static String[] FCTargetCurve = {"Parabolic Velocity-Altitude",
@@ -958,34 +969,41 @@ public class Plotting_3DOF implements  ActionListener {
   	  } );
       P1_SidePanel.add(axis_chooser);
       P1_SidePanel.add(axis_chooser2);
- //-----------------------------------------------------------------------------------------
- // 										Page 4.2
- //-----------------------------------------------------------------------------------------
-      
+	  //-----------------------------------------------------------------------------------------
+	  // 										Page 4.2
+	  //-----------------------------------------------------------------------------------------
       int INPUT_width = 120;
       int SidePanel_Width = 505; 
-      JPanel P2_SidePanel = new JPanel();
-      P2_SidePanel.setLayout(null);
-      //P2_SidePanel.setPreferredSize(new Dimension(SidePanel_Width, exty_main+400));
-      P2_SidePanel.setSize(SidePanel_Width, exty_main+400);
-      P2_SidePanel.setBackground(bc_c);
-      P2_SidePanel.setForeground(l_c);
+      JPanel PANEL_LEFT_InputSection = new JPanel();
+      PANEL_LEFT_InputSection.setLayout(null);
+      PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1200));
+      PANEL_LEFT_InputSection.setBackground(bc_c);
+      PANEL_LEFT_InputSection.setForeground(l_c);
       
-      JPanel P2_SidePanel1 = new JPanel();
-      P2_SidePanel1.setLayout(new BorderLayout());
-      P2_SidePanel1.setPreferredSize(new Dimension(405, exty_main+400));
-      P2_SidePanel1.setBackground(bc_c);
-      P2_SidePanel1.setForeground(l_c);
+      JPanel PANEL_RIGHT_InputSection = new JPanel();
+      PANEL_RIGHT_InputSection.setLayout(new BorderLayout());
+      PANEL_RIGHT_InputSection.setPreferredSize(new Dimension(405, exty_main));
+      PANEL_RIGHT_InputSection.setBackground(bc_c);
+      PANEL_RIGHT_InputSection.setForeground(l_c);
       
-      JScrollPane scrollPane_P2 = new JScrollPane(P2_SidePanel);
-      scrollPane_P2.setPreferredSize(new Dimension(405, exty_main));
-      scrollPane_P2.getVerticalScrollBar().setUnitIncrement(16);
-      PageX04_SimSetup.add(scrollPane_P2, BorderLayout.LINE_START);
-      JScrollPane scrollPane1_P2 = new JScrollPane(P2_SidePanel1);
-      scrollPane1_P2.getVerticalScrollBar().setUnitIncrement(16);
-      //scrollPane1_P2.setPreferredSize(new Dimension(405, exty_main));
-      PageX04_SimSetup.add(scrollPane1_P2, BorderLayout.CENTER);
-      //int uy_p41 = 10 ;
+      JScrollPane scrollPane_LEFT_InputSection = new JScrollPane(PANEL_LEFT_InputSection,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      scrollPane_LEFT_InputSection.setPreferredSize(new Dimension(405, exty_main));
+      scrollPane_LEFT_InputSection.getVerticalScrollBar().setUnitIncrement(16);
+      PageX04_SimSetup.add(scrollPane_LEFT_InputSection, BorderLayout.LINE_START);
+      JScrollPane scrollPane_RIGHT_InputSection = new JScrollPane(PANEL_RIGHT_InputSection,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+      scrollPane_RIGHT_InputSection.getVerticalScrollBar().setUnitIncrement(16);
+      PageX04_SimSetup.add(scrollPane_RIGHT_InputSection, BorderLayout.CENTER);
+      //---------------------------------------------------------------------------------------------
+      //                       Initial State Definition Block
+      //---------------------------------------------------------------------------------------------
+      JPanel PANEL_InitialState = new JPanel();
+      PANEL_InitialState.setLayout(null);
+      PANEL_InitialState.setSize(SidePanel_Width, 350);
+      PANEL_InitialState.setLocation(0,0);
+      PANEL_InitialState.setBackground(bc_c);
+      PANEL_InitialState.setForeground(l_c);
+      PANEL_LEFT_InputSection.add(PANEL_InitialState);
+      
       JLabel LABEL_InitState = new JLabel("Initial State");
       LABEL_InitState.setLocation(5, uy_p41 + 25 * 0  );
       LABEL_InitState.setSize(350, 20);
@@ -993,7 +1011,7 @@ public class Plotting_3DOF implements  ActionListener {
       LABEL_InitState.setForeground(Color.black);
       LABEL_InitState.setFont(HeadlineFont);
       LABEL_InitState.setHorizontalAlignment(0);
-      P2_SidePanel.add(LABEL_InitState);
+      PANEL_InitialState.add(LABEL_InitState);
       
       JLabel LABEL_InertialFrame = new JLabel("Inertial Frame");
       LABEL_InertialFrame.setLocation(2, uy_p41 + 25 * 1 );
@@ -1001,242 +1019,282 @@ public class Plotting_3DOF implements  ActionListener {
       LABEL_InertialFrame.setHorizontalAlignment(JLabel.CENTER);
       LABEL_InertialFrame.setBackground(Color.white);
       LABEL_InertialFrame.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_InertialFrame);
+      PANEL_InitialState.add(LABEL_InertialFrame);
       JLabel LABEL_RotatingFrame = new JLabel("Rotating Frame");
       LABEL_RotatingFrame.setLocation(2+INPUT_width+5, uy_p41 + 25 * 1  );
       LABEL_RotatingFrame.setSize(INPUT_width, 20);
       LABEL_RotatingFrame.setHorizontalAlignment(JLabel.CENTER);
       LABEL_RotatingFrame.setBackground(Color.white);
       LABEL_RotatingFrame.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_RotatingFrame);
+      PANEL_InitialState.add(LABEL_RotatingFrame);
       
       JLabel LABEL_longitude = new JLabel("Longitude [deg]");
       LABEL_longitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 2  );
       LABEL_longitude.setSize(250, 20);
       LABEL_longitude.setBackground(Color.white);
       LABEL_longitude.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_longitude);
+      PANEL_InitialState.add(LABEL_longitude);
       JLabel LABEL_latitude = new JLabel("Latitude [deg]");
       LABEL_latitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 3 );
       LABEL_latitude.setSize(250, 20);
       LABEL_latitude.setBackground(Color.white);
       LABEL_latitude.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_latitude);
+      PANEL_InitialState.add(LABEL_latitude);
       JLabel LABEL_altitude = new JLabel("Altitude [m]");
       LABEL_altitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 4);
       LABEL_altitude.setSize(250, 20);
       LABEL_altitude.setBackground(Color.white);
       LABEL_altitude.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_altitude);
+      PANEL_InitialState.add(LABEL_altitude);
       
       JLabel LABEL_referenceelevation = new JLabel("Ref. Elevation [m]");
       LABEL_referenceelevation.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 5 );
       LABEL_referenceelevation.setSize(250, 20);
       LABEL_referenceelevation.setBackground(Color.white);
       LABEL_referenceelevation.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_referenceelevation);
+      PANEL_InitialState.add(LABEL_referenceelevation);
       
       JLabel LABEL_velocity = new JLabel("Velocity [m/s]");
       LABEL_velocity.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 7 );
       LABEL_velocity.setSize(250, 20);
       LABEL_velocity.setBackground(Color.white);
       LABEL_velocity.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_velocity);
+      PANEL_InitialState.add(LABEL_velocity);
       JLabel LABEL_fpa = new JLabel("Flight Path angle [deg]");
       LABEL_fpa.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 8);
       LABEL_fpa.setSize(250, 20);
       LABEL_fpa.setBackground(Color.white);
       LABEL_fpa.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_fpa);
+      PANEL_InitialState.add(LABEL_fpa);
       JLabel LABEL_azimuth = new JLabel("Azimuth [deg]");
       LABEL_azimuth.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 9 );
       LABEL_azimuth.setSize(250, 20);
       LABEL_azimuth.setBackground(Color.white);
       LABEL_azimuth.setForeground(Color.black);
-      P2_SidePanel.add(LABEL_azimuth);
+      PANEL_InitialState.add(LABEL_azimuth);
 
       INPUT_LONG_Is = new JTextField(10);
       INPUT_LONG_Is.setLocation(2, uy_p41 + 25 * 2 );
       INPUT_LONG_Is.setSize(INPUT_width, 20);
+      INPUT_LONG_Is.setEnabled(false);
       INPUT_LONG_Is.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_LONG_Is.addActionListener(new ActionListener() {
-    		  public void actionPerformed( ActionEvent e )
-    		  	{ 
-					WRITE_INIT();
-					INPUT_LONG_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-    		}});
-      P2_SidePanel.add(INPUT_LONG_Is);
+      INPUT_LONG_Is.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			Inertial2Rotating();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_LONG_Is);
       INPUT_LAT_Is = new JTextField(10);
       INPUT_LAT_Is.setLocation(2, uy_p41 + 25 * 3 );
       INPUT_LAT_Is.setSize(INPUT_width, 20);
+      INPUT_LAT_Is.setEnabled(false);
       INPUT_LAT_Is.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_LAT_Is.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_LAT_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_LAT_Is);
+      INPUT_LAT_Is.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			Inertial2Rotating();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_LAT_Is);
       INPUT_ALT_Is = new JTextField(10);
       INPUT_ALT_Is.setLocation(2, uy_p41 + 25 * 4 );
       INPUT_ALT_Is.setSize(INPUT_width, 20);
+      INPUT_ALT_Is.setEnabled(false);
       INPUT_ALT_Is.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_ALT_Is.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_ALT_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_ALT_Is);   
+      INPUT_ALT_Is.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			Inertial2Rotating();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_ALT_Is);   
       INPUT_REFELEV = new JTextField(10);
       INPUT_REFELEV.setLocation(2+INPUT_width+5, uy_p41 + 25 * 5 );
       INPUT_REFELEV.setSize(INPUT_width, 20);
       INPUT_REFELEV.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_REFELEV.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_REFELEV.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_REFELEV); 
+      INPUT_REFELEV.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			WRITE_INIT();
+		
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_REFELEV); 
       INPUT_VEL_Is = new JTextField(10);
       INPUT_VEL_Is.setLocation(2, uy_p41 + 25 * 7 );
       INPUT_VEL_Is.setText("1");
       INPUT_VEL_Is.setSize(INPUT_width, 20);
       INPUT_VEL_Is.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_VEL_Is.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_VEL_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_VEL_Is);
+      INPUT_VEL_Is.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			Inertial2Rotating();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_VEL_Is);
       INPUT_FPA_Is = new JTextField(10);
       INPUT_FPA_Is.setLocation(2, uy_p41 + 25 * 8 );
       INPUT_FPA_Is.setText("0");
       INPUT_FPA_Is.setSize(INPUT_width, 20);
       INPUT_FPA_Is.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_FPA_Is.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_FPA_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_FPA_Is);
+      INPUT_FPA_Is.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			Inertial2Rotating();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_FPA_Is);
       INPUT_AZI_Is = new JTextField(10);
       INPUT_AZI_Is.setLocation(2, uy_p41 + 25 * 9 );
       INPUT_AZI_Is.setSize(INPUT_width, 20);
       INPUT_AZI_Is.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_AZI_Is.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_AZI_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_AZI_Is);
+      INPUT_AZI_Is.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			Inertial2Rotating();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_AZI_Is);
       //---------------------------------------------------------
       INPUT_LONG_Rs = new JTextField(10);
       INPUT_LONG_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 2 );
       INPUT_LONG_Rs.setSize(INPUT_width, 20);
       INPUT_LONG_Rs.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_LONG_Rs.addActionListener(new ActionListener() {
-    		  public void actionPerformed( ActionEvent e )
-    		  	{ 
-					WRITE_INIT();
-					INPUT_LONG_Rs.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-    		}});
       INPUT_LONG_Rs.addFocusListener(new FocusListener() {
 
 		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void focusGained(FocusEvent arg0) { }
 
 		@Override
 		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
-			
+			Rotating2Inertial();
+			WRITE_INIT();
 		}
     	  
       });
-      P2_SidePanel.add(INPUT_LONG_Rs);
+      PANEL_InitialState.add(INPUT_LONG_Rs);
       INPUT_LAT_Rs = new JTextField(10);
       INPUT_LAT_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 3 );
       INPUT_LAT_Rs.setSize(INPUT_width, 20);
       INPUT_LAT_Rs.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_LAT_Rs.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_LAT_Rs.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_LAT_Rs);
+      INPUT_LAT_Rs.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			Rotating2Inertial();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_LAT_Rs);
       INPUT_ALT_Rs = new JTextField(10);
       INPUT_ALT_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 4 );
       INPUT_ALT_Rs.setSize(INPUT_width, 20);
       INPUT_ALT_Rs.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_ALT_Rs.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_ALT_Is.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_ALT_Rs);    
+      INPUT_ALT_Rs.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			Rotating2Inertial();
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_ALT_Rs);    
       INPUT_VEL_Rs = new JTextField(10);
       INPUT_VEL_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 7 );
-      INPUT_VEL_Rs.setText("1");
       INPUT_VEL_Rs.setSize(INPUT_width, 20);
       INPUT_VEL_Rs.setHorizontalAlignment(JTextField.RIGHT);
       INPUT_VEL_Rs.addFocusListener(new FocusListener() {
 
 		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void focusGained(FocusEvent arg0) { }
 
 		@Override
-		public void focusLost(FocusEvent arg0) {
+		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
 			Rotating2Inertial();
+			WRITE_INIT();
 		}
     	  
       });
-      INPUT_VEL_Rs.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_VEL_Rs.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_VEL_Rs);
+      PANEL_InitialState.add(INPUT_VEL_Rs);
       INPUT_FPA_Rs = new JTextField(10);
       INPUT_FPA_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 8 );
-      INPUT_FPA_Rs.setText("0");
       INPUT_FPA_Rs.setSize(INPUT_width, 20);
       INPUT_FPA_Rs.setHorizontalAlignment(JTextField.RIGHT);
       INPUT_FPA_Rs.addFocusListener(new FocusListener() {
 
 		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void focusGained(FocusEvent arg0) { }
 
 		@Override
-		public void focusLost(FocusEvent arg0) {
+		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
 			Rotating2Inertial();
+			WRITE_INIT();
 		}
     	  
       });
-      INPUT_FPA_Rs.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_FPA_Rs.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_FPA_Rs);
+      PANEL_InitialState.add(INPUT_FPA_Rs);
       INPUT_AZI_Rs = new JTextField(10);
       INPUT_AZI_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 9 );
       INPUT_AZI_Rs.setSize(INPUT_width, 20);
@@ -1244,34 +1302,54 @@ public class Plotting_3DOF implements  ActionListener {
       INPUT_AZI_Rs.addFocusListener(new FocusListener() {
 
 		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
+		public void focusGained(FocusEvent arg0) { }
 
 		@Override
-		public void focusLost(FocusEvent arg0) {
+		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
 			Rotating2Inertial();
+			WRITE_INIT();
 		}
     	  
       });
-      INPUT_AZI_Rs.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_AZI_Rs.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
-      P2_SidePanel.add(INPUT_AZI_Rs);
-      //--------------------------------------------------------------------------------
-	  // Integrator definition panel       
+      PANEL_InitialState.add(INPUT_AZI_Rs);
+      
+      JLabel LABEL_Time = new JLabel("Time: ");
+      LABEL_Time.setLocation(2, uy_p41 + 25 * 11 );
+      LABEL_Time.setSize(50, 20);
+      LABEL_Time.setBackground(Color.white);
+      LABEL_Time.setForeground(Color.black);
+      PANEL_InitialState.add(LABEL_Time);
+      
+      INPUT_TIME = new JTextField(10);
+      INPUT_TIME.setLocation(55, uy_p41 + 25 * 11 );
+      INPUT_TIME.setSize(INPUT_width*2, 20);
+      INPUT_TIME.setHorizontalAlignment(JTextField.LEFT);
+      INPUT_TIME.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_TIME);
+      String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(Calendar.getInstance().getTime());
+      INPUT_TIME.setText(timeStamp);
+      //---------------------------------------------------------------------------------------------
+      //                         Integrator Definition Block
+      //---------------------------------------------------------------------------------------------       
       JPanel IntegratorInputPanel = new JPanel();
-      IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 12 );
+      IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 14 );
       IntegratorInputPanel.setSize(SidePanel_Width, 470);
       IntegratorInputPanel.setBackground(Color.white);
       IntegratorInputPanel.setForeground(Color.white);
       IntegratorInputPanel.setLayout(null);
-      P2_SidePanel.add(IntegratorInputPanel);
+      PANEL_LEFT_InputSection.add(IntegratorInputPanel);
       
       JSeparator Separator_Page2_1 = new JSeparator();
       Separator_Page2_1.setLocation(0, uy_p41 + 25 * 0 );
@@ -1450,21 +1528,46 @@ public class Plotting_3DOF implements  ActionListener {
     	ROW_EventHandler[0] = ""+EventHandler_Type[0];
     	ROW_EventHandler[1] = "";
     	MODEL_EventHandler.addRow(ROW_EventHandler);
-    	
-    	ROW_EventHandler[0] = ""+EventHandler_Type[1];
-    	ROW_EventHandler[1] = "";
-    	MODEL_EventHandler.addRow(ROW_EventHandler);
 
-      //--------------------------------------------------------------------------------
-	  // Spacecraft definition panel 
+    	
+        JButton BUTTON_AddEventHandler = new JButton("Add");
+        BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 8);
+        BUTTON_AddEventHandler.setSize(65,20);
+        BUTTON_AddEventHandler.setEnabled(true);
+        BUTTON_AddEventHandler.setForeground(Color.black);
+        BUTTON_AddEventHandler.setBackground(Color.white);
+        BUTTON_AddEventHandler.addActionListener(new ActionListener() { 
+        	  public void actionPerformed(ActionEvent e) { 
+        	    	ROW_EventHandler[0] = ""+EventHandler_Type[1];
+        	    	ROW_EventHandler[1] = "";
+        	    	MODEL_EventHandler.addRow(ROW_EventHandler); 
+        	  } } );
+        IntegratorInputPanel.add(BUTTON_AddEventHandler);
+        
+        JButton BUTTON_DeleteEventHandler = new JButton("Delete");
+        BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 8);
+        BUTTON_DeleteEventHandler.setSize(75,20);
+        BUTTON_DeleteEventHandler.setEnabled(true);
+        BUTTON_DeleteEventHandler.setForeground(Color.black);
+        BUTTON_DeleteEventHandler.setBackground(Color.white);
+        BUTTON_DeleteEventHandler.addActionListener(new ActionListener() { 
+        	  public void actionPerformed(ActionEvent e) { 
+        	    	int j = TABLE_EventHandler.getSelectedRow();
+        	    	if (j >= 0){MODEL_EventHandler.removeRow(j);}
+        	  } } );
+        IntegratorInputPanel.add(BUTTON_DeleteEventHandler);
+
+        //---------------------------------------------------------------------------------------------
+        //                         Spacecraft Definition Block
+        //--------------------------------------------------------------------------------------------- 
 	  
       JPanel SpaceCraftInputPanel = new JPanel();
-      SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 30 );
+      SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 33 );
       SpaceCraftInputPanel.setSize(SidePanel_Width, 600);
       SpaceCraftInputPanel.setBackground(Color.white);
       SpaceCraftInputPanel.setForeground(Color.white);
       SpaceCraftInputPanel.setLayout(null);
-      P2_SidePanel.add(SpaceCraftInputPanel);
+      PANEL_LEFT_InputSection.add(SpaceCraftInputPanel);
       
       JSeparator Separator_Page2_2 = new JSeparator();
       Separator_Page2_2.setLocation(0, 0 );
@@ -1601,7 +1704,7 @@ public class Plotting_3DOF implements  ActionListener {
     JScrollPane scrollPane_Controller = new JScrollPane(P2_ControllerPane);
     //scrollPane_Controller.setSize(405, exty_main);
     scrollPane_Controller.getVerticalScrollBar().setUnitIncrement(16);
-    P2_SidePanel1.add(scrollPane_Controller, BorderLayout.CENTER);
+    PANEL_RIGHT_InputSection.add(scrollPane_Controller, BorderLayout.CENTER);
     
     //-----------------------------------------------------------------------------------------------------------------------------
     //                  Sequence table 
@@ -1856,7 +1959,7 @@ public class Plotting_3DOF implements  ActionListener {
     JScrollPane scrollPane_Sequence = new JScrollPane(P2_SequenceMAIN,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     scrollPane_Sequence.setSize(305, 400);
     scrollPane_Sequence.getVerticalScrollBar().setUnitIncrement(16);
-    P2_SidePanel1.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
+    PANEL_RIGHT_InputSection.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
     
 	  p421_linp0 = new JCheckBox("Controller 001 ON/OFF");
 	  p421_linp0.setLocation(2, uy_p41 + 25 * 0 );
@@ -2032,16 +2135,8 @@ public class Plotting_3DOF implements  ActionListener {
         //------------------------------------------------------------------------
     		UPDATE_Page01();
     		READ_SEQUENCE();
-        /*
-        tabbedPane.addTab("3"+"|"+"DOF" , null, mainPanelX4, null);
-        tabbedPane.setMnemonicAt(0, KeyEvent.VK_4);
-        tabbedPane.setTabLayoutPolicy(JTabbedPane.SCROLL_TAB_LAYOUT);
-        TabPanel.add(tabbedPane);
-        tabbedPane.setSelectedIndex(0);
-        */
-       // tabbedPane.addTab("3|DOF" , null, mainPanel4, null);
-       // tabbedPane.setMnemonicAt(0, KeyEvent.VK_4);
-       // MainGUI.setSize(x_init,y_init);
+    	      Rotating2Inertial();
+
         MainGUI.setOpaque(true);
         return MainGUI;
 	}
@@ -2050,23 +2145,39 @@ public class Plotting_3DOF implements  ActionListener {
     }
     
     public static void Rotating2Inertial() {
+    	try {
     	double vel_rotating = Double.parseDouble(INPUT_VEL_Rs.getText());
     	double fpa_rotating = Double.parseDouble(INPUT_FPA_Rs.getText())*deg;
     	double azi_rotating = Double.parseDouble(INPUT_AZI_Rs.getText())*deg;
     	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg;
-    	double rm = 1737400;
-    	double omega = 2.661861E-6;
+    	double rm = DATA_MAIN[indx_target][0];
+    	double omega = DATA_MAIN[indx_target][2];
     	double radius = Double.parseDouble(INPUT_ALT_Rs.getText())+rm;
-    	double azimuth_intertFrame = Math.atan((vel_rotating+Math.cos(fpa_rotating)*Math.sin(azi_rotating)+omega*radius*Math.cos(lat_rotating))/(vel_rotating*Math.cos(fpa_rotating)*Math.cos(azi_rotating)));
-    	double fpa_inertFrame = Math.acos(Math.sin(fpa_rotating)*Math.cos(azimuth_intertFrame)/(Math.cos(fpa_rotating)*Math.cos(azi_rotating)));
-    	double vel_inertFrame = vel_rotating*Math.sin(fpa_rotating)/Math.sin(fpa_inertFrame);
-    	INPUT_AZI_Is.setText(""+azimuth_intertFrame*rad);
-    	INPUT_FPA_Is.setText(""+fpa_inertFrame*rad);
-    	INPUT_VEL_Is.setText(""+vel_inertFrame);		
+    	double azimuth_inertFrame = Math.atan((vel_rotating*Math.cos(fpa_rotating)*Math.sin(azi_rotating)+omega*radius+Math.cos(lat_rotating))/(vel_rotating*Math.cos(fpa_rotating)*Math.cos(azi_rotating)));
+    	double fpa_inertFrame = Math.atan(Math.tan(fpa_rotating)*Math.cos(azimuth_inertFrame)/Math.cos(azi_rotating));
+    	double vel_inertFrame = vel_rotating * Math.sin(fpa_rotating)/Math.sin(fpa_inertFrame);
+    	INPUT_AZI_Is.setText(""+df_VelVector.format(azimuth_inertFrame*rad));
+    	INPUT_FPA_Is.setText(""+df_VelVector.format(fpa_inertFrame*rad));
+    	INPUT_VEL_Is.setText(""+df_VelVector.format(vel_inertFrame));
+    	} catch(java.lang.NumberFormatException enfe) {System.out.println(enfe);}
     }
     
     public static void Inertial2Rotating() {
-    	
+    	try {
+    	double vel_inert = Double.parseDouble(INPUT_VEL_Is.getText());
+    	double fpa_inert = Double.parseDouble(INPUT_FPA_Is.getText())*deg;
+    	double azi_inert = Double.parseDouble(INPUT_AZI_Is.getText())*deg;
+    	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg;
+    	double rm = DATA_MAIN[indx_target][0];
+    	double omega = DATA_MAIN[indx_target][2];
+    	double radius = Double.parseDouble(INPUT_ALT_Rs.getText())+rm;
+    	double azimuth_rotFrame   = Math.atan(Math.tan(azi_inert)-omega*radius*Math.cos(lat_rotating)/(vel_inert*Math.cos(fpa_inert)*Math.cos(azi_inert)));
+    	double fpa_rotFrame 	  = Math.atan(Math.tan(fpa_inert)*Math.cos(azimuth_rotFrame)/Math.cos(azi_inert));
+    	double vel_rotFrame	      = vel_inert*Math.sin(fpa_inert)/Math.sin(fpa_rotFrame);
+    	INPUT_AZI_Rs.setText(""+df_VelVector.format(azimuth_rotFrame*rad));
+    	INPUT_FPA_Rs.setText(""+df_VelVector.format(fpa_rotFrame*rad));
+    	INPUT_VEL_Rs.setText(""+df_VelVector.format(vel_rotFrame));
+    	} catch(java.lang.NumberFormatException enfe) {System.out.println(enfe);}
     }
     
     public static void AddSequence() {
