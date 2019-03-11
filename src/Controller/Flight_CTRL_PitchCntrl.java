@@ -47,7 +47,9 @@ public class Flight_CTRL_PitchCntrl{
 	public Flight_CTRL_PitchCntrl(int ctrl_ID, boolean ctrl_on, double ctr_init_x, double ctr_init_y, double ctr_end_x, double ctr_end_y) {
 		this.ctrl_ID	  = ctrl_ID;
 		this.ctrl_on 	  = ctrl_on;
-		
+		if (ctrl_ID==0) {
+			this.ctrl_on=false;
+		} else {
 		double[] readINP;
 		try {
 			readINP = READ_CTRL_INPUT(Integer.toString(ctrl_ID));
@@ -61,6 +63,7 @@ public class Flight_CTRL_PitchCntrl{
 			// TODO Auto-generated catch block
 			System.out.println(e);
 			System.out.println("ERROR: Controller 01 setting read failed.");
+		}
 		}
 	}
 	

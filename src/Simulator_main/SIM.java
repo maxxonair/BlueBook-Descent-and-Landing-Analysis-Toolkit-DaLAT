@@ -37,7 +37,7 @@ public class SIM implements ActionListener{
 				  int ID_ELEMENT = NewElement.get_sequence_ID();
 						  if (ID_LIST == ID_ELEMENT){
 							  // item exists -> Update
-							  SEQUENCE_DATA.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID(), NewElement.get_ctrl_target_vel(), NewElement.get_ctrl_target_alt(), NewElement.get_ctrl_target_curve());
+							  SEQUENCE_DATA.get(i).Update(NewElement.get_sequence_ID(),NewElement.get_trigger_end_type(), NewElement.get_trigger_end_value(),NewElement.get_sequence_type(),NewElement.get_sequence_controller_ID(), NewElement.get_ctrl_target_vel(), NewElement.get_ctrl_target_alt(), NewElement.get_ctrl_target_curve(),NewElement.get_sequence_TVCController_ID(),NewElement.get_TVC_ctrl_target_time(),NewElement.get_TVC_ctrl_target_fpa(),NewElement.get_TVC_ctrl_target_curve());
 							  element_exist = true;
 						  } 
 			  }
@@ -81,14 +81,13 @@ public class SIM implements ActionListener{
     public static List<SequenceElement> READ_SEQUENCE() throws IOException{	
     	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
     	 String dir = System.getProperty("user.dir");
-    	 int val1=0;int val2=0;int val3=0;int val4=0;int val5=0;double val6=0; double val7=0;int val8=0;
        	   	 INPUT_FILE = dir+"/INP/sequence_1.inp";
 		BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
         String strLine;
         try {
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
-        	SequenceElement newSequenceElement = new SequenceElement( val1,  val2,  val3,  val4,  val5, val6, val7, val8);
+        	SequenceElement newSequenceElement = new SequenceElement( 0,  0,  0,  0,  0, 0, 0, 0,0,0,0,0);
         	int sequence_ID 			= Integer.parseInt(tokens[0]);
         	int trigger_end_type 		= Integer.parseInt(tokens[1]);
         	double trigger_end_value 	= Double.parseDouble(tokens[2]);
@@ -97,7 +96,17 @@ public class SIM implements ActionListener{
         	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
         	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
         	int ctrl_target_curve    = Integer.parseInt(tokens[7]);
-        	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID,ctrl_target_vel,ctrl_target_alt,ctrl_target_curve);
+        	int sequence_TVCcontroller_ID 		= 0;
+        	double TVCctrl_target_t      		= 0;
+        	double TVCctrl_target_alt 			= 0;
+        	int ctrl_TVC_target_curve    		= 0;
+        	try {
+        	 sequence_TVCcontroller_ID 	= Integer.parseInt(tokens[8]);
+        	 TVCctrl_target_t      = Double.parseDouble(tokens[9]);
+        	 TVCctrl_target_alt 		= Double.parseDouble(tokens[10]);
+        	 ctrl_TVC_target_curve    = Integer.parseInt(tokens[11]);
+        	}catch(java.lang.ArrayIndexOutOfBoundsException eAIOO) {System.out.println("No TVC controller found.");}
+        	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID,ctrl_target_vel,ctrl_target_alt,ctrl_target_curve,sequence_TVCcontroller_ID,TVCctrl_target_t,TVCctrl_target_alt,ctrl_TVC_target_curve);
             UPDATE_SequenceElements(newSequenceElement, SEQUENCE_DATA);
         }
         System.out.println("READ: Sequence setup sucessful.");

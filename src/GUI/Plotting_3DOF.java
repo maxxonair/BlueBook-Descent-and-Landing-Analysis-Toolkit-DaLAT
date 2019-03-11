@@ -245,25 +245,26 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Active Sequence ID [-]",
     										  "Groundtrack [km]",
     										  "CNTRL Error [m/s]",
-    										  "CNTRL Time [s]"
+    										  "CNTRL Time [s]",
+    										  "ElevAngle [deg]"
     										  };
     
     public static String[] Thrust_switch = { "Decelerate",
-    										 "Accelerate"
+    										 	 "Accelerate"
     };
     public static String[] LocalElevation_Resolution = { "4", 
-			  "16" , 
-			  "64", 
-			  "128"};
+			  											 "16" , 
+			  											 "64", 
+			  											 "128"};
     
     public static String[] EventHandler_Type = { "Time [s]", 
 			  									 "Longitude [rad]" , 
 			  									 "Latitude [rad]", 
-    											 "Altitude [m]",
-    											 "Velocity [m]",
-    											 "FPA [rad]",
-    											 "Azimuth [rad]",
-    											 "SC Mass [kg]"};
+			  									 "Altitude [m]",
+			  									 "Velocity [m]",
+			  									 "FPA [rad]",
+			  									 "Azimuth [rad]",
+    											 	 "SC Mass [kg]"};
     public static double h_init;
     public static double v_init;
     public static double v_touchdown;
@@ -325,18 +326,18 @@ public class Plotting_3DOF implements  ActionListener {
 			 					 "Sequence END type", 
 			 					 "Sequence END value", 
 			 					 "Sequence type", 
-			 					 "Sequence Thrust level FC",
-			 					 "Tl-FC target velocity", 
-			 					 "Tl-FC target altitude", 
+			 					 "Sequence TL-FC",		// Thrust Level Flight Controller
+			 					 "Tl-FC target velocity [m/s]", 
+			 					 "Tl-FC target altitude [m]", 
 			 					 "Tl-FC target curve",
-			 					 "Sequence TVC FC",
-			 					 "TVC-FC target velocity", 
-			 					 "TVC-FC target altitude", 
+			 					 "Sequence TVC FC", 		// Thrust Vector Control Flight Controller 
+			 					 "TVC-FC target time [s]", 
+			 					 "TVC-FC target FPA [deg]", 
 			 					 "TVC-FC target curve"};
 	public static String[] COLUMS_EventHandler = {"Event Type",
 												  "Event Value"
 	};
-	 static int c_SEQUENCE = 8;
+	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
 	 static DefaultTableModel MODEL_SEQUENCE;
 	 static JTable TABLE_SEQUENCE;
@@ -373,12 +374,15 @@ public class Plotting_3DOF implements  ActionListener {
 											   "Constrained Thrust (FC OFF)",
 											   "TVC Turn (FC OFF)"
 		};
-		public static String[] SequenceFC    = { "Flight Controller 1"};
-		public static String[] FCTargetCurve = {"Parabolic Velocity-Altitude",
-												"SquareRoot Velocity-Altitude",
-												"Hover Parabolic entry"
+		public static String[] SequenceFC    = { "",
+												 "Flight Controller 1"};
+		public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
+												 "SquareRoot Velocity-Altitude",
+												 "Hover Parabolic entry"
 		};
-		public static String[] SequenceTVCFC    = { "Flight Controller 1" , "Flight Controller 2"};
+		public static String[] SequenceTVCFC    = { "",
+													"Flight Controller 1" , 
+												    "Flight Controller 2"};
 		
 		
     Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
@@ -2336,10 +2340,45 @@ public class Plotting_3DOF implements  ActionListener {
             					int val = 0 ; 
             					for(int k=0;k<FCTargetCurve.length;k++) { if(str_val.equals(FCTargetCurve[k])){val=k+1;} }
             					row = row + val + " ";
-            				} else if(j==6) {
-            					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+            				} else if(j==8) {
+            					String str_val =  "";
+            					try {
+            					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
+            					} catch (java.lang.NumberFormatException eNFE) {
+            						System.out.println(eNFE);
+            					}
+            					int val = 0 ; 
+            					try {
+            					for(int k=0;k<SequenceTVCFC.length;k++) { if(str_val.equals(SequenceTVCFC[k])){val=k+1;} }
+            					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
             					row = row + val + " ";
-            				} 
+	        				} else if(j==9) {
+	        					double val = 0 ; 
+	        					try {
+	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j));
+	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
+	        						System.out.println(eNFE);
+	        					}
+	        					row = row + val + " ";
+	        				} else if(j==10) {
+	        					double val = 0 ; 
+	        					try {
+	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j))*deg;
+	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
+	        						System.out.println(eNFE);
+	        					}
+	        					row = row + val + " ";
+	        				} else if(j==11) {
+            					String str_val =  "";
+            					try {
+            					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
+            					} catch (java.lang.NumberFormatException eNFE) {System.out.println(eNFE);}
+            					int val=0;
+            					try {
+	        					for(int k=0;k<TargetCurve_Options_TVC.length;k++) { if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;} }
+	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
+	        					row = row + val + " ";
+	        				} 
             		   }
             			wr.write(row+System.getProperty( "line.separator" ));
                 }
@@ -2406,7 +2445,7 @@ public class Plotting_3DOF implements  ActionListener {
        	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
 	    	ROW_SEQUENCE[8] = ""+SequenceTVCFC[TVCsequence_controller_ID-1];
 	    	ROW_SEQUENCE[9] = ""+ctrl_target_x_TVC;
-	    	ROW_SEQUENCE[10] = ""+ctrl_target_y_TVC;
+	    	ROW_SEQUENCE[10] = ""+ctrl_target_y_TVC*rad;
 	    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
        	} catch(java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
     	ROW_SEQUENCE[0] = ""+sequence_ID;
@@ -2473,6 +2512,7 @@ try {
             } else if (k==9){
         		int Target_indx = (int) InitialState;
         		indx_target = (int) InitialState; 
+        		RM = DATA_MAIN[indx_target][0];
         		INDICATOR_TARGET.setText(Target_Options[indx_target]);
         		Target_chooser.setSelectedIndex(Target_indx);
                 if(indx_target==0) {
@@ -2773,7 +2813,11 @@ try {
        				      tokens[4]+" "+
        				      tokens[5]+" "+
        				      tokens[6]+" "+
-       				      tokens[7]+" "
+       				      tokens[7]+" "+
+       				      tokens[8]+" "+
+       				      tokens[9]+" "+
+       				      tokens[10]+" "+
+       				      tokens[11]+" "
        	);
        }
        br.close();
@@ -2825,14 +2869,24 @@ public static void IMPORT_Case() throws IOException {
 			 	 } 			     
 		indx_prop++;
 	    }  else if(tokens[0].equals("|SEQU|")) {
-			       	int sequence_ID 			= Integer.parseInt(tokens[1]);
-			       	int trigger_end_type 		= Integer.parseInt(tokens[2]);
-			       	double trigger_end_value 	= Double.parseDouble(tokens[3]);
-			       	int sequence_type		 	= Integer.parseInt(tokens[4]);
-			       	int sequence_controller_ID 	= Integer.parseInt(tokens[5]);
-			       	double ctrl_target_vel      = Double.parseDouble(tokens[6]);
-			       	double ctrl_target_alt 		= Double.parseDouble(tokens[7]);
-			       	int ctrl_target_curve       = Integer.parseInt(tokens[8]);
+			       	int sequence_ID 					= Integer.parseInt(tokens[1]);
+			       	int trigger_end_type 			= Integer.parseInt(tokens[2]);
+			       	double trigger_end_value 		= Double.parseDouble(tokens[3]);
+			       	int sequence_type		 		= Integer.parseInt(tokens[4]);
+			       	int sequence_controller_ID 		= Integer.parseInt(tokens[5]);
+			       	double ctrl_target_vel      		= Double.parseDouble(tokens[6]);
+			       	double ctrl_target_alt 			= Double.parseDouble(tokens[7]);
+			       	int ctrl_target_curve       		= Integer.parseInt(tokens[8]);
+			       	try {
+			       	int sequence_TVCcontroller_ID 	= Integer.parseInt(tokens[9]);
+			       	double TVCctrl_target_t      	= Double.parseDouble(tokens[10]);
+			       	double TVCctrl_target_fpa 		= Double.parseDouble(tokens[11]);
+			       	int ctrl_TVC_target_curve    	= Integer.parseInt(tokens[12]);
+				    	ROW_SEQUENCE[8] = ""+SequenceTVCFC[sequence_TVCcontroller_ID-1];
+				    	ROW_SEQUENCE[9] = ""+TVCctrl_target_t;
+				    	ROW_SEQUENCE[10] = ""+TVCctrl_target_fpa;
+				    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];	
+			       	} catch (java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
 			    	ROW_SEQUENCE[0] = ""+sequence_ID;
 			    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
 			    	ROW_SEQUENCE[2] = ""+trigger_end_value;
@@ -2910,6 +2964,16 @@ public static void EXPORT_Case() throws FileNotFoundException {
     	    		int val=0;
     	    		for(int k=0;k<FCTargetCurve.length;k++) {if(str_val.equals(FCTargetCurve[k])){val=k+1;}}
     	    		os.print(val+ BB_delimiter);
+    	    	} else if (col==8) {
+        	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+        	    		int val=0;
+        	    		for(int k=0;k<SequenceTVCFC.length;k++) {if(str_val.equals(SequenceTVCFC[k])){val=k+1;}}
+        	    		os.print(val+ BB_delimiter);
+    	    	} else if (col==11) {
+            	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+            	    		int val=0;
+            	    		for(int k=0;k<TargetCurve_Options_TVC.length;k++) {if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;}}
+            	    		os.print(val+ BB_delimiter);
     	    	} else {
 		        os.print(MODEL_SEQUENCE.getValueAt(row, col)+ BB_delimiter);
     	    	}
@@ -2944,12 +3008,12 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrl_curve=0;
 		           try {
 		           String[] sequ_tokens  = SEQUENCE_DATA.get(active_sequence).split(" ");
-		            active_sequ_type  = Integer.parseInt(sequ_tokens[1]);
-		            ctrl_vinit 	 = Double.parseDouble(sequ_tokens[3]);
-		            ctrl_hinit 	 = Double.parseDouble(sequ_tokens[4]);
-		            ctrl_vel 	     = Double.parseDouble(sequ_tokens[5]);
-		            ctrl_alt 		 = Double.parseDouble(sequ_tokens[6]);
-		            ctrl_curve        = Integer.parseInt(sequ_tokens[7]);
+		            active_sequ_type  	 = Integer.parseInt(sequ_tokens[1]);
+		            ctrl_vinit 	 		 = Double.parseDouble(sequ_tokens[3]);
+		            ctrl_hinit 	 		 = Double.parseDouble(sequ_tokens[4]);
+		            ctrl_vel 	    	     = Double.parseDouble(sequ_tokens[5]);
+		            ctrl_alt 		 	 = Double.parseDouble(sequ_tokens[6]);
+		            ctrl_curve           = Integer.parseInt(sequ_tokens[7]);
 		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
 		        	   System.out.println(eIOBE);
 		           }

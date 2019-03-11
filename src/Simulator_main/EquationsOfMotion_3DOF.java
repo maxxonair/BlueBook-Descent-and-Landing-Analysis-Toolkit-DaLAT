@@ -50,6 +50,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 	    public static int[] trigger_type_translator = {0,2,3};
 	    	public static String[] str_target = {"Earth","Moon","Mars","Venus"};
+	    	static double deg = PI/180.0; 		//Convert degrees to radians
+	    	static double rad = 180/PI; 		//Convert radians to degrees
 		//............................................                                       .........................................
 		//
 	    //	                                                         File Paths
@@ -117,6 +119,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    public static double Thrust_min=0;
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
+		    public static double cntr_t_init=0;
+		    public static double cntr_fpa_init=0;
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 	        private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
@@ -169,14 +173,23 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			   if (Flight_CTRL_ThrustMagnitude.size()==0){ EquationsOfMotion_3DOF.Flight_CTRL_ThrustMagnitude.add(NewElement); 
 			   } else {EquationsOfMotion_3DOF.Flight_CTRL_ThrustMagnitude.add(NewElement); } 
 		   }
+		public static void UPDATE_FlightController_PitchControl(Flight_CTRL_PitchCntrl NewElement){	   
+			   if (Flight_CTRL_PitchCntrl.size()==0){ EquationsOfMotion_3DOF.Flight_CTRL_PitchCntrl.add(NewElement); 
+			   } else {EquationsOfMotion_3DOF.Flight_CTRL_PitchCntrl.add(NewElement); } 
+		   }
 		public static void INITIALIZE_FlightController(double[]x) {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
 				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
 				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
+				 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
+				 double ctrl_tend = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_time();
 				// -> Create new Flight controller 
-				 Flight_CTRL_ThrustMagnitude NewFlightController = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
-				UPDATE_FlightController_ThrustMagnitude(NewFlightController);
+				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
+				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
+				
+				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, 0, 0, ctrl_tend, ctrl_fpa);
+				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}
 		public static void SEQUENCE_MANAGER(double t, double[] x) {
@@ -189,6 +202,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				if(isFirstSequence) {
 					cntr_v_init = x[3];
 					cntr_h_init = x[2]-rm-ref_ELEVATION;
+					cntr_t_init = t;
+					cntr_fpa_init = x[4];
 					SequenceWriteOut_addRow();
 					isFirstSequence=false; 
 				}
@@ -197,6 +212,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 							active_sequence++;
 							cntr_v_init = x[3];
 							cntr_h_init = x[2]-rm-ref_ELEVATION;
+							cntr_t_init = t;
+							cntr_fpa_init = x[4];
 							SequenceWriteOut_addRow();
 						}
 				} else if (trigger_type==1) {
@@ -204,12 +221,16 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 							active_sequence++;
 							cntr_v_init = x[3];
 							cntr_h_init = x[2]-rm-ref_ELEVATION;
+							cntr_t_init = t;
+							cntr_fpa_init = x[4];
 							SequenceWriteOut_addRow();}
 				} else if (trigger_type==2) {
 						if( x[3]<trigger_value) {
 							active_sequence++;
 							cntr_v_init = x[3];
 							cntr_h_init = x[2]-rm-ref_ELEVATION;
+							cntr_t_init = t;
+							cntr_fpa_init = x[4];
 							SequenceWriteOut_addRow();}
 	     		}
 	    	}
@@ -219,6 +240,8 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	if(active_sequence ==  (SEQUENCE_DATA_main.size()-1) && Sequence_RES_closed==false){
 				cntr_v_init = x[3];
 				cntr_h_init = x[2]-rm-ref_ELEVATION;
+				cntr_t_init = t;
+				cntr_fpa_init = x[4];
 	    		System.out.println("Write: Sequence result file ");
 	    		try {
 	            String resultpath="";
@@ -233,18 +256,21 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        } catch(Exception e) {};
 	    	}
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
-	    	int sequence_type = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
+	    	int sequence_type_TM = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
 	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
-	    	if(sequence_type==3) { // Controlled Flight Sequence 
+	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt);	    	
+	    	if(sequence_type_TM==3) { // Controlled Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller ON - Controlled Fight Sequence
 			    	//-------------------------------------------------------------------------------------------------------------
 			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_ID() +" set ON");}
 			    	Thrust        = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_thrust_cmd();
 			    	Throttle_CMD  = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_throttle_cmd();
-	    	} else if (sequence_type==2) { // Continuous propulsive Flight Sequence 
+			    	
+			    	elevationangle = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
+	    	} else if (sequence_type_TM==2) { // Continuous propulsive Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//                          Flight Controller OFF - Uncontrolled/continuous thrust
+			    	//                          TM-FC OFF | TVC-FC ON - Continuous thrust
 			    	//-------------------------------------------------------------------------------------------------------------
 	    		elevationangle = 0.0;
 		    		if((m_propellant_init-(M0-x[6]))>0) {
@@ -254,13 +280,14 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		        		Thrust = 0; 
 		        		Throttle_CMD = 0; 
 		    		}
-	    	} else if (sequence_type==1) { // Coasting Sequence 
+		    		elevationangle = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
+	    	} else if (sequence_type_TM==1) { // Coasting Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller OFF - Coasting - Thrust OFF
 			    	//-------------------------------------------------------------------------------------------------------------
 		    		Thrust = 0; 
 		    		Throttle_CMD = 0;
-	    	} else if (sequence_type==4) { // Constrained continuous thrust 
+	    	} else if (sequence_type_TM==4) { // Constrained continuous thrust 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                Flight Controller OFF - Uncontrolled/Constrained, continuous thrust TTM constraint
 			    	//-------------------------------------------------------------------------------------------------------------
@@ -271,7 +298,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 		    			Thrust = TTM_max * x[6]; 
 		    		}
 		    			Throttle_CMD = Thrust/Thrust_max;
-	    	} else if (sequence_type==5) {
+	    	} else if (sequence_type_TM==5) {
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
 			    	//-------------------------------------------------------------------------------------------------------------
@@ -556,7 +583,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  active_sequence+" "+
 	                    		  (groundtrack/1000)+" "+
 	                    		  CTRL_Error+" "+
-	                    		  CTRL_Time+" "
+	                    		  CTRL_Time+" "+
+	                    		  elevationangle*rad+" "
 	                    		  );
 	                }
 	                if(isLast) {
