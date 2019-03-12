@@ -112,6 +112,7 @@ import Toolbox.TextAreaOutputStream;
 import Toolbox.Tool;
 import javax.swing.JFileChooser;
 import Controller.LandingCurve;
+import Controller.PitchCurve;
 
 public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -285,9 +286,8 @@ public class Plotting_3DOF implements  ActionListener {
     public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, "");     
     private static Crosshair xCrosshair_x;
     private static Crosshair yCrosshair_x; 
-    private static Crosshair xCrosshair_DashBoardOverviewChart;
-    private static Crosshair yCrosshair_DashBoardOverviewChart; 
     public static Crosshair xCrosshair_A3_1,xCrosshair_A3_2,xCrosshair_A3_3,xCrosshair_A3_4,yCrosshair_A3_1,yCrosshair_A3_2,yCrosshair_A3_3,yCrosshair_A3_4;
+   public static Crosshair xCrosshair_DashBoardOverviewChart_Altitude_Velocity, yCrosshair_DashBoardOverviewChart_Altitude_Velocity,xCrosshair_DashBoardOverviewChart_Time_FPA, yCrosshair_DashBoardOverviewChart_Time_FPA;
     public static JPanel PageX04_Dashboard;
     public static JPanel PageX04_Map;
     public static JPanel PageX04_3;
@@ -297,19 +297,23 @@ public class Plotting_3DOF implements  ActionListener {
     public static JPanel PageX04_GroundClearance; 
     public static JPanel P1_Plotpanel;
     public static JPanel P1_SidePanel; 
-    public static JSplitPane SplitPane_Page1_Charts; 
+    public static JSplitPane SplitPane_Page1_Charts_horizontal; 
+    public static JSplitPane SplitPane_Page1_Charts_vertical; 
     static JFreeChart Chart_MercatorMap;
     static JFreeChart Chart_GroundClearance;
-	static JFreeChart CHART_P1_DashBoardOverviewChart;
+	static JFreeChart CHART_P1_DashBoardOverviewChart_Altitude_Velocity;
+	static JFreeChart CHART_P1_DashBoardOverviewChart_Time_FPA;
 	static JFreeChart chart_PolarMap;	  
 	static JFreeChart Chart_MercatorMap4;	
-	static ChartPanel ChartPanel_DashBoardOverviewChart; 
+	static ChartPanel ChartPanel_DashBoardOverviewChart_Altitude_Velocity; 
+	static ChartPanel ChartPanel_DashBoardOverviewChart_Time_FPA; 
 	static ChartPanel ChartPanel_DashBoardFlexibleChart;
-    private static Crosshair xCrosshair_DashboardFlexibleChart;
-    private static Crosshair yCrosshair_DashboardFlexibleChart;    
+    private static Crosshair xCH_DashboardFlexibleChart;
+    private static Crosshair yCH_DashboardFlexibleChart;    
     static public JFreeChart chartA3_1,chartA3_2,chartA3_3,chartA3_4; 
     public static ChartPanel CP_A31,CP_A32,CP_A33,CP_A34;
-	public static DefaultTableXYDataset CHART_P1_DashBoardOverviewChart_Dataset = new DefaultTableXYDataset();
+	public static DefaultTableXYDataset CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = new DefaultTableXYDataset();
+	public static DefaultTableXYDataset CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA = new DefaultTableXYDataset();
 	public static DefaultTableXYDataset ResultSet_GroundClearance_FlightPath = new DefaultTableXYDataset();
 	public static DefaultTableXYDataset ResultSet_GroundClearance_Elevation = new DefaultTableXYDataset();
 	public static XYSeriesCollection ResultSet_FlexibleChart = new XYSeriesCollection();
@@ -337,7 +341,7 @@ public class Plotting_3DOF implements  ActionListener {
 			 					 "TVC-FC target FPA [deg]", 
 			 					 "TVC-FC target curve"};
 	public static String[] COLUMS_EventHandler = {"Event Type",
-												  "Event Value"
+												 "Event Value"
 	};
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
@@ -666,14 +670,14 @@ public class Plotting_3DOF implements  ActionListener {
         P1_Plotpanel.setForeground(Color.white);
         PageX04_Dashboard.add(P1_Plotpanel,BorderLayout.LINE_END);
         
-        SplitPane_Page1_Charts = new JSplitPane();
+        SplitPane_Page1_Charts_horizontal = new JSplitPane();
        	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
-       	SplitPane_Page1_Charts.setOrientation(JSplitPane.VERTICAL_SPLIT );
-       	SplitPane_Page1_Charts.setDividerLocation(0.5);
+        SplitPane_Page1_Charts_horizontal.setOrientation(JSplitPane.VERTICAL_SPLIT );
+        SplitPane_Page1_Charts_horizontal.setDividerLocation(0.5);
        //	SplitPane_Page1_Charts.setForeground(Color.black);
        //	SplitPane_Page1_Charts.setBackground(Color.gray);
-       	SplitPane_Page1_Charts.setDividerSize(3);
-       	SplitPane_Page1_Charts.setUI(new BasicSplitPaneUI() {
+        SplitPane_Page1_Charts_horizontal.setDividerSize(3);
+        SplitPane_Page1_Charts_horizontal.setUI(new BasicSplitPaneUI() {
                @SuppressWarnings("serial")
    			public BasicSplitPaneDivider createDefaultDivider() {
                return new BasicSplitPaneDivider(this) {
@@ -691,7 +695,7 @@ public class Plotting_3DOF implements  ActionListener {
                }
            });
 
-       	SplitPane_Page1_Charts.addComponentListener(new ComponentListener(){
+        SplitPane_Page1_Charts_horizontal.addComponentListener(new ComponentListener(){
 
    			@Override
    			public void componentHidden(ComponentEvent arg0) {
@@ -719,16 +723,47 @@ public class Plotting_3DOF implements  ActionListener {
    			}
        
        	});
-       	SplitPane_Page1_Charts.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, 
+        SplitPane_Page1_Charts_horizontal.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, 
     		    new PropertyChangeListener() {
     		        @Override
     		        public void propertyChange(PropertyChangeEvent pce) {
 
     		        }
     		});
-       	SplitPane_Page1_Charts.setDividerLocation(500);
-       	P1_Plotpanel.add(SplitPane_Page1_Charts, BorderLayout.CENTER);
+        SplitPane_Page1_Charts_horizontal.setDividerLocation(500);
+       	P1_Plotpanel.add(SplitPane_Page1_Charts_horizontal, BorderLayout.CENTER);
         
+       	
+       	
+        SplitPane_Page1_Charts_vertical = new JSplitPane();
+       	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
+        SplitPane_Page1_Charts_vertical.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
+        SplitPane_Page1_Charts_vertical.setDividerLocation(0.5);
+       //	SplitPane_Page1_Charts.setForeground(Color.black);
+       //	SplitPane_Page1_Charts.setBackground(Color.gray);
+        SplitPane_Page1_Charts_vertical.setDividerSize(3);
+        SplitPane_Page1_Charts_vertical.setUI(new BasicSplitPaneUI() {
+               @SuppressWarnings("serial")
+   			public BasicSplitPaneDivider createDefaultDivider() {
+               return new BasicSplitPaneDivider(this) {
+                   @SuppressWarnings("unused")
+   				public void setBorder( Border b) {
+                   }
+
+                   @Override
+                       public void paint(Graphics g) {
+                       g.setColor(Color.gray);
+                       g.fillRect(0, 0, getSize().width, getSize().height);
+                           super.paint(g);
+                       }
+               };
+               }
+           });
+        SplitPane_Page1_Charts_vertical.setDividerLocation(500);
+        SplitPane_Page1_Charts_horizontal.add(SplitPane_Page1_Charts_vertical, JSplitPane.TOP);
+       	
+       	
+       	
         JScrollPane scrollPane_P1 = new JScrollPane(P1_SidePanel);
         scrollPane_P1.setPreferredSize(new Dimension(415, exty_main));
         scrollPane_P1.getVerticalScrollBar().setUnitIncrement(16);
@@ -2201,7 +2236,8 @@ public class Plotting_3DOF implements  ActionListener {
        PageX04_PolarMap.add(PolarMapContainer, BorderLayout.CENTER);
 	//-------------------------------------------------------------------------------------------------------------------------------
         // Create Charts:
-        CreateChart_DashboardOverviewChart(RM);
+       CreateChart_DashboardOverviewChart_Altitude_Velocity(RM);
+       CreateChart_DashboardOverviewChart_Time_FPA();
      	CreateChart_DashBoardFlexibleChart();
      	CreateChart_MercatorMap();
      	CreateChart_PolarMap();
@@ -2428,11 +2464,13 @@ public class Plotting_3DOF implements  ActionListener {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-	    	CHART_P1_DashBoardOverviewChart_Dataset.removeAllSeries();
+	    	CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.removeAllSeries();
+	    	CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.removeAllSeries();
 	    	try {
-	    	CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_DashboardOverviewChart(RM);
+	    	CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = AddDataset_DashboardOverviewChart(RM);
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
-	    	System.out.println("ERROR: Dashboard chart could not be created");
+	    		System.out.println(eFNF2);
+	    	System.out.println("ERROR: Dashboard chart could not be created. Add dataset failed");
 	    	}
 	    	ResultSet_MercatorMap.removeAllSeries();
 	    	try {
@@ -2848,7 +2886,9 @@ try {
        				      tokens[6]+" "+
        				      tokens[7]+" "+
        				      tokens[8]+" "+
-       				      tokens[9]+" "
+       				      tokens[9]+" "+
+       				      tokens[10]+" "+
+       				      tokens[11]+" "
        	);
        }
        br.close();
@@ -3017,93 +3057,114 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
 		ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
 		SEQUENCE_DATA = Read_SEQU();
+		
 	   	XYSeries xyseries10 = new XYSeries("Target Trajectory", false, false); 
 	   	XYSeries xyseries11 = new XYSeries("Trajectory", false, false); 
+	   	
+	   	XYSeries xyseries_FPA_is = new XYSeries("Flight Path Angle", false, false);
+	   	XYSeries xyseries_FPA_cmd = new XYSeries("Flight Path Angle IDEAL", false, false);
+	   	
 	    FileInputStream fstream = null;
 		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	              DataInputStream in = new DataInputStream(fstream);
 	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	              String strLine;
 	              
-	              try {
+	             // try {
 	              while ((strLine = br.readLine()) != null )   {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[6]);
 		           double y = Double.parseDouble(tokens[3]);
+		           
+		           double t = Double.parseDouble(tokens[0]);
+		           double fpa = Double.parseDouble(tokens[7])*rad;
+		           
+		           double t_sequence = Double.parseDouble(tokens[42]);
+		           
 		           int active_sequence = Integer.parseInt(tokens[39]);
 		           double xx=0;
+		           double fpa_cmd = 0;
 		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
 		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[38])));
 		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[29])))); 
 		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[33])));
-		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrl_curve=0;
+		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrl_curve=0; double ctrl_fpa_init=0;int ctrl_TVC_curve=0;
+		           double ctrl_t_end=0; double ctrl_fpa_end =0;
 		           try {
 		           String[] sequ_tokens  = SEQUENCE_DATA.get(active_sequence).split(" ");
 		            active_sequ_type  	 = Integer.parseInt(sequ_tokens[1]);
 		            ctrl_vinit 	 		 = Double.parseDouble(sequ_tokens[3]);
 		            ctrl_hinit 	 		 = Double.parseDouble(sequ_tokens[4]);
-		            ctrl_vel 	    	 = Double.parseDouble(sequ_tokens[5]);
+		            ctrl_vel 	    	     = Double.parseDouble(sequ_tokens[5]);
 		            ctrl_alt 		 	 = Double.parseDouble(sequ_tokens[6]);
-		            ctrl_curve           = Integer.parseInt(sequ_tokens[7]);
-		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
-		        	   System.out.println(eIOBE);
-		           }
-		           //System.out.println(ctrl_vinit+ " | "+ ctrl_hinit);
-		          // System.out.println(active_sequence+ " | "+ ctrl_curve);
+		            ctrl_curve            = Integer.parseInt(sequ_tokens[7]);
+		            ctrl_TVC_curve		  = Integer.parseInt(sequ_tokens[8]);
+		            ctrl_fpa_init		 = Double.parseDouble(sequ_tokens[9]);
+		            ctrl_t_end			 = Double.parseDouble(sequ_tokens[10]);
+		            ctrl_fpa_end			 = Double.parseDouble(sequ_tokens[11]);
+		            
+		           } catch (java.lang.IndexOutOfBoundsException eIOBE){System.out.println(eIOBE);}
+		           
+		    		    if  (ctrl_TVC_curve==0) {
+		    		    	xyseries_FPA_cmd.add(t  , 0); 
+		   		        } else if (ctrl_TVC_curve==1) {
+		   		        	fpa_cmd =    PitchCurve.SquareRootPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
+		   		        	if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
+		  		             try { xyseries_FPA_cmd.add(t  , fpa_cmd*deg); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    } else if (ctrl_TVC_curve==2) {
+		    		    		fpa_cmd =   PitchCurve.LinearPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
+		    		    		if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
+		    		    	 		try { xyseries_FPA_cmd.add(t , fpa_cmd*deg); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    } 
+		           
+		           //--------------------------------------------------------
 		           if(active_sequ_type==3) { // Controlled Propulsive flight
 		    		    if  (ctrl_curve==0) {
-		    		    	xyseries10.add(x  , 0); 
+		    		    		 xyseries10.add(x  , 0); 
 		   		        } else if (ctrl_curve==1) {
 		    		         xx =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		         //if(Double.isNaN(xx)) {xx=0;}
 		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_curve==2) {
-		    		    	 xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		    	 	xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
 		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_curve==3) {
-		    		    	 xx =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		    	 	xx =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
+		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
 		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } 
-		           } else {
-		        	   try {
-		        	   xyseries10.add(x  , 0);  
-		        	   } catch(org.jfree.data.general.SeriesException eSE) {
-		        		   System.out.println(eSE);
-		        	   }
-		           }
+		           } else {try {xyseries10.add(x  , 0);  } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}}
 		           
-		           //System.out.println(xx+ " | "+ y);
-		           try { 
-		           xyseries11.add(x  , y);
-		           } catch(org.jfree.data.general.SeriesException eSE) {
-		        	   System.out.println(eSE);
-		        	   System.out.println("ERROR: Dashboard chart not created.");
-		           }
+		           try {xyseries11.add(x  , y);} catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		           
+		           try {xyseries_FPA_is.add(t,fpa);} catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		        	   
 		           }
 	              
 	       fstream.close();
 	       in.close();
 	       br.close();
-		    CHART_P1_DashBoardOverviewChart_Dataset.addSeries(xyseries11); 
-		    CHART_P1_DashBoardOverviewChart_Dataset.addSeries(xyseries10);
-	              } catch (NullPointerException | IllegalArgumentException eNPE) { System.out.println(eNPE);System.out.println("Dashboard chart, illegal argument error");}
-	    return CHART_P1_DashBoardOverviewChart_Dataset;
+		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries11); 
+		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries10);
+		    
+		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
+		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_cmd);
+		    /*
+	              } catch (NullPointerException  eNPE) { System.out.println(eNPE);System.out.println("Dashboard chart, Nullpointerexception");
+					}catch(IllegalArgumentException eIAE) {System.out.println("Dashboard chart, illegal argument error");}
+					*/
+	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }
 	
 	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity(double RM) throws IOException {
-		/*
-		CHART_P1_DashBoardOverviewChart_Dataset.removeAllSeries();
-		try {
-		CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_DashboardOverviewChart(RM);
-		} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {System.out.println(eFNF2); System.out.println("Dashboard add chart error");}
-		*/
-	    //-----------------------------------------------------------------------------------
-		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
-	    CHART_P1_DashBoardOverviewChart = ChartFactory.createStackedXYAreaChart("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
-		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart.getXYPlot(); 
+		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
+		CHART_P1_DashBoardOverviewChart_Altitude_Velocity = ChartFactory.createStackedXYAreaChart("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
+		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
 	    renderer.setSeriesPaint( 0 , Color.BLACK );	
-		CHART_P1_DashBoardOverviewChart.setBackgroundPaint(Color.white);
+	    CHART_P1_DashBoardOverviewChart_Altitude_Velocity.setBackgroundPaint(Color.white);
 		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
 		plot.getDomainAxis().setLabelFont(font3);
 		plot.getRangeAxis().setLabelFont(font3);
@@ -3121,14 +3182,21 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
 		PlotPanel_X43.setBackground(Color.white);
 	
-		ChartPanel_DashBoardOverviewChart = new ChartPanel(CHART_P1_DashBoardOverviewChart);
-		ChartPanel_DashBoardOverviewChart.setMaximumDrawHeight(50000);
-		ChartPanel_DashBoardOverviewChart.setMaximumDrawWidth(50000);
-		ChartPanel_DashBoardOverviewChart.setMinimumDrawHeight(0);
-		ChartPanel_DashBoardOverviewChart.setMinimumDrawWidth(0);
-		ChartPanel_DashBoardOverviewChart.setMouseWheelEnabled(true);
-		ChartPanel_DashBoardOverviewChart.setPreferredSize(new Dimension(900, page1_plot_y));
-		ChartPanel_DashBoardOverviewChart.addChartMouseListener(new ChartMouseListener() {
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity = new ChartPanel(CHART_P1_DashBoardOverviewChart_Altitude_Velocity);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMaximumDrawHeight(50000);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMaximumDrawWidth(50000);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMinimumDrawHeight(0);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMinimumDrawWidth(0);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMouseWheelEnabled(true);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setPreferredSize(new Dimension(900, page1_plot_y));
+	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
+	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelVisible(true);
+	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelVisible(true);
+	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Altitude_Velocity);
+	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Altitude_Velocity);
+		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.addChartMouseListener(new ChartMouseListener() {
 	        @Override
 	        public void chartMouseClicked(ChartMouseEvent event) {
 	            // ignore
@@ -3136,48 +3204,34 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	
 	        @Override
 	        public void chartMouseMoved(ChartMouseEvent event) {
-	            Rectangle2D dataArea = Plotting_3DOF.ChartPanel_DashBoardOverviewChart.getScreenDataArea();
+	            Rectangle2D dataArea = Plotting_3DOF.ChartPanel_DashBoardOverviewChart_Altitude_Velocity.getScreenDataArea();
 	            JFreeChart chart = event.getChart();
 	            XYPlot plot = (XYPlot) chart.getPlot();
 	            ValueAxis xAxis = plot.getDomainAxis();
 	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                    RectangleEdge.BOTTOM);
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            Plotting_3DOF.xCrosshair_DashBoardOverviewChart.setValue(x);
-	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart.setValue(y);
+	            Plotting_3DOF.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
+	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(y);
 	        }
 	});
-	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCrosshair_DashBoardOverviewChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    xCrosshair_DashBoardOverviewChart.setLabelVisible(true);
-	    yCrosshair_DashBoardOverviewChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    yCrosshair_DashBoardOverviewChart.setLabelVisible(true);
-	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart);
-	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart);
-	    ChartPanel_DashBoardOverviewChart.addOverlay(crosshairOverlay);
-	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart,BorderLayout.PAGE_START);
+	    ChartPanel_DashBoardOverviewChart_Altitude_Velocity.addOverlay(crosshairOverlay);
+	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity,BorderLayout.PAGE_START);
 	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
-	   SplitPane_Page1_Charts.add(ChartPanel_DashBoardOverviewChart, JSplitPane.TOP);
+	   SplitPane_Page1_Charts_vertical.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity, JSplitPane.LEFT);
 	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
 		//jPanel4.validate();	
 		CHART_P1_DashBoardOverviewChart_fd = false;
 	}
 	
 	public static void CreateChart_DashboardOverviewChart_Time_FPA() throws IOException {
-		/*
-		CHART_P1_DashBoardOverviewChart_Dataset.removeAllSeries();
-		try {
-		CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_DashboardOverviewChart(RM);
-		} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {System.out.println(eFNF2); System.out.println("Dashboard add chart error");}
-		*/
-	    //-----------------------------------------------------------------------------------
-		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
-	    CHART_P1_DashBoardOverviewChart = ChartFactory.createStackedXYAreaChart("", "Time [s]", "Flight Path Angle [deg] ", CHART_P1_DashBoardOverviewChart_Dataset);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
-		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart.getXYPlot(); 
+		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
+	    CHART_P1_DashBoardOverviewChart_Time_FPA = ChartFactory.createStackedXYAreaChart("", "Time [s]", "Flight Path Angle [deg] ", CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
+		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Time_FPA.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
 	    renderer.setSeriesPaint( 0 , Color.BLACK );	
-		CHART_P1_DashBoardOverviewChart.setBackgroundPaint(Color.white);
+	    CHART_P1_DashBoardOverviewChart_Time_FPA.setBackgroundPaint(Color.white);
 		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
 		plot.getDomainAxis().setLabelFont(font3);
 		plot.getRangeAxis().setLabelFont(font3);
@@ -3195,14 +3249,14 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
 		PlotPanel_X43.setBackground(Color.white);
 	
-		ChartPanel_DashBoardOverviewChart = new ChartPanel(CHART_P1_DashBoardOverviewChart);
-		ChartPanel_DashBoardOverviewChart.setMaximumDrawHeight(50000);
-		ChartPanel_DashBoardOverviewChart.setMaximumDrawWidth(50000);
-		ChartPanel_DashBoardOverviewChart.setMinimumDrawHeight(0);
-		ChartPanel_DashBoardOverviewChart.setMinimumDrawWidth(0);
-		ChartPanel_DashBoardOverviewChart.setMouseWheelEnabled(true);
-		ChartPanel_DashBoardOverviewChart.setPreferredSize(new Dimension(900, page1_plot_y));
-		ChartPanel_DashBoardOverviewChart.addChartMouseListener(new ChartMouseListener() {
+		ChartPanel_DashBoardOverviewChart_Time_FPA = new ChartPanel(CHART_P1_DashBoardOverviewChart_Time_FPA);
+		ChartPanel_DashBoardOverviewChart_Time_FPA.setMaximumDrawHeight(50000);
+		ChartPanel_DashBoardOverviewChart_Time_FPA.setMaximumDrawWidth(50000);
+		ChartPanel_DashBoardOverviewChart_Time_FPA.setMinimumDrawHeight(0);
+		ChartPanel_DashBoardOverviewChart_Time_FPA.setMinimumDrawWidth(0);
+		ChartPanel_DashBoardOverviewChart_Time_FPA.setMouseWheelEnabled(true);
+		ChartPanel_DashBoardOverviewChart_Time_FPA.setPreferredSize(new Dimension(900, page1_plot_y));
+		ChartPanel_DashBoardOverviewChart_Time_FPA.addChartMouseListener(new ChartMouseListener() {
 	        @Override
 	        public void chartMouseClicked(ChartMouseEvent event) {
 	            // ignore
@@ -3210,28 +3264,28 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	
 	        @Override
 	        public void chartMouseMoved(ChartMouseEvent event) {
-	            Rectangle2D dataArea = Plotting_3DOF.ChartPanel_DashBoardOverviewChart.getScreenDataArea();
+	            Rectangle2D dataArea = Plotting_3DOF.ChartPanel_DashBoardOverviewChart_Time_FPA.getScreenDataArea();
 	            JFreeChart chart = event.getChart();
 	            XYPlot plot = (XYPlot) chart.getPlot();
 	            ValueAxis xAxis = plot.getDomainAxis();
 	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                    RectangleEdge.BOTTOM);
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            Plotting_3DOF.xCrosshair_DashBoardOverviewChart.setValue(x);
-	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart.setValue(y);
+	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(x);
+	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(y);
 	        }
 	});
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCrosshair_DashBoardOverviewChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    xCrosshair_DashBoardOverviewChart.setLabelVisible(true);
-	    yCrosshair_DashBoardOverviewChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    yCrosshair_DashBoardOverviewChart.setLabelVisible(true);
-	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart);
-	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart);
-	    ChartPanel_DashBoardOverviewChart.addOverlay(crosshairOverlay);
-	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart,BorderLayout.PAGE_START);
+	    yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
+	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
+	    crosshairOverlay.addDomainCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
+	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
+	    ChartPanel_DashBoardOverviewChart_Time_FPA.addOverlay(crosshairOverlay);
+	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Time_FPA,BorderLayout.PAGE_START);
 	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
-	   SplitPane_Page1_Charts.add(ChartPanel_DashBoardOverviewChart, JSplitPane.TOP);
+	   SplitPane_Page1_Charts_vertical.add(ChartPanel_DashBoardOverviewChart_Time_FPA, JSplitPane.RIGHT);
 	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
 		//jPanel4.validate();	
 		CHART_P1_DashBoardOverviewChart_fd = false;
@@ -3289,22 +3343,22 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                    RectangleEdge.BOTTOM);
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            Plotting_3DOF.xCrosshair_DashboardFlexibleChart.setValue(x);
-	            Plotting_3DOF.yCrosshair_DashboardFlexibleChart.setValue(y);
+	            Plotting_3DOF.xCH_DashboardFlexibleChart.setValue(x);
+	            Plotting_3DOF.yCH_DashboardFlexibleChart.setValue(y);
 	        }
 	});
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCrosshair_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    xCrosshair_DashboardFlexibleChart.setLabelVisible(true);
-	    yCrosshair_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    yCrosshair_DashboardFlexibleChart.setLabelVisible(true);
-	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashboardFlexibleChart);
-	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashboardFlexibleChart);
+	    xCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    xCH_DashboardFlexibleChart.setLabelVisible(true);
+	    yCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    yCH_DashboardFlexibleChart.setLabelVisible(true);
+	    crosshairOverlay.addDomainCrosshair(xCH_DashboardFlexibleChart);
+	    crosshairOverlay.addRangeCrosshair(yCH_DashboardFlexibleChart);
 	    ChartPanel_DashBoardFlexibleChart.addOverlay(crosshairOverlay);
 	   PlotPanel_X44.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.PAGE_START);
 	    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
 	    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
-	    SplitPane_Page1_Charts.add(ChartPanel_DashBoardFlexibleChart, JSplitPane.BOTTOM);
+	    SplitPane_Page1_Charts_horizontal.add(ChartPanel_DashBoardFlexibleChart, JSplitPane.BOTTOM);
 		//jPanel4.validate();	
 		Chart_MercatorMap4_fd = false;
 	}

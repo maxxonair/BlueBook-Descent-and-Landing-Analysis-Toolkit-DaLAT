@@ -161,8 +161,10 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_vel()+" "+
 			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_alt()+" "+
 			       SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve()+" "+
-			       cntr_t_init+" "+
-			       cntr_fpa_init+" "
+			       SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve()  +" "+
+			       cntr_fpa_init+" "+
+			       SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_time()+" "+
+			       SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_fpa()+" "
 		  );
 	    }
 		public static void SET_Constants(int TARGET) throws IOException{
