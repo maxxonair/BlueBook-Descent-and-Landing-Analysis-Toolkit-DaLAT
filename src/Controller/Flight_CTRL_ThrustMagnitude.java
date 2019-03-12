@@ -92,6 +92,7 @@ public class Flight_CTRL_ThrustMagnitude{
         double[] readINP = new double[20];
         String dir = System.getProperty("user.dir");
         INPUT_FILE = dir+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;
+       // System.out.println(INPUT_FILE);
        	double InitialState = 0;
    	    FileInputStream fstream = null;
        	try {
@@ -231,6 +232,7 @@ public class Flight_CTRL_ThrustMagnitude{
 	}
 	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double m0,  double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit,  double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, int ctrl_curve, double ctrl_dt) {
 		this.ctrl_on 	  = ctrl_on;
+		if(this.ctrl_ID==0) {this.ctrl_on=false;} // overwrite : controller off with no FC set
 		this.alt 		  = x[2]-rm-refElev;
 		this.vel 		  = x[3];
 		this.fpa 		  = x[4];

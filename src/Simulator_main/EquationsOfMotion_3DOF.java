@@ -14,6 +14,7 @@ import java.util.List;
 import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
+import org.apache.commons.math3.ode.events.EventHandler;
 import org.apache.commons.math3.ode.nonstiff.AdamsBashforthIntegrator;
 import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
@@ -143,7 +144,6 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	        public static double const_tzer0=0;
 	        public static boolean const_isFirst =true; 
 	        
-	        
 	        public static double TTM_max = 5.0;
 	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
@@ -160,7 +160,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			       cntr_h_init+" "+
 			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_vel()+" "+
 			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_alt()+" "+
-			       SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve()+" "
+			       SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve()+" "+
+			       cntr_t_init+" "+
+			       cntr_fpa_init+" "
 		  );
 	    }
 		public static void SET_Constants(int TARGET) throws IOException{
@@ -188,7 +190,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
 				
-				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, 0, 0, ctrl_tend, ctrl_fpa);
+				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa);
 				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}
@@ -257,6 +259,7 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 	    	}
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type_TM = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
+	 
 	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt);	    	
 	    	if(sequence_type_TM==3) { // Controlled Flight Sequence 
@@ -273,14 +276,16 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			    	//                          TM-FC OFF | TVC-FC ON - Continuous thrust
 			    	//-------------------------------------------------------------------------------------------------------------
 	    		elevationangle = 0.0;
+	    		elevationangle = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
 		    		if((m_propellant_init-(M0-x[6]))>0) {
+		    			//System.out.println((m_propellant_init-(M0-x[6])));
 		    			Thrust = Thrust_max; 
 		    			Throttle_CMD = 1; 
 		    		}else { // Empty tanks
 		        		Thrust = 0; 
 		        		Throttle_CMD = 0; 
 		    		}
-		    		elevationangle = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
+		    		
 	    	} else if (sequence_type_TM==1) { // Coasting Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller OFF - Coasting - Thrust OFF
@@ -303,9 +308,9 @@ public class EquationsOfMotion_3DOF implements FirstOrderDifferentialEquations {
 			    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
 			    	//-------------------------------------------------------------------------------------------------------------
     		    if(const_isFirst){const_tzer0=t;}
-		    	elevationangle =  Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_vel();
+		    	
 				Thrust = Thrust_max;
-    			    Throttle_CMD = Thrust/Thrust_max;	
+    			Throttle_CMD = Thrust/Thrust_max;	
 	    	} else { System.out.println("ERROR: Sequence type out of range");}
 		}
 		
@@ -607,11 +612,63 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	            }
 	            
 	        };
+	        
+			EventHandler AltitudeHandler =new EventHandler() {
+				@Override
+				public double g(double t, double[] y) {
+					// TODO Auto-generated method stub
+					return  y[2] - rm - ref_ELEVATION; // 
+					//return 0;
+				}
+				public Action eventOccurred(double t, double[] y, boolean increasing) {
+					  return Action.STOP;
+					}
+
+
+				@Override
+				public void init(double arg0, double[] arg1, double arg2) {
+					// TODO Auto-generated method stub
+					
+				}
+				@Override
+				public void resetState(double arg0, double[] arg1) {
+					// TODO Auto-generated method stub
+					
+				}
+	        	
+	        };
+	        
+			EventHandler VelocityHandler =new EventHandler() {
+				@Override
+				public double g(double t, double[] y) {
+					// TODO Auto-generated method stub
+					return  y[3]; // 
+					//return 0;
+				}
+				public Action eventOccurred(double t, double[] y, boolean increasing) {
+					  return Action.STOP;
+					}
+
+
+				@Override
+				public void init(double arg0, double[] arg1, double arg2) {
+					// TODO Auto-generated method stub
+					
+				}
+				@Override
+				public void resetState(double arg0, double[] arg1) {
+					// TODO Auto-generated method stub
+					
+				}
+	        	
+	        };
 
 	        System.out.println("------------------------------------------");
 	        System.out.println("READ successful");
 	        System.out.println("Initialization succesful");
-	        for(int i=0;i<Event_Handler.size();i++) {dp853.addEventHandler(Event_Handler.get(i).get_StopHandler(),1,1.0e-3,30);}
+	        for(int i=0;i<Event_Handler.size();i++) {dp853.addEventHandler(Event_Handler.get(i).get_StopHandler(),1,1.0e-3,30);System.out.println("Handler: "+Event_Handler.get(i).get_val_condition());}
+	        dp853.addEventHandler(AltitudeHandler,1,1.0e-3,30);
+	        dp853.addEventHandler(VelocityHandler,1,1.0e-3,30);
 	        System.out.println(""+Event_Handler.size()+" Event Handler added.");
 	        dp853.addStepHandler(WriteOut);
 	        System.out.println("Integrator start");

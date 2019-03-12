@@ -15,26 +15,26 @@ public class Flight_CTRL_PitchCntrl{
 	//			y - > Flight Path Angle [rad]
 	//
 	//--------------------------------------------------------------------------------------------------------
-	private int     ctrl_ID;			// Controller ID					[-]
-	private boolean ctrl_on;			// Switch on/off (ctrl)			[true/false]
-	private double ctr_init_x;
-	private double ctr_init_y;
-	private double ctr_end_x;
-	private double ctr_end_y;
-	private double x_is; 
-	private double y_is;
-	private double y_ideal; 
-	private int    ctrl_curve;		// Control curve 				[-]
-	private double ctrl_dt;			// Delta-t controller			[s]
-	private double P_GAIN; 			// controller p-gain				[-]
-	private double I_GAIN;			// controller i-gain		   		[-]
-	private double D_GAIN;			// controller d-gain				[-]
-	private double cmd_min;			// controller output cmd min		[-]
-	private double cmd_max;			// controller output cmd max    [-]
-	private double CTRL_ERROR;		// controller Errror				[ ]
-	private double CTRL_TIME;		// controller Time 				[s]	
-	
-	private double tvc_cmd;			// thrust vector angle cmd			[rad] 
+	private int     ctrl_ID;				// Controller ID					[-]
+	private boolean ctrl_on;				// Switch on/off (ctrl)				[true/false]
+	private double  ctr_init_x;
+	private double  ctr_init_y;
+	private double  ctr_end_x;
+	private double  ctr_end_y;
+	private double  x_is; 
+	private double  y_is;
+	private double  y_ideal; 
+	private int     ctrl_curve;				// Control curve 					[-]
+	private double  ctrl_dt;				// Delta-t controller				[s]
+	private double  P_GAIN; 				// controller p-gain				[-]
+	private double  I_GAIN;					// controller i-gain		   		[-]
+	private double  D_GAIN;					// controller d-gain				[-]
+	private double  cmd_min;				// controller output cmd min		[-]
+	private double  cmd_max;				// controller output cmd max    	[-]
+	private double  CTRL_ERROR;				// controller Errror				[ ]
+	private double  CTRL_TIME;				// controller Time 					[s]	
+		
+	private double tvc_cmd;					// thrust vector angle cmd			[rad] 
 	
 	private double  tzero; 					// Sequence Time 						[s]
 	private boolean tswitch =true;          // Time switch to start controller time [s]
@@ -138,7 +138,7 @@ public class Flight_CTRL_PitchCntrl{
         	} else {
         		tvc_cmd = 0; // Controller off 
         	}
-    		return tvc_cmd;
+    		return (-tvc_cmd);
     	}
 
 	public int get_ctrl_curve() {
@@ -155,6 +155,7 @@ public class Flight_CTRL_PitchCntrl{
 	}
 	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double ctr_init_x, double ctr_init_y, int ctrl_curve, double ctrl_dt) {
 		this.ctrl_on 	  = ctrl_on;
+		if(this.ctrl_ID==0) {this.ctrl_on=false;} // overwrite : controller off with no FC set
 		this.y_is 		  = x[4];
         this.ctr_init_x = ctr_init_x;
         this.ctr_init_y = ctr_init_y;

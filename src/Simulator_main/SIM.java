@@ -127,8 +127,7 @@ public class SIM implements ActionListener{
 	    	int event_type 			= Integer.parseInt(tokens[0]);
 	    	double event_value 		= Double.parseDouble(tokens[1]);
 	    	System.out.println(event_type+" | "+event_value);
-	    	if (event_type==3) {STOP_Handler.add(new StopCondition((rm + refElevation + event_value),event_type)); }
-	    	else			   {STOP_Handler.add(new StopCondition(event_value,event_type)); 	}
+	    	STOP_Handler.add(new StopCondition(event_value,event_type, rm, refElevation));
 	       }
 	       for(int i=0;i<STOP_Handler.size();i++) {
 	    	   STOP_Handler.get(i).create_StopHandler();

@@ -173,6 +173,8 @@ public class Plotting_3DOF implements  ActionListener {
    	public static Color w_c = new Color(gg,gg,gg);					// Box background color
    	public static Color t_c = new Color(255,255,255);				// Table background color
    	
+   	public static Color light_gray = new Color(230,230,230);
+   	
     static DecimalFormat decf = new DecimalFormat("#.#");
     static DecimalFormat df_X4 = new DecimalFormat("#####.###");
     static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
@@ -1745,6 +1747,8 @@ public class Plotting_3DOF implements  ActionListener {
     	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
             Component comp = super.prepareRenderer(renderer, row, col);
             Object value = getModel().getValueAt(row, col);
+            String val_TLFC = (String) getModel().getValueAt(row, 4);
+            String val_TVCFC = (String) getModel().getValueAt(row, 8);
           //  JTextField textfield= super.getComponent();
             try {
             	if (value.equals(""+SequenceType[2])) {
@@ -1759,7 +1763,25 @@ public class Plotting_3DOF implements  ActionListener {
             	} else if (value.equals(""+SequenceType[3])) {
                     comp.setBackground(Color.green);
                     comp.setForeground(Color.black);
-            	} else {
+            	} else if (col==9&&val_TVCFC.equals(""+SequenceTVCFC[0])){
+                    comp.setBackground(light_gray);
+                    comp.setForeground(Color.gray);
+            	}else if (col==10&&val_TVCFC.equals(""+SequenceTVCFC[0])){
+                    comp.setBackground(light_gray);
+                    comp.setForeground(Color.gray);
+            	} else if (col==11&&val_TVCFC.equals(""+SequenceTVCFC[0])){
+                    comp.setBackground(light_gray);
+                    comp.setForeground(Color.gray);
+            	} else if (col==5&&val_TLFC.equals(""+SequenceFC[0])){
+                    comp.setBackground(light_gray);
+                    comp.setForeground(Color.gray);
+            	} else if (col==6&&val_TLFC.equals(""+SequenceFC[0])){
+                    comp.setBackground(light_gray);
+                    comp.setForeground(Color.gray);
+            	} else if (col==7&&val_TLFC.equals(""+SequenceFC[0])){
+                    comp.setBackground(light_gray);
+                    comp.setForeground(Color.gray);
+            	}  else {
                     comp.setBackground(Color.white);
                     comp.setForeground(Color.black);
             	}         
@@ -1792,8 +1814,22 @@ public class Plotting_3DOF implements  ActionListener {
 		@Override
         public boolean isCellEditable(int row, int column) {
            //all cells false
+			String val_TVCFC = (String) MODEL_SEQUENCE.getValueAt(row, 8);
+			String val_TLFC = (String) MODEL_SEQUENCE.getValueAt(row, 4);
 			if (column == 0 ){
 				return false;
+			} else if (column==9 && val_TVCFC.equals(SequenceTVCFC[0])) {
+				return false; 
+			} else if (column==10 && val_TVCFC.equals(SequenceTVCFC[0])) {
+				return false; 
+			} else if (column==11 && val_TVCFC.equals(SequenceTVCFC[0])) {
+				return false; 
+			} else if (column==5 && val_TLFC.equals(SequenceFC[0])) {
+				return false; 
+			} else if (column==6 && val_TLFC.equals(SequenceFC[0])) {
+				return false; 
+			} else if (column==7 && val_TLFC.equals(SequenceFC[0])) {
+				return false; 
 			} else {
 				return true; 
 			}
@@ -1802,13 +1838,8 @@ public class Plotting_3DOF implements  ActionListener {
     MODEL_SEQUENCE.setColumnIdentifiers(COLUMS_SEQUENCE);
     TABLE_SEQUENCE.setModel(MODEL_SEQUENCE);
     TABLE_SEQUENCE.setBackground(Color.white);
-   // int tablewidth3 = 900;
-   // int tableheight3 = 400;
-  // ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
     TABLE_SEQUENCE.setBackground(Color.white);
     TABLE_SEQUENCE.setForeground(Color.black);
-    //TABLE_SEQUENCE.setPreferredSize(new Dimension(tablewidth3, tableheight3));
-    //TABLE_SEQUENCE.setSize(tablewidth3, tableheight3);
     TABLE_SEQUENCE.getTableHeader().setReorderingAllowed(false);
     TABLE_SEQUENCE.setRowHeight(45);
     
@@ -1819,14 +1850,14 @@ public class Plotting_3DOF implements  ActionListener {
 	    TableColumn SequENDValColumn  		 = TABLE_SEQUENCE.getColumnModel().getColumn(2);
 	    TableColumn SequTypeColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(3);
 	    TableColumn SequenceFCColumn 	  	 = TABLE_SEQUENCE.getColumnModel().getColumn(4);
-	    TableColumn FCvelColumn 	   		     = TABLE_SEQUENCE.getColumnModel().getColumn(5);
+	    TableColumn FCvelColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
 	    TableColumn FCaltColumn	   			 = TABLE_SEQUENCE.getColumnModel().getColumn(6);
 	    TableColumn FCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(7);
 	    
-	    TableColumn TVCFCColumn    	 			 = TABLE_SEQUENCE.getColumnModel().getColumn(8);
-	    TableColumn TVCFCxColumn    	 			 = TABLE_SEQUENCE.getColumnModel().getColumn(9);
-	    TableColumn TVCFCyColumn    	 			 = TABLE_SEQUENCE.getColumnModel().getColumn(10);
-	    TableColumn TVCFCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(11);
+	    TableColumn TVCFCColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(8);
+	    TableColumn TVCFCxColumn    	 	 = TABLE_SEQUENCE.getColumnModel().getColumn(9);
+	    TableColumn TVCFCyColumn    	 	 = TABLE_SEQUENCE.getColumnModel().getColumn(10);
+	    TableColumn TVCFCtargetCurveColumn   = TABLE_SEQUENCE.getColumnModel().getColumn(11);
 
 	    
 	    TABLE_SEQUENCE.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
@@ -2327,7 +2358,7 @@ public class Plotting_3DOF implements  ActionListener {
             				} else if(j==4) {
             					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
             					int val = 0 ; 
-            					for(int k=0;k<SequenceFC.length;k++) { if(str_val.equals(SequenceFC[k])){val=k+1;} }
+            					for(int k=0;k<SequenceFC.length;k++) { if(str_val.equals(SequenceFC[k])){val=k;} }
             					row = row + val + " ";
             				} else if(j==5) {
             					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
@@ -2401,7 +2432,7 @@ public class Plotting_3DOF implements  ActionListener {
 	    	try {
 	    	CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_DashboardOverviewChart(RM);
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
-	    		
+	    	System.out.println("ERROR: Dashboard chart could not be created");
 	    	}
 	    	ResultSet_MercatorMap.removeAllSeries();
 	    	try {
@@ -2429,35 +2460,37 @@ public class Plotting_3DOF implements  ActionListener {
        String strLine;
        try {
        while ((strLine = br.readLine()) != null )   {
-       	String[] tokens = strLine.split(" ");
-       	int sequence_ID 			= Integer.parseInt(tokens[0]);
-       	int trigger_end_type 		= Integer.parseInt(tokens[1]);
-       	double trigger_end_value 	= Double.parseDouble(tokens[2]);
-       	int sequence_type		 	= Integer.parseInt(tokens[3]);
-       	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
-       	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
-       	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
-       	int ctrl_target_curve       = Integer.parseInt(tokens[7]);
-       	try {
-       	int TVCsequence_controller_ID = Integer.parseInt(tokens[8]);
-       	double ctrl_target_x_TVC      = Double.parseDouble(tokens[9]);
-       	double ctrl_target_y_TVC 		= Double.parseDouble(tokens[10]);
-       	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
-	    	ROW_SEQUENCE[8] = ""+SequenceTVCFC[TVCsequence_controller_ID-1];
-	    	ROW_SEQUENCE[9] = ""+ctrl_target_x_TVC;
-	    	ROW_SEQUENCE[10] = ""+ctrl_target_y_TVC*rad;
-	    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
-       	} catch(java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
-    	ROW_SEQUENCE[0] = ""+sequence_ID;
-    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
-    	ROW_SEQUENCE[2] = ""+trigger_end_value;
-    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
-    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
-    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
-    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
-    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];		
-    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
-    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
+	       	String[] tokens = strLine.split(" ");
+	       	int sequence_ID 			= Integer.parseInt(tokens[0]);
+	       	int trigger_end_type 		= Integer.parseInt(tokens[1]);
+	       	double trigger_end_value 	= Double.parseDouble(tokens[2]);
+	       	int sequence_type		 	= Integer.parseInt(tokens[3]);
+	       	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
+	       	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
+	       	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
+	       	int ctrl_target_curve       = Integer.parseInt(tokens[7]);
+	    	ROW_SEQUENCE[0] = ""+sequence_ID;
+	    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
+	    	ROW_SEQUENCE[2] = ""+trigger_end_value;
+	    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
+	    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID];
+	    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
+	    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
+	    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];		
+	    	
+				       	try {
+					       	int TVCsequence_controller_ID   = Integer.parseInt(tokens[8]);
+					       	double ctrl_target_x_TVC        = Double.parseDouble(tokens[9]);
+					       	double ctrl_target_y_TVC 		= Double.parseDouble(tokens[10]);
+					       	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
+					    	ROW_SEQUENCE[8]  = "" + SequenceTVCFC[TVCsequence_controller_ID-1];
+					    	ROW_SEQUENCE[9]  = "" + ctrl_target_x_TVC;
+					    	ROW_SEQUENCE[10] = "" + ctrl_target_y_TVC*rad;
+					    	ROW_SEQUENCE[11] = "" + TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
+				       	} catch(java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
+	       	
+				    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
+	    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);} // Update numbering
        }
        br.close();
        } catch(NullPointerException eNPE) { System.out.println(eNPE);}
@@ -2815,13 +2848,11 @@ try {
        				      tokens[6]+" "+
        				      tokens[7]+" "+
        				      tokens[8]+" "+
-       				      tokens[9]+" "+
-       				      tokens[10]+" "+
-       				      tokens[11]+" "
+       				      tokens[9]+" "
        	);
        }
        br.close();
-       } catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);}
+       } catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);System.out.println("ERROR: Read SEQU.res failed. ");}
        return SEQUENCE_DATA;
     }
 	public static double[][] FIND_ctrl_init_cond() throws IOException{
@@ -2891,7 +2922,7 @@ public static void IMPORT_Case() throws IOException {
 			    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
 			    	ROW_SEQUENCE[2] = ""+trigger_end_value;
 			    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
-			    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
+			    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID];
 			    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
 			    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
 			    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
@@ -2957,7 +2988,7 @@ public static void EXPORT_Case() throws FileNotFoundException {
     	    	} else if (col==4) {
     	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
     	    		int val=0;
-    	    		for(int k=0;k<SequenceFC.length;k++) {if(str_val.equals(SequenceFC[k])){val=k+1;}}
+    	    		for(int k=0;k<SequenceFC.length;k++) {if(str_val.equals(SequenceFC[k])){val=k;}}
     	    		os.print(val+ BB_delimiter);
     	    	} else if (col==7) {
     	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
@@ -3011,7 +3042,7 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		            active_sequ_type  	 = Integer.parseInt(sequ_tokens[1]);
 		            ctrl_vinit 	 		 = Double.parseDouble(sequ_tokens[3]);
 		            ctrl_hinit 	 		 = Double.parseDouble(sequ_tokens[4]);
-		            ctrl_vel 	    	     = Double.parseDouble(sequ_tokens[5]);
+		            ctrl_vel 	    	 = Double.parseDouble(sequ_tokens[5]);
 		            ctrl_alt 		 	 = Double.parseDouble(sequ_tokens[6]);
 		            ctrl_curve           = Integer.parseInt(sequ_tokens[7]);
 		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
@@ -3039,11 +3070,13 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		        		   System.out.println(eSE);
 		        	   }
 		           }
+		           
 		           //System.out.println(xx+ " | "+ y);
 		           try { 
 		           xyseries11.add(x  , y);
 		           } catch(org.jfree.data.general.SeriesException eSE) {
 		        	   System.out.println(eSE);
+		        	   System.out.println("ERROR: Dashboard chart not created.");
 		           }
 		           }
 	              
@@ -3052,20 +3085,94 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	       br.close();
 		    CHART_P1_DashBoardOverviewChart_Dataset.addSeries(xyseries11); 
 		    CHART_P1_DashBoardOverviewChart_Dataset.addSeries(xyseries10);
-	              } catch (NullPointerException | IllegalArgumentException eNPE) { System.out.println(eNPE);}
+	              } catch (NullPointerException | IllegalArgumentException eNPE) { System.out.println(eNPE);System.out.println("Dashboard chart, illegal argument error");}
 	    return CHART_P1_DashBoardOverviewChart_Dataset;
 	   }
 	
-	public static void CreateChart_DashboardOverviewChart(double RM) throws IOException {
-		//result1.removeAllSeries();
-		//try {
-		//CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_X43(RM);
-		//} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {
-		//	System.out.println(eFNF2);
-		//}
+	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity(double RM) throws IOException {
+		/*
+		CHART_P1_DashBoardOverviewChart_Dataset.removeAllSeries();
+		try {
+		CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_DashboardOverviewChart(RM);
+		} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {System.out.println(eFNF2); System.out.println("Dashboard add chart error");}
+		*/
 	    //-----------------------------------------------------------------------------------
 		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
 	    CHART_P1_DashBoardOverviewChart = ChartFactory.createStackedXYAreaChart("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
+		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart.getXYPlot(); 
+	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
+	    plot.setRenderer(0, renderer); 
+	    renderer.setSeriesPaint( 0 , Color.BLACK );	
+		CHART_P1_DashBoardOverviewChart.setBackgroundPaint(Color.white);
+		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
+		plot.getDomainAxis().setLabelFont(font3);
+		plot.getRangeAxis().setLabelFont(font3);
+		plot.setForegroundAlpha(0.5f);
+		plot.setBackgroundPaint(Color.white);
+		plot.setDomainGridlinePaint(new Color(220,220,220));
+		plot.setRangeGridlinePaint(new Color(220,220,220)); 
+		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+		//domainAxis.setInverted(true);
+		
+		JPanel PlotPanel_X43 = new JPanel();
+		PlotPanel_X43.setLayout(new BorderLayout());
+		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
+		PlotPanel_X43.setBackground(Color.white);
+	
+		ChartPanel_DashBoardOverviewChart = new ChartPanel(CHART_P1_DashBoardOverviewChart);
+		ChartPanel_DashBoardOverviewChart.setMaximumDrawHeight(50000);
+		ChartPanel_DashBoardOverviewChart.setMaximumDrawWidth(50000);
+		ChartPanel_DashBoardOverviewChart.setMinimumDrawHeight(0);
+		ChartPanel_DashBoardOverviewChart.setMinimumDrawWidth(0);
+		ChartPanel_DashBoardOverviewChart.setMouseWheelEnabled(true);
+		ChartPanel_DashBoardOverviewChart.setPreferredSize(new Dimension(900, page1_plot_y));
+		ChartPanel_DashBoardOverviewChart.addChartMouseListener(new ChartMouseListener() {
+	        @Override
+	        public void chartMouseClicked(ChartMouseEvent event) {
+	            // ignore
+	        }
+	
+	        @Override
+	        public void chartMouseMoved(ChartMouseEvent event) {
+	            Rectangle2D dataArea = Plotting_3DOF.ChartPanel_DashBoardOverviewChart.getScreenDataArea();
+	            JFreeChart chart = event.getChart();
+	            XYPlot plot = (XYPlot) chart.getPlot();
+	            ValueAxis xAxis = plot.getDomainAxis();
+	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
+	                    RectangleEdge.BOTTOM);
+	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
+	            Plotting_3DOF.xCrosshair_DashBoardOverviewChart.setValue(x);
+	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart.setValue(y);
+	        }
+	});
+	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
+	    xCrosshair_DashBoardOverviewChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    xCrosshair_DashBoardOverviewChart.setLabelVisible(true);
+	    yCrosshair_DashBoardOverviewChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    yCrosshair_DashBoardOverviewChart.setLabelVisible(true);
+	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart);
+	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart);
+	    ChartPanel_DashBoardOverviewChart.addOverlay(crosshairOverlay);
+	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart,BorderLayout.PAGE_START);
+	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
+	   SplitPane_Page1_Charts.add(ChartPanel_DashBoardOverviewChart, JSplitPane.TOP);
+	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
+		//jPanel4.validate();	
+		CHART_P1_DashBoardOverviewChart_fd = false;
+	}
+	
+	public static void CreateChart_DashboardOverviewChart_Time_FPA() throws IOException {
+		/*
+		CHART_P1_DashBoardOverviewChart_Dataset.removeAllSeries();
+		try {
+		CHART_P1_DashBoardOverviewChart_Dataset = AddDataset_DashboardOverviewChart(RM);
+		} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {System.out.println(eFNF2); System.out.println("Dashboard add chart error");}
+		*/
+	    //-----------------------------------------------------------------------------------
+		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
+	    CHART_P1_DashBoardOverviewChart = ChartFactory.createStackedXYAreaChart("", "Time [s]", "Flight Path Angle [deg] ", CHART_P1_DashBoardOverviewChart_Dataset);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset, PlotOrientation.VERTICAL, true, false, false); 
 		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
