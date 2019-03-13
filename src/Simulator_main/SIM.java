@@ -12,7 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Sequence.SequenceElement;
-import Simulator_main.EquationsOfMotion_3DOF;
+import Simulator_main.EDL_3DOF;
 
 public class SIM implements ActionListener{
 	
@@ -87,7 +87,7 @@ public class SIM implements ActionListener{
         try {
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
-        	SequenceElement newSequenceElement = new SequenceElement( 0,  0,  0,  0,  0, 0, 0, 0,0,0,0,0);
+        	SequenceElement newSequenceElement = new SequenceElement( 0, 0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0);
         	int sequence_ID 			= Integer.parseInt(tokens[0]);
         	int trigger_end_type 		= Integer.parseInt(tokens[1]);
         	double trigger_end_value 	= Double.parseDouble(tokens[2]);
@@ -102,14 +102,15 @@ public class SIM implements ActionListener{
         	int ctrl_TVC_target_curve    		= 0;
         	try {
         	 sequence_TVCcontroller_ID 	= Integer.parseInt(tokens[8]);
-        	 TVCctrl_target_t      = Double.parseDouble(tokens[9]);
+        	 TVCctrl_target_t     	    = Double.parseDouble(tokens[9]);
         	 TVCctrl_target_alt 		= Double.parseDouble(tokens[10]);
-        	 ctrl_TVC_target_curve    = Integer.parseInt(tokens[11]);
+        	 ctrl_TVC_target_curve      = Integer.parseInt(tokens[11]);
         	}catch(java.lang.ArrayIndexOutOfBoundsException eAIOO) {System.out.println("No TVC controller found.");}
         	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID,ctrl_target_vel,ctrl_target_alt,ctrl_target_curve,sequence_TVCcontroller_ID,TVCctrl_target_t,TVCctrl_target_alt,ctrl_TVC_target_curve);
             UPDATE_SequenceElements(newSequenceElement, SEQUENCE_DATA);
         }
-        System.out.println("READ: Sequence setup sucessful.");
+        System.out.println("READ: Sequence setup sucessful. ");
+        System.out.println(""+SEQUENCE_DATA.size()+" Sequences added");
         br.close();
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return SEQUENCE_DATA;
@@ -160,12 +161,14 @@ public class SIM implements ActionListener{
 		if(inp_read_success) { 
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
-	    	double rm = EquationsOfMotion_3DOF.DATA_MAIN[target][0];
+	    	double rm = EDL_3DOF.DATA_MAIN[target][0];
 	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//System.out.println(target+" "+ rm);
+	    	int descent_ascent_switch = (int) x_init[12]; 
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
-			EquationsOfMotion_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 					 [-]
+	    	if(descent_ascent_switch==0 ) {
+	    	EDL_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 					 [-]
 														target, 				 // Target index 						 	 [-]
 														x_init[0]*deg, 			 // Longitude 							 [rad]
 														x_init[1]*deg, 			 // Latitude 							 [rad]
@@ -181,6 +184,24 @@ public class SIM implements ActionListener{
 												  (int) x_init[12],				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
 														STOP_Handler			     // Event Handler 	LIST					 [-]
 														);
+	    	} else {
+		    	Ascent_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 					 [-]
+						target, 				 // Target index 						 	 [-]
+						x_init[0]*deg, 			 // Longitude 							 [rad]
+						x_init[1]*deg, 			 // Latitude 							 [rad]
+						x_init[2]+x_init[11]+rm, // Radius 								 [m]
+						x_init[3], 				 // Velocity 							 [m/s]
+						x_init[4]*deg, 			 // Flight path angle 					 [rad]
+						x_init[5]*deg, 			 // Local Azimuth 						 [rad]
+						x_init[6], 				 // Initial S/C mass 					 [kg]
+						x_init[7], 			   	 // Maximum integ. time 				 [s]
+						x_init[10],				 // Write out delta time 				 [s]
+						x_init[11],				 // Reference Elevation  				 [m]
+						SEQUENCE_DATA,			 // Sequence data set	LIST		     [-]
+				                0,				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
+						STOP_Handler			 // Event Handler 	LIST			     [-]
+						);
+	    	}
 		}else {
 			System.out.println("Reading Input file failed -> Forced Integrator Stop.");
 		}

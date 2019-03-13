@@ -69,6 +69,7 @@ public class Flight_CTRL_PitchCntrl{
 	
     public static double[] READ_CTRL_INPUT(String Controller_ID) throws IOException{
         double[] readINP = new double[20];
+        if(Integer.parseInt(Controller_ID)!=0) {
         String dir = System.getProperty("user.dir");
         INPUT_FILE = dir+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;
        	double InitialState = 0;
@@ -91,6 +92,7 @@ public class Flight_CTRL_PitchCntrl{
            in.close();
            br.close();
            } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+        }
            return readINP;
        }
        

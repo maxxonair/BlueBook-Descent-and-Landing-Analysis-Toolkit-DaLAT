@@ -176,27 +176,27 @@ public class Plotting_3DOF implements  ActionListener {
    	
    	public static Color light_gray = new Color(230,230,230);
    	
-    static DecimalFormat decf = new DecimalFormat("#.#");
-    static DecimalFormat df_X4 = new DecimalFormat("#####.###");
+    static DecimalFormat decf 		  = new DecimalFormat("#.#");
+    static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
     static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
-    static Font menufont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
-    static Font labelfont_small     = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
-    static Font labelfont_verysmall = new Font("Verdana", Font.BOLD, 7);
-    static Font targetfont          = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
+    static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
+    static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
+    static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
+    static Font targetfont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
-    public static DecimalFormat df = new DecimalFormat();
+    public static DecimalFormat df 	  = new DecimalFormat();
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Variables and Container Arrays
     //-----------------------------------------------------------------------------------------------------------------------------------------
     public static int INTEGRATOR = 0; 
     public static String[] Integrator_Options = { "Dormand Prince 853 Integrator", 
-    												  "Standard Runge Kutta Integrator" , 
-    												  "Gragg-Bulirsch-Stoer Integrator", 
-    												  "Adams-Bashforth Integrator"};
+    											  "Standard Runge Kutta Integrator" , 
+    											  "Gragg-Bulirsch-Stoer Integrator", 
+    											  "Adams-Bashforth Integrator"};
     public static String[] Target_Options = { "Earth", 
-    											  "Moon" ,	
-    											  "Mars", 	
-    											  "Venus"};
+    									      "Moon" ,	
+    									      "Mars", 	
+    										  "Venus"};
     public static String[] TargetCurve_Options = { "",						// No target curve -> continous burn
     											   "Parabolic", 
     											   "SquareRoot" ,	
@@ -249,11 +249,18 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Groundtrack [km]",
     										  "CNTRL Error [m/s]",
     										  "CNTRL Time [s]",
-    										  "ElevAngle [deg]"
+    										  "ElevAngle [deg]",
+    										  "Xfo [N]",
+    										  "Yfo [N]",
+    										  "Zfo [N]",
+    										  "Vel cel [m/s]",
+    										  "FPA cel [m/s",
+    										  "AZ  cel [m/s]",
+    										  "FPA_dot [deg/s]"
     										  };
     
-    public static String[] Thrust_switch = { "Decelerate",
-    										 	 "Accelerate"
+    public static String[] Thrust_switch = { "Descent",
+    										 "Acent"
     };
     public static String[] LocalElevation_Resolution = { "4", 
 			  											 "16" , 
@@ -267,7 +274,45 @@ public class Plotting_3DOF implements  ActionListener {
 			  									 "Velocity [m]",
 			  									 "FPA [rad]",
 			  									 "Azimuth [rad]",
-    											 	 "SC Mass [kg]"};
+    											 "SC Mass [kg]"};
+    
+	public static String[] COLUMS_SEQUENCE = {"ID", 
+			 "Sequence END type", 
+			 "Sequence END value", 
+			 "Sequence type", 
+			 "Sequence TL-FC",		// Thrust Level Flight Controller
+			 "Tl-FC target velocity [m/s]", 
+			 "Tl-FC target altitude [m]", 
+			 "Tl-FC target curve",
+			 "Sequence TVC FC", 		// Thrust Vector Control Flight Controller 
+			 "TVC-FC target time [s]", 
+			 "TVC-FC target FPA [deg]", 
+			 "TVC-FC target curve"};
+public static String[] COLUMS_EventHandler = {"Event Type",
+							 "Event Value"
+};
+
+public static String[] SequenceENDType = {"Time [s]",
+										  "Altitude [m]",
+										  "Velocity [m/s]"
+};
+public static String[] SequenceType = {"Coasting (No Thrust)",
+									   "Continous (unregulated) Thrust",
+									   "Controlled Thrust (FC ON)",
+									   "Constrained Thrust (FC OFF)",
+									   "TVC Turn (FC OFF)"
+};
+public static String[] SequenceFC    = { "",
+										 "Flight Controller 1"};
+public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
+										 "SquareRoot Velocity-Altitude",
+										 "Hover Parabolic entry"
+};
+public static String[] SequenceTVCFC    = { "",
+											"Flight Controller 1" , 
+										    "Flight Controller 2"};
+
+
     public static double h_init;
     public static double v_init;
     public static double v_touchdown;
@@ -328,21 +373,6 @@ public class Plotting_3DOF implements  ActionListener {
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP;
-	public static String[] COLUMS_SEQUENCE = {"ID", 
-			 					 "Sequence END type", 
-			 					 "Sequence END value", 
-			 					 "Sequence type", 
-			 					 "Sequence TL-FC",		// Thrust Level Flight Controller
-			 					 "Tl-FC target velocity [m/s]", 
-			 					 "Tl-FC target altitude [m]", 
-			 					 "Tl-FC target curve",
-			 					 "Sequence TVC FC", 		// Thrust Vector Control Flight Controller 
-			 					 "TVC-FC target time [s]", 
-			 					 "TVC-FC target FPA [deg]", 
-			 					 "TVC-FC target curve"};
-	public static String[] COLUMS_EventHandler = {"Event Type",
-												 "Event Value"
-	};
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
 	 static DefaultTableModel MODEL_SEQUENCE;
@@ -368,29 +398,7 @@ public class Plotting_3DOF implements  ActionListener {
 		@SuppressWarnings("rawtypes")
 		public static JComboBox TVCFCTargetCurveCombobox = new JComboBox();
 	    @SuppressWarnings("rawtypes")
-		public static JComboBox Target_chooser, Integrator_chooser,TargetCurve_chooser,ThrustSwitch_chooser;
-		
-		public static String[] SequenceENDType = {"Time [s]",
-												  "Altitude [m]",
-												  "Velocity [m/s]"
-		};
-		public static String[] SequenceType = {"Coasting (No Thrust)",
-											   "Continous (unregulated) Thrust",
-											   "Controlled Thrust (FC ON)",
-											   "Constrained Thrust (FC OFF)",
-											   "TVC Turn (FC OFF)"
-		};
-		public static String[] SequenceFC    = { "",
-												 "Flight Controller 1"};
-		public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
-												 "SquareRoot Velocity-Altitude",
-												 "Hover Parabolic entry"
-		};
-		public static String[] SequenceTVCFC    = { "",
-													"Flight Controller 1" , 
-												    "Flight Controller 2"};
-		
-		
+		public static JComboBox Target_chooser, Integrator_chooser,TargetCurve_chooser,AscentDescent_SwitchChooser;
     Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
     Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 1);
     Border Mars_border 	= BorderFactory.createLineBorder(Color.ORANGE, 1);
@@ -1416,13 +1424,44 @@ public class Plotting_3DOF implements  ActionListener {
       IntegratorInputPanel.add(Separator_Page2_1);
       
       JLabel LABEL_IntegSetting = new JLabel("Integrator Settings");
-      LABEL_IntegSetting.setLocation(0, uy_p41 + 10 * 1 );
+      LABEL_IntegSetting.setLocation(0, uy_p41 + 10 * 0 );
       LABEL_IntegSetting.setSize(400, 20);
       LABEL_IntegSetting.setBackground(Color.white);
       LABEL_IntegSetting.setForeground(Color.black);
       LABEL_IntegSetting.setFont(HeadlineFont);
       LABEL_IntegSetting.setHorizontalAlignment(0);
       IntegratorInputPanel.add(LABEL_IntegSetting);
+      
+	  AscentDescent_SwitchChooser = new JComboBox(Thrust_switch);
+	  AscentDescent_SwitchChooser.setBackground(Color.white);
+	  AscentDescent_SwitchChooser.setLocation(2, uy_p41 + 26 * 1 );
+	  AscentDescent_SwitchChooser.setSize(150,25);
+	  AscentDescent_SwitchChooser.setSelectedIndex(0);
+	  AscentDescent_SwitchChooser.addActionListener(new ActionListener() { 
+   	  public void actionPerformed(ActionEvent e) {
+   		
+   	  }
+ 	  } );
+	  AscentDescent_SwitchChooser.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			 WRITE_INIT();
+			 if(AscentDescent_SwitchChooser.getSelectedIndex()==0) {
+			   AscentDescent_SwitchChooser.setBackground(Color.GREEN);
+			 } else {
+			   AscentDescent_SwitchChooser.setBackground(Color.RED);
+			 }
+		}
+		  
+	  });
+	  IntegratorInputPanel.add(AscentDescent_SwitchChooser);
    
       JLabel LABEL_writetime = new JLabel("Write time step [s]");
       LABEL_writetime.setLocation(65, uy_p41 + 25 * 3 );
@@ -1723,32 +1762,6 @@ public class Plotting_3DOF implements  ActionListener {
 		  	{ WRITE_PROP();}});
      SpaceCraftInputPanel.add(INPUT_THRUSTMIN);
      
-	  ThrustSwitch_chooser = new JComboBox(Thrust_switch);
-	  ThrustSwitch_chooser.setBackground(Color.white);
-	  ThrustSwitch_chooser.setLocation(2, uy_p41 + 25 * 8 );
-	  ThrustSwitch_chooser.setSize(150,25);
-	  ThrustSwitch_chooser.setSelectedIndex(0);
-	  ThrustSwitch_chooser.addActionListener(new ActionListener() { 
-   	  public void actionPerformed(ActionEvent e) {
-   		
-   	  }
- 	  } );
-	  ThrustSwitch_chooser.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void focusLost(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			 WRITE_INIT();
-		}
-		  
-	  });
-	  SpaceCraftInputPanel.add(ThrustSwitch_chooser);
 	  //-------------------------------------------- 
 	  //   Right side :
     JPanel P2_ControllerPane = new JPanel();
@@ -2601,7 +2614,7 @@ try {
             	INPUT_REFELEV.setText(decf.format(InitialState));  // Reference Elevation
 		    } else if (k==12) {
         		int Integ_indx = (int) InitialState;
-        		ThrustSwitch_chooser.setSelectedIndex(Integ_indx);
+        		AscentDescent_SwitchChooser.setSelectedIndex(Integ_indx);
 		    }
         	k++;
         }
@@ -2748,7 +2761,7 @@ try {
 			            r = Double.parseDouble(INPUT_REFELEV.getText())  ; // Reference elevation
 			            wr.write(r+System.getProperty( "line.separator" ));	
 		            } else if (i==12) {
-		            	rr =  ThrustSwitch_chooser.getSelectedIndex() ;
+		            	rr =  AscentDescent_SwitchChooser.getSelectedIndex() ;
 		                wr.write(rr+System.getProperty( "line.separator" ));	
 		            }
 		            }               
@@ -2929,7 +2942,7 @@ public static void IMPORT_Case() throws IOException {
 				     } else if (indx_init==9){Target_chooser.setSelectedIndex(Integer.parseInt(tokens[data_column]));
 				     } else if (indx_init==10){INPUT_WRITETIME.setText(decf.format(Double.parseDouble(tokens[data_column])));
 				     } else if (indx_init==11){INPUT_REFELEV.setText(decf.format(Double.parseDouble(tokens[data_column])));
-					 } else if (indx_init==12){ThrustSwitch_chooser.setSelectedIndex(Integer.parseInt(tokens[data_column]));
+					 } else if (indx_init==12){AscentDescent_SwitchChooser.setSelectedIndex(Integer.parseInt(tokens[data_column]));
 					 } 					     
         indx_init++;
     	} else if(tokens[0].equals("|PROP|")) {
@@ -2995,7 +3008,7 @@ public static void EXPORT_Case() throws FileNotFoundException {
                 } else if (i==9){os.print("|TARGET[-]|"+ BB_delimiter+Target_chooser.getSelectedIndex());
                 } else if (i==10){os.print("|WRITET[s]|"+ BB_delimiter+INPUT_WRITETIME.getText());
                 } else if (i==11){os.print("|REFELEVEVATION[m]|"+ BB_delimiter+INPUT_REFELEV.getText());
-    		    } else if (i==11){os.print("|ThrustSwitch[-]|"+ BB_delimiter+ThrustSwitch_chooser.getSelectedIndex());
+    		    } else if (i==11){os.print("|ThrustSwitch[-]|"+ BB_delimiter+AscentDescent_SwitchChooser.getSelectedIndex());
     		    } 
                 os.print(BB_delimiter);
     	os.println("");
@@ -3256,6 +3269,13 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		ChartPanel_DashBoardOverviewChart_Time_FPA.setMinimumDrawWidth(0);
 		ChartPanel_DashBoardOverviewChart_Time_FPA.setMouseWheelEnabled(true);
 		ChartPanel_DashBoardOverviewChart_Time_FPA.setPreferredSize(new Dimension(900, page1_plot_y));
+	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
+	    xCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    xCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
+	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
+	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Time_FPA);
+	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
 		ChartPanel_DashBoardOverviewChart_Time_FPA.addChartMouseListener(new ChartMouseListener() {
 	        @Override
 	        public void chartMouseClicked(ChartMouseEvent event) {
@@ -3271,17 +3291,11 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                    RectangleEdge.BOTTOM);
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(x);
+	            Plotting_3DOF.xCrosshair_DashBoardOverviewChart_Time_FPA.setValue(x);
 	            Plotting_3DOF.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(y);
 	        }
 	});
-	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
-	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
-	    crosshairOverlay.addDomainCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
-	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
+	    
 	    ChartPanel_DashBoardOverviewChart_Time_FPA.addOverlay(crosshairOverlay);
 	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Time_FPA,BorderLayout.PAGE_START);
 	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);

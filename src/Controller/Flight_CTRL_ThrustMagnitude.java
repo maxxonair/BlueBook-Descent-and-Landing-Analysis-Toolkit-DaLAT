@@ -7,11 +7,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Flight_CTRL_ThrustMagnitude{
-	private int     ctrl_ID;			// Controller ID					[-]
-	private boolean ctrl_on;			// Switch on/off (ctrl)			[true/false]
+	private int     ctrl_ID;	    // Controller ID					[-]
+	private boolean ctrl_on;	    // Switch on/off (ctrl)			[true/false]
 	private double  alt; 			// Altitude 						[m]
-	private double  vel;	 	    		// velocity 						[m/s]
-	private double  fpa;		    		// flight path angel 			[rad]
+	private double  vel;	 	    // velocity 						[m/s]
+	private double  fpa;		    // flight path angel 			[rad]
 	private double  m0;				// Initial mass 					[kg]
 	private double  m;				// Actual mass 					[kg]
 	private double mprop;			// Propellant mass              [kg]
@@ -19,10 +19,10 @@ public class Flight_CTRL_ThrustMagnitude{
 	private double ctrl_hinit;		// Controller initial altitude 	[m]
 	private double ctrl_tinit;		// Controller initial time 	   	[s]
 	private double ctrl_vel;  		// Additional target velocity 	[m/s]
-	private double ctrl_alt;		    // Additional target altitude 	[m]
+	private double ctrl_alt;		// Additional target altitude 	[m]
 	private double thrust_max;		// Maximum Thrust 			   	[N]
 	private double thrust_min;		// Minimum Thrust 			   	[N]
-	private double throttle_cmd;	    // Controller throttle command	[-]
+	private double throttle_cmd;	// Controller throttle command	[-]
 	private double thrust_cmd;      // Controller thrust command 	[N]
 	private int    ctrl_curve;		// Control curve 				[-]
 	private double ctrl_dt;			// Delta-t controller			[s]
@@ -63,14 +63,14 @@ public class Flight_CTRL_ThrustMagnitude{
 		this.throttle_cmd = throttle_cmd; 
 		this.thrust_cmd   = thrust_cmd; 
 		this.ctrl_curve   = ctrl_curve; 
-		this.ctrl_dt	      = ctrl_dt; 
+		this.ctrl_dt	  = ctrl_dt; 
 		this.P_GAIN		  = P_GAIN;
-		this.I_GAIN 	      = I_GAIN;
+		this.I_GAIN 	  = I_GAIN;
 		this.D_GAIN       = D_GAIN;
 		this.cmd_min      = cmd_min;
 		this.cmd_max      = cmd_min; 
 		this.rm			  = rm;
-		this.refElev	      = refElev; 
+		this.refElev	  = refElev; 
 		
 		double[] readINP;
 		try {
@@ -90,29 +90,31 @@ public class Flight_CTRL_ThrustMagnitude{
 	
     public static double[] READ_CTRL_INPUT(String Controller_ID) throws IOException{
         double[] readINP = new double[20];
-        String dir = System.getProperty("user.dir");
-        INPUT_FILE = dir+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;
-       // System.out.println(INPUT_FILE);
-       	double InitialState = 0;
-   	    FileInputStream fstream = null;
-       	try {
-   	    fstream = new FileInputStream(INPUT_FILE);
-   	    } catch(IOException eIO) { System.out.println(eIO);}
-            DataInputStream in = new DataInputStream(fstream);
-   			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-           String strLine;
-           int k = 0;
-           try {
-           while ((strLine = br.readLine()) != null )   {
-           	String[] tokens = strLine.split(" ");
-           	InitialState = Double.parseDouble(tokens[0]);
-           	readINP[k]= InitialState;
-           	k++;
-           }
-           fstream.close();
-           in.close();
-           br.close();
-           } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+        if(Integer.parseInt(Controller_ID)!=0) {
+		        String dir = System.getProperty("user.dir");
+		        INPUT_FILE = dir+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;
+		       // System.out.println(INPUT_FILE);
+		       	double InitialState = 0;
+		   	    FileInputStream fstream = null;
+		       	try {
+		   	    fstream = new FileInputStream(INPUT_FILE);
+		   	    } catch(IOException eIO) { System.out.println(eIO);}
+		            DataInputStream in = new DataInputStream(fstream);
+		   			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+		           String strLine;
+		           int k = 0;
+		           try {
+		           while ((strLine = br.readLine()) != null )   {
+		           	String[] tokens = strLine.split(" ");
+		           	InitialState = Double.parseDouble(tokens[0]);
+		           	readINP[k]= InitialState;
+		           	k++;
+		           }
+		           fstream.close();
+		           in.close();
+		           br.close();
+		           } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+        }
            return readINP;
        }
        
