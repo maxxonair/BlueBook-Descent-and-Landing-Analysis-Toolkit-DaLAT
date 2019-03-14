@@ -175,5 +175,8 @@ public class Flight_CTRL_PitchCntrl{
 	}
 	public void set_ctrl_dt(double NewValue) {
 		ctrl_dt = NewValue; 
-	}		
+	}	
+	public double get_ctr_end_y() {
+		return ctr_end_y; 
+	}
 }

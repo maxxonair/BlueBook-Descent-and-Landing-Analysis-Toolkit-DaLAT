@@ -249,14 +249,16 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Groundtrack [km]",
     										  "CNTRL Error [m/s]",
     										  "CNTRL Time [s]",
-    										  "ElevAngle [deg]",
+    										  "Thrust Elevation [deg]",
+    										  "Thrust Deviation [deg]",
     										  "Xfo [N]",
     										  "Yfo [N]",
     										  "Zfo [N]",
     										  "Vel cel [m/s]",
     										  "FPA cel [m/s",
     										  "AZ  cel [m/s]",
-    										  "FPA_dot [deg/s]"
+    										  "FPA_dot [deg/s]",
+    										  "Thrust Elevation_dot [deg/s]"
     										  };
     
     public static String[] Thrust_switch = { "Descent",
@@ -294,13 +296,15 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 public static String[] SequenceENDType = {"Time [s]",
 										  "Altitude [m]",
-										  "Velocity [m/s]"
+										  "Velocity [m/s]",
+										  "FPA ref. Horizon [deg]"
 };
 public static String[] SequenceType = {"Coasting (No Thrust)",
 									   "Continous (unregulated) Thrust",
 									   "Controlled Thrust (FC ON)",
 									   "Constrained Thrust (FC OFF)",
-									   "TVC Turn (FC OFF)"
+									   "TVC Turn fast (FC OFF)",
+									   "TVC Turn slow (FC OFF)"
 };
 public static String[] SequenceFC    = { "",
 										 "Flight Controller 1"};
@@ -1453,11 +1457,6 @@ public static String[] SequenceTVCFC    = { "",
 		public void focusLost(FocusEvent arg0) {
 			// TODO Auto-generated method stub
 			 WRITE_INIT();
-			 if(AscentDescent_SwitchChooser.getSelectedIndex()==0) {
-			   AscentDescent_SwitchChooser.setBackground(Color.GREEN);
-			 } else {
-			   AscentDescent_SwitchChooser.setBackground(Color.RED);
-			 }
 		}
 		  
 	  });
@@ -1722,44 +1721,86 @@ public static String[] SequenceTVCFC    = { "",
       INPUT_M0.setLocation(2, uy_p41 + 25 * 1 );
       INPUT_M0.setSize(INPUT_width, 20);
       INPUT_M0.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_M0.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-			  INPUT_M0.setBorder(BorderFactory.createLineBorder(Color.BLACK, 1));
-		}});
+      INPUT_M0.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_INIT();
+			WRITE_PROP();
+		}
+    	  
+      });
       SpaceCraftInputPanel.add(INPUT_M0);
       INPUT_ISP = new JTextField(10);
       INPUT_ISP.setLocation(2, uy_p41 + 25 * 3 );
       INPUT_ISP.setSize(INPUT_width, 20);
       INPUT_ISP.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_ISP.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ WRITE_PROP();}});
+      INPUT_ISP.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_INIT();
+			WRITE_PROP();
+		}
+    	  
+      });
       SpaceCraftInputPanel.add(INPUT_ISP);
      INPUT_PROPMASS = new JTextField(10);
      INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 4);
      INPUT_PROPMASS.setSize(INPUT_width, 20);
      INPUT_PROPMASS.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_PROPMASS.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ WRITE_PROP();}});
+     INPUT_PROPMASS.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_INIT();
+			WRITE_PROP();
+		}
+   	  
+     });
      SpaceCraftInputPanel.add(INPUT_PROPMASS);        
      INPUT_THRUSTMAX = new JTextField(10);
      INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 5 );
      INPUT_THRUSTMAX.setSize(INPUT_width, 20);
      INPUT_THRUSTMAX.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_THRUSTMAX.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ WRITE_PROP();}});
+     INPUT_THRUSTMAX.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_INIT();
+			WRITE_PROP();
+		}
+   	  
+     });
      SpaceCraftInputPanel.add(INPUT_THRUSTMAX);
      INPUT_THRUSTMIN = new JTextField(10);
      INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 6 );;
      INPUT_THRUSTMIN.setSize(INPUT_width, 20);
      INPUT_THRUSTMIN.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_THRUSTMIN.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ WRITE_PROP();}});
+     INPUT_THRUSTMIN.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_INIT();
+			WRITE_PROP();
+		}
+   	  
+     });
      SpaceCraftInputPanel.add(INPUT_THRUSTMIN);
      
 	  //-------------------------------------------- 
@@ -2503,7 +2544,8 @@ public static String[] SequenceTVCFC    = { "",
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-      	    		System.out.println("Updated");
+      	    		String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
+      	    		System.out.println("Updated "+timeStamp);
 	  } 
 
     public static void READ_SEQUENCE() throws IOException{	
@@ -3083,7 +3125,7 @@ public static void EXPORT_Case() throws FileNotFoundException {
 	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	              String strLine;
 	              
-	             // try {
+	              try {
 	              while ((strLine = br.readLine()) != null )   {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[6]);
@@ -3097,7 +3139,11 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		           int active_sequence = Integer.parseInt(tokens[39]);
 		           double xx=0;
 		           double fpa_cmd = 0;
+		           if(AscentDescent_SwitchChooser.getSelectedIndex()==1) {
 		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
+		           } else {
+		           INDICATOR_VTOUCHDOWN.setText("-");   
+		           }
 		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[38])));
 		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[29])))); 
 		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[33])));
@@ -3163,10 +3209,10 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		    
 		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
 		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_cmd);
-		    /*
+		    
 	              } catch (NullPointerException  eNPE) { System.out.println(eNPE);System.out.println("Dashboard chart, Nullpointerexception");
 					}catch(IllegalArgumentException eIAE) {System.out.println("Dashboard chart, illegal argument error");}
-					*/
+					
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }
 	

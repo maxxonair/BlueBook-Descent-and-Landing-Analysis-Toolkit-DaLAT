@@ -88,14 +88,14 @@ public class SIM implements ActionListener{
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
         	SequenceElement newSequenceElement = new SequenceElement( 0, 0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0);
-        	int sequence_ID 			= Integer.parseInt(tokens[0]);
-        	int trigger_end_type 		= Integer.parseInt(tokens[1]);
-        	double trigger_end_value 	= Double.parseDouble(tokens[2]);
-        	int sequence_type		 	= Integer.parseInt(tokens[3]);
-        	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
-        	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
-        	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
-        	int ctrl_target_curve    = Integer.parseInt(tokens[7]);
+        	int sequence_ID 					= Integer.parseInt(tokens[0]);
+        	int trigger_end_type 				= Integer.parseInt(tokens[1]);
+        	double trigger_end_value 			= Double.parseDouble(tokens[2]);
+        	int sequence_type		 			= Integer.parseInt(tokens[3]);
+        	int sequence_controller_ID 			= Integer.parseInt(tokens[4]);
+        	double ctrl_target_vel      		= Double.parseDouble(tokens[5]);
+        	double ctrl_target_alt 				= Double.parseDouble(tokens[6]);
+        	int ctrl_target_curve    			= Integer.parseInt(tokens[7]);
         	int sequence_TVCcontroller_ID 		= 0;
         	double TVCctrl_target_t      		= 0;
         	double TVCctrl_target_alt 			= 0;
