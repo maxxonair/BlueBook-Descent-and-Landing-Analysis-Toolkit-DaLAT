@@ -303,7 +303,7 @@ public static String[] SequenceType = {"Coasting (No Thrust)",
 									   "Continous (unregulated) Thrust",
 									   "Controlled Thrust (FC ON)",
 									   "Constrained Thrust (FC OFF)",
-									   "TVC Turn fast (FC OFF)",
+									   "TVC ON horizontal control",
 									   "TVC Turn slow (FC OFF)"
 };
 public static String[] SequenceFC    = { "",

@@ -7,6 +7,9 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class Flight_CTRL_PitchCntrl{
+        public static double PI = 3.141592653589793238462643383279502884197169399375;
+    	static double deg2rad = PI/180.0; 		//Convert deg2radrees to radians
+    	static double rad2deg = 180.0/PI; 		//Convert radians to deg2radrees
 	//--------------------------------------------------------------------------------------------------------
 	//
 	//		Thrust vector controller:
@@ -33,11 +36,17 @@ public class Flight_CTRL_PitchCntrl{
 	private double  cmd_max;				// controller output cmd max    	[-]
 	private double  CTRL_ERROR;				// controller Errror				[ ]
 	private double  CTRL_TIME;				// controller Time 					[s]	
+	private double  CTRL_Thrust;
+	private boolean engine_lost=false; 
 		
 	private double tvc_cmd;					// thrust vector angle cmd			[rad] 
 	
 	private double  tzero; 					// Sequence Time 						[s]
 	private boolean tswitch =true;          // Time switch to start controller time [s]
+	
+	private double tvc_was =0; 
+	private boolean tvc_switch=true; 
+	private double tvcwas=0; 
 	//-----------------------------------------------------------------------------
 	static String INPUT_FILE = null; 
 	public static String ControllerInputFile_1 = "/CTRL/cntrl_";
@@ -47,6 +56,10 @@ public class Flight_CTRL_PitchCntrl{
 	public Flight_CTRL_PitchCntrl(int ctrl_ID, boolean ctrl_on, double ctr_init_x, double ctr_init_y, double ctr_end_x, double ctr_end_y) {
 		this.ctrl_ID	  = ctrl_ID;
 		this.ctrl_on 	  = ctrl_on;
+		this.ctr_init_x   = ctr_init_x;
+		this.ctr_init_y   = ctr_init_y;
+		this.ctr_end_x    = ctr_end_x;
+		this.ctr_end_y    = ctr_end_y; 
 		if (ctrl_ID==0) {
 			this.ctrl_on=false;
 		} else {
@@ -110,7 +123,7 @@ public class Flight_CTRL_PitchCntrl{
  		    //									Select Reference Landing Path 
  		    //------------------------------------------------------------------------------------------------------------------
     			boolean ContinuousBurn = false;
-    			if        (ctrl_curve==0) {
+    		if        (ctrl_curve==0) {
 		         ContinuousBurn = true;
 		    } else if (ctrl_curve==1) {
  		         y_ideal =    PitchCurve.SquareRootPitchCurve(ctr_init_x, ctr_init_y, ctr_end_y, ctr_end_x, x_is);
@@ -142,6 +155,34 @@ public class Flight_CTRL_PitchCntrl{
         	}
     		return (-tvc_cmd);
     	}
+	public double get_Pitch_cmd() {
+		if(ctrl_on) {
+			double turn_rate_rad = ctr_end_y; 
+			if(engine_lost&&turn_rate_rad>0) {turn_rate_rad=turn_rate_rad*0.6;}
+			if(engine_lost&&turn_rate_rad<0) {turn_rate_rad=turn_rate_rad*3;}
+			if(turn_rate_rad<0) {if(tvc_switch){tvcwas = tvc_was;tvc_switch=false;}} else {tvcwas=0;}
+			tvc_cmd= tvcwas + turn_rate_rad*CTRL_TIME; 
+			double fpa_is = y_is*rad2deg;
+			if(fpa_is>180) {
+				tvc_cmd = -5*deg2rad; 
+			}
+			//System.out.println(""+CTRL_TIME+" | "+tvcwas+" | "+tvc_cmd*rad2deg);
+		}
+		return tvc_cmd; 
+	}
+	
+	public double get_maintain_horizontal_TVC_cmd() {
+		double fpa_is = y_is*rad2deg;
+	     CTRL_ERROR = 180 - fpa_is ;
+	     //if(Math.abs(Math.abs(fpa_is)-180)>0.5){
+	    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, 2, -20)*deg2rad;
+	    	// System.out.println(""+CTRL_ERROR+" | "+tvc_cmd*rad2deg+" | "+P_GAIN);
+	   //  } else {
+	  //  	 tvc_cmd = 0 ; 
+	  //   }
+
+		return tvc_cmd; 
+	}
 
 	public int get_ctrl_curve() {
 		return ctrl_curve; 
@@ -155,17 +196,20 @@ public class Flight_CTRL_PitchCntrl{
 	public double get_CTRL_TIME() {
 		return CTRL_TIME; 
 	}
-	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double ctr_init_x, double ctr_init_y, int ctrl_curve, double ctrl_dt) {
+	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double ctr_init_x, double ctr_init_y, int ctrl_curve, double ctrl_dt, double tvc_was, double CTRL_Thrust) {
 		this.ctrl_on 	  = ctrl_on;
 		if(this.ctrl_ID==0) {this.ctrl_on=false;} // overwrite : controller off with no FC set
 		this.y_is 		  = x[4];
-        this.ctr_init_x = ctr_init_x;
-        this.ctr_init_y = ctr_init_y;
+        this.ctr_init_x   = ctr_init_x;
+        this.ctr_init_y   = ctr_init_y;
 		this.ctrl_curve   = ctrl_curve; 
-		this.ctrl_dt	      = ctrl_dt; 
+		this.ctrl_dt	  = ctrl_dt; 
+		this.tvc_was      = tvc_was; 
 		if(t!=-1&&tswitch) {tzero=t;tswitch=false;}
 		CTRL_TIME = t-tzero; 
 		this.x_is 		  = CTRL_TIME;
+		if(this.CTRL_Thrust>CTRL_Thrust) {engine_lost=true; 	}
+		this.CTRL_Thrust=CTRL_Thrust;
 	}
 	public void set_ctrl_on(boolean NewValue){
 		ctrl_on = NewValue;

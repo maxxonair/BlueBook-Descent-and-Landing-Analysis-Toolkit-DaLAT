@@ -159,7 +159,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	        public static boolean const_isFirst =true; 
 	        
 	        public static double t_engine_loss = 20; 			// [s]
-	        public static double thrust_loss_perc = 1/6;		// Thrust loss due to engine loss [%]
+	        public static double thrust_loss_perc = 0.17;		// Thrust loss due to engine loss [%]
 	        public static boolean engine_loss_switch=true; 
 	        
 	        public static double TTM_max = 5.0;
@@ -224,11 +224,12 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
 				 double ctrl_tend = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_time();
+				 int TVC_ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_TVCController_ID();
 				// -> Create new Flight controller 
 				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
 				
-				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa);
+				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa);
 				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}
@@ -309,7 +310,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	 //System.out.println(sequence_type_TM);
 	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	
-	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt);	    	
+	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt,Thrust_Deviation, Thrust_max);	    	
 	    	// Check sync. controller timers 
 	    	// System.out.println(Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME()-Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_TIME());
 	    	if(sequence_type_TM==3) { // Controlled Flight Sequence 
@@ -317,15 +318,19 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 			    	//                          Flight Controller ON - Controlled Fight Sequence
 			    	//-------------------------------------------------------------------------------------------------------------
 			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_ID() +" set ON");}
-			    	Thrust        = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_thrust_cmd();
-			    	Throttle_CMD  = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_throttle_cmd();
-			    	
-			    	//Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
+			    	//Thrust        = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_thrust_cmd();
+			    	//Throttle_CMD  = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_throttle_cmd();
+			    	Thrust = Thrust_max; 
+			    	Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_Pitch_cmd();
 	    	} else if (sequence_type_TM==2) { // Continuous propulsive Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          TM-FC OFF | TVC-FC ON - Continuous thrust
 			    	//-------------------------------------------------------------------------------------------------------------
 	    		   Thrust_Deviation = 0.0;
+	    		  double  fpa_is=x[4]*rad2deg;
+		   			if(fpa_is>180) {
+		   				Thrust_Deviation = -15*deg2rad; 
+					}
 		    		if((m_propellant_init-(M0-x[6]))>0) {
 		    			//System.out.println((m_propellant_init-(M0-x[6])));
 		    			Thrust = Thrust_max; 
@@ -339,6 +344,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          Flight Controller OFF - Coasting - Thrust OFF
 			    	//-------------------------------------------------------------------------------------------------------------
+	    		   Thrust_Deviation=0;
 		    		Thrust = 0; 
 		    		Throttle_CMD = 0;
 	    	} else if (sequence_type_TM==4) { // Constrained continuous thrust 
@@ -356,6 +362,9 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 				    	//-------------------------------------------------------------------------------------------------------------	
 				    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
 				    	//-------------------------------------------------------------------------------------------------------------
+		    	Thrust = Thrust_max; 
+		    	Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_maintain_horizontal_TVC_cmd();
+		    	/*
 		    		double ctr_time = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
 		    		//Thrust_Deviation=10*deg2rad;
 		    		if(GroundClearance_Manager(x)) {
@@ -368,8 +377,9 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 		    		TE_save = Thrust_Deviation;
 		    		//System.out.println("tvc turn");
 	    		    if(const_isFirst){const_tzer0=t;}
-		    		if((TTM_max * x[6])>Thrust_max) {Thrust = Thrust_max;
+		    		if((TTM_max*x[6])>Thrust_max) {Thrust = Thrust_max;
 		    		} else {Thrust = TTM_max * x[6]; }Throttle_CMD = Thrust/Thrust_max;	
+		    		*/
 	    		
 	    	} else if (sequence_type_TM==6) {
 			    	//-------------------------------------------------------------------------------------------------------------	
@@ -380,7 +390,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    		
 	    		if(GroundClearance_Manager(x)) {
 	    			double turn_rate_rad=SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_fpa();
-	    		    Thrust_Deviation=TE_save - turn_rate_rad*ctr_time; 
+	    		    Thrust_Deviation=TE_save + turn_rate_rad*ctr_time; 
 	    			//Thrust_Deviation=10*deg2rad;
 	    			} 
 	    		else {
@@ -388,7 +398,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    		}
 	    		//System.out.println("tvc turn");
 			    if(const_isFirst){const_tzer0=t;}
-	    		if((TTM_max * x[6])>Thrust_max) {Thrust = Thrust_max;
+	    		if((TTM_max*x[6])>Thrust_max) {Thrust = Thrust_max;
 	    		} else {Thrust = TTM_max * x[6]; }Throttle_CMD = Thrust/Thrust_max;	
     		
     	}
@@ -439,7 +449,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Artificial engine loss scenario
     	//-------------------------------------------------------------------------------------------------------------------
-    	if(t>t_engine_loss && engine_loss_switch) {Thrust_max = Thrust_max * (100-thrust_loss_perc)/100;engine_loss_switch=false;}
+    	if(t>t_engine_loss && engine_loss_switch) {Thrust_max = Thrust_max * (1-thrust_loss_perc);engine_loss_switch=false;}
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------
