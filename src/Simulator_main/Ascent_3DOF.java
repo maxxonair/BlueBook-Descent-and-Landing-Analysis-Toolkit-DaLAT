@@ -158,7 +158,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	        public static double const_tzer0=0;
 	        public static boolean const_isFirst =true; 
 	        
-	        public static double t_engine_loss = 20; 			// [s]
+	        public static double t_engine_loss = 0; 			// [s]
 	        public static double thrust_loss_perc = 0.17;		// Thrust loss due to engine loss [%]
 	        public static boolean engine_loss_switch=true; 
 	        
@@ -544,7 +544,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    Velocity_Rotating2Inertial(x);
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double t_engine_off){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -582,6 +582,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 tetamin=x1;
     	 groundtrack=0;
     	 ref_ELEVATION =  reference_elevation;
+    	 
+    	 t_engine_loss = t_engine_off;
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------

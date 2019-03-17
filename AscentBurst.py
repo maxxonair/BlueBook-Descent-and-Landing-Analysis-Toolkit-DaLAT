@@ -1,18 +1,31 @@
+
 # Burst file to run several trajectories in a loop 
 import subprocess
 import os
 from shutil import copyfile 
+import shutil
 
+ResultFolder = './burst_container/' 
 
-
-start_cutoff_time=1 
+start_cutoff_time=30 
 # start engine cut-off time [s]
-end_cutoff_time = 4 
+end_cutoff_time = 34 
 # end engine cut-off
 
-def Adjust_CutOff_Time(time):
-	#Adjust Engine off time in Input
-	alpha=1
+def Clear_ResultFolder():
+		for the_file in os.listdir(ResultFolder):
+			file_path = os.path.join(ResultFolder, the_file)
+			try:
+				if os.path.isfile(file_path):
+					os.unlink(file_path)
+			except Exception as e:
+				print(e)
+
+def Adjust_CutOff_Time(timestamp):
+	os.remove("./INP/ErrorFile.inp")
+	f = open("./INP/ErrorFile.inp","w+")
+	f.write("%d" % timestamp)
+	f.close()
 
 def Run_Simulation():
 	subprocess.call(['java', '-jar', 'SIM.jar'])
@@ -20,11 +33,14 @@ def Run_Simulation():
 def Rename_and_Copy_Resultfiles(timestamp):
 	dst ="burstres_"+str(timestamp)+".txt"
 	src ="results.txt"
-	os.rename(src, dst)
-	src=dst
-	dst="/burst_container"
-	#copyfile(src, dst)
-
+	#os.rename(src, dst)
+	#src=dst
+	dst=ResultFolder+dst
+	copyfile(src, dst)
+#-----------------------------------------------------------------------
+#                      Main Loop
+#-----------------------------------------------------------------------
+Clear_ResultFolder()
 for i in range(start_cutoff_time,end_cutoff_time):
 	# |1|
 	Adjust_CutOff_Time(i)
