@@ -16,6 +16,7 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridBagLayout;
+import java.awt.Shape;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
@@ -24,6 +25,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.KeyEvent;
+import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -107,7 +109,7 @@ import org.jfree.ui.RectangleEdge;
 
 import Model.atm_dataset;
 import Sequence.SequenceElement;
-import Simulator_main.SIM;
+import Simulator_main.Launch_Simulation;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Tool;
 import javax.swing.JFileChooser;
@@ -258,7 +260,8 @@ public class Plotting_3DOF implements  ActionListener {
     										  "FPA cel [m/s",
     										  "AZ  cel [m/s]",
     										  "FPA_dot [deg/s]",
-    										  "Thrust Elevation_dot [deg/s]"
+    										  "Thrust Elevation_dot [deg/s]",
+    										  "Engine Loss Indicator [true/false]"
     										  };
     
     public static String[] Thrust_switch = { "Descent",
@@ -986,12 +989,21 @@ public static String[] SequenceTVCFC    = { "",
         JPanel JP_EnginModel = new JPanel();
         JP_EnginModel.setSize(390,200);
         JP_EnginModel.setLocation(5, uy_p41 + 25 * 18);
+        JP_EnginModel.setBackground(Color.white);
+        JP_EnginModel.setForeground(Color.white);
          JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
         //JP_EnginModel.setBackground(Color.red);
         taOutputStream = null; 
         taOutputStream = new TextAreaOutputStream(textArea, ""); 
         JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        JSP_EnginModel.setBackground(Color.white);
+        JSP_EnginModel.setForeground(Color.white);
+        JSP_EnginModel.getVerticalScrollBar().setForeground(Color.white);
+        JSP_EnginModel.getHorizontalScrollBar().setForeground(Color.white);
+        JSP_EnginModel.getHorizontalScrollBar().setBackground(Color.white);
+        JSP_EnginModel.getVerticalScrollBar().setBackground(Color.white);
+        JSP_EnginModel.setOpaque(true);
         JSP_EnginModel.setPreferredSize(new Dimension(395-10,200-10));
         JSP_EnginModel.setLocation(5, 5);
         JP_EnginModel.add(JSP_EnginModel);
@@ -2952,7 +2964,7 @@ try {
     }
 	public static double[][] FIND_ctrl_init_cond() throws IOException{
 	   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
-	   	    SEQUENCE_DATA = SIM.READ_SEQUENCE();
+	   	    SEQUENCE_DATA = Launch_Simulation.READ_SEQUENCE();
 	   	    double[][] INIT_CONDITIONS = new double[4][SEQUENCE_DATA.size()];
 	   	    for (int i=0;i<SEQUENCE_DATA.size();i++) {
 	   	    	
@@ -3139,7 +3151,7 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		           int active_sequence = Integer.parseInt(tokens[39]);
 		           double xx=0;
 		           double fpa_cmd = 0;
-		           if(AscentDescent_SwitchChooser.getSelectedIndex()==1) {
+		           if(AscentDescent_SwitchChooser.getSelectedIndex()==0) {
 		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
 		           } else {
 		           INDICATOR_VTOUCHDOWN.setText("-");   
@@ -3236,6 +3248,16 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
 		//domainAxis.setInverted(true);
 		
+		//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
+	    double size = 2.0;
+	    double size2 = 1.0;
+	    double delta = size / 2.0;
+	    double delta2 = size2 / 2.0;
+		Shape dot1 = new Ellipse2D.Double(-delta, -delta, size, size);
+		Shape dot2 = new Ellipse2D.Double(-delta2, -delta2, size2, size2);
+		renderer.setSeriesShape(0, dot1);
+		renderer.setSeriesShape(1, dot2);
+		
 		JPanel PlotPanel_X43 = new JPanel();
 		PlotPanel_X43.setLayout(new BorderLayout());
 		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
@@ -3302,6 +3324,14 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
 		//domainAxis.setInverted(true);
+	    double size = 2.0;
+	    double size2 = 1.0;
+	    double delta = size / 2.0;
+	    double delta2 = size2 / 2.0;
+		Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
+		Shape dot2 = new Ellipse2D.Double(-delta2, -delta2, size2, size2);
+		renderer.setSeriesShape(0, dot);
+		renderer.setSeriesShape(1, dot2);
 		
 		JPanel PlotPanel_X43 = new JPanel();
 		PlotPanel_X43.setLayout(new BorderLayout());
@@ -3380,6 +3410,13 @@ public static void EXPORT_Case() throws FileNotFoundException {
 		PlotPanel_X44.setLayout(new BorderLayout());
 		//PlotPanel_X44.setPreferredSize(new Dimension(900, page1_plot_y));
 		PlotPanel_X44.setBackground(Color.white);
+		
+		//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
+	    double size = 2.0;
+	    double delta = size / 2.0;
+		Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
+		renderer.setSeriesShape(0, dot);
+
 	
 		ChartPanel_DashBoardFlexibleChart = new ChartPanel(Chart_MercatorMap4);
 		ChartPanel_DashBoardFlexibleChart.setMaximumDrawHeight(50000);
@@ -3636,7 +3673,11 @@ public static void EXPORT_Case() throws FileNotFoundException {
 				XYPlot plot = (XYPlot)Chart_MercatorMap.getXYPlot(); 
 		        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 		        plot.setRenderer(0, renderer);  
-			
+			    double size = 2.0;
+			    double delta = size / 2.0;
+				Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
+				renderer.setSeriesShape(0, dot);
+		        
 		        Chart_MercatorMap.setBackgroundPaint(Color.white);
 				
 		        plot.getDomainAxis().setLabelFont(labelfont_small);

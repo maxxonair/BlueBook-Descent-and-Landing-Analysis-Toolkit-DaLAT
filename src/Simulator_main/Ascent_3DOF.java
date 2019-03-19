@@ -162,6 +162,8 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	        public static double thrust_loss_perc = 0.17;		// Thrust loss due to engine loss [%]
 	        public static boolean engine_loss_switch=true; 
 	        
+	        public static boolean engine_loss_indicator=false;
+	        
 	        public static double TTM_max = 5.0;
 	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
@@ -206,7 +208,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 		
 		public static boolean GroundClearance_Manager(double[] x) {
 	    	boolean GT_switch=false;
-	    	if(x[2]-rm-ref_ELEVATION>500){GT_switch=true;}
+	    	if(x[2]-rm-ref_ELEVATION>300){GT_switch=true;}
 	    	return GT_switch;
 		}
 		public static void UPDATE_FlightController_ThrustMagnitude(Flight_CTRL_ThrustMagnitude NewElement){	   
@@ -224,7 +226,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
 				 double ctrl_tend = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_time();
-				 int TVC_ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_TVCController_ID();
+				 int TVC_ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_TVCController_ID()-1;
 				// -> Create new Flight controller 
 				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
@@ -275,7 +277,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 							cntr_fpa_init = x[4];
 							SequenceWriteOut_addRow();}
 	     		} else if (trigger_type==3) {
-					if(  (Thrust_Deviation)<trigger_value) {
+					if(  (Thrust_Deviation)<trigger_value || Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME()>130) {
 						active_sequence++;
 						cntr_v_init = x[3];
 						cntr_h_init = x[2]-rm-ref_ELEVATION;
@@ -310,7 +312,9 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	 //System.out.println(sequence_type_TM);
 	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	
-	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt,Thrust_Deviation, Thrust_max);	    	
+	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt,Thrust_Deviation, Thrust_max, engine_loss_indicator);	    	
+	    	// ((boolean) Flight_CTRL_PitchCntrl.get(active_sequence).get_engine_lost() ? 1 : 0)
+	    	if(Flight_CTRL_PitchCntrl.get(active_sequence).get_engine_lost()&&engine_loss_indicator==false) {engine_loss_indicator=true;}
 	    	// Check sync. controller timers 
 	    	// System.out.println(Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME()-Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_TIME());
 	    	if(sequence_type_TM==3) { // Controlled Flight Sequence 
@@ -724,7 +728,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  fpa_inertFrame+" "+
 	                    		  azimuth_inertFrame+" "+
 	                    		  fpa_dot*rad2deg+" "+
-	                    		  Thrust_Deviation_dot*rad2deg+" "
+	                    		  Thrust_Deviation_dot*rad2deg+" "+
+	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "
 	                    		  );
 	                }
 	                if(isLast) {

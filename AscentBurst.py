@@ -7,9 +7,9 @@ import shutil
 
 ResultFolder = './burst_container/' 
 
-start_cutoff_time=30 
+start_cutoff_time=50 
 # start engine cut-off time [s]
-end_cutoff_time = 34 
+end_cutoff_time = 191
 # end engine cut-off
 
 def Clear_ResultFolder():
@@ -28,7 +28,8 @@ def Adjust_CutOff_Time(timestamp):
 	f.close()
 
 def Run_Simulation():
-	subprocess.call(['java', '-jar', 'SIM.jar'])
+	subprocess.check_call(['java', '-jar', 'SIM.jar'], shell=True)
+        #subprocess.call(['java', '-jar', 'SIM.jar'])
 
 def Rename_and_Copy_Resultfiles(timestamp):
 	dst ="burstres_"+str(timestamp)+".txt"
@@ -40,7 +41,11 @@ def Rename_and_Copy_Resultfiles(timestamp):
 #-----------------------------------------------------------------------
 #                      Main Loop
 #-----------------------------------------------------------------------
-Clear_ResultFolder()
+try:
+   # Clear_ResultFolder()
+   val=1
+except:
+    print("No files in result forlder")
 for i in range(start_cutoff_time,end_cutoff_time):
 	# |1|
 	Adjust_CutOff_Time(i)

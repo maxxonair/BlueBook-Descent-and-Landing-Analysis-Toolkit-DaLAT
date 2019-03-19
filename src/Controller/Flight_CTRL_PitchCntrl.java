@@ -158,10 +158,11 @@ public class Flight_CTRL_PitchCntrl{
 	public double get_Pitch_cmd() {
 		if(ctrl_on) {
 			double turn_rate_rad = ctr_end_y; 
-			if(engine_lost&&turn_rate_rad>0) {turn_rate_rad=turn_rate_rad*0.6;}
-			if(engine_lost&&turn_rate_rad<0) {turn_rate_rad=turn_rate_rad*3;}
-			if(turn_rate_rad<0) {if(tvc_switch){tvcwas = tvc_was;tvc_switch=false;}} else {tvcwas=0;}
-			tvc_cmd= tvcwas + turn_rate_rad*CTRL_TIME; 
+			if(engine_lost&&turn_rate_rad>0) {turn_rate_rad=turn_rate_rad*0.3;}
+			if(engine_lost&&turn_rate_rad<0) {turn_rate_rad=turn_rate_rad*2;}
+			if(turn_rate_rad<0) {
+				if(tvc_switch){tvcwas = tvc_was;tvc_switch=false;}} else {tvcwas=0;}
+				if(engine_lost) {tvc_cmd=4.5*deg2rad;} else {tvc_cmd= tvcwas + turn_rate_rad*CTRL_TIME;}
 			double fpa_is = y_is*rad2deg;
 			if(fpa_is>180) {
 				tvc_cmd = -5*deg2rad; 
@@ -175,8 +176,8 @@ public class Flight_CTRL_PitchCntrl{
 		double fpa_is = y_is*rad2deg;
 	     CTRL_ERROR = 180 - fpa_is ;
 	     //if(Math.abs(Math.abs(fpa_is)-180)>0.5){
-	    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, 2, -20)*deg2rad;
-	    	// System.out.println(""+CTRL_ERROR+" | "+tvc_cmd*rad2deg+" | "+P_GAIN);
+	    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
+	    	// System.out.println(""+CTRL_ERROR+" | "+tvc_cmd*rad2deg+" | "+P_GAIN+" | "+I_GAIN+" | "+D_GAIN);
 	   //  } else {
 	  //  	 tvc_cmd = 0 ; 
 	  //   }
@@ -196,7 +197,7 @@ public class Flight_CTRL_PitchCntrl{
 	public double get_CTRL_TIME() {
 		return CTRL_TIME; 
 	}
-	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double ctr_init_x, double ctr_init_y, int ctrl_curve, double ctrl_dt, double tvc_was, double CTRL_Thrust) {
+	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double ctr_init_x, double ctr_init_y, int ctrl_curve, double ctrl_dt, double tvc_was, double CTRL_Thrust, boolean engine_loss_detected) {
 		this.ctrl_on 	  = ctrl_on;
 		if(this.ctrl_ID==0) {this.ctrl_on=false;} // overwrite : controller off with no FC set
 		this.y_is 		  = x[4];
@@ -208,7 +209,8 @@ public class Flight_CTRL_PitchCntrl{
 		if(t!=-1&&tswitch) {tzero=t;tswitch=false;}
 		CTRL_TIME = t-tzero; 
 		this.x_is 		  = CTRL_TIME;
-		if(this.CTRL_Thrust>CTRL_Thrust) {engine_lost=true; 	}
+		if(this.CTRL_Thrust>CTRL_Thrust&&engine_loss_detected==false) {engine_lost=true; 	} 
+		else if(engine_loss_detected) {engine_lost=true;}
 		this.CTRL_Thrust=CTRL_Thrust;
 	}
 	public void set_ctrl_on(boolean NewValue){
@@ -222,5 +224,8 @@ public class Flight_CTRL_PitchCntrl{
 	}	
 	public double get_ctr_end_y() {
 		return ctr_end_y; 
+	}
+	public boolean get_engine_lost() {
+		return engine_lost;
 	}
 }
