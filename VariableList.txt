@@ -1,7 +1,9 @@
-                           TrajectSim V1.02 
+﻿                           BlueBook TrajectSim V0.0 
 
 Author: Max Braun,
-Date 26/09/16
+Date 26/09/16 (TrajectSim heritage)
+
+Updated: 13/02/18, M. Braun: Added values for propulsive landing 
 ..............................................................................................................................
                          Variable List (res.dat)
 ------------------------------------------------------------------------------------------------------------------------------
@@ -45,4 +47,11 @@ column / Variable [Unit]
 36  Potential Energy [J]
 37  Kinetic Energy [J]
 38  Total Energy [J]
+39  Thrust Command [%]
+40  Tank filling level [%]
+41  Thrust [N]
+42  Thrust to mass ratio [N/kg]
+43  Velocity horizontal [m/s] (rotating frame)
+44  Velocity vertical [m/s] (rotating frame)
+45  Accumulated delta-v [m/s]
 ------------------------------------------------------------------------------------------------------------------------------
