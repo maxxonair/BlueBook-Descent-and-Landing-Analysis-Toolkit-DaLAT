@@ -124,6 +124,8 @@ public class Plotting_3DOF implements  ActionListener {
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
+    
+    public static String CASE_FileEnding= ".case";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Relative File Paths
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -552,8 +554,8 @@ public static String[] SequenceTVCFC    = { "",
    		           	if (fileChooser.showOpenDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
    	                File file = fileChooser.getSelectedFile() ;
    	                String filePath = file.getAbsolutePath();
-   	                filePath = filePath.replaceAll(".DaLAT", "");
-                       file = new File(filePath + ".DaLAT");
+   	                filePath = filePath.replaceAll(CASE_FileEnding, "");
+                       file = new File(filePath + CASE_FileEnding);
                		   CurrentWorkfile_Path = file;
                        CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
                        MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
@@ -575,17 +577,12 @@ public static String[] SequenceTVCFC    = { "",
 		           	if (fileChooser.showSaveDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
 	                File file = fileChooser.getSelectedFile() ;
 	                String filePath = file.getAbsolutePath();
-	                filePath = filePath.replaceAll(".DaLAT", "");
-                    file = new File(filePath + ".DaLAT");
+	                filePath = filePath.replaceAll(CASE_FileEnding, "");
+                    file = new File(filePath + CASE_FileEnding);
             		    CurrentWorkfile_Path = file;
                     CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
                     MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
-                    try {
 						EXPORT_Case();
-					} catch (FileNotFoundException e1) {
-							System.out.println("File Not Found.");
-					}
-					System.out.println("File "+CurrentWorkfile_Name+" saved.");
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PostProcessing = new JMenu("PostProcessing");
@@ -3042,24 +3039,26 @@ public static void IMPORT_Case() throws IOException {
     WRITE_PROP();
     br.close();
 }
-public static void EXPORT_Case() throws FileNotFoundException {
+public static void EXPORT_Case() {
 	if ( CurrentWorkfile_Name.isEmpty()==false) {
-        File file = CurrentWorkfile_Path ; 
-        PrintWriter os;
-		os = new PrintWriter(file);
+		File file = CurrentWorkfile_Path;
+        PrintWriter os = null;
+		try {
+			os = new PrintWriter(file);
+		} catch (FileNotFoundException e) {System.out.println(e);}
 	
     	for (int i = 0; i < 12; i++) {  // 					init.inp
         os.print("|INIT|" + BB_delimiter);
-                       if (i==0){os.print("|LONGITUDE[DEG]|"+ BB_delimiter+INPUT_LONG_Rs.getText());
-            	} else if (i==1){os.print("|LATITUDE[DEG]|"+ BB_delimiter+INPUT_LAT_Rs.getText());
-            	} else if (i==2){os.print("|ALTITUDE[m]|"+ BB_delimiter+INPUT_ALT_Rs.getText());
-            	} else if (i==3){os.print("|VELOCITY[m/s]|"+ BB_delimiter+INPUT_VEL_Rs.getText());
-            	} else if (i==4){os.print("|FPA[DEG]|"+ BB_delimiter+INPUT_FPA_Rs.getText());
-            	} else if (i==5){os.print("|AZIMUTH[DEG]|"+ BB_delimiter+INPUT_AZI_Rs.getText());
-            	} else if (i==6){os.print("|INITMASS[kg]|"+ BB_delimiter+INPUT_M0.getText());
-            	} else if (i==7){os.print("|INTEGTIME[s]|"+ BB_delimiter+MODEL_EventHandler.getValueAt( 0, 1));
-            	} else if (i==8){os.print("|INTEG[-]|"+ BB_delimiter+Integrator_chooser.getSelectedIndex());
-                } else if (i==9){os.print("|TARGET[-]|"+ BB_delimiter+Target_chooser.getSelectedIndex());
+                       if (i==0) {os.print("|LONGITUDE[DEG]|"+ BB_delimiter+INPUT_LONG_Rs.getText());
+            	} else if (i==1) {os.print("|LATITUDE[DEG]|"+ BB_delimiter+INPUT_LAT_Rs.getText());
+            	} else if (i==2) {os.print("|ALTITUDE[m]|"+ BB_delimiter+INPUT_ALT_Rs.getText());
+            	} else if (i==3) {os.print("|VELOCITY[m/s]|"+ BB_delimiter+INPUT_VEL_Rs.getText());
+            	} else if (i==4) {os.print("|FPA[DEG]|"+ BB_delimiter+INPUT_FPA_Rs.getText());
+            	} else if (i==5) {os.print("|AZIMUTH[DEG]|"+ BB_delimiter+INPUT_AZI_Rs.getText());
+            	} else if (i==6) {os.print("|INITMASS[kg]|"+ BB_delimiter+INPUT_M0.getText());
+            	} else if (i==7) {os.print("|INTEGTIME[s]|"+ BB_delimiter+MODEL_EventHandler.getValueAt( 0, 1));
+            	} else if (i==8) {os.print("|INTEG[-]|"+ BB_delimiter+Integrator_chooser.getSelectedIndex());
+                } else if (i==9) {os.print("|TARGET[-]|"+ BB_delimiter+Target_chooser.getSelectedIndex());
                 } else if (i==10){os.print("|WRITET[s]|"+ BB_delimiter+INPUT_WRITETIME.getText());
                 } else if (i==11){os.print("|REFELEVEVATION[m]|"+ BB_delimiter+INPUT_REFELEV.getText());
     		    } else if (i==11){os.print("|ThrustSwitch[-]|"+ BB_delimiter+AscentDescent_SwitchChooser.getSelectedIndex());
@@ -3103,22 +3102,23 @@ public static void EXPORT_Case() throws FileNotFoundException {
     	    		for(int k=0;k<FCTargetCurve.length;k++) {if(str_val.equals(FCTargetCurve[k])){val=k+1;}}
     	    		os.print(val+ BB_delimiter);
     	    	} else if (col==8) {
-        	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
-        	    		int val=0;
-        	    		for(int k=0;k<SequenceTVCFC.length;k++) {if(str_val.equals(SequenceTVCFC[k])){val=k+1;}}
-        	    		os.print(val+ BB_delimiter);
+        	    	String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+        	    	int val=0;
+        	    	for(int k=0;k<SequenceTVCFC.length;k++) {if(str_val.equals(SequenceTVCFC[k])){val=k+1;}}
+        	    	os.print(val+ BB_delimiter);
     	    	} else if (col==11) {
-            	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
-            	    		int val=0;
-            	    		for(int k=0;k<TargetCurve_Options_TVC.length;k++) {if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;}}
-            	    		os.print(val+ BB_delimiter);
+            	    String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
+            	    int val=0;
+            	    for(int k=0;k<TargetCurve_Options_TVC.length;k++) {if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;}}
+            	    os.print(val+ BB_delimiter);
     	    	} else {
 		        os.print(MODEL_SEQUENCE.getValueAt(row, col)+ BB_delimiter);
     	    	}
     	    }
     	    os.println("");
     	}
-       os.close();
+       os.close();   
+       System.out.println("File "+CurrentWorkfile_Name+" saved.");
 	}
 }
 	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
