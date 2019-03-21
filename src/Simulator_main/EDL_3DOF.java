@@ -192,7 +192,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
 				
-				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa);
+				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa, rm , ref_ELEVATION);
 				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}

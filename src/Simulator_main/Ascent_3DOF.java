@@ -44,7 +44,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 	    public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
 				{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
-				{1737400,4903E9,2.661861E-6,320},						// Moon (Earth)
+				{1737400,4.90486959E12,2.661861E-6,320},						// Moon (Earth)
 				{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
 				{0,0,0,0},												// Venus
 		 };
@@ -231,7 +231,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
 				
-				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa);
+				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa, rm, ref_ELEVATION);
 				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}
@@ -368,42 +368,15 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 				    	//-------------------------------------------------------------------------------------------------------------
 		    	Thrust = Thrust_max; 
 		    	Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_maintain_horizontal_TVC_cmd();
-		    	/*
-		    		double ctr_time = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
-		    		//Thrust_Deviation=10*deg2rad;
-		    		if(GroundClearance_Manager(x)) {
-		    			double turn_rate_rad = SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_fpa(); 
-		    		    Thrust_Deviation=turn_rate_rad*ctr_time; 
-		    		} 
-		    		else {
-		    		Thrust_Deviation=0; 
-		    		}
-		    		TE_save = Thrust_Deviation;
-		    		//System.out.println("tvc turn");
-	    		    if(const_isFirst){const_tzer0=t;}
-		    		if((TTM_max*x[6])>Thrust_max) {Thrust = Thrust_max;
-		    		} else {Thrust = TTM_max * x[6]; }Throttle_CMD = Thrust/Thrust_max;	
-		    		*/
+
 	    		
 	    	} else if (sequence_type_TM==6) {
 			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
+			    	//            Full Reference control
 			    	//-------------------------------------------------------------------------------------------------------------
 	    		//double ctr_time_0 = Flight_CTRL_ThrustMagnitude.get(active_sequence-1).get_CTRL_TIME();
-	    		double ctr_time = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME() ;
-	    		
-	    		if(GroundClearance_Manager(x)) {
-	    			double turn_rate_rad=SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_fpa();
-	    		    Thrust_Deviation=TE_save + turn_rate_rad*ctr_time; 
-	    			//Thrust_Deviation=10*deg2rad;
-	    			} 
-	    		else {
-	    		Thrust_Deviation=0; 
-	    		}
-	    		//System.out.println("tvc turn");
-			    if(const_isFirst){const_tzer0=t;}
-	    		if((TTM_max*x[6])>Thrust_max) {Thrust = Thrust_max;
-	    		} else {Thrust = TTM_max * x[6]; }Throttle_CMD = Thrust/Thrust_max;	
+		    	Thrust = Thrust_max; 
+		    	Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_FULL_reference_TVC_cmd();
     		
     	}
 	    	else { System.out.println("ERROR: Sequence type out of range");}
@@ -668,10 +641,12 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
-	                double CTRL_Error =0;
+	                double CTRL_TM_Error =0;
+	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
 	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
-	                CTRL_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
+	                CTRL_TM_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
+	                CTRL_TVC_Error=Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_ERROR(); 
 	                }
 	                CTRL_Time=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
 	                if( t > twrite ) {
@@ -717,7 +692,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (acc_deltav)+" "+
 	                    		  active_sequence+" "+
 	                    		  (groundtrack/1000)+" "+
-	                    		  CTRL_Error+" "+
+	                    		  CTRL_TM_Error+" "+
+	                    		  CTRL_TVC_Error+" "+
 	                    		  CTRL_Time+" "+
 	                    		  (PI-y[4]-Thrust_Deviation)+" "+
 	                    		  Thrust_Deviation+" "+

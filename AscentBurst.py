@@ -7,9 +7,9 @@ import shutil
 
 ResultFolder = './burst_container/' 
 
-start_cutoff_time=50 
+start_cutoff_time=1 
 # start engine cut-off time [s]
-end_cutoff_time = 191
+end_cutoff_time = 480
 # end engine cut-off
 
 def Clear_ResultFolder():

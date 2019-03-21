@@ -1,11 +1,15 @@
 package GUI; 
 //-----------------------------------------------------------------------------------------------------------------------------------------
-//															BlueBook DaLAT GUI
+//															BlueBook DaLAT Graphical User Interface
 //
-//   Descent and Landing Analysis Toolkit  - Version 0.1 ALPHA
+//   Descent and Landing Analysis Toolkit  - Version 0.2 ALPHA
 //
 //   Author: M. Braun
 // 	 Date: 01/03/2019
+//
+//
+//           Version 0.2 
+// 							- Updates: Controller organised in dedicated table. 
 //
 //-----------------------------------------------------------------------------------------------------------------------------------------
 import java.awt.BasicStroke;
@@ -120,12 +124,13 @@ public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
-	static String PROJECT_TITLE = "  BlueBook DaLAT-3DoF  V0.1 ALPHA";
+	static String PROJECT_TITLE = "  BlueBook DaLAT-3DoF  V0.2 ALPHA";
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
     
     public static String CASE_FileEnding= ".case";
+    public static String RESULT_FileEnding = ".res";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Relative File Paths
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -141,6 +146,7 @@ public class Plotting_3DOF implements  ActionListener {
     public static String SEQU_File		 		= "/SEQU.res";				// Sequence output file 
     public static String ICON_File   	 		= "/lib/BB_icon.png";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
+    public static String CONTROLLER_File		= "CTRL/ctrl_main.inp";
 	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
 	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
@@ -251,7 +257,8 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Accumulated Delta-v [m/s]",
     										  "Active Sequence ID [-]",
     										  "Groundtrack [km]",
-    										  "CNTRL Error [m/s]",
+    										  "TM CNTRL Error [m/s]",
+    										  "TVC CNTRL Error [deg]",
     										  "CNTRL Time [s]",
     										  "Thrust Elevation [deg]",
     										  "Thrust Deviation [deg]",
@@ -295,6 +302,13 @@ public class Plotting_3DOF implements  ActionListener {
 			 "TVC-FC target time [s]", 
 			 "TVC-FC target FPA [deg]", 
 			 "TVC-FC target curve"};
+	public static String[] COLUMS_CONTROLLER = {"ID",
+												"Controller Type",
+												"P gain",
+												"I gain",
+												"D gain",
+												"MIN cmd",
+												"MAX cmd"};
 public static String[] COLUMS_EventHandler = {"Event Type",
 							 "Event Value"
 };
@@ -308,8 +322,8 @@ public static String[] SequenceType = {"Coasting (No Thrust)",
 									   "Continous (unregulated) Thrust",
 									   "Controlled Thrust (FC ON)",
 									   "Constrained Thrust (FC OFF)",
-									   "TVC ON horizontal control",
-									   "TVC Turn slow (FC OFF)"
+									   "Simple Ref. Angle Control (FC ON)",
+									   "Full TVC Reference Control (FC ON)"
 };
 public static String[] SequenceFC    = { "",
 										 "Flight Controller 1"};
@@ -318,8 +332,13 @@ public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
 										 "Hover Parabolic entry"
 };
 public static String[] SequenceTVCFC    = { "",
-											"Flight Controller 1" , 
-										    "Flight Controller 2"};
+											"Flight Controller 1", 
+										    "Flight Controller 2",
+										    "Flight Controller 3",
+										    "Flight Controller 4",
+										    "Flight Controller 5",
+										    "Flight Controller 6",
+										    "Flight Controller 7"};
 
 
     public static double h_init;
@@ -386,6 +405,11 @@ public static String[] SequenceTVCFC    = { "",
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
 	 static DefaultTableModel MODEL_SEQUENCE;
 	 static JTable TABLE_SEQUENCE;
+	 
+	 static int c_CONTROLLER = 12;
+	 static Object[] ROW_CONTROLLER = new Object[c_SEQUENCE];
+	 static DefaultTableModel MODEL_CONTROLLER;
+	 static JTable TABLE_CONTROLLER;
 	 
 	 static int c_EventHanlder = 2;
 	 static Object[] ROW_EventHandler = new Object[c_EventHanlder];
@@ -501,9 +525,9 @@ public static String[] SequenceTVCFC    = { "",
 	  		           	if (fileChooser.showSaveDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
 	  	                File file = fileChooser.getSelectedFile() ;
 	  	                String filePath = file.getAbsolutePath();
-	  	                filePath = filePath.replaceAll(".DaLAT", "");
+	  	                filePath = filePath.replaceAll(RESULT_FileEnding, "");
 	  	                File source = new File(RES_File);
-	  	                File dest = new File(filePath+".DaLAT");
+	  	                File dest = new File(filePath+RESULT_FileEnding);
                 	   try {
                 	       FileUtils.copyFile(source, dest);
                 	   } catch (IOException eIO) {System.out.println(eIO);}
@@ -1815,8 +1839,8 @@ public static String[] SequenceTVCFC    = { "",
 	  //-------------------------------------------- 
 	  //   Right side :
     JPanel P2_ControllerPane = new JPanel();
-    P2_ControllerPane.setLayout(null);
-    P2_ControllerPane.setPreferredSize(new Dimension((exty_main+400),290));
+   // P2_ControllerPane.setLayout(null);
+    //P2_ControllerPane.setPreferredSize(new Dimension((exty_main+400),290));
     P2_ControllerPane.setBackground(bc_c);
     P2_ControllerPane.setForeground(l_c);
     
@@ -1825,11 +1849,12 @@ public static String[] SequenceTVCFC    = { "",
    // P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
     P2_SequenceMAIN.setBackground(bc_c);
     P2_SequenceMAIN.setForeground(l_c);
-
+/*
     JScrollPane scrollPane_Controller = new JScrollPane(P2_ControllerPane);
     //scrollPane_Controller.setSize(405, exty_main);
     scrollPane_Controller.getVerticalScrollBar().setUnitIncrement(16);
     PANEL_RIGHT_InputSection.add(scrollPane_Controller, BorderLayout.CENTER);
+    */
     
     //-----------------------------------------------------------------------------------------------------------------------------
     //                  Sequence table 
@@ -1861,6 +1886,12 @@ public static String[] SequenceTVCFC    = { "",
             	} else if (value.equals(""+SequenceType[3])) {
                     comp.setBackground(Color.green);
                     comp.setForeground(Color.black);
+            	} else if (value.equals(""+SequenceType[4])) {
+                    comp.setBackground(Color.CYAN);
+                    comp.setForeground(Color.black);
+            	} else if (value.equals(""+SequenceType[5])) {
+                    comp.setBackground(Color.red);
+                    comp.setForeground(Color.white);
             	} else if (col==9&&val_TVCFC.equals(""+SequenceTVCFC[0])){
                     comp.setBackground(light_gray);
                     comp.setForeground(Color.gray);
@@ -2145,115 +2176,123 @@ public static String[] SequenceTVCFC    = { "",
     	  } } );
     SequenceControlPanel.add(BUTTON_ExportSequence);
     
-  //-----------------------------------------------------------------------------------------------------------------------------
+    
+    JButton BUTTON_AddController = new JButton("Add Controller");
+    BUTTON_AddController.setLocation(795, 5);
+    BUTTON_AddController.setSize(145,25);
+    BUTTON_AddController.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  AddController();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_AddController);
+    JButton BUTTON_DeleteController = new JButton("Delete Controller");
+    BUTTON_DeleteController.setLocation(795, 32);
+    BUTTON_DeleteController.setSize(145,25);
+    BUTTON_DeleteController.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  DeleteController();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_DeleteController);
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //                  Sequence table 
+    //-----------------------------------------------------------------------------------------------------------------------------
     JScrollPane scrollPane_Sequence = new JScrollPane(P2_SequenceMAIN,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     scrollPane_Sequence.setSize(305, 400);
     scrollPane_Sequence.getVerticalScrollBar().setUnitIncrement(16);
     PANEL_RIGHT_InputSection.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
-    
-	  p421_linp0 = new JCheckBox("Controller 001 ON/OFF");
-	  p421_linp0.setLocation(2, uy_p41 + 25 * 0 );
-	  p421_linp0.setBackground(Color.green);
-	  p421_linp0.setSize(250, 20);
-	  p421_linp0.addFocusListener(new FocusListener() {
 
-		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			 WRITE_CTRL_01();
-		}
 
-		@Override
-		public void focusLost(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			 WRITE_CTRL_01();
-		}
-		  
-	  });
-	  p421_linp0.addActionListener(new ActionListener() {
+	    TABLE_CONTROLLER = new JTable(){
+	   	 
+	    	/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
 
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-			WRITE_CTRL_01();
-			 if(p421_linp0.isSelected()) {p421_linp0.setBackground(Color.green);}else {p421_linp0.setBackground(Color.red);}
-		}
-		  
-	  });
-	  
-	  P2_ControllerPane.add(p421_linp0);
-	  
-      JLabel LABEL_ctrl_PGAIN = new JLabel("P Gain [-]");
-      LABEL_ctrl_PGAIN.setLocation(65, uy_p41 + 25 * 1 );
-      LABEL_ctrl_PGAIN.setSize(250, 20);
-      LABEL_ctrl_PGAIN.setBackground(Color.white);
-      LABEL_ctrl_PGAIN.setForeground(Color.black);
-      P2_ControllerPane.add(LABEL_ctrl_PGAIN);
-      JLabel LABEL_ctrl_IGAIN = new JLabel("I Gain [-]");
-      LABEL_ctrl_IGAIN.setLocation(65, uy_p41 + 25 * 2 );
-      LABEL_ctrl_IGAIN.setSize(250, 20);
-      LABEL_ctrl_IGAIN.setBackground(Color.white);
-      LABEL_ctrl_IGAIN.setForeground(Color.black);
-      P2_ControllerPane.add(LABEL_ctrl_IGAIN);
-      JLabel LABEL_ctrl_DGAIN = new JLabel("D Gain [-]");
-      LABEL_ctrl_DGAIN.setLocation(65, uy_p41 + 25 * 3 );
-      LABEL_ctrl_DGAIN.setSize(250, 20);
-      LABEL_ctrl_DGAIN.setBackground(Color.white);
-      LABEL_ctrl_DGAIN.setForeground(Color.black);
-      P2_ControllerPane.add(LABEL_ctrl_DGAIN);
-      JLabel LABEL_ctrl_max = new JLabel("Maximum Output CMD [-]");
-      LABEL_ctrl_max.setLocation(65, uy_p41 + 25 * 5 );
-      LABEL_ctrl_max.setSize(250, 20);
-      LABEL_ctrl_max.setBackground(Color.white);
-      LABEL_ctrl_max.setForeground(Color.black);
-      P2_ControllerPane.add(LABEL_ctrl_max);
-      JLabel LABEL_ctrl_min = new JLabel("Minimum Output CMD [-]");
-      LABEL_ctrl_min.setLocation(65, uy_p41 + 25 * 6 );
-      LABEL_ctrl_min.setSize(250, 20);
-      LABEL_ctrl_min.setBackground(Color.white);
-      LABEL_ctrl_min.setForeground(Color.black);
-      P2_ControllerPane.add(LABEL_ctrl_min);
+			@Override
+	    	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+	            Component comp = super.prepareRenderer(renderer, row, col);
+	           // String val_TLFC = (String) getModel().getValueAt(row, 1);
 
-      INPUT_PGAIN = new JTextField(10);
-      INPUT_PGAIN.setLocation(2, uy_p41 + 25 * 1 );
-      INPUT_PGAIN.setText("0");
-      INPUT_PGAIN.setSize(60, 20);
-      INPUT_PGAIN.addActionListener(new ActionListener() {
- 		  public void actionPerformed( ActionEvent e )
- 		  	{ WRITE_CTRL_01();}});
-      P2_ControllerPane.add(INPUT_PGAIN);
-      INPUT_IGAIN = new JTextField(10);
-      INPUT_IGAIN.setLocation(2, uy_p41 + 25 * 2 );
-      INPUT_IGAIN.setText("0");
-      INPUT_IGAIN.setSize(60, 20);
-      INPUT_IGAIN.addActionListener(new ActionListener() {
- 		  public void actionPerformed( ActionEvent e )
- 		  	{ WRITE_CTRL_01();}});
-      P2_ControllerPane.add(INPUT_IGAIN);
-      INPUT_DGAIN = new JTextField(10);
-      INPUT_DGAIN.setLocation(2, uy_p41 + 25 * 3 );
-      INPUT_DGAIN.setText("10");
-      INPUT_DGAIN.setSize(60, 20);
-      INPUT_DGAIN.addActionListener(new ActionListener() {
- 		  public void actionPerformed( ActionEvent e )
- 		  	{ WRITE_CTRL_01();}});
-      P2_ControllerPane.add(INPUT_DGAIN);
-       INPUT_CTRLMAX = new JTextField(10);
-       INPUT_CTRLMAX.setLocation(2, uy_p41 + 25 * 5 );
-       INPUT_CTRLMAX.setText("1");
-       INPUT_CTRLMAX.setSize(60, 20);
-      INPUT_CTRLMAX.addActionListener(new ActionListener() {
- 		  public void actionPerformed( ActionEvent e )
- 		  	{ WRITE_CTRL_01();}});
-      P2_ControllerPane.add(INPUT_CTRLMAX);
-       INPUT_CTRLMIN = new JTextField(10);
-      INPUT_CTRLMIN.setLocation(2, uy_p41 + 25 * 6 );
-      INPUT_CTRLMIN.setText("0");
-      INPUT_CTRLMIN.setSize(60, 20);
-      INPUT_CTRLMIN.addActionListener(new ActionListener() {
- 		  public void actionPerformed( ActionEvent e )
- 		  	{ WRITE_CTRL_01();}});
-      P2_ControllerPane.add(INPUT_CTRLMIN);
+
+	           // comp.setFont(table_font);
+	            
+	            return comp;
+	        }
+	    };
+	   // TABLE_SEQUENCE.setFont(table_font);
+	    
+		Action action4 = new AbstractAction()
+	    {
+	        /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void actionPerformed(ActionEvent e)
+	        {WriteControllerINP();}
+	    };
+	    @SuppressWarnings("unused")
+		TableCellListener tcl4 = new TableCellListener(TABLE_CONTROLLER, action4);
+	    MODEL_CONTROLLER = new DefaultTableModel(){
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+	        public boolean isCellEditable(int row, int column) {
+	           //all cells false
+				String val_TVCFC = (String) MODEL_CONTROLLER.getValueAt(row, 0);
+				if (column == 0 ){
+					return false;
+				} else if (column==1 && val_TVCFC.equals(SequenceTVCFC[0])) {
+					return false; 
+				}  else {
+					return true; 
+				}
+	        }
+	    }; 
+	    MODEL_CONTROLLER.setColumnIdentifiers(COLUMS_CONTROLLER);
+	    TABLE_CONTROLLER.setModel(MODEL_CONTROLLER);
+	    TABLE_CONTROLLER.setBackground(Color.white);
+	    TABLE_CONTROLLER.setBackground(Color.white);
+	    TABLE_CONTROLLER.setForeground(Color.black);
+	    TABLE_CONTROLLER.getTableHeader().setReorderingAllowed(false);
+	    TABLE_CONTROLLER.setRowHeight(45);
+
+
+		    TableColumn CtrId_colum   			 = TABLE_CONTROLLER.getColumnModel().getColumn(0);
+		    TableColumn CtrType_column 	    	 = TABLE_CONTROLLER.getColumnModel().getColumn(1);
+		    TableColumn CtrPGain_column  		 = TABLE_CONTROLLER.getColumnModel().getColumn(2);
+		    TableColumn CtrIGain_column 	     = TABLE_CONTROLLER.getColumnModel().getColumn(3);
+		    TableColumn CtrDGain_column 	  	 = TABLE_CONTROLLER.getColumnModel().getColumn(4);
+		    TableColumn CtrMin_column 	  		 = TABLE_CONTROLLER.getColumnModel().getColumn(5);
+		    TableColumn CtrMax_column 	  		 = TABLE_CONTROLLER.getColumnModel().getColumn(6);
+
+		    
+		    TABLE_CONTROLLER.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		    CtrId_colum.setPreferredWidth(50);
+		    CtrType_column.setPreferredWidth(100);
+		    CtrPGain_column.setPreferredWidth(100);
+		    CtrIGain_column.setPreferredWidth(100);
+		    CtrDGain_column.setPreferredWidth(100);
+		    CtrMin_column.setPreferredWidth(120);
+		    CtrMax_column.setPreferredWidth(120);
+
+		    
+		    ((JTable) TABLE_CONTROLLER).setFillsViewportHeight(true);
+	    
+		    TABLE_CONTROLLER.getTableHeader().setBackground(Color.white);
+		    TABLE_CONTROLLER.getTableHeader().setForeground(Color.black);
+		    
+		    JScrollPane TABLE_CONTROLLER_ScrollPane = new JScrollPane(TABLE_CONTROLLER,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		    //TABLE_SEQUENCE_ScrollPane.setLayout(null);
+		    TABLE_CONTROLLER_ScrollPane.getVerticalScrollBar().setBackground(Color.white);
+		    TABLE_CONTROLLER_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
+		    TABLE_CONTROLLER_ScrollPane.setBackground(Color.white);
+		    //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
+		    //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
+		   // P2_ControllerPane.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
+		    PANEL_RIGHT_InputSection.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------
@@ -2326,6 +2365,7 @@ public static String[] SequenceTVCFC    = { "",
         //------------------------------------------------------------------------
     		UPDATE_Page01();
     		READ_SEQUENCE();
+    		READ_CONTROLLER();
     	      Rotating2Inertial();
 
         MainGUI.setOpaque(true);
@@ -2419,6 +2459,52 @@ public static String[] SequenceTVCFC    = { "",
         for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
         
         WriteSequenceINP();
+    }
+    
+    public static void AddController() {
+    	int NumberOfSequences = MODEL_CONTROLLER.getRowCount();
+    	ROW_CONTROLLER[0]  = ""+NumberOfSequences;
+    	ROW_CONTROLLER[1]  = "0";
+    	ROW_CONTROLLER[2]  = "1";
+    	ROW_CONTROLLER[3]  = "1";
+    	ROW_CONTROLLER[4]  = "1";
+    	ROW_CONTROLLER[5]  = "0";
+    	ROW_CONTROLLER[6]  = "1";
+
+    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
+    	
+    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}    	
+    	WriteControllerINP();
+    }
+    
+    public static void DeleteController() {
+    	int j = TABLE_CONTROLLER.getSelectedRow();
+    	if (j >= 0){MODEL_CONTROLLER.removeRow(j);}
+    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
+    	
+    	WriteControllerINP();
+    }
+    public static void DeleteAllController() {
+    	for(int j=TABLE_CONTROLLER.getRowCount()-1;j>=0;j--) {MODEL_CONTROLLER.removeRow(j);}
+    	WriteControllerINP();
+    }
+    
+    public static void UpController() {
+        int[] rows2 = TABLE_CONTROLLER.getSelectedRows();
+        MODEL_CONTROLLER.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]-1);
+        TABLE_CONTROLLER.setRowSelectionInterval(rows2[0]-1, rows2[rows2.length-1]-1);
+        for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
+        
+        WriteControllerINP();
+    }
+    
+    public static void DownController() {
+        int[] rows2 = TABLE_SEQUENCE.getSelectedRows();
+        MODEL_CONTROLLER.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]+1);
+        TABLE_CONTROLLER.setRowSelectionInterval(rows2[0]+1, rows2[rows2.length-1]+1);
+        for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
+        
+        WriteControllerINP();
     }
     public static void WriteSequenceINP() {
             try {
@@ -2517,6 +2603,35 @@ public static String[] SequenceTVCFC    = { "",
             	System.out.println(eIO);
             }
     }
+    
+    public static void WriteControllerINP() {
+        try {
+            File fac = new File(CONTROLLER_File);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            //System.out.println("\n----------------------------------");
+            //System.out.println("The file has been created.");
+            //System.out.println("------------------------------------");
+            FileWriter wr = new FileWriter(fac);
+            for (int i=0; i<MODEL_CONTROLLER.getRowCount(); i++)
+            {
+        			String row ="";
+        			for(int j=0;j<MODEL_CONTROLLER.getColumnCount();j++) {
+    					String val =  (String) MODEL_CONTROLLER.getValueAt(i, j);
+    					row = row + val + " ";
+        		   }
+        			wr.write(row+System.getProperty( "line.separator" ));
+            }
+            wr.close(); 
+        } catch (IOException eIO){
+        	System.out.println(eIO);
+        }
+}
 
     
     public void UPDATE_Page01(){
@@ -2593,6 +2708,27 @@ public static String[] SequenceTVCFC    = { "",
 	       	
 				    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
 	    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);} // Update numbering
+       }
+       br.close();
+       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+
+   }
+    
+    public static void READ_CONTROLLER() throws IOException{	
+		BufferedReader br = new BufferedReader(new FileReader(CONTROLLER_File));
+       String strLine;
+       try {
+       while ((strLine = br.readLine()) != null )   {
+	       	String[] tokens = strLine.split(" ");
+	    	ROW_CONTROLLER[0] = ""+Integer.parseInt(tokens[0]);
+	    	ROW_CONTROLLER[1] = ""+Integer.parseInt(tokens[1]);
+	    	ROW_CONTROLLER[2] = ""+Double.parseDouble(tokens[2]);
+	    	ROW_CONTROLLER[3] = ""+Double.parseDouble(tokens[3]);
+	    	ROW_CONTROLLER[4] = ""+Double.parseDouble(tokens[4]);
+	    	ROW_CONTROLLER[5] = ""+Double.parseDouble(tokens[5]);
+	    	ROW_CONTROLLER[6] = ""+Double.parseDouble(tokens[6]);
+				    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
+	    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);} // Update numbering
        }
        br.close();
        } catch(NullPointerException eNPE) { System.out.println(eNPE);}
@@ -2972,6 +3108,7 @@ try {
 public static void IMPORT_Case() throws IOException {
 	BufferedReader br = new BufferedReader(new FileReader(CurrentWorkfile_Path));
 	DeleteAllSequence();
+	DeleteAllController();
     String strLine;
     int indx_init=0;
     int indx_prop=0;
@@ -3032,7 +3169,17 @@ public static void IMPORT_Case() throws IOException {
 			    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
 			    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
 			    	WriteSequenceINP();
-	    }
+	    } else if(tokens[0].equals("|CTRL|")) {
+	    	ROW_CONTROLLER[0] = ""+Integer.parseInt(tokens[1]);
+	    	ROW_CONTROLLER[1] = ""+Integer.parseInt(tokens[2]);
+	    	ROW_CONTROLLER[2] = ""+Double.parseDouble(tokens[3]);
+	    	ROW_CONTROLLER[3] = ""+Double.parseDouble(tokens[4]);
+	    	ROW_CONTROLLER[4] = ""+Double.parseDouble(tokens[5]);
+	    	ROW_CONTROLLER[5] = ""+Double.parseDouble(tokens[6]);
+	    	ROW_CONTROLLER[6] = ""+Double.parseDouble(tokens[7]);
+	    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
+	    	WriteControllerINP();
+	}
     k++;
     }
     WRITE_INIT();
@@ -3117,6 +3264,14 @@ public static void EXPORT_Case() {
     	    }
     	    os.println("");
     	}
+        for (int  row2 = 0; row2 < MODEL_CONTROLLER.getRowCount(); row2++) {  // 					Sequence.inp
+        		os.print("|CTRL|" + BB_delimiter);
+        	    for (int col = 0; col < MODEL_CONTROLLER.getColumnCount(); col++) {
+    		        os.print(MODEL_CONTROLLER.getValueAt(row2, col)+ BB_delimiter);
+        	    	}
+        	    os.println("");  	    
+        }	    
+
        os.close();   
        System.out.println("File "+CurrentWorkfile_Name+" saved.");
 	}
