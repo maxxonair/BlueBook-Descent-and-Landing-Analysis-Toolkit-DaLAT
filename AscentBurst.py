@@ -7,9 +7,9 @@ import shutil
 
 ResultFolder = './burst_container/' 
 
-start_cutoff_time=1 
+start_cutoff_time=0 
 # start engine cut-off time [s]
-end_cutoff_time = 480
+end_cutoff_time = 450
 # end engine cut-off
 
 def Clear_ResultFolder():
@@ -53,4 +53,5 @@ for i in range(start_cutoff_time,end_cutoff_time):
 	Run_Simulation()
 	# |3|
 	Rename_and_Copy_Resultfiles(i)
+	print("File ",str(i)," created")
 		 

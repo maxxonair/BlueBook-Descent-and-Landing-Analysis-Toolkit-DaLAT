@@ -41,9 +41,11 @@ public class Flight_CTRL_PitchCntrl{
 	private double  CTRL_TIME;				// controller Time 					[s]	
 	private double  CTRL_Thrust;
 	private boolean engine_lost=false; 
+	private double t_engine_lost; 
 	private double  altitude_is;				// Acutall Altitude ref. mean radius [m]
 	private double rm; 						// Mean radius [m]
 	private double elevation; 				// Lodacl elevation [m] 
+	private double global_time; 			// Global ascent time [s]
 		
 	private double tvc_cmd;					// thrust vector angle cmd			[rad] 
 	
@@ -79,8 +81,8 @@ public class Flight_CTRL_PitchCntrl{
 		 this.P_GAIN  = readINP[1];
 		 this.I_GAIN  = readINP[2];
 		 this.D_GAIN  = readINP[3];
-		 this.cmd_max = readINP[4];
-		 this.cmd_min = readINP[5];
+		 this.cmd_min = readINP[4];
+		 this.cmd_max = readINP[5];
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e);
@@ -199,7 +201,7 @@ public class Flight_CTRL_PitchCntrl{
         	}
     		return (-tvc_cmd);
     	}
-	public double get_Pitch_cmd() {
+	public double get_Pitchover_cmd() {
 		if(ctrl_on) {
 			double turn_rate_rad = ctr_end_y; 
 			if(engine_lost&&turn_rate_rad>0) {turn_rate_rad=turn_rate_rad*0.3;}
@@ -211,7 +213,6 @@ public class Flight_CTRL_PitchCntrl{
 			if(fpa_is>180) {
 				tvc_cmd = -5*deg2rad; 
 			}
-			//System.out.println(""+CTRL_TIME+" | "+tvcwas+" | "+tvc_cmd*rad2deg);
 		}
 		return tvc_cmd; 
 	}
@@ -226,15 +227,13 @@ public class Flight_CTRL_PitchCntrl{
 	     } else if (ctrl_type==1){
 	    	 tvc_cmd = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
 	     }
-	    	// System.out.println(""+CTRL_ERROR+" | "+tvc_cmd*rad2deg+" | "+P_GAIN+" | "+I_GAIN+" | "+D_GAIN);
-	   //  } else {
-	  //  	 tvc_cmd = 0 ; 
-	  //   }
-
 		return tvc_cmd; 
 	}
 	
 	public double get_FULL_reference_TVC_cmd() {
+		//-------------------------------------------------------------------------------------------------
+		//  							Full reference profile TVC control
+		//-------------------------------------------------------------------------------------------------
 		double fpa_is_rad = y_is;
 		double alt_is_m = altitude_is; 
 		double[] data_x = new double[reference_fpa_profile.length];
@@ -247,17 +246,26 @@ public class Flight_CTRL_PitchCntrl{
 		}
 		//-------------------------------------------------------------------------------------------------
 		double fpa_ideal_rad = 0 ;
-		if(engine_lost) {  fpa_ideal_rad = Tool.LinearInterpolate( data_x , data_y2 , alt_is_m);}
-		else 			{  fpa_ideal_rad = Tool.LinearInterpolate( data_x , data_y1 , alt_is_m);}
+		double t_split = ctr_end_x; 
+		double y2 = Tool.LinearInterpolate( data_x , data_y2 , alt_is_m);
+		double y1 = Tool.LinearInterpolate( data_x , data_y1 , alt_is_m);
+		//System.out.println(""+global_time+" | "+ (y1-y2)*rad2deg);
+		if(engine_lost&& t_engine_lost<t_split) {  fpa_ideal_rad = y2;}
+		else 			{  fpa_ideal_rad = y1;}
+		//-------------------------------------------------------------------------------------------------
+		// If altitude is outside reference profile :
+		if(alt_is_m>50000) {
+			fpa_ideal_rad=180*rad2deg; 
+		} else if (alt_is_m<-4200) {
+			fpa_ideal_rad=90*rad2deg; 
+		}
 		//-------------------------------------------------------------------------------------------------
 	     CTRL_ERROR = fpa_ideal_rad - fpa_is_rad ;
-
 	     if (ctrl_type==0){
 	    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
 	     } else if (ctrl_type==1){
 	    	 tvc_cmd = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
 	     }
-
 		return tvc_cmd; 
 	}
 
@@ -283,10 +291,11 @@ public class Flight_CTRL_PitchCntrl{
 		this.ctrl_curve   = ctrl_curve; 
 		this.ctrl_dt	  = ctrl_dt; 
 		this.tvc_was      = tvc_was; 
+		this.global_time  = t; 
 		if(t!=-1&&tswitch) {tzero=t;tswitch=false;}
 		CTRL_TIME = t-tzero; 
 		this.x_is 		  = CTRL_TIME;
-		if(this.CTRL_Thrust>CTRL_Thrust&&engine_loss_detected==false) {engine_lost=true; 	} 
+		if(this.CTRL_Thrust>CTRL_Thrust&&engine_loss_detected==false) {engine_lost=true; t_engine_lost=global_time;	} 
 		else if(engine_loss_detected) {engine_lost=true;}
 		this.CTRL_Thrust=CTRL_Thrust;
 	}
@@ -310,5 +319,11 @@ public class Flight_CTRL_PitchCntrl{
 	}
 	public double get_ctrl_type() {
 		return ctrl_type; 
+	}
+	public double get_global_time() {
+		return global_time; 
+	}
+	public double get_t_engine_lost() {
+		return t_engine_lost; 
 	}
 }

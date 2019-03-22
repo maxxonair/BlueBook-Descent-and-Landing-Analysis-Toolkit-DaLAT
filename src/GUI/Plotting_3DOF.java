@@ -2241,10 +2241,12 @@ public static String[] SequenceTVCFC    = { "",
 			@Override
 	        public boolean isCellEditable(int row, int column) {
 	           //all cells false
-				String val_TVCFC = (String) MODEL_CONTROLLER.getValueAt(row, 0);
+				String Ctrl_type = (String) MODEL_CONTROLLER.getValueAt(row, 1);
 				if (column == 0 ){
 					return false;
-				} else if (column==1 && val_TVCFC.equals(SequenceTVCFC[0])) {
+				} else if (column==5 && Ctrl_type.equals("1") ){
+					return false; 
+				}  else if (column==6 && Ctrl_type.equals("1") ){
 					return false; 
 				}  else {
 					return true; 
@@ -2367,6 +2369,7 @@ public static String[] SequenceTVCFC    = { "",
     		READ_SEQUENCE();
     		READ_CONTROLLER();
     	      Rotating2Inertial();
+    	      UpdateFC_LIST();
 
         MainGUI.setOpaque(true);
         return MainGUI;
@@ -2393,6 +2396,17 @@ public static String[] SequenceTVCFC    = { "",
     	} catch(java.lang.NumberFormatException enfe) {System.out.println(enfe);}
     }
     
+    @SuppressWarnings("unchecked")
+	public static void UpdateFC_LIST() {
+    	SequenceTVCFCCombobox.removeAllItems();
+    	SequenceFCCombobox.removeAllItems();
+    	SequenceTVCFCCombobox.addItem("");
+    	SequenceFCCombobox.addItem("");
+    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {
+    		SequenceTVCFCCombobox.addItem("Flight Controller "+(i+1));
+    		SequenceFCCombobox.addItem("Flight Controller "+(i+1));
+    		}
+    }
     public static void Inertial2Rotating() {
     	try {
     	double vel_inert = Double.parseDouble(INPUT_VEL_Is.getText());
@@ -2475,6 +2489,7 @@ public static String[] SequenceTVCFC    = { "",
     	
     	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}    	
     	WriteControllerINP();
+    	UpdateFC_LIST();
     }
     
     public static void DeleteController() {
@@ -2483,10 +2498,12 @@ public static String[] SequenceTVCFC    = { "",
     	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
     	
     	WriteControllerINP();
+    	UpdateFC_LIST();
     }
     public static void DeleteAllController() {
     	for(int j=TABLE_CONTROLLER.getRowCount()-1;j>=0;j--) {MODEL_CONTROLLER.removeRow(j);}
     	WriteControllerINP();
+    	UpdateFC_LIST();
     }
     
     public static void UpController() {
@@ -2496,6 +2513,7 @@ public static String[] SequenceTVCFC    = { "",
         for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
         
         WriteControllerINP();
+        UpdateFC_LIST();
     }
     
     public static void DownController() {
@@ -2505,6 +2523,7 @@ public static String[] SequenceTVCFC    = { "",
         for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
         
         WriteControllerINP();
+        UpdateFC_LIST();
     }
     public static void WriteSequenceINP() {
             try {

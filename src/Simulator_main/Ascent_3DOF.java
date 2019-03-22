@@ -325,7 +325,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 			    	//Thrust        = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_thrust_cmd();
 			    	//Throttle_CMD  = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_throttle_cmd();
 			    	Thrust = Thrust_max; 
-			    	Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_Pitch_cmd();
+			    	Thrust_Deviation = Flight_CTRL_PitchCntrl.get(active_sequence).get_Pitchover_cmd();
 	    	} else if (sequence_type_TM==2) { // Continuous propulsive Flight Sequence 
 			    	//-------------------------------------------------------------------------------------------------------------	
 			    	//                          TM-FC OFF | TVC-FC ON - Continuous thrust
@@ -644,10 +644,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double CTRL_TM_Error =0;
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
-	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
-	                CTRL_TM_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
-	                CTRL_TVC_Error=Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_ERROR(); 
-	                }
+	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {CTRL_TM_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();}
+	                CTRL_TVC_Error=Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_ERROR();  
 	                CTRL_Time=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
 	                if( t > twrite ) {
 	                	twrite = twrite + dt_write; 

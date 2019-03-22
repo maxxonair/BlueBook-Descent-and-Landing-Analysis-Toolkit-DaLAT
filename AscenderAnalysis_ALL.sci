@@ -1,10 +1,10 @@
 clear 
-RootFolder='C:\Users\Max Braun\Documents\Max_Braun_2017\05_Tools\LandingSim\LandingSim-3DOF\burst_container\';
+RootFolder='C:\Users\Max Braun\Documents\Max_Braun_2017\05_Tools\LandingSim\BlueBook-DaLAT-3DoF\burst_container\';
 //initialize the list
 BB_ascent = list();
 step=10
-tstart=1
-tend = 190
+tstart = 1
+tend   = 450
 for i=tstart:step:tend
     file_01 = 'burstres_';
     file_02 = '.txt';
@@ -25,19 +25,22 @@ t=1;
 fpa_BB = 8;
 vel_BB = 7;
 m0_BB = 30;
-thrust_BB= 28; 
+thrust_BB= 28;
+ctrl_error_BB = 43; 
 alt_BB = 4;
 //------------------------------------------------------------------------------
 //                                Plot 
 //------------------------------------------------------------------------------
 f = scf()
+//------------------------------------------------------------------------------
 subplot(221)
 for i=tstart:step:tend
-plot(BB_ascent(i)(:,t),BB_ascent(i)(:,fpa_BB).*180/%pi-90,rand(1,3));
+plot(BB_ascent(i)(:,t),BB_ascent(i)(:,fpa_BB).*180/%pi-90);
 end
 xlabel("Time [s]]");
 ylabel("flight path angle [deg]");
 //hl = legend("BB mk4 Engines 6 out of 6", "BB mk4 Engines 6 out of 6");
+//------------------------------------------------------------------------------
 subplot(222)
 for i=tstart:step:tend
 plot(BB_ascent(i)(:,t),BB_ascent(i)(:,alt_BB)/1000);
@@ -45,20 +48,23 @@ end
 xlabel("Time [s]]");
 ylabel("Altitude [km]");
 //hl = legend("BB mk4 Engines 6 out of 6", "BB mk4 Engines 6 out of 6");
-/*
+//------------------------------------------------------------------------------
 subplot(223)
-plot(BB_ascent_6_6(:,vel_BB),BB_ascent_6_6(:,alt_BB)/1000,'b');
-plot(BB_ascent_5_6(:,vel_BB),BB_ascent_5_6(:,alt_BB)/1000,'r');
-xlabel("Velocity [m/s]]");
-ylabel("Altitude [km]");
-//hl = legend("BB mk4 Engines 6 out of 6", "BB mk4 Engines 6 out of 6");
-*/
+for i=tstart:step:tend  
+plot(BB_ascent(i)(:,t),BB_ascent(i)(:,ctrl_error_BB).*180/%pi);
+a=gca()
+end
+a.data_bounds=[0,-10;600,10];
+xlabel("Time [s]]");
+ylabel("Controller Error [deg]");
+//------------------------------------------------------------------------------
 subplot(224)
 for i=tstart:step:tend
 plot(BB_ascent(i)(:,t),BB_ascent(i)(:,thrust_BB)/1000);
+aa=gca()
 end
 xlabel("Time [s]]");
 ylabel("Thrust [N]");
-hl = legend("BB mk4 Engines 6 out of 6", "BB mk4 Engines 6 out of 6");
-
-
+aa.data_bounds=[0,28;600,37];
+//hl = legend("BB mk4 Engines 6 out of 6", "BB mk4 Engines 6 out of 6");
+//------------------------------------------------------------------------------
