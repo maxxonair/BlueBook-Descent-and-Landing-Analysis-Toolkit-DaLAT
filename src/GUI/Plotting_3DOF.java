@@ -101,6 +101,7 @@ import org.jfree.chart.plot.Crosshair;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.chart.renderer.xy.StackedXYAreaRenderer;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -138,15 +139,15 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String Elevation_File_RES16	= "/ELEVATION/LRO_16.csv";
 	public static String Elevation_File_RES64 	= "/ELEVATION/LRO_16.csv";
 	public static String Elevation_File_RES128 	= "/ELEVATION/LRO_128.csv";
-	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   //
-    public static String Init_File   			= "/INP/init.inp" ;		    // Input: Initial state
+	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   		//
+    public static String Init_File   			= "/INP/init.inp" ;		    		// Input: Initial state
     public static String RES_File    			= "/results.txt"  ;       	 	// Input: result file 
     public static String CTR_001_File			= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
-    public static String Prop_File 	 			= "/INP/PROP/prop.inp";		// Main propulsion ystem input file 
-    public static String SEQU_File		 		= "/SEQU.res";				// Sequence output file 
+    public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
+    public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String ICON_File   	 		= "/lib/BB_icon.png";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
-    public static String CONTROLLER_File		= "CTRL/ctrl_main.inp";
+    public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
 	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
 	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
@@ -3846,11 +3847,13 @@ public static void EXPORT_Case() {
 		        Chart_MercatorMap = ChartFactory.createScatterPlot("", "Longitude [deg]", "Latitude [deg] ", ResultSet_MercatorMap, PlotOrientation.VERTICAL, false, false, false); 
 				XYPlot plot = (XYPlot)Chart_MercatorMap.getXYPlot(); 
 		        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-		        plot.setRenderer(0, renderer);  
+		        
 			    double size = 2.0;
 			    double delta = size / 2.0;
 				Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
 				renderer.setSeriesShape(0, dot);
+				renderer.setSeriesLinesVisible(0, false);
+		        plot.setRenderer(0, renderer);
 		        
 		        Chart_MercatorMap.setBackgroundPaint(Color.white);
 				
@@ -3924,8 +3927,9 @@ public static void EXPORT_Case() {
         chart_PolarMap = ChartFactory.createPolarChart("", ResultSet_MercatorMap, false, false, false);
   
 		PolarPlot plot =  (PolarPlot) chart_PolarMap.getPlot();
-		//PolarItemRenderer renderer = new PolarItemRenderer();
-       // plot.setRenderer(0,  renderer);  
+		MyDefaultPolarItemRenderer renderer = new MyDefaultPolarItemRenderer();
+		renderer.setSeriesFillPaint(0, Color.red);
+        plot.setRenderer(0, renderer);
 	
 		chart_PolarMap.setBackgroundPaint(Color.white);
 
