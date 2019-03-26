@@ -138,8 +138,9 @@ public class Launch_Simulation implements ActionListener{
        return STOP_Handler; 
     }
     
-    public static double  READ_ErrorFile() throws IOException{
-    	double engine_toff =0;
+    public static double[]  READ_ErrorFile() throws IOException{
+    	double[] engine_toff=new double[3];
+    	engine_toff[0]=1;
 	   	 String dir = System.getProperty("user.dir");
  	   	 INPUT_FILE = dir+"/INP/ErrorFile.inp";
  	   	 BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
@@ -147,7 +148,11 @@ public class Launch_Simulation implements ActionListener{
       try { 
 			      while ((strLine = br.readLine()) != null )   {
 			      	String[] tokens = strLine.split(" ");
-			   	   engine_toff 	= Double.parseDouble(tokens[0]);
+			      	if(Integer.parseInt(tokens[0])==0) {
+			       engine_toff[0] = 0;
+			   	   engine_toff[1] 	= Double.parseDouble(tokens[1]);
+			   	   engine_toff[2] 	= Double.parseDouble(tokens[2]);
+			      	}
 			
 			      }
 	  }catch(NullPointerException eNPE) { System.out.println(eNPE);}
@@ -178,7 +183,7 @@ public class Launch_Simulation implements ActionListener{
 		if(inp_read_success) { 
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
-	    	double t_engine_off = READ_ErrorFile();
+	    	double[] engine_off = READ_ErrorFile();
 	    	double rm = EDL_3DOF.DATA_MAIN[target][0];
 	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
@@ -218,7 +223,7 @@ public class Launch_Simulation implements ActionListener{
 						SEQUENCE_DATA,			 // Sequence data set	LIST		     [-]
 				                0,				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
 						STOP_Handler	,		 // Event Handler 	LIST			     [-]
-						t_engine_off
+						engine_off
 						);
 	    	}
 		}else {

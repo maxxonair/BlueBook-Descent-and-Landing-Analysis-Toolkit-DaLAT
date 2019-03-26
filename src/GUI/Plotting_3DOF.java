@@ -101,7 +101,6 @@ import org.jfree.chart.plot.Crosshair;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.DefaultPolarItemRenderer;
 import org.jfree.chart.renderer.xy.StackedXYAreaRenderer;
 import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -146,8 +145,9 @@ public class Plotting_3DOF implements  ActionListener {
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String ICON_File   	 		= "/lib/BB_icon.png";
+    public static String ERROR_File 			= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
-    public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
+    public static String CONTROLLER_File		= "CTRL/ctrl_main.inp";
 	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
 	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
@@ -244,14 +244,13 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Flowzone [-]",
     										  "Dynamic Pressure [Pa]",
     										  "Parachute Cd [-]",
-    										  "Thrust Force [N]", 
     										  "Cdm [-]",
     										  "SC Mass [kg]",
     										  "Normalized Deceleartion [-]",
     										  "Total Engergy [J]",
     										  "Thrust CMD [%]",
     										  "Tank filling level [%]",
-    										  "Thrust [N]", 
+    										  "Thrust Force [N]", 
     										  "Thrust to mass [N/kg]",
     										  "Velocity horizontal [m/s]",
     										  "Velocity vertical [m/s]",
@@ -270,7 +269,7 @@ public class Plotting_3DOF implements  ActionListener {
     										  "FPA cel [m/s",
     										  "AZ  cel [m/s]",
     										  "FPA_dot [deg/s]",
-    										  "Thrust Elevation_dot [deg/s]",
+    										  "Thrust Elevation Angel Change [deg/s]",
     										  "Engine Loss Indicator [true/false]"
     										  };
     
@@ -295,14 +294,14 @@ public class Plotting_3DOF implements  ActionListener {
 			 "Sequence END type", 
 			 "Sequence END value", 
 			 "Sequence type", 
-			 "Sequence TL-FC",		// Thrust Level Flight Controller
-			 "Tl-FC target velocity [m/s]", 
-			 "Tl-FC target altitude [m]", 
-			 "Tl-FC target curve",
+			 "Sequence TL FC",		// Thrust Level Flight Controller
+			 "TL FC target velocity [m/s]", 
+			 "TL FC target altitude [m]", 
+			 "TL FC target curve",
 			 "Sequence TVC FC", 		// Thrust Vector Control Flight Controller 
-			 "TVC-FC target time [s]", 
-			 "TVC-FC target FPA [deg]", 
-			 "TVC-FC target curve"};
+			 "TVC FC Input Value 1 [-]", 
+			 "TVC FC Input Value 2 [-]", 
+			 "TVC FC target curve"};
 	public static String[] COLUMS_CONTROLLER = {"ID",
 												"Controller Type",
 												"P gain",
@@ -310,6 +309,15 @@ public class Plotting_3DOF implements  ActionListener {
 												"D gain",
 												"MIN cmd",
 												"MAX cmd"};
+	public static String[] COLUMS_ERROR = 		{"ID",
+												"Error Type",
+												"Trigger Value []",
+												"Error Value"};
+	public static String[] ErrorType = { "Thrust",
+										 "TVC Lock", 
+										 "Event Delay"
+			
+	};
 public static String[] COLUMS_EventHandler = {"Event Type",
 							 "Event Value"
 };
@@ -319,12 +327,12 @@ public static String[] SequenceENDType = {"Time [s]",
 										  "Velocity [m/s]",
 										  "FPA ref. Horizon [deg]"
 };
-public static String[] SequenceType = {"Coasting (No Thrust)",
-									   "Continous (unregulated) Thrust",
+public static String[] SequenceType = {"Coasting (No Thrust/ FC OFF)",
+									   "Continous Thrust (FC OFF)",
 									   "Controlled Thrust (FC ON)",
 									   "Constrained Thrust (FC OFF)",
-									   "Simple Ref. Angle Control (FC ON)",
-									   "Full TVC Reference Control (FC ON)"
+									   "Reference Angle Control (FC ON)",
+									   "Full TVC Reference Trajectory Control (FC ON)"
 };
 public static String[] SequenceFC    = { "",
 										 "Flight Controller 1"};
@@ -373,15 +381,15 @@ public static String[] SequenceTVCFC    = { "",
     public static JPanel P1_SidePanel; 
     public static JSplitPane SplitPane_Page1_Charts_horizontal; 
     public static JSplitPane SplitPane_Page1_Charts_vertical; 
-    static JFreeChart Chart_MercatorMap;
-    static JFreeChart Chart_GroundClearance;
-	static JFreeChart CHART_P1_DashBoardOverviewChart_Altitude_Velocity;
-	static JFreeChart CHART_P1_DashBoardOverviewChart_Time_FPA;
-	static JFreeChart chart_PolarMap;	  
-	static JFreeChart Chart_MercatorMap4;	
-	static ChartPanel ChartPanel_DashBoardOverviewChart_Altitude_Velocity; 
-	static ChartPanel ChartPanel_DashBoardOverviewChart_Time_FPA; 
-	static ChartPanel ChartPanel_DashBoardFlexibleChart;
+    public static JFreeChart Chart_MercatorMap;
+    public static JFreeChart Chart_GroundClearance;
+	public static JFreeChart CHART_P1_DashBoardOverviewChart_Altitude_Velocity;
+	public static JFreeChart CHART_P1_DashBoardOverviewChart_Time_FPA;
+	public static JFreeChart chart_PolarMap;	  
+	public static JFreeChart Chart_MercatorMap4;	
+	public static ChartPanel ChartPanel_DashBoardOverviewChart_Altitude_Velocity; 
+	public static ChartPanel ChartPanel_DashBoardOverviewChart_Time_FPA; 
+	public static ChartPanel ChartPanel_DashBoardFlexibleChart;
     private static Crosshair xCH_DashboardFlexibleChart;
     private static Crosshair yCH_DashboardFlexibleChart;    
     static public JFreeChart chartA3_1,chartA3_2,chartA3_3,chartA3_4; 
@@ -412,13 +420,17 @@ public static String[] SequenceTVCFC    = { "",
 	 static DefaultTableModel MODEL_CONTROLLER;
 	 static JTable TABLE_CONTROLLER;
 	 
+	 static int c_ERROR = 5;
+	 static Object[] ROW_ERROR = new Object[c_ERROR];
+	 static DefaultTableModel MODEL_ERROR;
+	 static JTable TABLE_ERROR; 
+	 
 	 static int c_EventHanlder = 2;
 	 static Object[] ROW_EventHandler = new Object[c_EventHanlder];
 	 static DefaultTableModel MODEL_EventHandler;
 	 static JTable TABLE_EventHandler;
 		@SuppressWarnings("rawtypes")
 		public static JComboBox EventHandlerTypeCombobox = new JComboBox();
-		
 		@SuppressWarnings("rawtypes")
 		public static JComboBox SequenceENDTypeCombobox = new JComboBox();
 		@SuppressWarnings("rawtypes")
@@ -431,6 +443,8 @@ public static String[] SequenceTVCFC    = { "",
 		public static JComboBox SequenceTVCFCCombobox = new JComboBox();
 		@SuppressWarnings("rawtypes")
 		public static JComboBox TVCFCTargetCurveCombobox = new JComboBox();
+		@SuppressWarnings("rawtypes")
+		public static JComboBox ErrorTypeCombobox= new JComboBox(); 
 	    @SuppressWarnings("rawtypes")
 		public static JComboBox Target_chooser, Integrator_chooser,TargetCurve_chooser,AscentDescent_SwitchChooser;
     Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
@@ -461,6 +475,7 @@ public static String[] SequenceTVCFC    = { "",
     	 SEQU_File = dir + SEQU_File; 
     	 ICON_File = dir + ICON_File; 
     	 SEQUENCE_File = dir +SEQUENCE_File; 
+    	 ERROR_File = dir + ERROR_File; 
     	 Elevation_File_RES4 = dir + Elevation_File_RES4 ;
     	 Elevation_File_RES16 = dir + Elevation_File_RES16 ;
     	 Elevation_File_RES64 = dir + Elevation_File_RES64 ;
@@ -708,11 +723,8 @@ public static String[] SequenceTVCFC    = { "",
         PageX04_Dashboard.add(P1_Plotpanel,BorderLayout.LINE_END);
         
         SplitPane_Page1_Charts_horizontal = new JSplitPane();
-       	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
         SplitPane_Page1_Charts_horizontal.setOrientation(JSplitPane.VERTICAL_SPLIT );
         SplitPane_Page1_Charts_horizontal.setDividerLocation(0.5);
-       //	SplitPane_Page1_Charts.setForeground(Color.black);
-       //	SplitPane_Page1_Charts.setBackground(Color.gray);
         SplitPane_Page1_Charts_horizontal.setDividerSize(3);
         SplitPane_Page1_Charts_horizontal.setUI(new BasicSplitPaneUI() {
                @SuppressWarnings("serial")
@@ -786,7 +798,6 @@ public static String[] SequenceTVCFC    = { "",
                    @SuppressWarnings("unused")
    				public void setBorder( Border b) {
                    }
-
                    @Override
                        public void paint(Graphics g) {
                        g.setColor(Color.gray);
@@ -812,49 +823,65 @@ public static String[] SequenceTVCFC    = { "",
         int uy_p41 = 10 ; 
         JLabel LABEL_LONG = new JLabel("Longitude [deg]");
         LABEL_LONG.setLocation(65, uy_p41 + 0 );
-        LABEL_LONG.setSize(250, 20);
+        LABEL_LONG.setSize(150, 20);
+        LABEL_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_LONG.setBorder(Moon_border);
         LABEL_LONG.setBackground(Color.white);
         LABEL_LONG.setForeground(Color.black);
         P1_SidePanel.add(LABEL_LONG);
         JLabel LABEL_LAT = new JLabel("Latitude [deg]");
         LABEL_LAT.setLocation(65, uy_p41 + 25 );
-        LABEL_LAT.setSize(250, 20);
+        LABEL_LAT.setSize(150, 20);
+        LABEL_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_LAT.setBorder(Moon_border);
         LABEL_LAT.setBackground(Color.white);
         LABEL_LAT.setForeground(Color.black);
         P1_SidePanel.add(LABEL_LAT);
         JLabel LABEL_ALT = new JLabel("Altitude [m]");
         LABEL_ALT.setLocation(65, uy_p41 + 50 );
-        LABEL_ALT.setSize(250, 20);
+        LABEL_ALT.setSize(150, 20);
+        LABEL_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_ALT.setBorder(Moon_border);
         LABEL_ALT.setBackground(Color.white);
         LABEL_ALT.setForeground(Color.black);
         P1_SidePanel.add(LABEL_ALT);
         JLabel LABEL_VEL = new JLabel("Velocity [m/s]");
         LABEL_VEL.setLocation(65, uy_p41 + 75 );
-        LABEL_VEL.setSize(250, 20);
+        LABEL_VEL.setSize(150, 20);
+        LABEL_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_VEL.setBorder(Moon_border);
         LABEL_VEL.setBackground(Color.white);
         LABEL_VEL.setForeground(Color.black);
         P1_SidePanel.add(LABEL_VEL);
-        JLabel LABEL_FPA = new JLabel("Flight Path angle [deg]");
+        JLabel LABEL_FPA = new JLabel("Flight Path Angle [deg]");
         LABEL_FPA.setLocation(65, uy_p41 + 100 );
-        LABEL_FPA.setSize(250, 20);
+        LABEL_FPA.setSize(150, 20);
+        LABEL_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_FPA.setBorder(Moon_border);
         LABEL_FPA.setBackground(Color.white);
         LABEL_FPA.setForeground(Color.black);
         P1_SidePanel.add(LABEL_FPA);
         JLabel LABEL_AZI = new JLabel("Azimuth [deg]");
         LABEL_AZI.setLocation(65, uy_p41 + 125 );
-        LABEL_AZI.setSize(250, 20);
+        LABEL_AZI.setSize(150, 20);
+        LABEL_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_AZI.setBorder(Moon_border);
         LABEL_AZI.setBackground(Color.white);
         LABEL_AZI.setForeground(Color.black);
         P1_SidePanel.add(LABEL_AZI);
-        JLabel LABEL_M0 = new JLabel("Initial mass [kg]");
+        JLabel LABEL_M0 = new JLabel("Initial Mass [kg]");
         LABEL_M0.setLocation(65, uy_p41 + 150 );
-        LABEL_M0.setSize(250, 20);
+        LABEL_M0.setSize(150, 20);
+        LABEL_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_M0.setBorder(Moon_border);
         LABEL_M0.setBackground(Color.white);
         LABEL_M0.setForeground(Color.black);
         P1_SidePanel.add(LABEL_M0);
-        JLabel LABEL_INTEGTIME = new JLabel("Integration time [s]");
+        JLabel LABEL_INTEGTIME = new JLabel("Integration Time [s]");
         LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 );
-        LABEL_INTEGTIME.setSize(250, 20);
+        LABEL_INTEGTIME.setSize(150, 20);
+        LABEL_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_INTEGTIME.setBorder(Moon_border);
         LABEL_INTEGTIME.setBackground(Color.white);
         LABEL_INTEGTIME.setForeground(Color.black);
         P1_SidePanel.add(LABEL_INTEGTIME);
@@ -862,33 +889,49 @@ public static String[] SequenceTVCFC    = { "",
          INDICATOR_LONG = new JLabel();
         INDICATOR_LONG.setLocation(2, uy_p41 + 25 * 0 );
         INDICATOR_LONG.setSize(60, 20);
+        INDICATOR_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_LONG.setBorder(Moon_border);
         P1_SidePanel.add(INDICATOR_LONG);
         INDICATOR_LAT = new JLabel();
         INDICATOR_LAT.setLocation(2, uy_p41 + 25 * 1 );
         INDICATOR_LAT.setSize(60, 20);
+        INDICATOR_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_LAT.setBorder(Moon_border);
         P1_SidePanel.add(INDICATOR_LAT);
          INDICATOR_ALT = new JLabel();
         INDICATOR_ALT.setLocation(2, uy_p41 + 25 * 2 );
         INDICATOR_ALT.setSize(60, 20);
+        INDICATOR_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_ALT.setBorder(Moon_border);
         P1_SidePanel.add(INDICATOR_ALT);
         INDICATOR_VEL = new JLabel();
         INDICATOR_VEL.setLocation(2, uy_p41 + 25 * 3 );
+        INDICATOR_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_VEL.setBorder(Moon_border);
         INDICATOR_VEL.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_VEL);
         INDICATOR_FPA = new JLabel();
         INDICATOR_FPA.setLocation(2, uy_p41 + 25 * 4 );
+        INDICATOR_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_FPA.setBorder(Moon_border);
         INDICATOR_FPA.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_FPA);
         INDICATOR_AZI = new JLabel();
         INDICATOR_AZI.setLocation(2, uy_p41 + 25 * 5 );
+        INDICATOR_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_AZI.setBorder(Moon_border);
         INDICATOR_AZI.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_AZI);        
         INDICATOR_M0 = new JLabel();
         INDICATOR_M0.setLocation(2, uy_p41 + 25 * 6 );
+        INDICATOR_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_M0.setBorder(Moon_border);
         INDICATOR_M0.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_M0);
         INDICATOR_INTEGTIME = new JLabel();
         INDICATOR_INTEGTIME.setLocation(2, uy_p41 + 25 * 7 );
+        INDICATOR_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        INDICATOR_INTEGTIME.setBorder(Moon_border);
         INDICATOR_INTEGTIME.setSize(60, 20);
        P1_SidePanel.add(INDICATOR_INTEGTIME);
        
@@ -1001,6 +1044,8 @@ public static String[] SequenceTVCFC    = { "",
 //-----------------------------------------------------------------------------------------------
 //								Console Window        
 //-----------------------------------------------------------------------------------------------
+        int console_size_x = 390;
+        int console_size_y = 340; 
         JLabel LABEL_CONSOLE = new JLabel("Console:");
         LABEL_CONSOLE.setLocation(5, uy_p41 + 25 *17 );
         LABEL_CONSOLE.setSize(200, 20);
@@ -1009,7 +1054,7 @@ public static String[] SequenceTVCFC    = { "",
         P1_SidePanel.add(LABEL_CONSOLE);
         
         JPanel JP_EnginModel = new JPanel();
-        JP_EnginModel.setSize(390,200);
+        JP_EnginModel.setSize(console_size_x,console_size_y);
         JP_EnginModel.setLocation(5, uy_p41 + 25 * 18);
         JP_EnginModel.setBackground(Color.white);
         JP_EnginModel.setForeground(Color.white);
@@ -1026,7 +1071,7 @@ public static String[] SequenceTVCFC    = { "",
         JSP_EnginModel.getHorizontalScrollBar().setBackground(Color.white);
         JSP_EnginModel.getVerticalScrollBar().setBackground(Color.white);
         JSP_EnginModel.setOpaque(true);
-        JSP_EnginModel.setPreferredSize(new Dimension(395-10,200-10));
+        JSP_EnginModel.setPreferredSize(new Dimension(console_size_x-5,console_size_y-10));
         JSP_EnginModel.setLocation(5, 5);
         JP_EnginModel.add(JSP_EnginModel);
         System.setOut(new PrintStream(taOutputStream));       
@@ -1850,13 +1895,7 @@ public static String[] SequenceTVCFC    = { "",
    // P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
     P2_SequenceMAIN.setBackground(bc_c);
     P2_SequenceMAIN.setForeground(l_c);
-/*
-    JScrollPane scrollPane_Controller = new JScrollPane(P2_ControllerPane);
-    //scrollPane_Controller.setSize(405, exty_main);
-    scrollPane_Controller.getVerticalScrollBar().setUnitIncrement(16);
-    PANEL_RIGHT_InputSection.add(scrollPane_Controller, BorderLayout.CENTER);
-    */
-    
+    PANEL_RIGHT_InputSection.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
     //-----------------------------------------------------------------------------------------------------------------------------
     //                  Sequence table 
     //-----------------------------------------------------------------------------------------------------------------------------
@@ -2157,29 +2196,9 @@ public static String[] SequenceTVCFC    = { "",
     	  } } );
     SequenceControlPanel.add(BUTTON_ExportFC);
     
-    JButton BUTTON_ImportSequence = new JButton("Import Sequence");
-    BUTTON_ImportSequence.setLocation(625, 5);
-    BUTTON_ImportSequence.setSize(145,25);
-    BUTTON_ImportSequence.setEnabled(false);
-    BUTTON_ImportSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  
-    	  } } );
-    SequenceControlPanel.add(BUTTON_ImportSequence);
-    
-    JButton BUTTON_ExportSequence = new JButton("Export Sequence");
-    BUTTON_ExportSequence.setLocation(625, 32);
-    BUTTON_ExportSequence.setSize(145,25);
-    BUTTON_ExportSequence.setEnabled(false);
-    BUTTON_ExportSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  
-    	  } } );
-    SequenceControlPanel.add(BUTTON_ExportSequence);
-    
     
     JButton BUTTON_AddController = new JButton("Add Controller");
-    BUTTON_AddController.setLocation(795, 5);
+    BUTTON_AddController.setLocation(655, 5);
     BUTTON_AddController.setSize(145,25);
     BUTTON_AddController.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) { 
@@ -2187,22 +2206,106 @@ public static String[] SequenceTVCFC    = { "",
     	  } } );
     SequenceControlPanel.add(BUTTON_AddController);
     JButton BUTTON_DeleteController = new JButton("Delete Controller");
-    BUTTON_DeleteController.setLocation(795, 32);
+    BUTTON_DeleteController.setLocation(655, 32);
     BUTTON_DeleteController.setSize(145,25);
     BUTTON_DeleteController.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) { 
     		  DeleteController();
     	  } } );
     SequenceControlPanel.add(BUTTON_DeleteController);
+    
+    JButton BUTTON_AddError = new JButton("Add Error");
+    BUTTON_AddError.setLocation(805, 5);
+    BUTTON_AddError.setSize(145,25);
+    BUTTON_AddError.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  AddError();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_AddError);
+    JButton BUTTON_DeleteError = new JButton("Delete Error");
+    BUTTON_DeleteError.setLocation(805, 32);
+    BUTTON_DeleteError.setSize(145,25);
+    BUTTON_DeleteError.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) { 
+    		  DeleteError();
+    	  } } );
+    SequenceControlPanel.add(BUTTON_DeleteError);
     //-----------------------------------------------------------------------------------------------------------------------------
     //                  Sequence table 
     //-----------------------------------------------------------------------------------------------------------------------------
-    JScrollPane scrollPane_Sequence = new JScrollPane(P2_SequenceMAIN,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    scrollPane_Sequence.setSize(305, 400);
-    scrollPane_Sequence.getVerticalScrollBar().setUnitIncrement(16);
-    PANEL_RIGHT_InputSection.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
+    JPanel Pane_Sequence = new JPanel();
+    Pane_Sequence.setLocation(0, 0);
+    Pane_Sequence.setPreferredSize(new Dimension(900, 200));
+    Pane_Sequence.setLayout(new BorderLayout());
+    Pane_Sequence.setBackground(bc_c);
+    Pane_Sequence.setForeground(l_c);
+    PANEL_RIGHT_InputSection.add(Pane_Sequence, BorderLayout.CENTER);
 
+    JSplitPane SplitPane_Page2_Charts_HorizontalSplit = new JSplitPane();
+    SplitPane_Page2_Charts_HorizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
+    SplitPane_Page2_Charts_HorizontalSplit.setDividerLocation(0.4);
+    SplitPane_Page2_Charts_HorizontalSplit.setDividerSize(3);
+    SplitPane_Page2_Charts_HorizontalSplit.setUI(new BasicSplitPaneUI() {
+           @SuppressWarnings("serial")
+			public BasicSplitPaneDivider createDefaultDivider() {
+           return new BasicSplitPaneDivider(this) {
+               @SuppressWarnings("unused")
+				public void setBorder( Border b) {
+               }
 
+               @Override
+                   public void paint(Graphics g) {
+                   g.setColor(Color.gray);
+                   g.fillRect(0, 0, getSize().width, getSize().height);
+                       super.paint(g);
+                   }
+           };
+           }
+       });
+
+    SplitPane_Page2_Charts_HorizontalSplit.addComponentListener(new ComponentListener(){
+
+			@Override
+			public void componentHidden(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+
+			@Override
+			public void componentMoved(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				//System.out.println("Line moved");	
+				
+			}
+
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void componentShown(ComponentEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+   
+   	});
+    SplitPane_Page2_Charts_HorizontalSplit.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, 
+		    new PropertyChangeListener() {
+		        @Override
+		        public void propertyChange(PropertyChangeEvent pce) {
+
+		        }
+		});
+    SplitPane_Page2_Charts_HorizontalSplit.setDividerLocation(700);
+    Pane_Sequence.add(SplitPane_Page2_Charts_HorizontalSplit, BorderLayout.CENTER);
+    
+    
+    
+    
+    
+    
 	    TABLE_CONTROLLER = new JTable(){
 	   	 
 	    	/**
@@ -2295,7 +2398,98 @@ public static String[] SequenceTVCFC    = { "",
 		    //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
 		    //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
 		   // P2_ControllerPane.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
-		    PANEL_RIGHT_InputSection.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
+		    //PANEL_RIGHT_InputSection.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
+		    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_CONTROLLER_ScrollPane, JSplitPane.LEFT);
+		    
+		    //---------------------------------------------------------------------------------------------
+		    TABLE_ERROR = new JTable(){
+			   	 
+		    	/**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+		    	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
+		            Component comp = super.prepareRenderer(renderer, row, col);
+		           // String val_TLFC = (String) getModel().getValueAt(row, 1);
+
+
+		           // comp.setFont(table_font);
+		            
+		            return comp;
+		        }
+		    };
+		   // TABLE_SEQUENCE.setFont(table_font);
+		    
+			Action action5 = new AbstractAction()
+		    {
+		        /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				public void actionPerformed(ActionEvent e)
+		        {WriteErrorINP();	}
+		    };
+		    @SuppressWarnings("unused")
+			TableCellListener tcl5 = new TableCellListener(TABLE_ERROR, action5);
+		    MODEL_ERROR = new DefaultTableModel(){
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+		        public boolean isCellEditable(int row, int column) {
+		           //all cells false
+					if (column == 0 ){
+						return false;
+					} else {
+						return true; 
+					}
+		        }
+		    }; 
+		    MODEL_ERROR.setColumnIdentifiers(COLUMS_ERROR);
+		    TABLE_ERROR.setModel(MODEL_ERROR);
+		    TABLE_ERROR.setBackground(Color.white);
+		    TABLE_ERROR.setBackground(Color.white);
+		    TABLE_ERROR.setForeground(Color.black);
+		    TABLE_ERROR.getTableHeader().setReorderingAllowed(false);
+		    TABLE_ERROR.setRowHeight(45);
+
+
+			    TableColumn ErrorID_colum   			 = TABLE_ERROR.getColumnModel().getColumn(0);
+			    TableColumn ErrorType_column 	    	 = TABLE_ERROR.getColumnModel().getColumn(1);
+			    TableColumn ErrorTrigger_column  		 = TABLE_ERROR.getColumnModel().getColumn(2);
+			    TableColumn ErrorValue_column  			 = TABLE_ERROR.getColumnModel().getColumn(3);
+			    
+			    TABLE_ERROR.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+			    ErrorID_colum.setPreferredWidth(50);
+			    ErrorType_column.setPreferredWidth(100);
+			    ErrorTrigger_column.setPreferredWidth(100);
+			    ErrorValue_column.setPreferredWidth(100);
+
+
+			    
+			    ((JTable) TABLE_ERROR).setFillsViewportHeight(true);
+		    
+			    TABLE_ERROR.getTableHeader().setBackground(Color.white);
+			    TABLE_ERROR.getTableHeader().setForeground(Color.black);
+			    
+			    ErrorTypeCombobox.setBackground(Color.white);
+			    try {
+			    for (int i=0;i<ErrorType.length;i++) {
+			    	ErrorTypeCombobox.addItem(ErrorType[i]);
+			    }
+			    } catch(NullPointerException eNPE) {
+			    	System.out.println(eNPE);
+			    }
+			    ErrorType_column.setCellEditor(new DefaultCellEditor(ErrorTypeCombobox));
+			    
+			    JScrollPane TABLE_ERROR_ScrollPane = new JScrollPane(TABLE_ERROR,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			    TABLE_ERROR_ScrollPane.getVerticalScrollBar().setBackground(Color.white);
+			    TABLE_ERROR_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
+			    TABLE_ERROR_ScrollPane.setBackground(Color.white);
+			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------
@@ -2369,6 +2563,7 @@ public static String[] SequenceTVCFC    = { "",
     		UPDATE_Page01();
     		READ_SEQUENCE();
     		READ_CONTROLLER();
+    		READ_ERROR();
     	      Rotating2Inertial();
     	      UpdateFC_LIST();
 
@@ -2525,6 +2720,51 @@ public static String[] SequenceTVCFC    = { "",
         
         WriteControllerINP();
         UpdateFC_LIST();
+    }
+    public static void AddError() {
+    	int NumberOfSequences = MODEL_ERROR.getRowCount();
+    	ROW_ERROR[0]  = ""+NumberOfSequences;
+    	ROW_ERROR[1]  = ""+ErrorType[0];
+    	ROW_ERROR[2]  = "0";
+    	ROW_ERROR[3]  = "0";
+
+    	MODEL_ERROR.addRow(ROW_ERROR);
+    	
+    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);}    	
+    	WriteErrorINP();
+    }
+    
+    public static void DeleteError() {
+    	int j = TABLE_ERROR.getSelectedRow();
+    	if (j >= 0){MODEL_ERROR.removeRow(j);}
+    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);}
+    	
+    	WriteErrorINP();
+    }
+    
+    public static void WriteErrorINP() {
+        try {
+            File fac = new File(ERROR_File);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            FileWriter wr = new FileWriter(fac);
+            for (int i=0; i<MODEL_ERROR.getRowCount(); i++)
+            {
+            	String error_type 		= (String) MODEL_ERROR.getValueAt(i, 1);
+            	for(int k=0;k<ErrorType.length;k++) { if(error_type.equals(ErrorType[k])){error_type=""+k;} }
+            	String error_trigger 	= (String) MODEL_ERROR.getValueAt(i, 2);
+            	String error_value 		= (String) MODEL_ERROR.getValueAt(i, 3); 
+            	wr.write(error_type+" "+error_trigger+" "+error_value+System.getProperty( "line.separator" ));
+            }
+            wr.close(); 
+         } catch (IOException eIO){
+         	System.out.println(eIO);
+         }
     }
     public static void WriteSequenceINP() {
             try {
@@ -2749,6 +2989,26 @@ public static String[] SequenceTVCFC    = { "",
 	    	ROW_CONTROLLER[6] = ""+Double.parseDouble(tokens[6]);
 				    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
 	    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);} // Update numbering
+       }
+       br.close();
+       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+
+   }
+    
+    public static void READ_ERROR() throws IOException{	
+		BufferedReader br = new BufferedReader(new FileReader(ERROR_File));
+       String strLine;
+       try {
+       while ((strLine = br.readLine()) != null )   {
+	       	String[] tokens = strLine.split(" ");
+	    	ROW_ERROR[0] = "0";
+	    	try {
+	    	ROW_ERROR[1] = ""+ ErrorType[Integer.parseInt(tokens[0])];
+	    	} catch(java.lang.ArrayIndexOutOfBoundsException eA) { System.out.println("Read Error file failed: Array Index out of Bounds.");}
+	    	ROW_ERROR[2] = ""+Double.parseDouble(tokens[1]);
+	    	ROW_ERROR[3] = ""+Double.parseDouble(tokens[2]);
+				    	MODEL_ERROR.addRow(ROW_ERROR);
+	    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);} // Update numbering
        }
        br.close();
        } catch(NullPointerException eNPE) { System.out.println(eNPE);}
@@ -3321,9 +3581,9 @@ public static void EXPORT_Case() {
 		           double t = Double.parseDouble(tokens[0]);
 		           double fpa = Double.parseDouble(tokens[7])*rad;
 		           
-		           double t_sequence = Double.parseDouble(tokens[42]);
+		           double t_sequence = Double.parseDouble(tokens[41]);
 		           
-		           int active_sequence = Integer.parseInt(tokens[39]);
+		           int active_sequence = Integer.parseInt(tokens[38]);
 		           double xx=0;
 		           double fpa_cmd = 0;
 		           if(AscentDescent_SwitchChooser.getSelectedIndex()==0) {
@@ -3331,22 +3591,22 @@ public static void EXPORT_Case() {
 		           } else {
 		           INDICATOR_VTOUCHDOWN.setText("-");   
 		           }
-		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[38])));
-		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[29])))); 
-		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[33])));
+		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[37])));
+		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[28])))); 
+		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[32])));
 		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrl_curve=0; double ctrl_fpa_init=0;int ctrl_TVC_curve=0;
 		           double ctrl_t_end=0; double ctrl_fpa_end =0;
 		           try {
-		           String[] sequ_tokens  = SEQUENCE_DATA.get(active_sequence).split(" ");
-		            active_sequ_type  	 = Integer.parseInt(sequ_tokens[1]);
-		            ctrl_vinit 	 		 = Double.parseDouble(sequ_tokens[3]);
-		            ctrl_hinit 	 		 = Double.parseDouble(sequ_tokens[4]);
+		           String[] sequ_tokens  	 = SEQUENCE_DATA.get(active_sequence).split(" ");
+		            active_sequ_type  	 	 = Integer.parseInt(sequ_tokens[1]);
+		            ctrl_vinit 	 			 = Double.parseDouble(sequ_tokens[3]);
+		            ctrl_hinit 	 			 = Double.parseDouble(sequ_tokens[4]);
 		            ctrl_vel 	    	     = Double.parseDouble(sequ_tokens[5]);
-		            ctrl_alt 		 	 = Double.parseDouble(sequ_tokens[6]);
-		            ctrl_curve            = Integer.parseInt(sequ_tokens[7]);
-		            ctrl_TVC_curve		  = Integer.parseInt(sequ_tokens[8]);
-		            ctrl_fpa_init		 = Double.parseDouble(sequ_tokens[9]);
-		            ctrl_t_end			 = Double.parseDouble(sequ_tokens[10]);
+		            ctrl_alt 		 		 = Double.parseDouble(sequ_tokens[6]);
+		            ctrl_curve           	 = Integer.parseInt(sequ_tokens[7]);
+		            ctrl_TVC_curve		 	 = Integer.parseInt(sequ_tokens[8]);
+		            ctrl_fpa_init			 = Double.parseDouble(sequ_tokens[9]);
+		            ctrl_t_end				 = Double.parseDouble(sequ_tokens[10]);
 		            ctrl_fpa_end			 = Double.parseDouble(sequ_tokens[11]);
 		            
 		           } catch (java.lang.IndexOutOfBoundsException eIOBE){System.out.println(eIOBE);}
@@ -3392,10 +3652,10 @@ public static void EXPORT_Case() {
 	       in.close();
 	       br.close();
 		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries11); 
-		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries10);
+		   // CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries10);
 		    
 		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
-		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_cmd);
+		   // CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_cmd);
 		    
 	              } catch (NullPointerException  eNPE) { System.out.println(eNPE);System.out.println("Dashboard chart, Nullpointerexception");
 					}catch(IllegalArgumentException eIAE) {System.out.println("Dashboard chart, illegal argument error");}

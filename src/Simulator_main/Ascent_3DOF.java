@@ -159,7 +159,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	        public static boolean const_isFirst =true; 
 	        
 	        public static double t_engine_loss = 0; 			// [s]
-	        public static double thrust_loss_perc = 0.17;		// Thrust loss due to engine loss [%]
+	        public static double thrust_loss_perc = 0;		// Thrust loss due to engine loss [%]
 	        public static boolean engine_loss_switch=true; 
 	        
 	        public static boolean engine_loss_indicator=false;
@@ -521,7 +521,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    Velocity_Rotating2Inertial(x);
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double t_engine_off){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double[] engine_off){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -560,7 +560,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 groundtrack=0;
     	 ref_ELEVATION =  reference_elevation;
     	 
-    	 t_engine_loss = t_engine_off;
+    	 if(engine_off[0]==0) {
+    		 engine_loss_switch=true;
+    	 } else {
+    		 engine_loss_switch=false; 
+    	 }
+    	 t_engine_loss = engine_off[1];
+    	 thrust_loss_perc = engine_off[2];
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -676,7 +682,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  flowzone+ " " +
 	                    		  qinf+ " " +
 	                    		  CdC+ " " +
-	                    		  Thrust+ " " +
 	                    		  Cdm+ " " +
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
