@@ -9,7 +9,7 @@ ResultFolder = './burst_container/'
 
 start_cutoff_time=0 
 # start engine cut-off time [s]
-end_cutoff_time = 450
+end_cutoff_time = 5
 # end engine cut-off
 
 def Clear_ResultFolder():
@@ -24,7 +24,7 @@ def Clear_ResultFolder():
 def Adjust_CutOff_Time(timestamp):
 	os.remove("./INP/ErrorFile.inp")
 	f = open("./INP/ErrorFile.inp","w+")
-	f.write("%d" % timestamp)
+	f.write("0 %d 0.17" % timestamp)
 	f.close()
 
 def Run_Simulation():

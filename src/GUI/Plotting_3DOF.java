@@ -409,7 +409,7 @@ public static String[] SequenceTVCFC    = { "",
     public static JTextField INPUT_TIME; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
-    public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP;
+    public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator;
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
 	 static DefaultTableModel MODEL_SEQUENCE;
@@ -821,7 +821,9 @@ public static String[] SequenceTVCFC    = { "",
         PageX04_Dashboard.add(scrollPane1_P1, BorderLayout.CENTER);
         
         int uy_p41 = 10 ; 
-        JLabel LABEL_LONG = new JLabel("Longitude [deg]");
+        int y_ext_vel = 10; 
+      
+        JLabel LABEL_LONG = new JLabel(" Longitude [deg]");
         LABEL_LONG.setLocation(65, uy_p41 + 0 );
         LABEL_LONG.setSize(150, 20);
         LABEL_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
@@ -829,7 +831,7 @@ public static String[] SequenceTVCFC    = { "",
         LABEL_LONG.setBackground(Color.white);
         LABEL_LONG.setForeground(Color.black);
         P1_SidePanel.add(LABEL_LONG);
-        JLabel LABEL_LAT = new JLabel("Latitude [deg]");
+        JLabel LABEL_LAT = new JLabel(" Latitude [deg]");
         LABEL_LAT.setLocation(65, uy_p41 + 25 );
         LABEL_LAT.setSize(150, 20);
         LABEL_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
@@ -837,7 +839,7 @@ public static String[] SequenceTVCFC    = { "",
         LABEL_LAT.setBackground(Color.white);
         LABEL_LAT.setForeground(Color.black);
         P1_SidePanel.add(LABEL_LAT);
-        JLabel LABEL_ALT = new JLabel("Altitude [m]");
+        JLabel LABEL_ALT = new JLabel(" Altitude [m]");
         LABEL_ALT.setLocation(65, uy_p41 + 50 );
         LABEL_ALT.setSize(150, 20);
         LABEL_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
@@ -845,46 +847,57 @@ public static String[] SequenceTVCFC    = { "",
         LABEL_ALT.setBackground(Color.white);
         LABEL_ALT.setForeground(Color.black);
         P1_SidePanel.add(LABEL_ALT);
-        JLabel LABEL_VEL = new JLabel("Velocity [m/s]");
-        LABEL_VEL.setLocation(65, uy_p41 + 75 );
+        
+        
+        JLabel LABEL_VEL = new JLabel(" Velocity [m/s]");
+        LABEL_VEL.setLocation(65, uy_p41 + 75 + y_ext_vel);
         LABEL_VEL.setSize(150, 20);
         LABEL_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         LABEL_VEL.setBorder(Moon_border);
         LABEL_VEL.setBackground(Color.white);
         LABEL_VEL.setForeground(Color.black);
         P1_SidePanel.add(LABEL_VEL);
-        JLabel LABEL_FPA = new JLabel("Flight Path Angle [deg]");
-        LABEL_FPA.setLocation(65, uy_p41 + 100 );
+        JLabel LABEL_FPA = new JLabel(" Flight Path Angle [deg]");
+        LABEL_FPA.setLocation(65, uy_p41 + 100 + y_ext_vel);
         LABEL_FPA.setSize(150, 20);
         LABEL_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         LABEL_FPA.setBorder(Moon_border);
         LABEL_FPA.setBackground(Color.white);
         LABEL_FPA.setForeground(Color.black);
         P1_SidePanel.add(LABEL_FPA);
-        JLabel LABEL_AZI = new JLabel("Azimuth [deg]");
-        LABEL_AZI.setLocation(65, uy_p41 + 125 );
+        JLabel LABEL_AZI = new JLabel(" Azimuth [deg]");
+        LABEL_AZI.setLocation(65, uy_p41 + 125 + y_ext_vel);
         LABEL_AZI.setSize(150, 20);
         LABEL_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         LABEL_AZI.setBorder(Moon_border);
         LABEL_AZI.setBackground(Color.white);
         LABEL_AZI.setForeground(Color.black);
         P1_SidePanel.add(LABEL_AZI);
-        JLabel LABEL_M0 = new JLabel("Initial Mass [kg]");
-        LABEL_M0.setLocation(65, uy_p41 + 150 );
+        
+        
+        JLabel LABEL_M0 = new JLabel(" Initial Mass [kg]");
+        LABEL_M0.setLocation(65, uy_p41 + 150 + y_ext_vel*2);
         LABEL_M0.setSize(150, 20);
         LABEL_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         LABEL_M0.setBorder(Moon_border);
         LABEL_M0.setBackground(Color.white);
         LABEL_M0.setForeground(Color.black);
         P1_SidePanel.add(LABEL_M0);
-        JLabel LABEL_INTEGTIME = new JLabel("Integration Time [s]");
-        LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 );
+        JLabel LABEL_INTEGTIME = new JLabel(" Integration Time [s]");
+        LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 + y_ext_vel*2);
         LABEL_INTEGTIME.setSize(150, 20);
         LABEL_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         LABEL_INTEGTIME.setBorder(Moon_border);
         LABEL_INTEGTIME.setBackground(Color.white);
         LABEL_INTEGTIME.setForeground(Color.black);
         P1_SidePanel.add(LABEL_INTEGTIME);
+        
+        Error_Indicator = new JLabel("");
+        Error_Indicator.setLocation(225, uy_p41 + 25 * 9);
+        Error_Indicator.setSize(150, 20);
+        //Error_Indicator.setBackground(Color.white);
+        Error_Indicator.setForeground(Color.black);
+        P1_SidePanel.add(Error_Indicator);
         
          INDICATOR_LONG = new JLabel();
         INDICATOR_LONG.setLocation(2, uy_p41 + 25 * 0 );
@@ -905,31 +918,31 @@ public static String[] SequenceTVCFC    = { "",
         INDICATOR_ALT.setBorder(Moon_border);
         P1_SidePanel.add(INDICATOR_ALT);
         INDICATOR_VEL = new JLabel();
-        INDICATOR_VEL.setLocation(2, uy_p41 + 25 * 3 );
+        INDICATOR_VEL.setLocation(2, uy_p41 + 25 * 3 + y_ext_vel);
         INDICATOR_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_VEL.setBorder(Moon_border);
         INDICATOR_VEL.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_VEL);
         INDICATOR_FPA = new JLabel();
-        INDICATOR_FPA.setLocation(2, uy_p41 + 25 * 4 );
+        INDICATOR_FPA.setLocation(2, uy_p41 + 25 * 4 + y_ext_vel);
         INDICATOR_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_FPA.setBorder(Moon_border);
         INDICATOR_FPA.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_FPA);
         INDICATOR_AZI = new JLabel();
-        INDICATOR_AZI.setLocation(2, uy_p41 + 25 * 5 );
+        INDICATOR_AZI.setLocation(2, uy_p41 + 25 * 5 + y_ext_vel);
         INDICATOR_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_AZI.setBorder(Moon_border);
         INDICATOR_AZI.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_AZI);        
         INDICATOR_M0 = new JLabel();
-        INDICATOR_M0.setLocation(2, uy_p41 + 25 * 6 );
+        INDICATOR_M0.setLocation(2, uy_p41 + 25 * 6 + y_ext_vel*2);
         INDICATOR_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_M0.setBorder(Moon_border);
         INDICATOR_M0.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_M0);
         INDICATOR_INTEGTIME = new JLabel();
-        INDICATOR_INTEGTIME.setLocation(2, uy_p41 + 25 * 7 );
+        INDICATOR_INTEGTIME.setLocation(2, uy_p41 + 25 * 7 + y_ext_vel*2);
         INDICATOR_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_INTEGTIME.setBorder(Moon_border);
         INDICATOR_INTEGTIME.setSize(60, 20);
@@ -2430,7 +2443,10 @@ public static String[] SequenceTVCFC    = { "",
 				private static final long serialVersionUID = 1L;
 
 				public void actionPerformed(ActionEvent e)
-		        {WriteErrorINP();	}
+		       {
+					WriteErrorINP();	
+					Update_ErrorIndicator();
+		       }
 		    };
 		    @SuppressWarnings("unused")
 			TableCellListener tcl5 = new TableCellListener(TABLE_ERROR, action5);
@@ -2564,6 +2580,7 @@ public static String[] SequenceTVCFC    = { "",
     		READ_SEQUENCE();
     		READ_CONTROLLER();
     		READ_ERROR();
+    		Update_ErrorIndicator();
     	      Rotating2Inertial();
     	      UpdateFC_LIST();
 
@@ -2732,6 +2749,7 @@ public static String[] SequenceTVCFC    = { "",
     	
     	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);}    	
     	WriteErrorINP();
+    	Update_ErrorIndicator();
     }
     
     public static void DeleteError() {
@@ -2740,8 +2758,20 @@ public static String[] SequenceTVCFC    = { "",
     	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);}
     	
     	WriteErrorINP();
+    	Update_ErrorIndicator();
     }
     
+    public static void Update_ErrorIndicator() {
+    	if(MODEL_ERROR.getRowCount()>0) {
+    		Error_Indicator.setText("Artificial Error ON");
+    		Error_Indicator.setBackground(Color.red);
+    		Error_Indicator.setForeground(Color.red);
+    	} else {
+    		Error_Indicator.setText("Artificial Error OFF");
+    		Error_Indicator.setBackground(Color.white);
+    		Error_Indicator.setForeground(Color.black);
+    	}
+    }
     public static void WriteErrorINP() {
         try {
             File fac = new File(ERROR_File);
@@ -2762,6 +2792,7 @@ public static String[] SequenceTVCFC    = { "",
             	wr.write(error_type+" "+error_trigger+" "+error_value+System.getProperty( "line.separator" ));
             }
             wr.close(); 
+            Update_ErrorIndicator();
          } catch (IOException eIO){
          	System.out.println(eIO);
          }
