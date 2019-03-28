@@ -2,7 +2,7 @@ clear
 RootFolder='C:\Users\Max Braun\Documents\Max_Braun_2017\05_Tools\LandingSim\BlueBook-DaLAT-3DoF\burst_container\';
 //initialize the list
 BB_ascent = list();
-step=10
+step=25
 tstart = 1
 tend   = 450
 for i=tstart:step:tend
@@ -24,9 +24,9 @@ end
 t=1;
 fpa_BB = 8;
 vel_BB = 7;
-m0_BB = 30;
-thrust_BB= 28;
-ctrl_error_BB = 43; 
+m0_BB = 29;
+thrust_BB= 34;
+ctrl_error_BB = 42; 
 alt_BB = 4;
 //------------------------------------------------------------------------------
 //                                Plot 
@@ -54,7 +54,7 @@ for i=tstart:step:tend
 plot(BB_ascent(i)(:,t),BB_ascent(i)(:,ctrl_error_BB).*180/%pi);
 a=gca()
 end
-a.data_bounds=[0,-10;600,10];
+a.data_bounds=[0,-20;600,10];
 xlabel("Time [s]]");
 ylabel("Controller Error [deg]");
 //------------------------------------------------------------------------------

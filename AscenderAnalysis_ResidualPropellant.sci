@@ -5,18 +5,18 @@ clear
 t=1;
 fpa_BB = 8;
 vel_BB = 7;
-m0_BB = 30;
-res_prop = 34; 
-thrust_BB= 28; 
-deltav_BB=39;
+m0_BB = 29;
+res_prop = 33; 
+thrust_BB= 34; 
+deltav_BB=38;
 alt_BB = 4;
 //------------------------------------------------------------------------------
 RootFolder='C:\Users\Max Braun\Documents\Max_Braun_2017\05_Tools\LandingSim\BlueBook-DaLAT-3DoF\burst_container\';
 //initialize the list
 BB_ascent = list();
-step=10
+step=20
 tstart=1
-tend = 450
+tend = 430
 k=1;
 for i=tstart:step:tend
     file_01 = 'burstres_';

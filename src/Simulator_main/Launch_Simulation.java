@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -116,6 +117,26 @@ public class Launch_Simulation implements ActionListener{
         return SEQUENCE_DATA;
     }
     
+    public static double[][] READ_Inertia() throws FileNotFoundException{
+    	double[][] INERTIA = new double[3][3];
+   	 String dir = System.getProperty("user.dir");
+	   	 INPUT_FILE = dir+"/INP/SC/Inertia.dat";
+		BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
+		String strLine;
+		int j =0;
+		try {
+		while ((strLine = br.readLine()) != null )   {
+			String[] tokens = strLine.split(" ");
+				for(int i=0; i<3;i++) {
+				INERTIA[j][i] = Double.parseDouble(tokens[i]);
+				}
+			j++;
+		}
+		br.close();
+		} catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);}
+    	return INERTIA;
+    }
+    
     public static List<StopCondition> READ_EventHandler(double rm, double refElevation) throws IOException{
          	 List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
 		   	 String dir = System.getProperty("user.dir");
@@ -149,7 +170,7 @@ public class Launch_Simulation implements ActionListener{
 			      while ((strLine = br.readLine()) != null )   {
 			      	String[] tokens = strLine.split(" ");
 			      	if(Integer.parseInt(tokens[0])==0) {
-			       engine_toff[0] = 0;
+			       engine_toff[0]   = 0;
 			   	   engine_toff[1] 	= Double.parseDouble(tokens[1]);
 			   	   engine_toff[2] 	= Double.parseDouble(tokens[2]);
 			      	}
@@ -191,8 +212,13 @@ public class Launch_Simulation implements ActionListener{
 	    	int descent_ascent_switch = (int) x_init[12]; 
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
 	    	if(descent_ascent_switch==0 ) {
-	    	EDL_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 					 [-]
-														target, 				 // Target index 						 	 [-]
+	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    		//												3 Degree of Freedom EDL module
+	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    		System.out.println("EDL 3DOF Module running");
+	    		EDL_3DOF.Launch_Integrator(
+	    												INTEGRATOR, 		     // Integrator Index 					 [-]
+														target, 				 // Target index 						 [-]
 														x_init[0]*deg, 			 // Longitude 							 [rad]
 														x_init[1]*deg, 			 // Latitude 							 [rad]
 														x_init[2]+x_init[11]+rm, // Radius 								 [m]
@@ -200,16 +226,21 @@ public class Launch_Simulation implements ActionListener{
 														x_init[4]*deg, 			 // Flight path angle 					 [rad]
 														x_init[5]*deg, 			 // Local Azimuth 						 [rad]
 														x_init[6], 				 // Initial S/C mass 					 [kg]
-														x_init[7], 			   	 // Maximum integ. time 				 	 [s]
+														x_init[7], 			   	 // Maximum integ. time 				 [s]
 														x_init[10],				 // Write out delta time 				 [s]
 														x_init[11],				 // Reference Elevation  				 [m]
-														SEQUENCE_DATA,			 // Sequence data set	LIST				 [-]
+														SEQUENCE_DATA,			 // Sequence data set	LIST			 [-]
 												  (int) x_init[12],				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
-														STOP_Handler			     // Event Handler 	LIST					 [-]
+														STOP_Handler			     // Event Handler 	LIST			 [-]
 														);
-	    	} else {
-		    	Ascent_3DOF.Launch_Integrator(INTEGRATOR, 				 // Integrator Index 					 [-]
-						target, 				 // Target index 						 	 [-]
+	    	} else if (descent_ascent_switch ==1) {
+	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    		//												3 Degree of Freedom Ascent module
+	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    		System.out.println("Ascent 3DOF Module running");
+		    	Ascent_3DOF.Launch_Integrator(
+		    			INTEGRATOR, 			 // Integrator Index 					 [-]
+						target, 				 // Target index 						 [-]
 						x_init[0]*deg, 			 // Longitude 							 [rad]
 						x_init[1]*deg, 			 // Latitude 							 [rad]
 						x_init[2]+x_init[11]+rm, // Radius 								 [m]
@@ -221,10 +252,40 @@ public class Launch_Simulation implements ActionListener{
 						x_init[10],				 // Write out delta time 				 [s]
 						x_init[11],				 // Reference Elevation  				 [m]
 						SEQUENCE_DATA,			 // Sequence data set	LIST		     [-]
-				                0,				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
 						STOP_Handler	,		 // Event Handler 	LIST			     [-]
 						engine_off
 						);
+	    	} else if (descent_ascent_switch==2) {
+	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    		//												6 Degree of Freedom EDL module
+	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	    		System.out.println("Ascent 6DOF Module running");
+	    		double[][] INERTIA = new double[3][3];
+	    		try {
+	    		INERTIA = READ_Inertia();
+	    		} catch(FileNotFoundException eFNo) {
+	    			System.out.println("ERROR: Inertia input file not found");
+	    		}
+		    	Ascent_6DOF.Launch_Integrator(
+		    		    INTEGRATOR, 			 // Integrator Index 					 [-]
+						target, 				 // Target index 						 [-]
+						x_init[0]*deg, 			 // Longitude 							 [rad]
+						x_init[1]*deg, 			 // Latitude 							 [rad]
+						x_init[2]+x_init[11]+rm, // Radius 								 [m]
+						x_init[3], 				 // Velocity 							 [m/s]
+						x_init[4]*deg, 			 // Flight path angle 					 [rad]
+						x_init[5]*deg, 			 // Local Azimuth 						 [rad]
+						x_init[6], 				 // Initial S/C mass 					 [kg]
+						x_init[7], 			   	 // Maximum integration time 		     [s]
+						x_init[10],				 // Write out delta time 				 [s]
+						x_init[11],				 // Reference Elevation  				 [m]
+						SEQUENCE_DATA,			 // Sequence data set	LIST		     [-]
+						STOP_Handler	,		 // Event Handler 	LIST			     [-]
+						engine_off, 			 // Artifical main engine error timing   [s]
+						INERTIA					 // SC Moment of Inertia 				 [-] 
+						);
+	    	} else {
+	    		System.out.println("Module selection not recognized. ");
 	    	}
 		}else {
 			System.out.println("Reading Input file failed -> Forced Integrator Stop.");

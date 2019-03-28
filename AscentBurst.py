@@ -4,12 +4,13 @@ import subprocess
 import os
 from shutil import copyfile 
 import shutil
+import time
 
 ResultFolder = './burst_container/' 
 
-start_cutoff_time=0 
+start_cutoff_time = 5 
 # start engine cut-off time [s]
-end_cutoff_time = 5
+end_cutoff_time = 450
 # end engine cut-off
 
 def Clear_ResultFolder():
@@ -47,11 +48,13 @@ try:
 except:
     print("No files in result forlder")
 for i in range(start_cutoff_time,end_cutoff_time):
-	# |1|
-	Adjust_CutOff_Time(i)
-	# |2|
-	Run_Simulation()
-	# |3|
-	Rename_and_Copy_Resultfiles(i)
-	print("File ",str(i)," created")
+    # |1|
+    start = time.time()
+    Adjust_CutOff_Time(i)
+    # |2|
+    Run_Simulation()
+    # |3|
+    Rename_and_Copy_Resultfiles(i)
+    end = time.time()
+    print("File ",str(i)," created",str((end-start)))
 		 

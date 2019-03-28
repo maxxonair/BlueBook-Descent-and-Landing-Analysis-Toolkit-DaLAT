@@ -191,6 +191,7 @@ public class Plotting_3DOF implements  ActionListener {
     static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
     static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
     static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
+    static Font small_font			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
     static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
     static Font targetfont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
@@ -270,11 +271,15 @@ public class Plotting_3DOF implements  ActionListener {
     										  "AZ  cel [m/s]",
     										  "FPA_dot [deg/s]",
     										  "Thrust Elevation Angel Change [deg/s]",
-    										  "Engine Loss Indicator [true/false]"
+    										  "Engine Loss Indicator [true/false]", 
+    										  "u [m/s]",
+    										  "v [m/s]",
+    										  "w [m/s]"
     										  };
     
-    public static String[] Thrust_switch = { "Descent",
-    										 "Acent"
+    public static String[] Thrust_switch = { "Descent Module - 3 DoF",
+    										 "Ascent Module - 3 DoF",
+    										 "Ascent Module - 6 DoF"
     };
     public static String[] LocalElevation_Resolution = { "4", 
 			  											 "16" , 
@@ -970,24 +975,28 @@ public static String[] SequenceTVCFC    = { "",
       LABEL_VTOUCHDOWN.setSize(200, 20);
       LABEL_VTOUCHDOWN.setBackground(Color.black);
       LABEL_VTOUCHDOWN.setForeground(Color.black);
+      LABEL_VTOUCHDOWN.setFont(small_font);
       P1_SidePanel.add(LABEL_VTOUCHDOWN);
       JLabel LABEL_DELTAV = new JLabel("Total D-V [m/s]");
       LABEL_DELTAV.setLocation(55, uy_p41 + 285 + 25 *1 );
       LABEL_DELTAV.setSize(200, 20);
       LABEL_DELTAV.setBackground(Color.black);
       LABEL_DELTAV.setForeground(Color.black);
+      LABEL_DELTAV.setFont(small_font);
       P1_SidePanel.add(LABEL_DELTAV);
       JLabel LABEL_PROPPERC = new JLabel("Used Propellant [kg]");
       LABEL_PROPPERC.setLocation(270, uy_p41 + 285 + 25 *0 );
       LABEL_PROPPERC.setSize(200, 20);
       LABEL_PROPPERC.setBackground(Color.black);
       LABEL_PROPPERC.setForeground(Color.black);
+      LABEL_PROPPERC.setFont(small_font);
       P1_SidePanel.add(LABEL_PROPPERC);
       JLabel LABEL_RESPROP = new JLabel("Residual Propellant [%]");
       LABEL_RESPROP.setLocation(260, uy_p41 + 285 + 25 *1 );
       LABEL_RESPROP.setSize(200, 20);
       LABEL_RESPROP.setBackground(Color.black);
       LABEL_RESPROP.setForeground(Color.black);
+      LABEL_RESPROP.setFont(small_font);
       P1_SidePanel.add(LABEL_RESPROP);
       
        INDICATOR_VTOUCHDOWN = new JLabel("");
@@ -1174,19 +1183,21 @@ public static String[] SequenceTVCFC    = { "",
       LABEL_InitState.setHorizontalAlignment(0);
       PANEL_InitialState.add(LABEL_InitState);
       
-      JLabel LABEL_InertialFrame = new JLabel("Inertial Frame");
+      JLabel LABEL_InertialFrame = new JLabel("Inertial Frame [ECI]");
       LABEL_InertialFrame.setLocation(2, uy_p41 + 25 * 1 );
       LABEL_InertialFrame.setSize(INPUT_width, 20);
       LABEL_InertialFrame.setHorizontalAlignment(JLabel.CENTER);
       LABEL_InertialFrame.setBackground(Color.white);
       LABEL_InertialFrame.setForeground(Color.black);
+      LABEL_InertialFrame.setFont(small_font);
       PANEL_InitialState.add(LABEL_InertialFrame);
-      JLabel LABEL_RotatingFrame = new JLabel("Rotating Frame");
+      JLabel LABEL_RotatingFrame = new JLabel("Rotating Frame [ECEF]");
       LABEL_RotatingFrame.setLocation(2+INPUT_width+5, uy_p41 + 25 * 1  );
-      LABEL_RotatingFrame.setSize(INPUT_width, 20);
+      LABEL_RotatingFrame.setSize(INPUT_width+40, 20);
       LABEL_RotatingFrame.setHorizontalAlignment(JLabel.CENTER);
       LABEL_RotatingFrame.setBackground(Color.white);
       LABEL_RotatingFrame.setForeground(Color.black);
+      LABEL_RotatingFrame.setFont(small_font);
       PANEL_InitialState.add(LABEL_RotatingFrame);
       
       JLabel LABEL_longitude = new JLabel("Longitude [deg]");
@@ -1531,7 +1542,7 @@ public static String[] SequenceTVCFC    = { "",
 	  AscentDescent_SwitchChooser = new JComboBox(Thrust_switch);
 	  AscentDescent_SwitchChooser.setBackground(Color.white);
 	  AscentDescent_SwitchChooser.setLocation(2, uy_p41 + 26 * 1 );
-	  AscentDescent_SwitchChooser.setSize(150,25);
+	  AscentDescent_SwitchChooser.setSize(250,25);
 	  AscentDescent_SwitchChooser.setSelectedIndex(0);
 	  AscentDescent_SwitchChooser.addActionListener(new ActionListener() { 
    	  public void actionPerformed(ActionEvent e) {

@@ -36,7 +36,6 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 		public static boolean HoverStop = true; 
 	    public static boolean ctrl_callout = false; 
-	    public static boolean ascent_switch = false;
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -521,7 +520,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    Velocity_Rotating2Inertial(x);
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double[] engine_off){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, List<StopCondition> Event_Handler, double[] engine_off){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -535,7 +534,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		}
 //----------------------------------------------------------------------------------------------
 //   Read propulsion setting:	Propulsion/Controller INIT
-	if(ThrustSwitch==1) {ascent_switch=true;System.out.println("Ascent mode set");}else {ascent_switch=false;System.out.println("Descent mode set");}
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
