@@ -37,6 +37,8 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 		public static boolean HoverStop = true; 
 	    public static boolean ctrl_callout = false; 
+	    
+	    public static int DIMENSION = 14; 
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -88,8 +90,7 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 			public static double rm    = 0;    	    // Planets average radius                   [m]
 			public static double omega = 0 ;        // Planets rotational rate                  [rad/sec]
 			public static double g0 = 9.81;         // For normalized ISP 			
-			public static double gn = 0;
-			public static double gr = 0;
+			public static double[] g = {0,0,0};			// Gravity vector in NED frame 				[m/s²]
 			public static double D = 0;
 			public static double L = 0;
 			public static double Ty = 0; 
@@ -166,14 +167,16 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 	        
 	        public static double TTM_max = 5.0;
 	        
-	        static double[] M_atm = new double[3];					// Angular momentum vector from atmosphere momentum
-	        static double[] M_prop = new double[3];					// Angular Momentum vector from propulsion system 
-	        static double[] M_total = new double[3];				// Total angular momentum 
-	        static double[][] I = new double[3][3];				    // Moment of Inertia
-	        static Double[][] omega_B = new Double[3][1];				// Angular rates with respect to NED in body fixed frame 
-	        static double[] quaternions_dot = new double[4];			// Quaternions 
+	        static double[] M_atm = new double[3];							 // Angular momentum vector from atmosphere momentum
+	        static double[] M_prop = new double[3];							 // Angular Momentum vector from propulsion system 
+	        static Double[][] M_total = new Double[3][1];						 // Total angular momentum 
+	        static Double[][] I = new Double[3][3];				   			 // Moment of Inertia
+	        static Double[][] omega_B = new Double[3][1];					 // Angular rates with respect to NED in body fixed frame 
+	        static Double[][] quaternions_dot = new Double[4][1];			 // Quaternions 
 	     
 	        
+	        public static double[] vel_cartesian = new double[3];
+	        public static double[] vel_spherical = new double[3];
 	        
 	        static double[] v_NED = new double[3];					// Cartesian velocity vector in north east down system
 	        
@@ -183,7 +186,7 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
 	    public int getDimension() {
-	        return 7;
+	        return DIMENSION;
 	    }
 	    public double[] crossproduct(double[] a, double[] b) {
 	    	double[] vector_result = new double[3];
@@ -330,7 +333,7 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 	    	}
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type_TM = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
-	 //System.out.println(sequence_type_TM);
+	        //System.out.println(sequence_type_TM);
 	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
 	    	
 	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt,Thrust_Deviation, Thrust_max, engine_loss_indicator);	    	
@@ -402,12 +405,12 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
     	}
 	    	else { System.out.println("ERROR: Sequence type out of range");}
 		} 	
-		public static void GRAVITY_MANAGER(double[] x) {
+		public static double[] GRAVITY_MANAGER(double[] x) {
 			//------------------------------------------------------------------------------
-			//     simplified 2D atmosphere model (J2 only) 
+			//     Full 3D gravity model (work TBD on complexity) 
 			//------------------------------------------------------------------------------
-	    	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
-	    	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
+	    	g = GravityModel.get_g( x[2],  x[0], x[1],  rm,  mu, TARGET);
+	    	return g; 
 		}
 		public static void update_v_NED(double[] x) {
 			v_NED[0] = x[3]*Math.sin(x[4])*Math.cos(x[5]);
@@ -444,6 +447,7 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 		    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
 	    	}
 		}
+		// Linear Algebra functions: 
 	    public static Double[][] Multiply_Matrix(Double[][] A, Double[][] B) {
 	        int aRows = A.length;
 	        int aColumns = A[0].length;
@@ -482,7 +486,54 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 	            }
 	    	return result; 
 	    }
-    public void computeDerivatives(double t, double[] x, double[] dxdt) {
+	    public static Double[][] Substract_Matrix(Double[][] A, Double[][] B){
+	        int aRows = A.length;
+	        int aColumns = A[0].length;
+	        int bRows = B.length;
+	        int bColumns = B[0].length;
+        	Double[][] C = new Double[aRows][aColumns];
+        	
+	        if (aRows!=bRows || aColumns!=bColumns) {
+	        	System.out.println("ERROR: Matrix dimensions do not match");
+	        	return C; 
+	        } else {
+		        for (int i = 0; i < aRows; i++) { // aRow
+		            for (int j = 0; j < bColumns; j++) { // bColumn
+		                    C[i][j] = A[i][j] - B[i][j];
+		                }
+		            }
+		            return C; 
+	        }
+	    }
+	    public static Double[][] Inverse_Matrix(Double[][] A){
+	        int aRows = A.length;
+	        int aColumns = A[0].length;
+	    	Double[][] X = new Double[aRows][aColumns];
+	    			
+	    			return X; 
+	    }
+	    //--------------------------------------------------------------------------
+	    //				Coordinate Frame Functions 
+	    //--------------------------------------------------------------------------
+		public static double[] Spherical2Cartesian(double[] X) {
+			double[] result = new double[3];
+			result[0]  = X[0] * Math.cos(X[1]) * Math.cos(X[2]);
+			result[1]  = X[0] * Math.cos(X[1]) * Math.sin(X[2]);
+			result[2]  = -X[0] * Math.sin(X[1]);
+			// Filter small errors from binary conversion: 
+			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
+			return result; 
+			}
+		public static double[] Cartesian2Spherical(double[] X) {
+			double[] result = new double[3];
+			result[0]  = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
+			result[1]  = Math.acos(X[2]/result[0]);
+			result[2]  = Math.atan(X[1]/X[0]);
+			// Filter small errors from binary conversion: 
+			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
+			return result; 
+			}
+public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Artificial error: Engine loss scenario
     	//-------------------------------------------------------------------------------------------------------------------
@@ -490,7 +541,7 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------
-    	GRAVITY_MANAGER(x);
+    	g = GRAVITY_MANAGER(x);
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -509,9 +560,9 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
     	// 				      Force Definition  Propulsive Thrust Force | BodyFixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
 	   	double fT = Thrust;
-	   	 Xfo = fT*Math.cos(Thrust_Deviation)-D;
+	   	 Xfo = 0;
 	   	 Yfo = 0;
-	   	 Zfo = fT*Math.sin(Thrust_Deviation); 
+	   	 Zfo = -fT; 
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
@@ -537,70 +588,53 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
     	phimin=phi;
     	tetamin=theta; 
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									     Equations of Motion - Preparations
-    	//-------------------------------------------------------------------------------------------------------------------
-    	double cos_fpa = Math.cos(x[4]); 
-    	double sin_fpa = Math.sin(x[4]);
-    	double tan_fpa = Math.tan(x[4]);
-    	double cos_A = Math.cos(x[5]);
-    	double sin_A = Math.sin(x[5]);
-    	double omega_sqr = omega * omega; 
-    	double cos_lat = Math.cos(x[1]);
-    	double sin_lat = Math.sin(x[1]);
-    	double tan_lat = Math.tan(x[1]);
-    	//-------------------------------------------------------------------------------------------------------------------
-    	//							Momentum vector
-    	//-------------------------------------------------------------------------------------------------------------------
-
-    	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------	
-    	// Position vector
+    	// 		Position vector
     	//-------------------------------------------------------------------------------------------------------------------	
-	    dxdt[0] = x[3] * cos_fpa * sin_A / ( x[2] * cos_lat );
-	    dxdt[1] = x[3] * cos_fpa * cos_A / x[2] ;
-	    dxdt[2] = x[3] * sin_fpa;	    
+	    dxdt[0] = x[4]/(x[2]*Math.cos(x[1]));
+	    dxdt[1] = x[3]/x[2];
+	    dxdt[2] = -x[5];	    
 	    // Velocity vector
 	    //-------------------------------------------------------------------------------------------------------------------	
-	    dxdt[3] = - gr * sin_fpa + gn * cos_A * cos_fpa + Xfo / x[6] + omega_sqr * x[2] * cos_lat  * ( sin_fpa * cos_lat - cos_fpa* cos_A * sin_lat) ;
-	    if(GroundClearance_Manager(x)==false) { // Get ground clearance until condition is met
-	    	dxdt[4]=0;
-	    	dxdt[5]=0;
-	    } else {
-	    	dxdt[4] = (x[3]/x[2]-gr/x[3])*cos_fpa-gn*cos_A*sin_fpa/x[3]+Zfo/(x[3]*x[6])+2*omega*sin_A*cos_lat+omega_sqr*x[2]*cos_lat*(cos_fpa*cos_lat+sin_fpa*cos_A*sin_lat)/x[3];
-	    			if(Math.abs(x[4])<1E-6) {
-	    				dxdt[5] = x[3] * sin_A * tan_lat * cos_fpa/x[2]-gn*sin_A/x[3]-Yfo/(x[3]*cos_fpa*x[6])-2*omega*(tan_fpa * cos_A * cos_lat - sin_lat) + omega_sqr * x[2] * sin_A*sin_lat*cos_lat/(x[3]*cos_fpa);
-	    			} else {
-	    				dxdt[5] =	0;
-	    			}
-	    }
+	    dxdt[3] = Xfo/x[6] + g[0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) - 2*omega*x[4]*Math.sin(x[1]));
+	    dxdt[4] = Yfo/x[6] + g[1] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) + 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
+	    dxdt[5] = Zfo/x[6] + g[2] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
 	    // Mass equation
 	    //-------------------------------------------------------------------------------------------------------------------
 	    dxdt[6] = - Thrust/(ISP*g0) ; 
-	    update_v_NED(x) ;
-	    // Quaternions
+	    // 		Quaternions
 	    //-------------------------------------------------------------------------------------------------------------------
-	    /*
-	    quaternions_dot[0] =dxdt[7];
-	    quaternions_dot[1] =dxdt[8];
-	    quaternions_dot[2] =dxdt[9];
-	    quaternions_dot[3] =dxdt[10];
-	    */
 	    Double[][] Quaternion_Matrix = { {-0.5*x[8],      -0.5*x[9],      -0.5*x[10]}, 
 	    								 { 0.5*x[7],      -0.5*x[10],      0.5*x[9] }, 
 	    								 { 0.5*x[10],      0.5*x[7],      -0.5*x[8] },
-	    								 {-0.5*x[9],      0.5*x[8],        0.5*x[7] }
+	    								 {-0.5*x[9],       0.5*x[8],       0.5*x[7] }
 	    									};
-	    omega_B[0][0] = x[11];
-	    omega_B[1][0] = x[14];
-	    omega_B[2][0] = x[13];
-	    Double[][] vel_vec = {{v_NED[1]}, {-v_NED[0]}, {-v_NED[1]*Math.tan(x[1])}};
-	    Double[][] omega_vec = {{ omega*Math.cos(x[1])}, { 0.0}, { -omega*Math.sin(x[1])}};
-	    Double[][] G_rot = new Double[3][3];  // Rotation matrix from geocentric NED to the body frame 
-	    Double[][] M1 = Multiply_Scalar((1/x[3]),G_rot);
-	    quaternions_dot = Multiply_Matrix(Quaternion_Matrix, (omega_B - Multiply_Matrix( M1, vel_vec) - Multiply_Matrix(G_rot, omega_vec) ));
+	    omega_B[0][0] =  x[11];  // x[11];
+	    omega_B[1][0] =  x[12];  // x[14];
+	    omega_B[2][0] =  x[13];  // x[13];
+	    Double[][] vel_vec = { {x[4]}, 
+	    		  			   {-x[3]}, 
+	    		  			   {-x[4]*Math.tan(x[1])} };    
+	    Double[][] omega_vec = { { omega*Math.cos(x[1])}, 
+	    						 { 0.0}, 
+	    						 {-omega*Math.sin(x[1])} };
+	    Double[][] G_ROT_NED2B = { { (x[7]*x[7] + x[8]*x[8] - x[9]*x[9] - x[10]*x[10]),  (2*(x[8]*x[9] + x[7]*x[10])), 							(2*(x[8]*x[10] - x[7]*x[9]))  },
+	    					 	   { (2*(x[8]*x[9] - x[7]*x[10])), 						 (x[7]*x[7] - x[8]*x[8] + x[9]*x[9] - x[10]*x[10] ) ,   (2*(x[7]*x[8] + x[9]*x[10]))},
+	    					 	   { (2*(x[8]*x[10] + x[7]*x[9])),						 (2*(x[9]*x[10] - x[7]*x[8])), 							(x[7]*x[7] - x[8]*x[8] - x[9]*x[9] + x[10]*x[10])  },
+	    };  // Rotation matrix from geocentric NED to the body frame 
+	    Double[][] M1 =  Multiply_Scalar((1/x[3]),G_ROT_NED2B);
+	    Double[][] M2 =  Multiply_Matrix( M1, vel_vec);
+	    Double[][] M3 =  Multiply_Matrix(G_ROT_NED2B, omega_vec);
+	    quaternions_dot = Multiply_Matrix(Quaternion_Matrix, ( Substract_Matrix( omega_B, Substract_Matrix(M2, M3) ) ));
+	    dxdt[7]  = quaternions_dot[0][0];
+	    dxdt[8]  = quaternions_dot[1][0];
+	    dxdt[9]  = quaternions_dot[2][0];
+	    dxdt[10] = quaternions_dot[3][0];	    
     	//-------------------------------------------------------------------------------------------------------------------
-	    
+	    Double[][] omega_B_dot = new Double[3][1];
+	    Double[][] M4 = new Double[3][1];
+	    omega_B_dot = Multiply_Matrix(Inverse_Matrix(I), Substract_Matrix(M_total, M4));
 	    //-------------------------------------------------------------------------------------------------------------------
     	// 								hah Update Event handler
     	//-------------------------------------------------------------------------------------------------------------------
@@ -612,7 +646,7 @@ public class Ascent_6DOF implements FirstOrderDifferentialEquations {
 	    Velocity_Rotating2Inertial(x);
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA,List<StopCondition> Event_Handler, double[] engine_off, double[][] INERTIA){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA,List<StopCondition> Event_Handler, double[] engine_off, Double[][] INERTIA){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -658,9 +692,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 t_engine_loss = engine_off[1];
     	 thrust_loss_perc = engine_off[2];
     	 
-    	 
-    	I = INERTIA; 
-    	 
+    	I= INERTIA; 
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -715,7 +747,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			*/
 //----------------------------------------------------------------------------------------------
     // 						Result vector setup - do not touch
-	        double[] y = new double[14]; // Result vector
+	        double[] y = new double[DIMENSION]; // Result vector
 	// Position: 
 	        y[0] = x0;
 	        y[1] = x1;
@@ -732,9 +764,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        y[9]  = 0;
 	        y[10] = 0;
 	// Angular rate acceleration:
-	        y[11] = 0 ;
-	        y[12] = 0 ;
-	        y[13] = 0 ;
 	//------------------------------------------------------------------------------------------        
 			INITIALIZE_FlightController(y) ;
 //----------------------------------------------------------------------------------------------
@@ -751,8 +780,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};if(tis!=tminus) {val_dt=Math.abs(tis-tminus);}else{val_dt=0.01;};
 	                double[] y     = interpolator.getInterpolatedState();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
-	                double g_total = Math.sqrt(gr*gr+gn*gn);
-	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
+	                double g_total = Math.sqrt(g[0]*g[0]+g[1]*g[1]+g[2]*g[2]);
+	                double v_total = Math.sqrt(y[3]*y[3]+y[4]*y[4]+y[5]*y[5]);
+	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*v_total*v_total);
+	                vel_cartesian[0] = y[3];
+	                vel_cartesian[1] = y[4];
+	                vel_cartesian[2] = y[5];
+	                vel_spherical = Cartesian2Spherical(vel_cartesian);
 	                double CTRL_TM_Error =0;
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
@@ -767,15 +801,15 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (y[2]-rm-ref_ELEVATION) + " " + 
 	                    		  (y[2]-rm)+ " " + 
 	                    		  y[2] + " " + 
-	                    		  y[3]+ " " + 
-	                    		  y[4] + " " + 
-	                    		  y[5] + " " + 
+	                    		  vel_spherical[0]+ " " + 
+	                    		  vel_spherical[1] + " " + 
+	                    		  vel_spherical[2] + " " + 
 	                    		  rho + " " + 
 	                    		  D + " " +
 	                    		  L + " " +
-	                    		  Ty + " " +
-	                    		  gr + " " +
-	                    		  gn + " " +
+	                    		  g[0] + " " +
+	                    		  g[1] + " " +
+	                    		  g[2] + " " +
 	                    		  g_total + " " +
 	                    		  T+ " " +
 	                    		  Ma+ " " +
@@ -815,9 +849,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  fpa_dot*rad2deg+" "+
 	                    		  Thrust_Deviation_dot*rad2deg+" "+
 	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "+
-	                    		  v_NED[0]+" "+
-	                    		  v_NED[1]+" "+
-	                    		  v_NED[2]+" "
+	                    		  vel_cartesian[0]+" "+
+	                    		  vel_cartesian[1]+" "+
+	                    		  vel_cartesian[2]+" "+
+	                    		  y[7]+" "+
+	                    		  y[8]+" "+
+	                    		  y[9]+" "+
+	                    		  y[10]+" "
 	                    		  );
 	                }
 	                if(isLast) {

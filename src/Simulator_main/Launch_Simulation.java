@@ -23,8 +23,8 @@ public class Launch_Simulation implements ActionListener{
     public static double kB    = 1.380650424e-23;               // Boltzmann constant                         [SI]    
     public static double G     = 1.48808E-34;
     public static int TARGET; 
-	static double deg = PI/180.0; 		//Convert degrees to radians
-	static double rad = 180/PI; 		//Convert radians to degrees
+	static double deg2rad = PI/180.0; 		//Convert degrees to radians
+	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
    	//System.out.println(INPUT_FILE);
 	
@@ -117,8 +117,8 @@ public class Launch_Simulation implements ActionListener{
         return SEQUENCE_DATA;
     }
     
-    public static double[][] READ_Inertia() throws FileNotFoundException{
-    	double[][] INERTIA = new double[3][3];
+    public static Double[][] READ_Inertia() throws FileNotFoundException{
+    	Double[][] INERTIA = new Double[3][3];
    	 String dir = System.getProperty("user.dir");
 	   	 INPUT_FILE = dir+"/INP/SC/Inertia.dat";
 		BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
@@ -217,20 +217,20 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("EDL 3DOF Module running");
 	    		EDL_3DOF.Launch_Integrator(
-	    												INTEGRATOR, 		     // Integrator Index 					 [-]
-														target, 				 // Target index 						 [-]
-														x_init[0]*deg, 			 // Longitude 							 [rad]
-														x_init[1]*deg, 			 // Latitude 							 [rad]
-														x_init[2]+x_init[11]+rm, // Radius 								 [m]
-														x_init[3], 				 // Velocity 							 [m/s]
-														x_init[4]*deg, 			 // Flight path angle 					 [rad]
-														x_init[5]*deg, 			 // Local Azimuth 						 [rad]
-														x_init[6], 				 // Initial S/C mass 					 [kg]
-														x_init[7], 			   	 // Maximum integ. time 				 [s]
-														x_init[10],				 // Write out delta time 				 [s]
-														x_init[11],				 // Reference Elevation  				 [m]
-														SEQUENCE_DATA,			 // Sequence data set	LIST			 [-]
-												  (int) x_init[12],				 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
+	    												INTEGRATOR, 		     	 // Integrator Index 					 [-]
+														target, 				 	 // Target index 						 [-]
+														x_init[0]*deg2rad, 			 // Longitude 							 [rad]
+														x_init[1]*deg2rad, 			 // Latitude 							 [rad]
+														x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
+														x_init[3], 				 	 // Velocity 							 [m/s]
+														x_init[4]*deg2rad, 			 // Flight path angle 					 [rad]
+														x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
+														x_init[6], 				 	 // Initial S/C mass 					 [kg]
+														x_init[7], 			   	 	 // Maximum integ. time 				 [s]
+														x_init[10],				 	 // Write out delta time 				 [s]
+														x_init[11],				 	 // Reference Elevation  				 [m]
+														SEQUENCE_DATA,			 	 // Sequence data set	LIST			 [-]
+												  (int) x_init[12],				 	 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
 														STOP_Handler			     // Event Handler 	LIST			 [-]
 														);
 	    	} else if (descent_ascent_switch ==1) {
@@ -241,12 +241,12 @@ public class Launch_Simulation implements ActionListener{
 		    	Ascent_3DOF.Launch_Integrator(
 		    			INTEGRATOR, 			 // Integrator Index 					 [-]
 						target, 				 // Target index 						 [-]
-						x_init[0]*deg, 			 // Longitude 							 [rad]
-						x_init[1]*deg, 			 // Latitude 							 [rad]
+						x_init[0]*deg2rad, 			 // Longitude 						 [rad]
+						x_init[1]*deg2rad, 			 // Latitude 					     [rad]
 						x_init[2]+x_init[11]+rm, // Radius 								 [m]
 						x_init[3], 				 // Velocity 							 [m/s]
-						x_init[4]*deg, 			 // Flight path angle 					 [rad]
-						x_init[5]*deg, 			 // Local Azimuth 						 [rad]
+						x_init[4]*deg2rad, 			 // Flight path angle 			[rad]
+						x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
 						x_init[6], 				 // Initial S/C mass 					 [kg]
 						x_init[7], 			   	 // Maximum integ. time 				 [s]
 						x_init[10],				 // Write out delta time 				 [s]
@@ -260,29 +260,29 @@ public class Launch_Simulation implements ActionListener{
 	    		//												6 Degree of Freedom EDL module
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Ascent 6DOF Module running");
-	    		double[][] INERTIA = new double[3][3];
+	    		Double[][] INERTIA = new Double[3][3];
 	    		try {
 	    		INERTIA = READ_Inertia();
 	    		} catch(FileNotFoundException eFNo) {
 	    			System.out.println("ERROR: Inertia input file not found");
 	    		}
 		    	Ascent_6DOF.Launch_Integrator(
-		    		    INTEGRATOR, 			 // Integrator Index 					 [-]
-						target, 				 // Target index 						 [-]
-						x_init[0]*deg, 			 // Longitude 							 [rad]
-						x_init[1]*deg, 			 // Latitude 							 [rad]
-						x_init[2]+x_init[11]+rm, // Radius 								 [m]
-						x_init[3], 				 // Velocity 							 [m/s]
-						x_init[4]*deg, 			 // Flight path angle 					 [rad]
-						x_init[5]*deg, 			 // Local Azimuth 						 [rad]
-						x_init[6], 				 // Initial S/C mass 					 [kg]
-						x_init[7], 			   	 // Maximum integration time 		     [s]
-						x_init[10],				 // Write out delta time 				 [s]
-						x_init[11],				 // Reference Elevation  				 [m]
-						SEQUENCE_DATA,			 // Sequence data set	LIST		     [-]
-						STOP_Handler	,		 // Event Handler 	LIST			     [-]
-						engine_off, 			 // Artifical main engine error timing   [s]
-						INERTIA					 // SC Moment of Inertia 				 [-] 
+		    		    INTEGRATOR, 			 	 // Integrator Index 					 [-]
+						target, 				 	 // Target index 						 [-]
+						x_init[0]*deg2rad, 			 // Longitude 							 [rad]
+						x_init[1]*deg2rad, 			 // Latitude 							 [rad]
+						x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
+						x_init[3], 				 	 // Velocity u							 [m/s]
+						x_init[4], 			 		 // Velocity v					 		 [m/s]
+						x_init[5], 					 // Velocity w						 	 [m/s]
+						x_init[6], 				 	 // Initial S/C mass 					 [kg]
+						x_init[7], 			   	 	 // Maximum integration time 		     [s]
+						x_init[10],				 	 // Write out delta time 				 [s]
+						x_init[11],				 	 // Reference Elevation  				 [m]
+						SEQUENCE_DATA,			 	 // Sequence data set	LIST		     [-]
+						STOP_Handler	,		 	 // Event Handler 	LIST			     [-]
+						engine_off, 			 	 // Artifical main engine error timing   [s]
+						INERTIA					 	 // SC Moment of Inertia 				 [-] 
 						);
 	    	} else {
 	    		System.out.println("Module selection not recognized. ");

@@ -163,8 +163,8 @@ public class Plotting_3DOF implements  ActionListener {
     public static int TARGET;  
     public static  double RM = 0; 		// Target planet radius
     public static int indx_target = 0;  // Target planet indx 
-	static double deg = PI/180.0; 		//Convert degrees to radians
-	static double rad = 180/PI; 		//Convert radians to degrees
+	static double deg2rad = PI/180.0; 		//Convert degrees to radians
+	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
     public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
 			{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
@@ -272,9 +272,13 @@ public class Plotting_3DOF implements  ActionListener {
     										  "FPA_dot [deg/s]",
     										  "Thrust Elevation Angel Change [deg/s]",
     										  "Engine Loss Indicator [true/false]", 
-    										  "u [m/s]",
-    										  "v [m/s]",
-    										  "w [m/s]"
+    										  "Velocity (NED) u [m/s]",
+    										  "Velocity (NED) v [m/s]",
+    										  "Velocity (NED) w [m/s]",
+    										  "Quaternion q1",
+    										  "Quaternion q2",
+    										  "Quaternion q3",
+    										  "Quaternion q4"
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
@@ -353,6 +357,8 @@ public static String[] SequenceTVCFC    = { "",
 										    "Flight Controller 5",
 										    "Flight Controller 6",
 										    "Flight Controller 7"};
+public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
+											"Spherical Coordinate Frame (NED)"};
 
 
     public static double h_init;
@@ -414,7 +420,8 @@ public static String[] SequenceTVCFC    = { "",
     public static JTextField INPUT_TIME; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
-    public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator;
+    public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator,Module_Indicator;
+    public static int vel_frame_hist = 1; 
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
 	 static DefaultTableModel MODEL_SEQUENCE;
@@ -901,8 +908,16 @@ public static String[] SequenceTVCFC    = { "",
         Error_Indicator.setLocation(225, uy_p41 + 25 * 9);
         Error_Indicator.setSize(150, 20);
         //Error_Indicator.setBackground(Color.white);
+        Error_Indicator.setFont(labelfont_small);
         Error_Indicator.setForeground(Color.black);
         P1_SidePanel.add(Error_Indicator);
+        
+        Module_Indicator = new JLabel("");
+        Module_Indicator.setLocation(225, uy_p41 + 25 * 10);
+        Module_Indicator.setSize(150, 20);
+        Module_Indicator.setFont(labelfont_small);
+        Module_Indicator.setForeground(Color.black);
+        P1_SidePanel.add(Module_Indicator);
         
          INDICATOR_LONG = new JLabel();
         INDICATOR_LONG.setLocation(2, uy_p41 + 25 * 0 );
@@ -1227,19 +1242,19 @@ public static String[] SequenceTVCFC    = { "",
       PANEL_InitialState.add(LABEL_referenceelevation);
       
       JLabel LABEL_velocity = new JLabel("Velocity [m/s]");
-      LABEL_velocity.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 7 );
+      LABEL_velocity.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 8 );
       LABEL_velocity.setSize(250, 20);
       LABEL_velocity.setBackground(Color.white);
       LABEL_velocity.setForeground(Color.black);
       PANEL_InitialState.add(LABEL_velocity);
       JLabel LABEL_fpa = new JLabel("Flight Path angle [deg]");
-      LABEL_fpa.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 8);
+      LABEL_fpa.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 9);
       LABEL_fpa.setSize(250, 20);
       LABEL_fpa.setBackground(Color.white);
       LABEL_fpa.setForeground(Color.black);
       PANEL_InitialState.add(LABEL_fpa);
       JLabel LABEL_azimuth = new JLabel("Azimuth [deg]");
-      LABEL_azimuth.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 9 );
+      LABEL_azimuth.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 10 );
       LABEL_azimuth.setSize(250, 20);
       LABEL_azimuth.setBackground(Color.white);
       LABEL_azimuth.setForeground(Color.black);
@@ -1321,7 +1336,7 @@ public static String[] SequenceTVCFC    = { "",
       });
       PANEL_InitialState.add(INPUT_REFELEV); 
       INPUT_VEL_Is = new JTextField(10);
-      INPUT_VEL_Is.setLocation(2, uy_p41 + 25 * 7 );
+      INPUT_VEL_Is.setLocation(2, uy_p41 + 25 * 8 );
       INPUT_VEL_Is.setText("1");
       INPUT_VEL_Is.setSize(INPUT_width, 20);
       INPUT_VEL_Is.setHorizontalAlignment(JTextField.RIGHT);
@@ -1340,7 +1355,7 @@ public static String[] SequenceTVCFC    = { "",
       });
       PANEL_InitialState.add(INPUT_VEL_Is);
       INPUT_FPA_Is = new JTextField(10);
-      INPUT_FPA_Is.setLocation(2, uy_p41 + 25 * 8 );
+      INPUT_FPA_Is.setLocation(2, uy_p41 + 25 * 9 );
       INPUT_FPA_Is.setText("0");
       INPUT_FPA_Is.setSize(INPUT_width, 20);
       INPUT_FPA_Is.setHorizontalAlignment(JTextField.RIGHT);
@@ -1359,7 +1374,7 @@ public static String[] SequenceTVCFC    = { "",
       });
       PANEL_InitialState.add(INPUT_FPA_Is);
       INPUT_AZI_Is = new JTextField(10);
-      INPUT_AZI_Is.setLocation(2, uy_p41 + 25 * 9 );
+      INPUT_AZI_Is.setLocation(2, uy_p41 + 25 * 10 );
       INPUT_AZI_Is.setSize(INPUT_width, 20);
       INPUT_AZI_Is.setHorizontalAlignment(JTextField.RIGHT);
       INPUT_AZI_Is.addFocusListener(new FocusListener() {
@@ -1431,8 +1446,58 @@ public static String[] SequenceTVCFC    = { "",
     	  
       });
       PANEL_InitialState.add(INPUT_ALT_Rs);    
+      
+      
+	  JComboBox VelocityFrame_chooser = new JComboBox(Vel_Frame_options);
+	  VelocityFrame_chooser.setBackground(Color.white);
+	  VelocityFrame_chooser.setLocation(2+INPUT_width+5, uy_p41 + 25 * 7);
+	  VelocityFrame_chooser.setSize(380-(2+INPUT_width+5),20);
+	  VelocityFrame_chooser.setSelectedIndex(1);
+	  VelocityFrame_chooser.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) {
+    		 
+  			if(VelocityFrame_chooser.getSelectedIndex()==0) {
+				LABEL_velocity.setText("u [m/s]");
+				LABEL_fpa.setText("v [m/s]");
+				LABEL_azimuth.setText("w [m/s]");
+			} else {
+				LABEL_velocity.setText("v [m/s]");
+				LABEL_fpa.setText("flight path angle [deg]");
+				LABEL_azimuth.setText("local azimuth [deg]");	
+			}
+  			if(VelocityFrame_chooser.getSelectedIndex()==vel_frame_hist) {
+  				// do nothing
+  			} else if(VelocityFrame_chooser.getSelectedIndex()==0 && vel_frame_hist==1) {
+  				// Spherical to Cartesian
+  				double[] X = new double[3];
+  				X[0]= Double.parseDouble(INPUT_VEL_Rs.getText());
+  				X[1]= Double.parseDouble(INPUT_FPA_Rs.getText())*deg2rad;
+  				X[2]= Double.parseDouble(INPUT_AZI_Rs.getText())*deg2rad;
+  				double[] res =  Spherical2Cartesian(X);
+  				INPUT_VEL_Rs.setText(""+res[0]);
+  				INPUT_FPA_Rs.setText(""+res[1]);
+  				INPUT_AZI_Rs.setText(""+res[2]);
+  				vel_frame_hist=VelocityFrame_chooser.getSelectedIndex();
+  			} else if(VelocityFrame_chooser.getSelectedIndex()==1 && vel_frame_hist==0) {
+  				// Cartesian to Spherical 
+  				double[] X = new double[3];
+  				X[0]= Double.parseDouble(INPUT_VEL_Rs.getText());
+  				X[1]= Double.parseDouble(INPUT_FPA_Rs.getText());
+  				X[2]= Double.parseDouble(INPUT_AZI_Rs.getText());
+  				X =  Cartesian2Spherical(X);
+  				INPUT_VEL_Rs.setText(""+X[0]);
+  				INPUT_FPA_Rs.setText(""+X[1]*rad2deg);
+  				INPUT_AZI_Rs.setText(""+X[2]*rad2deg);
+  				vel_frame_hist=VelocityFrame_chooser.getSelectedIndex();
+  			}
+    	  }
+    	  
+  	  } );
+	  PANEL_InitialState.add(VelocityFrame_chooser);
+      
+      
       INPUT_VEL_Rs = new JTextField(10);
-      INPUT_VEL_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 7 );
+      INPUT_VEL_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 8 );
       INPUT_VEL_Rs.setSize(INPUT_width, 20);
       INPUT_VEL_Rs.setHorizontalAlignment(JTextField.RIGHT);
       INPUT_VEL_Rs.addFocusListener(new FocusListener() {
@@ -1450,7 +1515,7 @@ public static String[] SequenceTVCFC    = { "",
       });
       PANEL_InitialState.add(INPUT_VEL_Rs);
       INPUT_FPA_Rs = new JTextField(10);
-      INPUT_FPA_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 8 );
+      INPUT_FPA_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 9 );
       INPUT_FPA_Rs.setSize(INPUT_width, 20);
       INPUT_FPA_Rs.setHorizontalAlignment(JTextField.RIGHT);
       INPUT_FPA_Rs.addFocusListener(new FocusListener() {
@@ -1468,7 +1533,7 @@ public static String[] SequenceTVCFC    = { "",
       });
       PANEL_InitialState.add(INPUT_FPA_Rs);
       INPUT_AZI_Rs = new JTextField(10);
-      INPUT_AZI_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 9 );
+      INPUT_AZI_Rs.setLocation(2+INPUT_width+5, uy_p41 + 25 * 10 );
       INPUT_AZI_Rs.setSize(INPUT_width, 20);
       INPUT_AZI_Rs.setHorizontalAlignment(JTextField.RIGHT);
       INPUT_AZI_Rs.addFocusListener(new FocusListener() {
@@ -1487,14 +1552,14 @@ public static String[] SequenceTVCFC    = { "",
       PANEL_InitialState.add(INPUT_AZI_Rs);
       
       JLabel LABEL_Time = new JLabel("Time: ");
-      LABEL_Time.setLocation(2, uy_p41 + 25 * 11 );
+      LABEL_Time.setLocation(2, uy_p41 + 25 * 12);
       LABEL_Time.setSize(50, 20);
       LABEL_Time.setBackground(Color.white);
       LABEL_Time.setForeground(Color.black);
       PANEL_InitialState.add(LABEL_Time);
       
       INPUT_TIME = new JTextField(10);
-      INPUT_TIME.setLocation(55, uy_p41 + 25 * 11 );
+      INPUT_TIME.setLocation(55, uy_p41 + 25 * 12 );
       INPUT_TIME.setSize(INPUT_width*2, 20);
       INPUT_TIME.setHorizontalAlignment(JTextField.LEFT);
       INPUT_TIME.addFocusListener(new FocusListener() {
@@ -1546,7 +1611,7 @@ public static String[] SequenceTVCFC    = { "",
 	  AscentDescent_SwitchChooser.setSelectedIndex(0);
 	  AscentDescent_SwitchChooser.addActionListener(new ActionListener() { 
    	  public void actionPerformed(ActionEvent e) {
-   		
+   		Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
    	  }
  	  } );
 	  AscentDescent_SwitchChooser.addFocusListener(new FocusListener() {
@@ -2605,17 +2670,17 @@ public static String[] SequenceTVCFC    = { "",
     public static void Rotating2Inertial() {
     	try {
     	double vel_rotating = Double.parseDouble(INPUT_VEL_Rs.getText());
-    	double fpa_rotating = Double.parseDouble(INPUT_FPA_Rs.getText())*deg;
-    	double azi_rotating = Double.parseDouble(INPUT_AZI_Rs.getText())*deg;
-    	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg;
+    	double fpa_rotating = Double.parseDouble(INPUT_FPA_Rs.getText())*deg2rad;
+    	double azi_rotating = Double.parseDouble(INPUT_AZI_Rs.getText())*deg2rad;
+    	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg2rad;
     	double rm = DATA_MAIN[indx_target][0];
     	double omega = DATA_MAIN[indx_target][2];
     	double radius = Double.parseDouble(INPUT_ALT_Rs.getText())+rm;
     	double azimuth_inertFrame = Math.atan((vel_rotating*Math.cos(fpa_rotating)*Math.sin(azi_rotating)+omega*radius+Math.cos(lat_rotating))/(vel_rotating*Math.cos(fpa_rotating)*Math.cos(azi_rotating)));
     	double fpa_inertFrame = Math.atan(Math.tan(fpa_rotating)*Math.cos(azimuth_inertFrame)/Math.cos(azi_rotating));
     	double vel_inertFrame = vel_rotating * Math.sin(fpa_rotating)/Math.sin(fpa_inertFrame);
-    	INPUT_AZI_Is.setText(""+df_VelVector.format(azimuth_inertFrame*rad));
-    	INPUT_FPA_Is.setText(""+df_VelVector.format(fpa_inertFrame*rad));
+    	INPUT_AZI_Is.setText(""+df_VelVector.format(azimuth_inertFrame*rad2deg));
+    	INPUT_FPA_Is.setText(""+df_VelVector.format(fpa_inertFrame*rad2deg));
     	INPUT_VEL_Is.setText(""+df_VelVector.format(vel_inertFrame));
     	} catch(java.lang.NumberFormatException enfe) {System.out.println(enfe);}
     }
@@ -2634,17 +2699,17 @@ public static String[] SequenceTVCFC    = { "",
     public static void Inertial2Rotating() {
     	try {
     	double vel_inert = Double.parseDouble(INPUT_VEL_Is.getText());
-    	double fpa_inert = Double.parseDouble(INPUT_FPA_Is.getText())*deg;
-    	double azi_inert = Double.parseDouble(INPUT_AZI_Is.getText())*deg;
-    	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg;
+    	double fpa_inert = Double.parseDouble(INPUT_FPA_Is.getText())*deg2rad;
+    	double azi_inert = Double.parseDouble(INPUT_AZI_Is.getText())*deg2rad;
+    	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg2rad;
     	double rm = DATA_MAIN[indx_target][0];
     	double omega = DATA_MAIN[indx_target][2];
     	double radius = Double.parseDouble(INPUT_ALT_Rs.getText())+rm;
     	double azimuth_rotFrame   = Math.atan(Math.tan(azi_inert)-omega*radius*Math.cos(lat_rotating)/(vel_inert*Math.cos(fpa_inert)*Math.cos(azi_inert)));
     	double fpa_rotFrame 	  = Math.atan(Math.tan(fpa_inert)*Math.cos(azimuth_rotFrame)/Math.cos(azi_inert));
     	double vel_rotFrame	      = vel_inert*Math.sin(fpa_inert)/Math.sin(fpa_rotFrame);
-    	INPUT_AZI_Rs.setText(""+df_VelVector.format(azimuth_rotFrame*rad));
-    	INPUT_FPA_Rs.setText(""+df_VelVector.format(fpa_rotFrame*rad));
+    	INPUT_AZI_Rs.setText(""+df_VelVector.format(azimuth_rotFrame*rad2deg));
+    	INPUT_FPA_Rs.setText(""+df_VelVector.format(fpa_rotFrame*rad2deg));
     	INPUT_VEL_Rs.setText(""+df_VelVector.format(vel_rotFrame));
     	} catch(java.lang.NumberFormatException enfe) {System.out.println(enfe);}
     }
@@ -2782,6 +2847,7 @@ public static String[] SequenceTVCFC    = { "",
     		Error_Indicator.setBackground(Color.white);
     		Error_Indicator.setForeground(Color.black);
     	}
+    	Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
     }
     public static void WriteErrorINP() {
         try {
@@ -2881,7 +2947,7 @@ public static String[] SequenceTVCFC    = { "",
 	        				} else if(j==10) {
 	        					double val = 0 ; 
 	        					try {
-	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j))*deg;
+	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j))*deg2rad;
 	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
 	        						System.out.println(eNFE);
 	        					}
@@ -3004,7 +3070,7 @@ public static String[] SequenceTVCFC    = { "",
 					       	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
 					    	ROW_SEQUENCE[8]  = "" + SequenceTVCFC[TVCsequence_controller_ID-1];
 					    	ROW_SEQUENCE[9]  = "" + ctrl_target_x_TVC;
-					    	ROW_SEQUENCE[10] = "" + ctrl_target_y_TVC*rad;
+					    	ROW_SEQUENCE[10] = "" + ctrl_target_y_TVC*rad2deg;
 					    	ROW_SEQUENCE[11] = "" + TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
 				       	} catch(java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
 	       	
@@ -3598,6 +3664,27 @@ public static void EXPORT_Case() {
        System.out.println("File "+CurrentWorkfile_Name+" saved.");
 	}
 }
+
+	public static double[] Spherical2Cartesian(double[] X) {
+	double[] result = new double[3];
+	result[0]  = X[0] * Math.cos(X[1]) * Math.cos(X[2]);
+	result[1]  = X[0] * Math.cos(X[1]) * Math.sin(X[2]);
+	result[2]  = -X[0] * Math.sin(X[1]);
+	// Filter small errors from binary conversion: 
+	for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
+	return result; 
+	}
+	
+	public static double[] Cartesian2Spherical(double[] X) {
+	double[] result = new double[3];
+	result[0]  = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
+	result[1]  = Math.acos(X[2]/result[0]);
+	result[2]  = Math.atan(X[1]/X[0]);
+	// Filter small errors from binary conversion: 
+	for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
+	return result; 
+	}
+	
 	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
 		ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
 		SEQUENCE_DATA = Read_SEQU();
@@ -3621,7 +3708,7 @@ public static void EXPORT_Case() {
 		           double y = Double.parseDouble(tokens[3]);
 		           
 		           double t = Double.parseDouble(tokens[0]);
-		           double fpa = Double.parseDouble(tokens[7])*rad;
+		           double fpa = Double.parseDouble(tokens[7])*rad2deg;
 		           
 		           double t_sequence = Double.parseDouble(tokens[41]);
 		           
@@ -3658,11 +3745,11 @@ public static void EXPORT_Case() {
 		   		        } else if (ctrl_TVC_curve==1) {
 		   		        	fpa_cmd =    PitchCurve.SquareRootPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
 		   		        	if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
-		  		             try { xyseries_FPA_cmd.add(t  , fpa_cmd*deg); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		  		             try { xyseries_FPA_cmd.add(t  , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } else if (ctrl_TVC_curve==2) {
 		    		    		fpa_cmd =   PitchCurve.LinearPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
 		    		    		if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
-		    		    	 		try { xyseries_FPA_cmd.add(t , fpa_cmd*deg); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    	 		try { xyseries_FPA_cmd.add(t , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
 		    		    } 
 		           
 		           //--------------------------------------------------------
@@ -3960,14 +4047,14 @@ public static void EXPORT_Case() {
 						             xx = Double.parseDouble(tokens[x]); } else {
 						            	 String x_axis_label = String.valueOf(axis_chooser.getSelectedItem());
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
-						            	 if(isangle) {xx = Double.parseDouble(tokens[x])*rad;} else {
+						            	 if(isangle) {xx = Double.parseDouble(tokens[x])*rad2deg;} else {
 						            		 		  xx = Double.parseDouble(tokens[x]);} 
 						            	 }
 						            if(y==3) {
 						             yy = Double.parseDouble(tokens[y]);} else {
 						            	 String x_axis_label = String.valueOf(axis_chooser2.getSelectedItem());
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
-						            	 if(isangle) {yy = Double.parseDouble(tokens[y])*rad;} else {
+						            	 if(isangle) {yy = Double.parseDouble(tokens[y])*rad2deg;} else {
 						             yy = Double.parseDouble(tokens[y]);	}
 						             }
 						         	xyseries10.add(xx , yy);
@@ -4297,8 +4384,8 @@ public static void EXPORT_Case() {
       try {
       while ((strLine = br.readLine()) != null )   {
        String[] tokens = strLine.split(" ");
-       double longitude = Double.parseDouble(tokens[1])*rad;     // Longitude 	[deg]
-       double latitude  = Double.parseDouble(tokens[2])*rad;     // Latitude 	[deg]
+       double longitude = Double.parseDouble(tokens[1])*rad2deg;     // Longitude 	[deg]
+       double latitude  = Double.parseDouble(tokens[2])*rad2deg;     // Latitude 	[deg]
        double local_elevation = GetLocalElevation(Elevation_File, longitude, latitude);
        //System.out.println(local_elevation);
        steps.add(local_elevation+" ");
@@ -4486,7 +4573,7 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 	           double y2 = Double.parseDouble(tokens[3])-RM;
 	          
 	           double x3 = Double.parseDouble(tokens[0]);
-	           double y3 = Double.parseDouble(tokens[5])*rad;
+	           double y3 = Double.parseDouble(tokens[5])*rad2deg;
 	           
 	           double x4 = 0 , y4=0;
 	           if (chartA3_fd==true){
