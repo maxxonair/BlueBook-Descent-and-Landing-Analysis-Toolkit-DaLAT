@@ -9,7 +9,9 @@ package GUI;
 //
 //
 //           Version 0.2 
-// 							- Updates: Controller organised in dedicated table. 
+// 							- Updates: PID controller organized in dedicated table. 
+//							           New table to implement system error simulation
+//									   Reference coordinate frames implemented
 //
 //-----------------------------------------------------------------------------------------------------------------------------------------
 import java.awt.BasicStroke;
@@ -122,7 +124,7 @@ import Controller.PitchCurve;
 
 public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
-    //												Main Container Frame Elements
+    //									     	Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
 	static String PROJECT_TITLE = "  BlueBook DaLAT-3DoF  V0.2 ALPHA";
     static int x_init = 1350;

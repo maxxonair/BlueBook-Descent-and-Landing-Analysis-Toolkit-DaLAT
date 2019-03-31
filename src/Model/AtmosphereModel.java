@@ -13,9 +13,9 @@ import Toolbox.Tool;
 
 public class AtmosphereModel  {
 //-------------------------------------------------------------------------------
-//  %
-//INPUT Files                                   %
-//  %
+//  																			   %
+//                            INPUT Files                                      %
+//  																			   %
 //-------------------------------------------------------------------------------
 public static String file_atm   = ""  ;
 public static String DELIMITER = ",";
