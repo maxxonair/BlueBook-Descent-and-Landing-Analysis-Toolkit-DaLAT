@@ -34,7 +34,7 @@ public static void  Set_File_Paths(int TARGET) throws URISyntaxException{
     if (  TARGET == 1 ){
     file_atm = dir + "/ATM/atm_MOON.csv";}
 	if (  TARGET == 2 ){
-	file_atm = dir + "/LandingSim-3DOF/ATM/atm_MARS.csv";}
+	file_atm = dir + "/ATM/atm_MARS.csv";}
 }
 
 public static List<atm_dataset> INITIALIZE_ATM_DATA(int TARGET) throws URISyntaxException{
