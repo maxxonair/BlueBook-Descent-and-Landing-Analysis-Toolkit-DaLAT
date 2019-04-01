@@ -144,10 +144,10 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	        public static double Zfo = 0 ; 
 	        
 	        static double azimuth_inertFrame = 0 ;
-	        static double fpa_inertFrame     = 0 ;
-	    		static double vel_inertFrame     = 0 ;
+	    	static double fpa_inertFrame     = 0 ;
+	    	static double vel_inertFrame     = 0 ;
 	    	
-	    		public static double fpa_dot =0;
+	    	public static double fpa_dot =0;
 	        
 	        public static double Thrust_Deviation=0; 
 	        public static double Thrust_Elevation=0;
@@ -202,7 +202,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 		    Lt    = DATA_MAIN[TARGET][3];    	// Average collision diameter (CO2)         [m]
 		    mu    = DATA_MAIN[TARGET][1];    	// Standard gravitational constant          []
 		    rm    = DATA_MAIN[TARGET][0];    	// Planets mean radius                      [m]
-		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     		        [rad/s]
+		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     		    [rad/s]
 		}
 		
 		public static boolean GroundClearance_Manager(double[] x) {
@@ -309,7 +309,8 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
 	    	int sequence_type_TM = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
 	 //System.out.println(sequence_type_TM);
-	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;	    	
+	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
+	    	
 	    	Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt,Thrust_Deviation, Thrust_max, engine_loss_indicator);	    	
 	    	// ((boolean) Flight_CTRL_PitchCntrl.get(active_sequence).get_engine_lost() ? 1 : 0)
 	    	if(Flight_CTRL_PitchCntrl.get(active_sequence).get_engine_lost()&&engine_loss_indicator==false) {engine_loss_indicator=true;}
@@ -393,24 +394,24 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 	    	if (x[2]-rm>200000 || TARGET == 1){ // In space conditions: 
 	    		// Set atmosphere properties to zero: 
 		    		rho   = 0; 																// Density 							[kg/m3]
-		    		qinf  = 0;																// Dynamic pressure 					[Pa]
-		    		T     = 0 ; 																// Temperature 						[K]
-		    		gamma = 0 ; 																// Heat capacity ratio 				[-]
-		    		R	  = 0; 																// Gas constant 						[J/kgK]
+		    		qinf  = 0;																// Dynamic pressure 				[Pa]
+		    		T     = 0 ; 															// Temperature 						[K]
+		    		gamma = 0 ; 															// Heat capacity ratio 				[-]
+		    		R	  = 0; 																// Gas constant 					[J/kgK]
 		    		Ma 	  = 0; 																// Mach number 						[-]
 		      	//----------------------------------------------------------------------------------------------
 	    	} else { // In atmosphere conditions (if any)
 		    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;       					// density                         [kg/m3]
 		    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         		// Dynamic pressure                [Pa]
 		    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		// Temperature                     [K]
-		    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        		// Heat capacity ratio			   [-]
+		    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        // Heat capacity ratio			   [-]
 		    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                        // Gas Constant                    [J/kgK]
-		    	 P      = rho * R * T;														// Ambient pressure 			   	   [Pa]
+		    	 P      = rho * R * T;														// Ambient pressure 			   [Pa]
 		    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 		// Mach number                     [-]
 	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
-	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       			// Continuum flow drag coefficient [-]
-		    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    		// Lift coefficient                [-]
-		    	 S 		= 4;																	// Projected surface area 		   [m2]
+	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       		// Continuum flow drag coefficient [-]
+		    	 Cd 	= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
+		    	 S 		= 4;																// Projected surface area 		   [m2]
 		     	//-----------------------------------------------------------------------------------------------
 		    	 D  = - qinf * S * Cd  - Thrust ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]
 		    	 L  =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
@@ -563,6 +564,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     		 engine_loss_switch=false; 
     	 }
     	 t_engine_loss = engine_off[1];
+    	 System.out.println(""+t_engine_loss);
     	 thrust_loss_perc = engine_off[2];
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
@@ -579,13 +581,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			IntegInput = dir + IntegratorInputPath[INTEGRATOR];
 		try {
 			double[] IntegINP = Tool.READ_INTEGRATOR_INPUT(IntegInput);
-		if        (INTEGRATOR == 1) {
+		if (INTEGRATOR == 1) {
 	         dp853 = new ClassicalRungeKuttaIntegrator(IntegINP[0]);
 		} else if (INTEGRATOR == 0) {
 	         dp853 = new DormandPrince853Integrator(IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3]);
-		} else if (INTEGRATOR == 2) {
+		} else if (INTEGRATOR ==2){
 			dp853 = new GraggBulirschStoerIntegrator(IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3]);
-		} else if (INTEGRATOR == 3) {
+		} else if (INTEGRATOR == 3){
 			dp853 = new AdamsBashforthIntegrator((int) IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3], IntegINP[4]);
 		} else {
 			// Default Value
@@ -790,20 +792,25 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        System.out.println("Integrator start");
 	        System.out.println("------------------------------------------");
 	        long startTime   = System.nanoTime();
+	        boolean integ_error=false; 
 	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        	System.out.println("ERROR: Integrator failed:");
 	        	System.out.println(eNBE);
+	        	integ_error=true; 
 	        } catch (org.apache.commons.math3.exception.NumberIsTooSmallException eMSS) {
 	        	System.out.println("ERROR: Integrator failed: Minimal stepsize reached");
+	        	integ_error=true;
 	        	System.out.println(eMSS);
 	        }
 			long endTime   = System.nanoTime();
 			long totalTime = endTime - startTime;
 			double  totalTime_sec = (double) (totalTime * 1E-9);
-	        System.out.println("Integration successful --> No Errors ");   
+			if(integ_error==false) {
+	        System.out.println("INTEGRATION SUCCESSFUL. ");   
 	        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
+			}
 	       
 		}
 }

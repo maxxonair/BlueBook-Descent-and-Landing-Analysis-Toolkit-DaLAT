@@ -9,9 +9,7 @@ package GUI;
 //
 //
 //           Version 0.2 
-// 							- Updates: PID controller organized in dedicated table. 
-//							           New table to implement system error simulation
-//									   Reference coordinate frames implemented
+// 							- Updates: Controller organised in dedicated table. 
 //
 //-----------------------------------------------------------------------------------------------------------------------------------------
 import java.awt.BasicStroke;
@@ -124,7 +122,7 @@ import Controller.PitchCurve;
 
 public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
-    //									     	Main Container Frame Elements
+    //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
 	static String PROJECT_TITLE = "  BlueBook DaLAT-3DoF  V0.2 ALPHA";
     static int x_init = 1350;
@@ -156,6 +154,10 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String MAP_MARS				= "/MAPS/Mars_MAP.jpg";
 	public static String MAP_SOUTHPOLE_MOON		= "/MAPS/Moon_South_Pole.jpg";
 	public static String EventHandler_File		= "/INP/eventhandler.inp";
+	public static String INTEG_File_01 			= "/INP/INTEG/00_DormandPrince853Integrator.inp";
+	public static String INTEG_File_02 			= "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp";
+	public static String INTEG_File_03 			= "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp";
+	public static String INTEG_File_04 			= "/INP/INTEG/03_AdamsBashfordIntegrator.inp";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -226,9 +228,9 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Altitude ref. Landing [m]", 
     										  "Altidue ref. mean [m]",
     										  "Radius [m]",
-    										  "Velocity [m/s]", 
-    										  "Flight Path angle [deg]", 
-    										  "Local Azimuth [deg]", 
+    										  "Velocity NED/ECEF [m/s]", 
+    										  "Flight Path angle NED/ECEF [deg]", 
+    										  "Local Azimuth NED/ECEF [deg]", 
     										  "Density [kg/m3]", 
     										  "Drag Force [N]", 
     										  "Lift Force [N]",
@@ -268,15 +270,15 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Xfo [N]",
     										  "Yfo [N]",
     										  "Zfo [N]",
-    										  "Vel cel [m/s]",
-    										  "FPA cel [m/s",
-    										  "AZ  cel [m/s]",
-    										  "FPA_dot [deg/s]",
+    										  "Vel NED/ECI [m/s]",
+    										  "FPA NED/ECI [m/s",
+    										  "AZ  NED/ECI [m/s]",
+    										  "FPA_dot ",
     										  "Thrust Elevation Angel Change [deg/s]",
     										  "Engine Loss Indicator [true/false]", 
-    										  "Velocity (NED) u [m/s]",
-    										  "Velocity (NED) v [m/s]",
-    										  "Velocity (NED) w [m/s]",
+    										  "Velocity u NED/ECEF [m/s]",
+    										  "Velocity v NED/ECEF [m/s]",
+    										  "Velocity w NED/ECEF [m/s]",
     										  "Quaternion q1",
     										  "Quaternion q2",
     										  "Quaternion q3",
@@ -423,6 +425,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator,Module_Indicator;
+    public static JLabel LABEL_IntegratorSetting_01, LABEL_IntegratorSetting_02, LABEL_IntegratorSetting_03, LABEL_IntegratorSetting_04, LABEL_IntegratorSetting_05; 
+    public static JTextField INPUT_IntegratorSetting_01, INPUT_IntegratorSetting_02, INPUT_IntegratorSetting_03, INPUT_IntegratorSetting_04, INPUT_IntegratorSetting_05;
     public static int vel_frame_hist = 1; 
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
@@ -468,6 +472,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JCheckBox p421_linp0;
     private static List<atm_dataset> Page03_storage = new ArrayList<atm_dataset>(); // |1| time |2| altitude |3| velocity
     static XYSeriesCollection ResultSet_MercatorMap = new XYSeriesCollection();
+    static XYSeriesCollection ResultSet_PolarMap = new XYSeriesCollection();
     	static int page1_plot_y =380;
     	@SuppressWarnings("rawtypes")
 		public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
@@ -501,6 +506,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	 MAP_VENUS = dir + MAP_VENUS;
     	 MAP_SOUTHPOLE_MOON = dir + MAP_SOUTHPOLE_MOON;
     	 EventHandler_File = dir + EventHandler_File;
+    	 INTEG_File_01 = dir + INTEG_File_01;
+    	 INTEG_File_02 = dir + INTEG_File_02;
+    	 INTEG_File_03 = dir + INTEG_File_03;
+    	 INTEG_File_04 = dir + INTEG_File_04; 
     	// ---------------------------------------------------------------------------------
     //       The following function contains all GUI elements of the main window
     // ---------------------------------------------------------------------------------
@@ -987,28 +996,28 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       P1_SidePanel.add(INDICATOR_TARGET);
         
       
-      JLabel LABEL_VTOUCHDOWN = new JLabel("Touchdown velocity [m/s]");
+      JLabel LABEL_VTOUCHDOWN = new JLabel("  Touchdown velocity [m/s]");
       LABEL_VTOUCHDOWN.setLocation(55, uy_p41 + 285  + 25 *0 );
       LABEL_VTOUCHDOWN.setSize(200, 20);
       LABEL_VTOUCHDOWN.setBackground(Color.black);
       LABEL_VTOUCHDOWN.setForeground(Color.black);
       LABEL_VTOUCHDOWN.setFont(small_font);
       P1_SidePanel.add(LABEL_VTOUCHDOWN);
-      JLabel LABEL_DELTAV = new JLabel("Total D-V [m/s]");
+      JLabel LABEL_DELTAV = new JLabel("  Total D-V [m/s]");
       LABEL_DELTAV.setLocation(55, uy_p41 + 285 + 25 *1 );
       LABEL_DELTAV.setSize(200, 20);
       LABEL_DELTAV.setBackground(Color.black);
       LABEL_DELTAV.setForeground(Color.black);
       LABEL_DELTAV.setFont(small_font);
       P1_SidePanel.add(LABEL_DELTAV);
-      JLabel LABEL_PROPPERC = new JLabel("Used Propellant [kg]");
+      JLabel LABEL_PROPPERC = new JLabel("  Used Propellant [kg]");
       LABEL_PROPPERC.setLocation(270, uy_p41 + 285 + 25 *0 );
       LABEL_PROPPERC.setSize(200, 20);
       LABEL_PROPPERC.setBackground(Color.black);
       LABEL_PROPPERC.setForeground(Color.black);
       LABEL_PROPPERC.setFont(small_font);
       P1_SidePanel.add(LABEL_PROPPERC);
-      JLabel LABEL_RESPROP = new JLabel("Residual Propellant [%]");
+      JLabel LABEL_RESPROP = new JLabel("  Residual Propellant [%]");
       LABEL_RESPROP.setLocation(260, uy_p41 + 285 + 25 *1 );
       LABEL_RESPROP.setSize(200, 20);
       LABEL_RESPROP.setBackground(Color.black);
@@ -1140,6 +1149,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       //axis_chooser2.setPreferredSize(new Dimension(150,25));
       axis_chooser2.setSize(180,25);
       axis_chooser2.setSelectedIndex(3);
+      axis_chooser2.setMaximumRowCount(20);
+      axis_chooser.setMaximumRowCount(20);
       axis_chooser2.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
     		  Update_DashboardFlexibleChart();
@@ -1584,7 +1595,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       //---------------------------------------------------------------------------------------------       
       JPanel IntegratorInputPanel = new JPanel();
       IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 14 );
-      IntegratorInputPanel.setSize(SidePanel_Width, 470);
+      IntegratorInputPanel.setSize(SidePanel_Width, 595);
       IntegratorInputPanel.setBackground(Color.white);
       IntegratorInputPanel.setForeground(Color.white);
       IntegratorInputPanel.setLayout(null);
@@ -1691,6 +1702,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  Integrator_chooser.setSelectedIndex(3);
 	  Integrator_chooser.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
+    		  Update_IntegratorSettings();
+    		  READ_INTEG();
     	  }
   	  } );
 	  Integrator_chooser.addFocusListener(new FocusListener() {
@@ -1709,9 +1722,126 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		  
 	  });
 	  IntegratorInputPanel.add(Integrator_chooser);
-	  
-	    JLabel LABEL_EventHandler = new JLabel("Stop conditions:");
-	    LABEL_EventHandler.setLocation(2, uy_p41 + 25 * 8   );
+	  //------------------------------------------------------------------------------------------------------------------
+      LABEL_IntegratorSetting_01 = new JLabel("");
+      LABEL_IntegratorSetting_01.setLocation(65, uy_p41 + 25 * 8 );
+      LABEL_IntegratorSetting_01.setSize(250, 20);
+      LABEL_IntegratorSetting_01.setBackground(Color.white);
+      LABEL_IntegratorSetting_01.setForeground(Color.black);
+      IntegratorInputPanel.add(LABEL_IntegratorSetting_01);
+      INPUT_IntegratorSetting_01 = new JTextField(10);
+      INPUT_IntegratorSetting_01.setLocation(2, uy_p41 + 25 * 8 );
+      INPUT_IntegratorSetting_01.setSize(60, 20);
+      INPUT_IntegratorSetting_01.setHorizontalAlignment(JTextField.LEFT);
+      INPUT_IntegratorSetting_01.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			WRITE_INTEG();
+		}
+    	  
+      });
+      IntegratorInputPanel.add(INPUT_IntegratorSetting_01);
+      LABEL_IntegratorSetting_02 = new JLabel("");
+      LABEL_IntegratorSetting_02.setLocation(65, uy_p41 + 25 * 9 );
+      LABEL_IntegratorSetting_02.setSize(250, 20);
+      LABEL_IntegratorSetting_02.setBackground(Color.white);
+      LABEL_IntegratorSetting_02.setForeground(Color.black);
+      IntegratorInputPanel.add(LABEL_IntegratorSetting_02);
+      INPUT_IntegratorSetting_02 = new JTextField(10);
+      INPUT_IntegratorSetting_02.setLocation(2, uy_p41 + 25 * 9 );
+      INPUT_IntegratorSetting_02.setSize(60, 20);
+      INPUT_IntegratorSetting_02.setHorizontalAlignment(JTextField.LEFT);
+      INPUT_IntegratorSetting_02.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			WRITE_INTEG();
+		}
+    	  
+      });
+      IntegratorInputPanel.add(INPUT_IntegratorSetting_02);
+      LABEL_IntegratorSetting_03 = new JLabel("");
+      LABEL_IntegratorSetting_03.setLocation(65, uy_p41 + 25 * 10 );
+      LABEL_IntegratorSetting_03.setSize(250, 20);
+      LABEL_IntegratorSetting_03.setBackground(Color.white);
+      LABEL_IntegratorSetting_03.setForeground(Color.black);
+      IntegratorInputPanel.add(LABEL_IntegratorSetting_03);
+      INPUT_IntegratorSetting_03 = new JTextField(10);
+      INPUT_IntegratorSetting_03.setLocation(2, uy_p41 + 25 * 10 );
+      INPUT_IntegratorSetting_03.setSize(60, 20);
+      INPUT_IntegratorSetting_03.setHorizontalAlignment(JTextField.LEFT);
+      INPUT_IntegratorSetting_03.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			WRITE_INTEG();
+		}
+    	  
+      });
+      IntegratorInputPanel.add(INPUT_IntegratorSetting_03);
+      LABEL_IntegratorSetting_04 = new JLabel("");
+      LABEL_IntegratorSetting_04.setLocation(65, uy_p41 + 25 * 11 );
+      LABEL_IntegratorSetting_04.setSize(250, 20);
+      LABEL_IntegratorSetting_04.setBackground(Color.white);
+      LABEL_IntegratorSetting_04.setForeground(Color.black);
+      IntegratorInputPanel.add(LABEL_IntegratorSetting_04);
+      INPUT_IntegratorSetting_04 = new JTextField(10);
+      INPUT_IntegratorSetting_04.setLocation(2, uy_p41 + 25 * 11 );
+      INPUT_IntegratorSetting_04.setSize(60, 20);
+      INPUT_IntegratorSetting_04.setHorizontalAlignment(JTextField.LEFT);
+      INPUT_IntegratorSetting_04.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			WRITE_INTEG();
+		}
+    	  
+      });
+      IntegratorInputPanel.add(INPUT_IntegratorSetting_04);
+      LABEL_IntegratorSetting_05 = new JLabel("");
+      LABEL_IntegratorSetting_05.setLocation(65, uy_p41 + 25 * 12 );
+      LABEL_IntegratorSetting_05.setSize(250, 20);
+      LABEL_IntegratorSetting_05.setBackground(Color.white);
+      LABEL_IntegratorSetting_05.setForeground(Color.black);
+      IntegratorInputPanel.add(LABEL_IntegratorSetting_05);
+      INPUT_IntegratorSetting_05 = new JTextField(10);
+      INPUT_IntegratorSetting_05.setLocation(2, uy_p41 + 25 * 12 );
+      INPUT_IntegratorSetting_05.setSize(60, 20);
+      INPUT_IntegratorSetting_05.setHorizontalAlignment(JTextField.LEFT);
+      INPUT_IntegratorSetting_05.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			WRITE_INTEG();
+		}
+    	  
+      });
+      
+      IntegratorInputPanel.add(INPUT_IntegratorSetting_05); 
+	  //------------------------------------------------------------------------------------------------------------------
+	    JLabel LABEL_EventHandler = new JLabel("Solver stop conditions:");
+	    LABEL_EventHandler.setLocation(2, uy_p41 + 25 * 13   );
 	    LABEL_EventHandler.setSize(150, 20);
 	    LABEL_EventHandler.setBackground(Color.white);
 	    LABEL_EventHandler.setForeground(Color.black);
@@ -1787,7 +1917,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    TABLE_EventHandler_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
 	    TABLE_EventHandler_ScrollPane.setBackground(Color.white);
 	    TABLE_EventHandler_ScrollPane.setSize(tablewidth_EventHandler,tableheight_EventHandler);
-	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 9 );
+	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 14 );
 	    TABLE_EventHandler_ScrollPane.setOpaque(false);
 	    IntegratorInputPanel.add(TABLE_EventHandler_ScrollPane);
 	    
@@ -1797,7 +1927,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
     	
         JButton BUTTON_AddEventHandler = new JButton("Add");
-        BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 8);
+        BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 13);
         BUTTON_AddEventHandler.setSize(65,20);
         BUTTON_AddEventHandler.setEnabled(true);
         BUTTON_AddEventHandler.setForeground(Color.black);
@@ -1812,7 +1942,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         IntegratorInputPanel.add(BUTTON_AddEventHandler);
         
         JButton BUTTON_DeleteEventHandler = new JButton("Delete");
-        BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 8);
+        BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 13);
         BUTTON_DeleteEventHandler.setSize(75,20);
         BUTTON_DeleteEventHandler.setEnabled(true);
         BUTTON_DeleteEventHandler.setForeground(Color.black);
@@ -1832,7 +1962,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         //--------------------------------------------------------------------------------------------- 
 	  
       JPanel SpaceCraftInputPanel = new JPanel();
-      SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 33 );
+      SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 38 );
       SpaceCraftInputPanel.setSize(SidePanel_Width, 600);
       SpaceCraftInputPanel.setBackground(Color.white);
       SpaceCraftInputPanel.setForeground(Color.white);
@@ -2661,6 +2791,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		Update_ErrorIndicator();
     	      Rotating2Inertial();
     	      UpdateFC_LIST();
+    	      Update_IntegratorSettings();
 
         MainGUI.setOpaque(true);
         return MainGUI;
@@ -3003,7 +3134,90 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         }
 }
 
-    
+    public static void Update_IntegratorSettings() {
+    	if(Integrator_chooser.getSelectedIndex()==0) {
+    		// Dormand Prince 853 Integrator 
+    		// 4 Inputs 
+    		LABEL_IntegratorSetting_01.setText("Min. step [s]");
+    		LABEL_IntegratorSetting_02.setText("Max. step [s]");
+    		LABEL_IntegratorSetting_03.setText("Abs. Tolerance []");
+    		LABEL_IntegratorSetting_04.setText("Rel. Tolerance []");
+    		LABEL_IntegratorSetting_05.setText("");
+    		//-------------------------------------------------------
+    		INPUT_IntegratorSetting_05.setText("");
+    		INPUT_IntegratorSetting_01.setEditable(true);
+    		INPUT_IntegratorSetting_02.setEditable(true);
+    		INPUT_IntegratorSetting_03.setEditable(true);
+    		INPUT_IntegratorSetting_04.setEditable(true);
+    		INPUT_IntegratorSetting_05.setEditable(false);
+    		
+    	} else if (Integrator_chooser.getSelectedIndex()==1) {
+    		// Standard Runge Kutta Integrator 
+    		// 1 input 
+    		LABEL_IntegratorSetting_01.setText("Step size [s]");
+    		LABEL_IntegratorSetting_02.setText("");
+    		LABEL_IntegratorSetting_03.setText("");
+    		LABEL_IntegratorSetting_04.setText("");
+    		LABEL_IntegratorSetting_05.setText("");
+    		//-------------------------------------------------------
+    		INPUT_IntegratorSetting_02.setText("");
+    		INPUT_IntegratorSetting_03.setText("");
+    		INPUT_IntegratorSetting_04.setText("");
+    		INPUT_IntegratorSetting_05.setText("");
+    		INPUT_IntegratorSetting_01.setEditable(true);
+    		INPUT_IntegratorSetting_02.setEditable(false);
+    		INPUT_IntegratorSetting_03.setEditable(false);
+    		INPUT_IntegratorSetting_04.setEditable(false);
+    		INPUT_IntegratorSetting_05.setEditable(false);
+    	} else if (Integrator_chooser.getSelectedIndex()==2) {
+    		// Gragg Bulirsch Stoer Integrator 
+    		// 4 Inputs 
+    		LABEL_IntegratorSetting_01.setText("Min. step [s]");
+    		LABEL_IntegratorSetting_02.setText("Max. step [s]");
+    		LABEL_IntegratorSetting_03.setText("Abs. Tolerance []");
+    		LABEL_IntegratorSetting_04.setText("Rel. Tolerance []");
+    		LABEL_IntegratorSetting_05.setText("");
+    		//-------------------------------------------------------
+    		INPUT_IntegratorSetting_05.setText("");
+    		INPUT_IntegratorSetting_01.setEditable(true);
+    		INPUT_IntegratorSetting_02.setEditable(true);
+    		INPUT_IntegratorSetting_03.setEditable(true);
+    		INPUT_IntegratorSetting_04.setEditable(true);
+    		INPUT_IntegratorSetting_05.setEditable(false);
+    	} else if (Integrator_chooser.getSelectedIndex()==3) {
+    		// Adams Bashford Integrator 
+    		// 5 Inputs 
+    		LABEL_IntegratorSetting_01.setText("Steps [-]");
+    		LABEL_IntegratorSetting_02.setText("Min. step [s]");
+    		LABEL_IntegratorSetting_03.setText("Max. step [s]");
+    		LABEL_IntegratorSetting_04.setText("Abs. Tolerance []");
+    		LABEL_IntegratorSetting_05.setText("Rel. Tolerance []");
+    		INPUT_IntegratorSetting_01.setEditable(true);
+    		INPUT_IntegratorSetting_02.setEditable(true);
+    		INPUT_IntegratorSetting_03.setEditable(true);
+    		INPUT_IntegratorSetting_04.setEditable(true);
+    		INPUT_IntegratorSetting_05.setEditable(true);
+    	} else {
+    		System.out.println("Selected integrator not recognized");
+    		LABEL_IntegratorSetting_01.setText("");
+    		LABEL_IntegratorSetting_02.setText("");
+    		LABEL_IntegratorSetting_03.setText("");
+    		LABEL_IntegratorSetting_04.setText("");
+    		LABEL_IntegratorSetting_05.setText("");
+    		//-------------------------------------------------------
+    		INPUT_IntegratorSetting_01.setText("");
+    		INPUT_IntegratorSetting_02.setText("");
+    		INPUT_IntegratorSetting_03.setText("");
+    		INPUT_IntegratorSetting_04.setText("");
+    		INPUT_IntegratorSetting_05.setText("");
+    		INPUT_IntegratorSetting_01.setEditable(false);
+    		INPUT_IntegratorSetting_02.setEditable(false);
+    		INPUT_IntegratorSetting_03.setEditable(false);
+    		INPUT_IntegratorSetting_04.setEditable(false);
+    		INPUT_IntegratorSetting_05.setEditable(false);
+    	}
+		LABEL_IntegratorSetting_05.requestFocusInWindow();
+    }
     public void UPDATE_Page01(){
 		  try {
 			READ_INPUT();
@@ -3022,7 +3236,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    	}
 	    	ResultSet_MercatorMap.removeAllSeries();
 	    	try {
-	    	ResultSet_MercatorMap = AddDataset_MAP();
+	    	ResultSet_MercatorMap = AddDataset_Mercator_MAP();
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
 	    		
 	    	}
@@ -3247,7 +3461,7 @@ try {
     // Read from PROP
     try {
         fstream = new FileInputStream(Prop_File);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading env.inp failed.");} 
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading prop.inp failed.");} 
   in3 = new DataInputStream(fstream);
   @SuppressWarnings("resource")
   BufferedReader br4 = new BufferedReader(new InputStreamReader(in3));
@@ -3281,6 +3495,119 @@ try {
   br4.close();
   fstream.close();
   } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
+  //--------------------------------------------------------------------------------------------------------
+  // Integrator settings 
+  //--------------------------------------------------------------------------------------------------------
+	String integ_file = null;  
+	if(Integrator_chooser.getSelectedIndex()==0) {
+		integ_file = INTEG_File_01; 
+	} else if (Integrator_chooser.getSelectedIndex()==1) {
+		integ_file = INTEG_File_02; 
+	} else if (Integrator_chooser.getSelectedIndex()==2) {
+		integ_file = INTEG_File_03; ;
+	} else if (Integrator_chooser.getSelectedIndex()==3) {
+		integ_file = INTEG_File_04; 
+	}
+    try {
+        fstream = new FileInputStream(integ_file);
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
+  in3 = new DataInputStream(fstream);
+  @SuppressWarnings("resource")
+  BufferedReader br5 = new BufferedReader(new InputStreamReader(in3));
+  k = 0;
+  try {
+  while ((strLine3 = br5.readLine()) != null )   {
+  	String[] tokens = strLine3.split(" ");
+  	InitialState = Double.parseDouble(tokens[0]);
+    if (k==0){
+    	INPUT_IntegratorSetting_01.setText(""+(InitialState)); 
+  	} else if (k==1){
+  		INPUT_IntegratorSetting_02.setText(""+(InitialState)); 
+  	} else if (k==2){
+  		INPUT_IntegratorSetting_03.setText(""+(InitialState)); 
+  	} else if (k==3){
+  		INPUT_IntegratorSetting_04.setText(""+(InitialState)); 
+  	} else if (k==4){
+  		INPUT_IntegratorSetting_05.setText(""+(InitialState)); 
+  	} else if (k==5){
+
+  	} else if (k==6){
+
+  	} else if (k==7){
+
+  	}
+  	k++;
+  }
+  in3.close();
+  br5.close();
+  fstream.close();
+  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
+  //-------------------------------------------------------------------------------------------------------------------
+    }
+    
+    public static void READ_INTEG() {
+    	  //--------------------------------------------------------------------------------------------------------
+    	  // Integrator settings 
+    	  //--------------------------------------------------------------------------------------------------------
+    		String integ_file = null;
+    		 FileInputStream  fstream = null; 
+    		if(Integrator_chooser.getSelectedIndex()==0) {
+    			integ_file = INTEG_File_01; 
+    		} else if (Integrator_chooser.getSelectedIndex()==1) {
+    			integ_file = INTEG_File_02; 
+    		} else if (Integrator_chooser.getSelectedIndex()==2) {
+    			integ_file = INTEG_File_03; ;
+    		} else if (Integrator_chooser.getSelectedIndex()==3) {
+    			integ_file = INTEG_File_04; 
+    		}
+    	    try {
+    	         fstream = new FileInputStream(integ_file);
+    	} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
+    	  DataInputStream in3 = new DataInputStream(fstream);
+    	  @SuppressWarnings("resource")
+    	  BufferedReader br5 = new BufferedReader(new InputStreamReader(in3));
+    	  int k = 0;
+    	  String strLine3="" ; 
+    	  try {
+    	  try {
+			while ((strLine3 = br5.readLine()) != null )   {
+			  	String[] tokens = strLine3.split(" ");
+			  	double InitialState = Double.parseDouble(tokens[0]);
+			    if (k==0){
+			    	INPUT_IntegratorSetting_01.setText(""+(InitialState)); 
+			  	} else if (k==1){
+			  		INPUT_IntegratorSetting_02.setText(""+(InitialState)); 
+			  	} else if (k==2){
+			  		INPUT_IntegratorSetting_03.setText(""+(InitialState)); 
+			  	} else if (k==3){
+			  		INPUT_IntegratorSetting_04.setText(""+(InitialState)); 
+			  	} else if (k==4){
+			  		INPUT_IntegratorSetting_05.setText(""+(InitialState)); 
+			  	} else if (k==5){
+
+			  	} else if (k==6){
+
+			  	} else if (k==7){
+
+			  	}
+			  	k++;
+			  }
+		} catch (NumberFormatException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	  try {
+    		  in3.close();
+	    	  br5.close();
+	    	  fstream.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+    	  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  	
     }
 
     public static void WRITE_INIT() {
@@ -3388,6 +3715,58 @@ try {
                 	r = Double.parseDouble(INPUT_CTRLMIN.getText()) ;
                 	wr.write(r+System.getProperty( "line.separator" ));	
             		} 
+		            }               
+            wr.close();
+            } catch (IOException eIO) {
+            	System.out.println(eIO);
+            }
+    }
+    
+    public static void WRITE_INTEG() {
+    	String integ_file = null;  
+    	int steps =0 ; 
+    	if(Integrator_chooser.getSelectedIndex()==0) {
+    		integ_file = INTEG_File_01; 
+    		steps = 4; 
+    	} else if (Integrator_chooser.getSelectedIndex()==1) {
+    		integ_file = INTEG_File_02; 
+    		steps =1;
+    	} else if (Integrator_chooser.getSelectedIndex()==2) {
+    		integ_file = INTEG_File_03; 
+    		steps =4;
+    	} else if (Integrator_chooser.getSelectedIndex()==3) {
+    		integ_file = INTEG_File_04; 
+    		steps =5;
+    	}
+        try {
+            File fac = new File(integ_file);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            double r = 0;
+            FileWriter wr = new FileWriter(fac);
+            for (int i = 0; i<steps; i++)
+            {
+            		   if(i==0) {
+        			r = Double.parseDouble(INPUT_IntegratorSetting_01.getText()) ;
+        			wr.write(r+System.getProperty( "line.separator" ));
+            	} else if (i==1) {
+        			r = Double.parseDouble(INPUT_IntegratorSetting_02.getText()) ;
+        			wr.write(r+System.getProperty( "line.separator" ));
+            	} else if (i==2) {
+        			r = Double.parseDouble(INPUT_IntegratorSetting_03.getText()) ;
+        			wr.write(r+System.getProperty( "line.separator" ));
+            	} else if (i==3) {
+        			r = Double.parseDouble(INPUT_IntegratorSetting_04.getText()) ;
+        			wr.write(r+System.getProperty( "line.separator" ));
+            	} else if (i==4) {
+        			r = Double.parseDouble(INPUT_IntegratorSetting_05.getText()) ;
+        			wr.write(r+System.getProperty( "line.separator" ));
+            	} 
 		            }               
             wr.close();
             } catch (IOException eIO) {
@@ -4195,7 +4574,7 @@ public static void EXPORT_Case() {
 		       CPXX4.setPreferredSize(new Dimension(1300, 660));
 		       PageX04_GroundClearance.add(CPXX4, BorderLayout.CENTER);	
 	}
-	public static XYSeriesCollection AddDataset_MAP() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
+	public static XYSeriesCollection AddDataset_Mercator_MAP() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
             FileInputStream fstream = null;
@@ -4228,9 +4607,38 @@ public static void EXPORT_Case() {
                   } catch(NullPointerException eNPI) { System.out.print(eNPI); }
         return ResultSet_MercatorMap;          
        }
+	public static XYSeriesCollection AddDataset_Polar_MAP() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
+       	XYSeries xyseries10 = new XYSeries("", false, true); 
+
+            FileInputStream fstream = null;
+            		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+                  DataInputStream in = new DataInputStream(fstream);
+                  BufferedReader br = new BufferedReader(new InputStreamReader(in));
+                  String strLine;
+                  try {
+                  while ((strLine = br.readLine()) != null )   {
+		           String[] tokens = strLine.split(" ");
+		           double y = Double.parseDouble(tokens[2])*180/PI;  // Latitude [deg[
+		           double x = Double.parseDouble(tokens[1])*180/PI;	 // Longitude [deg]
+		           
+		           while (x>360 || x<0 || y>90 || y<-90){
+				                  if (x > 360){x=x-360;
+				           } else if (x <   0){x=x+360; }
+				           
+				                  if (y>90){ y=y-180;
+				           } else if (y<-90){ y=y+180;}
+		           }
+		           //System.out.println(x + " | " + y);
+		         	xyseries10.add(x,y);
+		           }
+           in.close();
+           ResultSet_PolarMap.addSeries(xyseries10); 
+                  } catch(NullPointerException eNPI) { System.out.print(eNPI); }
+        return ResultSet_PolarMap;          
+       }
 	public static void CreateChart_MercatorMap() throws IOException{
 		 try {
-		        ResultSet_MercatorMap = AddDataset_MAP(); 
+		        ResultSet_MercatorMap = AddDataset_Mercator_MAP(); 
 		        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {
 		        	System.out.println(" Error read for plot X40");
 		        }
@@ -4308,14 +4716,14 @@ public static void EXPORT_Case() {
 		       PageX04_Map.add(CPXX4, BorderLayout.CENTER);	
 	}
 	public static void CreateChart_PolarMap() throws IOException {
-		ResultSet_MercatorMap.removeAllSeries();
+		ResultSet_PolarMap.removeAllSeries();
         try {
-        ResultSet_MercatorMap = AddDataset_MAP(); 
+        	ResultSet_PolarMap = AddDataset_Polar_MAP(); 
         } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {
         	System.out.println(" Error read for plot X40");
         }
 
-        chart_PolarMap = ChartFactory.createPolarChart("", ResultSet_MercatorMap, false, false, false);
+        chart_PolarMap = ChartFactory.createPolarChart("", ResultSet_PolarMap, false, false, false);
   
 		PolarPlot plot =  (PolarPlot) chart_PolarMap.getPlot();
 		MyDefaultPolarItemRenderer renderer = new MyDefaultPolarItemRenderer();

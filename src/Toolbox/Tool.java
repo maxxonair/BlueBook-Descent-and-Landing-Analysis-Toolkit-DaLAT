@@ -74,7 +74,8 @@ public class Tool{
         System.out.println("READ: Integrator setup successful.");
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Integrator setup read failed.");}
         return readINP;
-    }   
+    }
+    
     public static double[] READ_PROPULSION_INPUT(String PropulsionInputFile) throws IOException{
     double[] readINP = new double[10];
     String INPUT_FILE = PropulsionInputFile;
@@ -101,7 +102,8 @@ public class Tool{
         System.out.println("READ: Propulsion setup successful.");
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Propulsion setup read failed.");}
         return readINP;
-    }    
+    }
+    
     public static double[] READ_SPACECRAFT_INPUT(String SpacecraftInputFile) throws IOException{
     double[] readINP = new double[10];
     String INPUT_FILE = SpacecraftInputFile;
@@ -127,5 +129,6 @@ public class Tool{
         System.out.println("READ: Spacecraft setup successful.");
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Spacecraft setup read failed.");}
         return readINP;
-    }	
+    }
+	
 }

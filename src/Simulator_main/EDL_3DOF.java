@@ -51,8 +51,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 	    public static int[] trigger_type_translator = {0,2,3};
 	    	public static String[] str_target = {"Earth","Moon","Mars","Venus"};
-	    	static double deg = PI/180.0; 		//Convert degrees to radians
-	    	static double rad = 180/PI; 		//Convert radians to degrees
+	    	static double deg2rad = PI/180.0; 		//Convert degrees to radians
+	    	static double rad2deg = 180/PI; 		//Convert radians to degrees
 		//............................................                                       .........................................
 		//
 	    //	                                                         File Paths
@@ -139,12 +139,28 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	        public static double groundtrack = 0; 
 	        public static double phimin=0;
 	        public static double tetamin=0;
+	      	public static double fpa_dot =0;
+	      	
+	        public static double Xfo = 0 ;
+	        public static double Yfo = 0 ; 
+	        public static double Zfo = 0 ; 
+	        
+	        static double azimuth_inertFrame = 0 ;
+	    	static double fpa_inertFrame     = 0 ;
+	    	static double vel_inertFrame     = 0 ;
 	        
 	        public static double elevationangle; 
 	        public static double const_tzer0=0;
 	        public static boolean const_isFirst =true; 
 	        
+	        public static double Thrust_Deviation=0; 
+	        public static double Thrust_Elevation=0;
+	        public static double Thrust_Deviation_mo = 0; 
+	        public static double Thrust_Deviation_dot =0;
+	        public static double TE_save =0;
+	        
 	        public static double TTM_max = 5.0;
+	        public static boolean engine_loss_indicator=false;
 	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
@@ -541,10 +557,12 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
-	                double CTRL_Error =0;
+	                double CTRL_TM_Error =0;
+	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
 	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
-	                CTRL_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
+	                CTRL_TM_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
+	                CTRL_TVC_Error=Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_ERROR();  
 	                }
 	                CTRL_Time=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
 	                if( t > twrite ) {
@@ -576,7 +594,6 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  flowzone+ " " +
 	                    		  qinf+ " " +
 	                    		  CdC+ " " +
-	                    		  Thrust+ " " +
 	                    		  Cdm+ " " +
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
@@ -590,9 +607,20 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (acc_deltav)+" "+
 	                    		  active_sequence+" "+
 	                    		  (groundtrack/1000)+" "+
-	                    		  CTRL_Error+" "+
+	                    		  CTRL_TM_Error+" "+
+	                    		  CTRL_TVC_Error+" "+
 	                    		  CTRL_Time+" "+
-	                    		  elevationangle*rad+" "
+	                    		  (PI-y[4]-Thrust_Deviation)+" "+
+	                    		  Thrust_Deviation+" "+
+	                    		  Xfo+" "+
+	                    		  Yfo+" "+
+	                    		  Zfo+" "+
+	                    		  vel_inertFrame+" "+
+	                    		  fpa_inertFrame+" "+
+	                    		  azimuth_inertFrame+" "+
+	                    		  fpa_dot*rad2deg+" "+
+	                    		  Thrust_Deviation_dot*rad2deg+" "+
+	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "
 	                    		  );
 	                }
 	                if(isLast) {
@@ -677,20 +705,25 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        System.out.println("Integrator start");
 	        System.out.println("------------------------------------------");
 	        long startTime   = System.nanoTime();
+	        boolean integ_error=false; 
 	        try {
 	        dp853.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        	System.out.println("ERROR: Integrator failed:");
 	        	System.out.println(eNBE);
+	        	integ_error=true; 
 	        } catch (org.apache.commons.math3.exception.NumberIsTooSmallException eMSS) {
 	        	System.out.println("ERROR: Integrator failed: Minimal stepsize reached");
 	        	System.out.println(eMSS);
+	        	integ_error=true; 
 	        }
 			long endTime   = System.nanoTime();
 			long totalTime = endTime - startTime;
 			double  totalTime_sec = (double) (totalTime * 1E-9);
-	        System.out.println("Integration successful --> No Errors ");   
-	        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
+			if(integ_error==false) {
+		        System.out.println("INTEGRATION SUCCESSFUL. ");   
+		        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
+				}
 	       
 		}
 }

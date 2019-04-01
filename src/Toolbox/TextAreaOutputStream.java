@@ -1,4 +1,5 @@
 package Toolbox;
+import java.awt.Color;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -35,7 +36,18 @@ public class TextAreaOutputStream extends OutputStream {
          final String text = sb.toString() + "\n";
          SwingUtilities.invokeLater(new Runnable() {
             public void run() {
+               boolean isFound = text.indexOf("commons.math3.exception")!=-1? true: false; 
+               if(isFound) {
+               textArea.setSelectedTextColor(Color.red);
+               textArea.append("\n");
+               textArea.append("ERROR: Integrator FAILED. ");
+               textArea.append("\n");
                textArea.append(text);
+               textArea.append("\n");
+               } else {
+            	   
+            	   textArea.append(text); 
+               }
             }
          });
          sb.setLength(0);

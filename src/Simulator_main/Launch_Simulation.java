@@ -1,16 +1,5 @@
 package Simulator_main;
-//------------------------------------------------------------------------------------------------------------
-//										Launch SIM.jar
-//------------------------------------------------------------------------------------------------------------
-// 
-// 31/03/2019
-//	Author: M Braun
-//
-//	Contents : - This functions reads the required input files to initialize the solver 
-//			   - The function selects the respective solver module (3DOF/6DOF, ascent/descent)
-//
-//
-//------------------------------------------------------------------------------------------------------------
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.BufferedReader;
@@ -31,12 +20,13 @@ public class Launch_Simulation implements ActionListener{
    	static double[] x_init =new double[20];	
    	public static String INPUT_FILE;
     public static double PI    = 3.14159265359;                 // PI                                       [-]
-    public static double kB    = 1.380650424e-23;               // Boltzmann constant                       [SI]    
-    public static double G     = 1.48808E-34;					// Gravitational Constant 				    [SI]
-    public static int TARGET; 									// Target body index 						[-]
-	static double deg2rad = PI/180.0; 							// Convert degrees to radians
-	static double rad2deg = 180/PI; 								// Convert radians to degrees
+    public static double kB    = 1.380650424e-23;               // Boltzmann constant                         [SI]    
+    public static double G     = 1.48808E-34;
+    public static int TARGET; 
+	static double deg2rad = PI/180.0; 		//Convert degrees to radians
+	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
+   	//System.out.println(INPUT_FILE);
 	
 	public static void UPDATE_SequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
 		   if (SEQUENCE_DATA.size()==0){
