@@ -145,9 +145,9 @@ public class Plotting_3DOF implements  ActionListener {
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String ICON_File   	 		= "/lib/BB_icon.png";
-    public static String ERROR_File 			= "/INP/ErrorFile.inp";
+    public static String ERROR_File 				= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
-    public static String CONTROLLER_File		= "CTRL/ctrl_main.inp";
+    public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
 	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
 	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
