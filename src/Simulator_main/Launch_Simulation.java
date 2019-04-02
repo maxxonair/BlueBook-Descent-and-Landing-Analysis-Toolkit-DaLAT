@@ -47,8 +47,7 @@ public class Launch_Simulation implements ActionListener{
 				SEQUENCE_DATA.add(NewElement);
 			}	  
 		   } 
-	   }
-	
+	   }	
     public static boolean READ_INPUT() throws IOException{
    String dir = System.getProperty("user.dir");
        	   	 INPUT_FILE = dir+"/INP/init.inp";
@@ -77,8 +76,7 @@ public class Launch_Simulation implements ActionListener{
         read_state = true;
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return read_state;
-    }
-    
+    }    
     public static List<SequenceElement> READ_SEQUENCE() throws IOException{	
     	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
     	 String dir = System.getProperty("user.dir");
@@ -115,8 +113,7 @@ public class Launch_Simulation implements ActionListener{
         br.close();
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return SEQUENCE_DATA;
-    }
-    
+    }    
     public static Double[][] READ_Inertia() throws FileNotFoundException{
     	Double[][] INERTIA = new Double[3][3];
    	 String dir = System.getProperty("user.dir");
@@ -135,8 +132,7 @@ public class Launch_Simulation implements ActionListener{
 		br.close();
 		} catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);}
     	return INERTIA;
-    }
-    
+    }    
     public static List<StopCondition> READ_EventHandler(double rm, double refElevation) throws IOException{
          	 List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
 		   	 String dir = System.getProperty("user.dir");
@@ -157,8 +153,7 @@ public class Launch_Simulation implements ActionListener{
        }catch(NullPointerException eNPE) { System.out.println(eNPE);}
        br.close();
        return STOP_Handler; 
-    }
-    
+    }    
     public static double[]  READ_ErrorFile() throws IOException{
     	double[] engine_toff=new double[3];
     	engine_toff[0]=1;
@@ -239,20 +234,20 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Ascent 3DOF Module running");
 		    	Ascent_3DOF.Launch_Integrator(
-		    			INTEGRATOR, 			 // Integrator Index 					 [-]
-						target, 				 // Target index 						 [-]
-						x_init[0]*deg2rad, 			 // Longitude 						 [rad]
-						x_init[1]*deg2rad, 			 // Latitude 					     [rad]
-						x_init[2]+x_init[11]+rm, // Radius 								 [m]
-						x_init[3], 				 // Velocity 							 [m/s]
-						x_init[4]*deg2rad, 			 // Flight path angle 			[rad]
+		    			INTEGRATOR, 				 // Integrator Index 					 [-]
+						target, 				 	 // Target index 						 [-]
+						x_init[0]*deg2rad, 			 // Longitude 						 	 [rad]
+						x_init[1]*deg2rad, 			 // Latitude 					     	 [rad]
+						x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
+						x_init[3], 				 	 // Velocity 							 [m/s]
+						x_init[4]*deg2rad, 			 // Flight path angle 					 [rad]
 						x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
-						x_init[6], 				 // Initial S/C mass 					 [kg]
-						x_init[7], 			   	 // Maximum integ. time 				 [s]
-						x_init[10],				 // Write out delta time 				 [s]
-						x_init[11],				 // Reference Elevation  				 [m]
-						SEQUENCE_DATA,			 // Sequence data set	LIST		     [-]
-						STOP_Handler	,		 // Event Handler 	LIST			     [-]
+						x_init[6], 				 	 // Initial S/C mass 					 [kg]
+						x_init[7], 			   	 	 // Maximum integ. time 				 [s]
+						x_init[10],				 	 // Write out delta time 				 [s]
+						x_init[11],				 	 // Reference Elevation  				 [m]
+						SEQUENCE_DATA,			 	 // Sequence data set	LIST		     [-]
+						STOP_Handler	,		 	 // Event Handler 	LIST			     [-]
 						engine_off
 						);
 	    	} else if (descent_ascent_switch==2) {

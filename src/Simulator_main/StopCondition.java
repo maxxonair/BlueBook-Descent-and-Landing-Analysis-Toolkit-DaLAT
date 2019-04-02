@@ -4,7 +4,7 @@ import org.apache.commons.math3.ode.events.EventHandler;
 
 public class StopCondition{
 	
-	private EventHandler StopHandler ;
+	public  EventHandler StopHandler ;
 	private double val_is ;
 	private double val_condition;
 	private double ConditionOption;

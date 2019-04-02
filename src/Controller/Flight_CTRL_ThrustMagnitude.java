@@ -35,14 +35,13 @@ public class Flight_CTRL_ThrustMagnitude{
 	private double CTRL_TIME;		// controller Time 				[s]
 	private double rm;				// Mean Radius					[m]
 	private double refElev;			// Reference Elevation			[m]
+	private int ctrl_type; 		// Controller Type 				[]
 	
 	private double  tzero; 					// Sequence Time 						[s]
 	private boolean tswitch =true;          // Time switch to start controller time [s]
 	//-----------------------------------------------------------------------------
 	static String INPUT_FILE = null; 
-	public static String ControllerInputFile_1 = "/CTRL/cntrl_";
-    public static String ControllerInputFile_2 = ".inp"; 
-	public static String ControllerInputFile; 
+	public static String ControllerInputFile = "/CTRL/ctrl_main.inp";
 	//-----------------------------------------------------------------------------
 	public Flight_CTRL_ThrustMagnitude(int ctrl_ID, boolean ctrl_on, double[] x, double m0, double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit, double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, double throttle_cmd, double thrust_cmd, int ctrl_curve, double ctrl_dt, double P_GAIN, double I_GAIN, double D_GAIN, double cmd_min, double cmd_max, double rm, double refElev) {
 		this.ctrl_ID	  = ctrl_ID;
@@ -74,51 +73,56 @@ public class Flight_CTRL_ThrustMagnitude{
 		
 		double[] readINP;
 		try {
-			readINP = READ_CTRL_INPUT(Integer.toString(ctrl_ID));
-			if (readINP[0]==1) {this.ctrl_on=true;}else {this.ctrl_on=false;}
+			readINP = READ_CTRL_INPUT(ctrl_ID);
+		 this.ctrl_type = (int) readINP[0];
 		 this.P_GAIN  = readINP[1];
 		 this.I_GAIN  = readINP[2];
 		 this.D_GAIN  = readINP[3];
-		 this.cmd_max = readINP[4];
-		 this.cmd_min = readINP[5];
+		 this.cmd_min = readINP[4];
+		 this.cmd_max = readINP[5];
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e);
 			System.out.println("ERROR: Controller 01 setting read failed.");
 		}
+
 	}
 	
-    public static double[] READ_CTRL_INPUT(String Controller_ID) throws IOException{
-        double[] readINP = new double[20];
-        if(Integer.parseInt(Controller_ID)!=0) {
-		        String dir = System.getProperty("user.dir");
-		        INPUT_FILE = dir+ControllerInputFile_1+""+Controller_ID+""+ControllerInputFile_2;
-		       // System.out.println(INPUT_FILE);
-		       	double InitialState = 0;
-		   	    FileInputStream fstream = null;
-		       	try {
-		   	    fstream = new FileInputStream(INPUT_FILE);
-		   	    } catch(IOException eIO) { System.out.println(eIO);}
-		            DataInputStream in = new DataInputStream(fstream);
-		   			BufferedReader br = new BufferedReader(new InputStreamReader(in));
-		           String strLine;
-		           int k = 0;
-		           try {
-		           while ((strLine = br.readLine()) != null )   {
-		           	String[] tokens = strLine.split(" ");
-		           	InitialState = Double.parseDouble(tokens[0]);
-		           	readINP[k]= InitialState;
-		           	k++;
-		           }
-		           fstream.close();
-		           in.close();
-		           br.close();
-		           } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+    public static double[] READ_CTRL_INPUT(int Controller_ID) throws IOException{
+        double[] readCTRL = new double[6]; 
+    	if(Controller_ID!=0) {
+        String dir = System.getProperty("user.dir");
+        INPUT_FILE = dir+ControllerInputFile;
+   	    FileInputStream fstream = null;
+       	try {
+   	    fstream = new FileInputStream(INPUT_FILE);
+   	    } catch(IOException eIO) { System.out.println(eIO);}
+            DataInputStream in = new DataInputStream(fstream);
+   			BufferedReader br = new BufferedReader(new InputStreamReader(in));
+   			String strLine;
+           try {
+           while ((strLine = br.readLine()) != null )   {
+              	String[] tokens = strLine.split(" ");
+        	   if(Integer.parseInt(tokens[0])==Controller_ID) {
+			           	readCTRL[0]= Double.parseDouble(tokens[1]);
+			           	readCTRL[1]= Double.parseDouble(tokens[2]);
+			           	readCTRL[2]= Double.parseDouble(tokens[3]);
+			           	readCTRL[3]= Double.parseDouble(tokens[4]);
+			           	readCTRL[4]= Double.parseDouble(tokens[5]);
+			           	readCTRL[5]= Double.parseDouble(tokens[6]);
+        	   }
+           }
+           fstream.close();
+           in.close();
+           br.close();
+           } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         }
-           return readINP;
+    	return readCTRL; 
        }
        
-	
+	public int get_ctrl_type() {
+		return ctrl_type; 
+	}
 	public int get_ctrl_ID() {
 		return ctrl_ID;
 	}
@@ -171,17 +175,18 @@ public class Flight_CTRL_ThrustMagnitude{
     	if(ctrl_on) {
  		    double target_velocity=0;
  		    boolean ContinuousBurn = false;
+ 		   // System.out.println(ctrl_ID+" | "+ P_GAIN);
  		    //------------------------------------------------------------------------------------------------------------------
  		    //									Select Reference Landing Path 
  		    //------------------------------------------------------------------------------------------------------------------
  		    if        (ctrl_curve==0) {
-		         ContinuousBurn = true;
+		         ContinuousBurn  =    true;
 		    } else if (ctrl_curve==1) {
  		         target_velocity =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } else if (ctrl_curve==2) {
- 		    	 target_velocity =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
+ 		    	 target_velocity =    LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } else if (ctrl_curve==3) {
- 		    	 target_velocity =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
+ 		    	 target_velocity =    LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, alt);
  		    } 
  		    //------------------------------------------------------------------------------------------------------------------
  		    //									No Reference Landing curve set -> Continuous burn 
@@ -249,7 +254,7 @@ public class Flight_CTRL_ThrustMagnitude{
 		this.thrust_max   = thrust_max;
 		this.thrust_min   = thrust_min;
 		this.ctrl_curve   = ctrl_curve; 
-		this.ctrl_dt	      = ctrl_dt; 
+		this.ctrl_dt	  = ctrl_dt; 
 		if(ctrl_tinit!=-1&&tswitch) {tzero=ctrl_tinit;tswitch=false;}
 		CTRL_TIME = ctrl_tinit-tzero; 
 	}

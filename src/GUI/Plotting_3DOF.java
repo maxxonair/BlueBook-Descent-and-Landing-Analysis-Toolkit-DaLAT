@@ -282,7 +282,8 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Quaternion q1",
     										  "Quaternion q2",
     										  "Quaternion q3",
-    										  "Quaternion q4"
+    										  "Quaternion q4",
+    										  "Main engine ISP [s]"
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
@@ -347,20 +348,12 @@ public static String[] SequenceType = {"Coasting (No Thrust/ FC OFF)",
 									   "Reference Angle Control (FC ON)",
 									   "Full TVC Reference Trajectory Control (FC ON)"
 };
-public static String[] SequenceFC    = { "",
-										 "Flight Controller 1"};
+public static String[] SequenceFC    = { ""};
 public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
 										 "SquareRoot Velocity-Altitude",
 										 "Hover Parabolic entry"
 };
-public static String[] SequenceTVCFC    = { "",
-											"Flight Controller 1", 
-										    "Flight Controller 2",
-										    "Flight Controller 3",
-										    "Flight Controller 4",
-										    "Flight Controller 5",
-										    "Flight Controller 6",
-										    "Flight Controller 7"};
+public static String[] SequenceTVCFC    = { ""};
 public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 											"Spherical Coordinate Frame (NED)"};
 
@@ -3044,7 +3037,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
             				} else if(j==4) {
             					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
             					int val = 0 ; 
-            					for(int k=0;k<SequenceFC.length;k++) { if(str_val.equals(SequenceFC[k])){val=k;} }
+            					//System.out.println(""+SequenceFC.length);
+            					try {
+            					for(int k=0;k<SequenceFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceFCCombobox.getItemAt(k) )){val=k+1;} }
+            					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
             					row = row + val + " ";
             				} else if(j==5) {
             					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
@@ -3066,7 +3062,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
             					}
             					int val = 0 ; 
             					try {
-            					for(int k=0;k<SequenceTVCFC.length;k++) { if(str_val.equals(SequenceTVCFC[k])){val=k+1;} }
+            					for(int k=0;k<SequenceTVCFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceTVCFCCombobox.getItemAt(k))){val=k+1;} }
             					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
             					row = row + val + " ";
 	        				} else if(j==9) {
@@ -3271,14 +3267,21 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	       	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
 	       	int ctrl_target_curve       = Integer.parseInt(tokens[7]);
 	    	ROW_SEQUENCE[0] = ""+sequence_ID;
+	       	try {
 	    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
+	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
 	    	ROW_SEQUENCE[2] = ""+trigger_end_value;
+	       	try {
 	    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
-	    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID];
+	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
+	       	try {
+	    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
+	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
 	    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
 	    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
+	       	try {
 	    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];		
-	    	
+	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
 				       	try {
 					       	int TVCsequence_controller_ID   = Integer.parseInt(tokens[8]);
 					       	double ctrl_target_x_TVC        = Double.parseDouble(tokens[9]);
@@ -3413,59 +3416,17 @@ try {
         br.close();
         fstream.close();
         } catch (NullPointerException eNPE) { System.out.println(eNPE);}
-      //------------------------------------------------------------------
-      // Read from CTRL
-      try {
-          fstream = new FileInputStream(CTR_001_File);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading ctrl.inp failed.");} 
-    DataInputStream in3 = new DataInputStream(fstream);
-    @SuppressWarnings("resource")
-		BufferedReader br3 = new BufferedReader(new InputStreamReader(in3));
-    String strLine3;
-    k = 0;
-    try {
-    while ((strLine3 = br3.readLine()) != null )   {
-    	String[] tokens = strLine3.split(" ");
-    	InitialState = Double.parseDouble(tokens[0]);
-      if (k==0){
-      int ctr_on_off = (int) InitialState; 
-		if(ctr_on_off==1) {
-			p421_linp0.setSelected(true);
-		} else {
-			p421_linp0.setSelected(false);
-		}
-		if(p421_linp0.isSelected()) {p421_linp0.setBackground(Color.green);}else {p421_linp0.setBackground(Color.red);}
-    	} else if (k==1){
-    		INPUT_PGAIN.setText(df_X4.format(InitialState)); 
-    	//System.out.println(RM);
-    	} else if (k==2){
-    		INPUT_IGAIN.setText(df_X4.format(InitialState));
-    	} else if (k==3){
-    		INPUT_DGAIN.setText(df_X4.format(InitialState));
-    	} else if (k==4){
-    		INPUT_CTRLMAX.setText(decf.format(InitialState));
-    	} else if (k==5){
-    		INPUT_CTRLMIN.setText(decf.format(InitialState));
-    	} else if (k==6){
 
-    	} else if (k==7){
-
-    	}
-    	k++;
-    }
-    in3.close();
-    br3.close();
-    fstream.close();
-    } catch (NullPointerException eNPE) { System.out.println(eNPE);}
     //------------------------------------------------------------------
     // Read from PROP
     try {
         fstream = new FileInputStream(Prop_File);
 } catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading prop.inp failed.");} 
-  in3 = new DataInputStream(fstream);
+  DataInputStream in3 = new DataInputStream(fstream);
   @SuppressWarnings("resource")
   BufferedReader br4 = new BufferedReader(new InputStreamReader(in3));
   k = 0;
+  String strLine3;
   try {
   while ((strLine3 = br4.readLine()) != null )   {
   	String[] tokens = strLine3.split(" ");
@@ -3932,7 +3893,7 @@ public static void IMPORT_Case() throws IOException {
 			    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
 			    	ROW_SEQUENCE[2] = ""+trigger_end_value;
 			    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
-			    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID];
+			    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
 			    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
 			    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
 			    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
@@ -4010,7 +3971,7 @@ public static void EXPORT_Case() {
     	    	} else if (col==4) {
     	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
     	    		int val=0;
-    	    		for(int k=0;k<SequenceFC.length;k++) {if(str_val.equals(SequenceFC[k])){val=k;}}
+    	    		for(int k=0;k<SequenceFC.length;k++) {if(str_val.equals(SequenceFC[k])){val=k+1;}}
     	    		os.print(val+ BB_delimiter);
     	    	} else if (col==7) {
     	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);

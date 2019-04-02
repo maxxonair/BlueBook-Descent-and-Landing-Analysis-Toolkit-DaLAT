@@ -37,6 +37,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		public static boolean HoverStop = true; 
 	    public static boolean ctrl_callout = false; 
 	    public static boolean ascent_switch = false;
+	    public static boolean ISP_Throttle_model= true; 
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -159,12 +160,33 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	        public static double Thrust_Deviation_dot =0;
 	        public static double TE_save =0;
 	        
+	        public static double ISP_min = 340; 
+	        public static double ISP_max = 370; 
+	        
 	        public static double TTM_max = 5.0;
 	        public static boolean engine_loss_indicator=false;
 	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
+	        public double ThrottleMODEL_get_ISP(double ISP_min, double ISP_max, double Throttle_CMD) {
+	        	// input check
+	        	if(Throttle_CMD>1 || Throttle_CMD<0) {
+	        		System.out.println("ERROR: ISP model - throttle command out of range" );
+	        		ISP =  ISP_max;
+	        	} else if (ISP_min>ISP_max) {
+	        		System.out.println("ERROR: ISP model - minimum ISP is larger than maximum ISP" );
+	        		ISP=ISP_max;
+	        	} else if (ISP_min<0 || ISP_max<0) {
+	        		System.out.println("ERROR: ISP model - ISP below 0");
+	        		ISP=0; 
+	        	} else {
+	        		double m = (ISP_max - ISP_min)/(1 - cmd_min);
+	        		double n = ISP_max - m ; 
+	        		ISP = m * Throttle_CMD + n; 
+	        	}
+	        	return ISP; 
+	        }
 	    public int getDimension() {
 	        return 7;
 	    }
@@ -199,16 +221,17 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		   }
 		public static void INITIALIZE_FlightController(double[]x) {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
-				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
+				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID()-1;
 				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
 				 double ctrl_tend = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_time();
+				 int TVC_ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_TVCController_ID()-1;
 				// -> Create new Flight controller 
 				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
 				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
 				
-				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa, rm , ref_ELEVATION);
+				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa, rm , ref_ELEVATION);
 				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}
@@ -398,9 +421,9 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	   	Ty =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
     	}
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    		Force Definition  | BodyFixed Frame |
+    	// 					    				ISP model for engine throttling
     	//-------------------------------------------------------------------------------------------------------------------
-//System.out.println((x[2]-rm-ref_ELEVATION)+" | "+x[3] + " | "+ Thrust + " | "+ (m_propellant_init-(M0-x[6]))/m_propellant_init*100);
+    	if(ISP_Throttle_model) {ThrottleMODEL_get_ISP( ISP_min,  ISP_max,  Throttle_CMD);}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
@@ -620,7 +643,15 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  azimuth_inertFrame+" "+
 	                    		  fpa_dot*rad2deg+" "+
 	                    		  Thrust_Deviation_dot*rad2deg+" "+
-	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "
+	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  ISP+" "
 	                    		  );
 	                }
 	                if(isLast) {

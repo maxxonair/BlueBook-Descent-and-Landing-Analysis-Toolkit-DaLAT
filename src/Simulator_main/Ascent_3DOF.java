@@ -220,7 +220,7 @@ public class Ascent_3DOF implements FirstOrderDifferentialEquations {
 		   }
 		public static void INITIALIZE_FlightController(double[]x) {
 			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
-				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID();
+				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID()-1;
 				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
 				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
 				 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
