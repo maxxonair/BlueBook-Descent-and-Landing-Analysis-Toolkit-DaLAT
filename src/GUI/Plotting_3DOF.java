@@ -28,6 +28,8 @@ import java.awt.event.ComponentEvent;
 import java.awt.event.ComponentListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
@@ -139,15 +141,15 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String Elevation_File_RES64 	= "/ELEVATION/LRO_16.csv";
 	public static String Elevation_File_RES128 	= "/ELEVATION/LRO_128.csv";
 	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   		//
-    public static String Init_File   			= "/INP/init.inp" ;		    		// Input: Initial state
+    public static String Init_File   			= "/INP/init.inp" ;		    	// Input: Initial state
     public static String RES_File    			= "/results.txt"  ;       	 	// Input: result file 
     public static String CTR_001_File			= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String ICON_File   	 		= "/lib/BB_icon.png";
-    public static String ERROR_File 				= "/INP/ErrorFile.inp";
+    public static String ERROR_File 			= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
-    public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
+    public static String CONTROLLER_File		= "CTRL/ctrl_main.inp";
 	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
 	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
@@ -283,7 +285,8 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Quaternion q2",
     										  "Quaternion q3",
     										  "Quaternion q4",
-    										  "Main engine ISP [s]"
+    										  "Main engine ISP [s]",
+    										  "Event Handler 1 output [-]"
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
@@ -411,12 +414,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static XYSeriesCollection result11_A3_2 = new XYSeriesCollection();
     public static XYSeriesCollection result11_A3_3 = new XYSeriesCollection();
     public static XYSeriesCollection result11_A3_4 = new XYSeriesCollection();
+    public static JCheckBox INPUT_ISPMODEL; 
     public static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG, INDICATOR_LAT,INDICATOR_LONG,INDICATOR_ALT,INDICATOR_VEL,INDICATOR_FPA,INDICATOR_AZI,INDICATOR_M0,INDICATOR_INTEGTIME, INDICATOR_TARGET;
     public static JTextField INPUT_LONG_Is,INPUT_LAT_Is,INPUT_ALT_Is,INPUT_VEL_Is,INPUT_FPA_Is,INPUT_AZI_Is;   // Input vector inertial Frame / spherical coordinates -> Is
     public static JTextField INPUT_LONG_Rs,INPUT_LAT_Rs,INPUT_ALT_Rs,INPUT_VEL_Rs,INPUT_FPA_Rs,INPUT_AZI_Rs;   // Input vector rotating Frame / spherical coordinates -> Rs
     public static JTextField INPUT_TIME; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
-    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV;
+    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV,INPUT_ISPMIN;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator,Module_Indicator;
     public static JLabel LABEL_IntegratorSetting_01, LABEL_IntegratorSetting_02, LABEL_IntegratorSetting_03, LABEL_IntegratorSetting_04, LABEL_IntegratorSetting_05; 
     public static JTextField INPUT_IntegratorSetting_01, INPUT_IntegratorSetting_02, INPUT_IntegratorSetting_03, INPUT_IntegratorSetting_04, INPUT_IntegratorSetting_05;
@@ -1167,7 +1171,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       int SidePanel_Width = 505; 
       JPanel PANEL_LEFT_InputSection = new JPanel();
       PANEL_LEFT_InputSection.setLayout(null);
-      PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1200));
+      PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1250));
       PANEL_LEFT_InputSection.setBackground(bc_c);
       PANEL_LEFT_InputSection.setForeground(l_c);
       
@@ -1956,7 +1960,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  
       JPanel SpaceCraftInputPanel = new JPanel();
       SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-      SpaceCraftInputPanel.setSize(SidePanel_Width, 600);
+      SpaceCraftInputPanel.setSize(SidePanel_Width, 650);
       SpaceCraftInputPanel.setBackground(Color.white);
       SpaceCraftInputPanel.setForeground(Color.white);
       SpaceCraftInputPanel.setLayout(null);
@@ -2008,6 +2012,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_ME_Thrust_min.setBackground(Color.white);
       LABEL_ME_Thrust_min.setForeground(Color.black);
       SpaceCraftInputPanel.add(LABEL_ME_Thrust_min);
+      
+      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
+      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
+      LABEL_ME_ISP_Model.setSize(300, 20);
+      LABEL_ME_ISP_Model.setBackground(Color.white);
+      LABEL_ME_ISP_Model.setForeground(Color.black);
+      SpaceCraftInputPanel.add(LABEL_ME_ISP_Model);
+      
+      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
+      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
+      LABEL_ME_ISP_min.setSize(300, 20);
+      LABEL_ME_ISP_min.setBackground(Color.white);
+      LABEL_ME_ISP_min.setForeground(Color.black);
+      SpaceCraftInputPanel.add(LABEL_ME_ISP_min);
 	 
       
       INPUT_M0 = new JTextField(10);
@@ -2095,6 +2113,37 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
    	  
      });
      SpaceCraftInputPanel.add(INPUT_THRUSTMIN);
+     
+     INPUT_ISPMODEL = new JCheckBox();
+     INPUT_ISPMODEL.setLocation(INPUT_width+5-20, uy_p41 + 25 * 7+2);
+     INPUT_ISPMODEL.setSize(15, 15);
+     INPUT_ISPMODEL.setSelected(true);
+     INPUT_ISPMODEL.addItemListener(new ItemListener() {
+       	 public void itemStateChanged(ItemEvent e) {
+       		WRITE_PROP();
+       	 }
+                  });
+     INPUT_ISPMODEL.setHorizontalAlignment(0);
+     SpaceCraftInputPanel.add(INPUT_ISPMODEL);
+     
+     
+     INPUT_ISPMIN = new JTextField(10);
+     INPUT_ISPMIN.setLocation(2, uy_p41 + 25 * 8 );;
+     INPUT_ISPMIN.setSize(INPUT_width, 20);
+     INPUT_ISPMIN.setHorizontalAlignment(JTextField.RIGHT);
+     INPUT_ISPMIN.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_INIT();
+			WRITE_PROP();
+		}
+   	  
+     });
+     SpaceCraftInputPanel.add(INPUT_ISPMIN);
      
 	  //-------------------------------------------- 
 	  //   Right side :
@@ -2201,17 +2250,17 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			String val_TLFC = (String) MODEL_SEQUENCE.getValueAt(row, 4);
 			if (column == 0 ){
 				return false;
-			} else if (column==9 && val_TVCFC.equals(SequenceTVCFC[0])) {
+			} else if (column==9 && val_TVCFC.equals(SequenceTVCFCCombobox.getItemAt(0))) {
 				return false; 
-			} else if (column==10 && val_TVCFC.equals(SequenceTVCFC[0])) {
+			} else if (column==10 && val_TVCFC.equals(SequenceTVCFCCombobox.getItemAt(0))) {
 				return false; 
-			} else if (column==11 && val_TVCFC.equals(SequenceTVCFC[0])) {
+			} else if (column==11 && val_TVCFC.equals(SequenceTVCFCCombobox.getItemAt(0))) {
 				return false; 
-			} else if (column==5 && val_TLFC.equals(SequenceFC[0])) {
+			} else if (column==5 && val_TLFC.equals(SequenceFCCombobox.getItemAt(0))) {
 				return false; 
-			} else if (column==6 && val_TLFC.equals(SequenceFC[0])) {
+			} else if (column==6 && val_TLFC.equals(SequenceFCCombobox.getItemAt(0))) {
 				return false; 
-			} else if (column==7 && val_TLFC.equals(SequenceFC[0])) {
+			} else if (column==7 && val_TLFC.equals(SequenceFCCombobox.getItemAt(0))) {
 				return false; 
 			} else {
 				return true; 
@@ -2778,12 +2827,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			}
         //------------------------------------------------------------------------
     		UPDATE_Page01();
-    		READ_SEQUENCE();
     		READ_CONTROLLER();
+  	      		UpdateFC_LIST();
+    		READ_SEQUENCE();
     		READ_ERROR();
     		Update_ErrorIndicator();
     	      Rotating2Inertial();
-    	      UpdateFC_LIST();
     	      Update_IntegratorSettings();
 
         MainGUI.setOpaque(true);
@@ -2813,13 +2862,17 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     
     @SuppressWarnings("unchecked")
 	public static void UpdateFC_LIST() {
+    	try {
     	SequenceTVCFCCombobox.removeAllItems();
     	SequenceFCCombobox.removeAllItems();
+    	} catch(NullPointerException | java.lang.ArrayIndexOutOfBoundsException eNPE) {
+    		System.out.println("ERROR: Removing Combobox items failed");
+    	}
     	SequenceTVCFCCombobox.addItem("");
     	SequenceFCCombobox.addItem("");
     	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {
-    		SequenceTVCFCCombobox.addItem("Flight Controller "+(i+1));
-    		SequenceFCCombobox.addItem("Flight Controller "+(i+1));
+    		SequenceTVCFCCombobox.addItem("PID "+(i+1));
+    		SequenceFCCombobox.addItem("PID "+(i+1));
     		}
     }
     public static void Inertial2Rotating() {
@@ -2850,7 +2903,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	ROW_SEQUENCE[5]  = "1";
     	ROW_SEQUENCE[6]  = "1";
     	ROW_SEQUENCE[7]  = ""+FCTargetCurve[0];	
-    	ROW_SEQUENCE[8]  = ""+SequenceTVCFC[1];
+    	ROW_SEQUENCE[8]  = ""+SequenceTVCFC[0];
     	ROW_SEQUENCE[9]  = "1";
     	ROW_SEQUENCE[10] = "1";
     	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[0];	
@@ -3275,7 +3328,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
 	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
 	       	try {
-	    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
+	    	ROW_SEQUENCE[4] = ""+SequenceFCCombobox.getItemAt(sequence_controller_ID-1);
 	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
 	    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
 	    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
@@ -3287,7 +3340,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					       	double ctrl_target_x_TVC        = Double.parseDouble(tokens[9]);
 					       	double ctrl_target_y_TVC 		= Double.parseDouble(tokens[10]);
 					       	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
-					    	ROW_SEQUENCE[8]  = "" + SequenceTVCFC[TVCsequence_controller_ID-1];
+					    	ROW_SEQUENCE[8]  = "" + SequenceTVCFCCombobox.getItemAt(TVCsequence_controller_ID-1);
 					    	ROW_SEQUENCE[9]  = "" + ctrl_target_x_TVC;
 					    	ROW_SEQUENCE[10] = "" + ctrl_target_y_TVC*rad2deg;
 					    	ROW_SEQUENCE[11] = "" + TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
@@ -3430,7 +3483,11 @@ try {
   try {
   while ((strLine3 = br4.readLine()) != null )   {
   	String[] tokens = strLine3.split(" ");
+  	if(tokens[0].isEmpty()==false) {
   	InitialState = Double.parseDouble(tokens[0]);
+  	} else {
+  		InitialState =0; 
+  	}
     if (k==0){
     	INPUT_ISP.setText(df_X4.format(InitialState)); 
   	} else if (k==1){
@@ -3442,9 +3499,10 @@ try {
   		INPUT_THRUSTMIN.setText(df_X4.format(InitialState)); 
   		Propellant_Mass=InitialState;
   	} else if (k==4){
-
+  		int value = (int) InitialState; 
+  		if(value==1) {INPUT_ISPMODEL.setSelected(true);}else {INPUT_ISPMODEL.setSelected(false);}
   	} else if (k==5){
-
+  		INPUT_ISPMIN.setText(df_X4.format(InitialState)); 
   	} else if (k==6){
 
   	} else if (k==7){
@@ -3789,9 +3847,18 @@ try {
             			r = Double.parseDouble(INPUT_THRUSTMIN.getText()) ;
             			wr.write(r+System.getProperty( "line.separator" ));
         			} else if (i == 4 ){
-
+        					if(INPUT_ISPMODEL.isSelected()) {
+        						wr.write(1+System.getProperty( "line.separator" ));
+        					} else {
+        						wr.write(0+System.getProperty( "line.separator" ));
+        					}
         			} else if (i == 5 ){
-
+        				try {
+            			r = Double.parseDouble(INPUT_ISPMIN.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+        				} catch (java.lang.NumberFormatException eNFE) {
+        					wr.write(""+System.getProperty( "line.separator" ));	
+        				}
             		} 
 		            }               
             wr.close();
@@ -3870,35 +3937,6 @@ public static void IMPORT_Case() throws IOException {
 			 	 } else if (indx_prop==3){INPUT_THRUSTMIN.setText(decf.format(Double.parseDouble(tokens[data_column])));
 			 	 } 			     
 		indx_prop++;
-	    }  else if(tokens[0].equals("|SEQU|")) {
-			       	int sequence_ID 					= Integer.parseInt(tokens[1]);
-			       	int trigger_end_type 			= Integer.parseInt(tokens[2]);
-			       	double trigger_end_value 		= Double.parseDouble(tokens[3]);
-			       	int sequence_type		 		= Integer.parseInt(tokens[4]);
-			       	int sequence_controller_ID 		= Integer.parseInt(tokens[5]);
-			       	double ctrl_target_vel      		= Double.parseDouble(tokens[6]);
-			       	double ctrl_target_alt 			= Double.parseDouble(tokens[7]);
-			       	int ctrl_target_curve       		= Integer.parseInt(tokens[8]);
-			       	try {
-			       	int sequence_TVCcontroller_ID 	= Integer.parseInt(tokens[9]);
-			       	double TVCctrl_target_t      	= Double.parseDouble(tokens[10]);
-			       	double TVCctrl_target_fpa 		= Double.parseDouble(tokens[11]);
-			       	int ctrl_TVC_target_curve    	= Integer.parseInt(tokens[12]);
-				    	ROW_SEQUENCE[8] = ""+SequenceTVCFC[sequence_TVCcontroller_ID-1];
-				    	ROW_SEQUENCE[9] = ""+TVCctrl_target_t;
-				    	ROW_SEQUENCE[10] = ""+TVCctrl_target_fpa;
-				    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];	
-			       	} catch (java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
-			    	ROW_SEQUENCE[0] = ""+sequence_ID;
-			    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
-			    	ROW_SEQUENCE[2] = ""+trigger_end_value;
-			    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
-			    	ROW_SEQUENCE[4] = ""+SequenceFC[sequence_controller_ID-1];
-			    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
-			    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
-			    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
-			    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
-			    	WriteSequenceINP();
 	    } else if(tokens[0].equals("|CTRL|")) {
 	    	ROW_CONTROLLER[0] = ""+Integer.parseInt(tokens[1]);
 	    	ROW_CONTROLLER[1] = ""+Integer.parseInt(tokens[2]);
@@ -3909,12 +3947,42 @@ public static void IMPORT_Case() throws IOException {
 	    	ROW_CONTROLLER[6] = ""+Double.parseDouble(tokens[7]);
 	    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
 	    	WriteControllerINP();
-	}
+	    	UpdateFC_LIST(); 
+	    } else if(tokens[0].equals("|SEQU|")) {
+       	int sequence_ID 				= Integer.parseInt(tokens[1]);
+       	int trigger_end_type 			= Integer.parseInt(tokens[2]);
+       	double trigger_end_value 		= Double.parseDouble(tokens[3]);
+       	int sequence_type		 		= Integer.parseInt(tokens[4]);
+       	int sequence_controller_ID 		= Integer.parseInt(tokens[5]);
+       	double ctrl_target_vel      	= Double.parseDouble(tokens[6]);
+       	double ctrl_target_alt 			= Double.parseDouble(tokens[7]);
+       	int ctrl_target_curve       	= Integer.parseInt(tokens[8]);
+       	try {
+       	int sequence_TVCcontroller_ID 	= Integer.parseInt(tokens[9]);
+       	double TVCctrl_target_t      	= Double.parseDouble(tokens[10]);
+       	double TVCctrl_target_fpa 		= Double.parseDouble(tokens[11]);
+       	int ctrl_TVC_target_curve    	= Integer.parseInt(tokens[12]);
+	    	ROW_SEQUENCE[8]  = ""+SequenceTVCFCCombobox.getItemAt(sequence_TVCcontroller_ID-1);
+	    	ROW_SEQUENCE[9]  = ""+TVCctrl_target_t;
+	    	ROW_SEQUENCE[10] = ""+TVCctrl_target_fpa;
+	    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];	
+       	} catch (java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
+    	ROW_SEQUENCE[0] = ""+sequence_ID;
+    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
+    	ROW_SEQUENCE[2] = ""+trigger_end_value;
+    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
+    	ROW_SEQUENCE[4] = ""+SequenceFCCombobox.getItemAt(sequence_controller_ID-1);
+    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
+    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
+    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];	
+    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
+    	WriteSequenceINP();
+	 }
     k++;
     }
+    br.close();    
     WRITE_INIT();
     WRITE_PROP();
-    br.close();
 }
 public static void EXPORT_Case() {
 	if ( CurrentWorkfile_Name.isEmpty()==false) {
@@ -3950,11 +4018,18 @@ public static void EXPORT_Case() {
 		     	} else if (i==1){os.print("|PROPMASS[kg]|"+ BB_delimiter+INPUT_PROPMASS.getText());
 		     	} else if (i==2){os.print("|THRUSTMAX[N]|"+ BB_delimiter+INPUT_THRUSTMAX.getText());
 		     	} else if (i==3){os.print("|THRUSTMIN[N]|"+ BB_delimiter+INPUT_THRUSTMIN.getText());
-		     	} else if (i==4){
-		     	} else if (i==5){
+		     	} else if (i==4){if(INPUT_ISPMODEL.isSelected()) {os.print("|ISPMODEL[-]|"+ BB_delimiter+1);} else {os.print("|ISPMODEL[-]|"+ BB_delimiter+0);}
+		     	} else if (i==5){os.print("|ISPMIN[s]|"+ BB_delimiter+INPUT_ISPMIN.getText());
 		    	}
 	        os.println("");
     	}
+        for (int  row2 = 0; row2 < MODEL_CONTROLLER.getRowCount(); row2++) {  // 					Sequence.inp
+    		os.print("|CTRL|" + BB_delimiter);
+    	    for (int col = 0; col < MODEL_CONTROLLER.getColumnCount(); col++) {
+		        os.print(MODEL_CONTROLLER.getValueAt(row2, col)+ BB_delimiter);
+    	    	}
+    	    os.println("");  	    
+    }	
     	for (int row = 0; row < MODEL_SEQUENCE.getRowCount(); row++) {  // 					Sequence.inp
     		os.print("|SEQU|" + BB_delimiter);
     	    for (int col = 0; col < MODEL_SEQUENCE.getColumnCount(); col++) {
@@ -3971,7 +4046,7 @@ public static void EXPORT_Case() {
     	    	} else if (col==4) {
     	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
     	    		int val=0;
-    	    		for(int k=0;k<SequenceFC.length;k++) {if(str_val.equals(SequenceFC[k])){val=k+1;}}
+    	    		for(int k=0;k<SequenceFCCombobox.getItemCount();k++) {if(str_val.equals(SequenceFCCombobox.getItemAt(k))){val=k+1;}}
     	    		os.print(val+ BB_delimiter);
     	    	} else if (col==7) {
     	    		String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
@@ -3981,7 +4056,7 @@ public static void EXPORT_Case() {
     	    	} else if (col==8) {
         	    	String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
         	    	int val=0;
-        	    	for(int k=0;k<SequenceTVCFC.length;k++) {if(str_val.equals(SequenceTVCFC[k])){val=k+1;}}
+        	    	for(int k=0;k<SequenceTVCFCCombobox.getItemCount();k++) {if(str_val.equals(SequenceTVCFCCombobox.getItemAt(k))){val=k+1;}}
         	    	os.print(val+ BB_delimiter);
     	    	} else if (col==11) {
             	    String str_val = (String) MODEL_SEQUENCE.getValueAt(row, col);
@@ -3994,13 +4069,7 @@ public static void EXPORT_Case() {
     	    }
     	    os.println("");
     	}
-        for (int  row2 = 0; row2 < MODEL_CONTROLLER.getRowCount(); row2++) {  // 					Sequence.inp
-        		os.print("|CTRL|" + BB_delimiter);
-        	    for (int col = 0; col < MODEL_CONTROLLER.getColumnCount(); col++) {
-    		        os.print(MODEL_CONTROLLER.getValueAt(row2, col)+ BB_delimiter);
-        	    	}
-        	    os.println("");  	    
-        }	    
+    
 
        os.close();   
        System.out.println("File "+CurrentWorkfile_Name+" saved.");

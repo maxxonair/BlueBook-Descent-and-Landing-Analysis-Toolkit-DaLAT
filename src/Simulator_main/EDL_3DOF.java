@@ -37,7 +37,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		public static boolean HoverStop = true; 
 	    public static boolean ctrl_callout = false; 
 	    public static boolean ascent_switch = false;
-	    public static boolean ISP_Throttle_model= true; 
+	    public static boolean ISP_Throttle_model= false; 
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -160,8 +160,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	        public static double Thrust_Deviation_dot =0;
 	        public static double TE_save =0;
 	        
-	        public static double ISP_min = 340; 
-	        public static double ISP_max = 370; 
+	        public static double ISP_min = 0; 
+	        public static double ISP_max = 0; 
 	        
 	        public static double TTM_max = 5.0;
 	        public static boolean engine_loss_indicator=false;
@@ -475,7 +475,12 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			e2.printStackTrace();
 		}
 //----------------------------------------------------------------------------------------------
-//   Read propulsion setting:	Propulsion/Controller INIT
+//	
+//	Initialise Simulation: 
+//	
+//   - Read propulsion setting:	Propulsion/Controller INIT
+//   - Initialise ground track computation
+//----------------------------------------------------------------------------------------------	
 	if(ThrustSwitch==1) {ascent_switch=true;System.out.println("Ascent mode set");}else {ascent_switch=false;System.out.println("Descent mode set");}
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
@@ -486,6 +491,11 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	    	 m_propellant_init= prop_read[1];
 	    	 Thrust_max 	  = prop_read[2];
 	    	 Thrust_min		  = prop_read[3];
+	    	 if((int) prop_read[4]==1) {
+	    		 ISP_max = ISP;
+	    		 ISP_min = prop_read[5];
+	    		 ISP_Throttle_model=true; 
+	    	 }
 	    	 M0 			  = x6  ; 
 	    	 mminus			  = M0  ;
 	    	 vminus			  = x3  ;
@@ -500,6 +510,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 tetamin=x1;
     	 groundtrack=0;
     	 ref_ELEVATION =  reference_elevation;
+    	 STOP_Handler = Event_Handler; 
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -654,6 +665,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  ISP+" "
 	                    		  );
 	                }
+	              
 	                if(isLast) {
 	                    try{
 	        	        	//DateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd_HH_mm_ss");
@@ -728,10 +740,14 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        System.out.println("------------------------------------------");
 	        System.out.println("READ successful");
 	        System.out.println("Initialization succesful");
-	        for(int i=0;i<Event_Handler.size();i++) {dp853.addEventHandler(Event_Handler.get(i).get_StopHandler(),1,1.0e-3,30);System.out.println("Handler: "+Event_Handler.get(i).get_val_condition());}
+	        for(int i=0;i<STOP_Handler.size();i++) {
+	        	EventHandler interimEvent = STOP_Handler.get(i).get_StopHandler();
+	        	dp853.addEventHandler(interimEvent,1,1.0e-3,30);
+	        	System.out.println("Handler: "+STOP_Handler.get(i).get_val_condition());
+	        }
 	        dp853.addEventHandler(AltitudeHandler,1,1.0e-3,30);
 	        dp853.addEventHandler(VelocityHandler,1,1.0e-3,30);
-	        System.out.println(""+Event_Handler.size()+" Event Handler added.");
+	        System.out.println(""+STOP_Handler.size()+" Event Handler added.");
 	        dp853.addStepHandler(WriteOut);
 	        System.out.println("Integrator start");
 	        System.out.println("------------------------------------------");

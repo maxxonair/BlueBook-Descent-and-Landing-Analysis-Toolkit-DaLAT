@@ -5,15 +5,15 @@ import org.apache.commons.math3.ode.events.EventHandler;
 public class StopCondition{
 	
 	public  EventHandler StopHandler ;
-	private double val_is ;
+	public double val_is;
 	private double val_condition;
-	private double ConditionOption;
+	private int ConditionOption;
 	private double rm ; 
 	private double LocalElevation; 
 	@SuppressWarnings("unused")
-	private double t;
+	public double t;
 	@SuppressWarnings("unused")
-	private double[] x; 
+	public double[] y; 
 	
 	public StopCondition(double val_condition, int ConditionOption, double RM, double LocalElevation) {
 		this.val_condition = val_condition;
@@ -24,7 +24,7 @@ public class StopCondition{
 	
 	public void Update_StopCondition(double t, double[]x) {
 		this.t = t;
-		this.x = x; 
+		this.y = x; 
 			 if(ConditionOption==0) {this.val_is = t;}							// Time condition
 		else if(ConditionOption==1) {this.val_is = x[0];}						// Longitude condition
 		else if(ConditionOption==2) {this.val_is = x[1];}						// Latitude condition
@@ -41,8 +41,8 @@ public class StopCondition{
 			@Override
 			public double g(double t, double[] y) {
 				// TODO Auto-generated method stub
-				return  val_condition - val_is; // 
-				//return 0;
+				return (val_is - val_condition);
+
 			}
 			public Action eventOccurred(double t, double[] y, boolean increasing) {
 				  return Action.STOP;
@@ -72,6 +72,9 @@ public class StopCondition{
 	}
 	public double get_val_is() {
 		return val_is; 
+	}
+	public int get_ConditionOption() {
+		return ConditionOption; 
 	}
 	
 }

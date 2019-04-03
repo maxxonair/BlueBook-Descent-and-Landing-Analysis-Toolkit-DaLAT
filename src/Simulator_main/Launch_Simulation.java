@@ -226,7 +226,7 @@ public class Launch_Simulation implements ActionListener{
 														x_init[11],				 	 // Reference Elevation  				 [m]
 														SEQUENCE_DATA,			 	 // Sequence data set	LIST			 [-]
 												  (int) x_init[12],				 	 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
-														STOP_Handler			     // Event Handler 	LIST			 [-]
+														STOP_Handler			     // Event Handler 	LIST			 	 [-]
 														);
 	    	} else if (descent_ascent_switch ==1) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
