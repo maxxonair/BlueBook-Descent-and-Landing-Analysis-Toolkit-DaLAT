@@ -3018,11 +3018,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     
     public static void Update_ErrorIndicator() {
     	if(MODEL_ERROR.getRowCount()>0) {
-    		Error_Indicator.setText("Artificial Error ON");
+    		Error_Indicator.setText("Induced Error ON");
     		Error_Indicator.setBackground(Color.red);
     		Error_Indicator.setForeground(Color.red);
     	} else {
-    		Error_Indicator.setText("Artificial Error OFF");
+    		Error_Indicator.setText("Induced Error OFF");
     		Error_Indicator.setBackground(Color.white);
     		Error_Indicator.setForeground(Color.black);
     	}

@@ -34,10 +34,13 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 		//				Control variables
 		//----------------------------------------------------------------------------------------------------------------------------
-		public static boolean HoverStop = true; 
+		public static boolean HoverStop = false; 
 	    public static boolean ctrl_callout = false; 
 	    public static boolean ascent_switch = false;
 	    public static boolean ISP_Throttle_model= false; 
+	    public static boolean stophandler_ON = true; 
+	    
+	    public static 	    boolean spherical=true;
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -84,6 +87,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		    public static double twrite=0;
 		    public static double ref_ELEVATION = 0;
 	 	//----------------------------------------------------------------
+			public static double[] g = {0,0,0};			// Gravity vector in NED frame 				[m/s²]
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
 			public static double rm    = 0;    	    // Planets average radius                   [m]
@@ -124,12 +128,12 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		    public static double cntr_t_init=0;
 		    public static double cntr_fpa_init=0;
 		    public static int ctrl_curve;
-	        private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
-	        private static List<SequenceElement> SEQUENCE_DATA_main = new ArrayList<SequenceElement>(); 
-	        private static List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
+	        private static List<atm_dataset> ATM_DATA 									 = new ArrayList<atm_dataset>(); 
+	        private static List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
+	        private static List<StopCondition> STOP_Handler 							 = new ArrayList<StopCondition>(); 
 	        private static List<Flight_CTRL_ThrustMagnitude> Flight_CTRL_ThrustMagnitude = new ArrayList<Flight_CTRL_ThrustMagnitude>(); 
-	        private static List<Flight_CTRL_PitchCntrl> Flight_CTRL_PitchCntrl = new ArrayList<Flight_CTRL_PitchCntrl>(); 
-	        private static ArrayList<String> CTRL_steps = new ArrayList<String>();
+	        private static List<Flight_CTRL_PitchCntrl> Flight_CTRL_PitchCntrl 			 = new ArrayList<Flight_CTRL_PitchCntrl>(); 
+	        private static ArrayList<String> CTRL_steps 								 = new ArrayList<String>();
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
 	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
@@ -150,6 +154,11 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	static double fpa_inertFrame     = 0 ;
 	    	static double vel_inertFrame     = 0 ;
 	        
+	    	
+			public static double[] V_NED_ECEF_spherical = {0,0,0};			// Velocity vector in NED system with respect to ECEF in spherical coordinates  [m/s]
+			public static double[] V_NED_ECEF_cartesian = {0,0,0};			// Velocity vector in NED system with respect to ECEF in cartesian coordinates [m/s]
+			
+			
 	        public static double elevationangle; 
 	        public static double const_tzer0=0;
 	        public static boolean const_isFirst =true; 
@@ -190,6 +199,25 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    public int getDimension() {
 	        return 7;
 	    }
+		public static double[] Spherical2Cartesian(double[] X) {
+			double[] result = new double[3];
+			result[0]  = X[0] * Math.cos(X[1]) * Math.cos(X[2]);
+			result[1]  = X[0] * Math.cos(X[1]) * Math.sin(X[2]);
+			result[2]  = -X[0] * Math.sin(X[1]);
+			// Filter small errors from binary conversion: 
+			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
+			return result; 
+			}
+		
+		public static double[] Cartesian2Spherical(double[] X) {
+			double[] result = new double[3];
+			result[0]  = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
+			result[1]  = Math.acos(X[2]/result[0]);
+			result[2]  = Math.atan(X[1]/X[0]);
+			// Filter small errors from binary conversion: 
+			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
+			return result; 
+			}
 	    public static void SequenceWriteOut_addRow() {
 			CTRL_steps.add(SEQUENCE_DATA_main.get(active_sequence).get_sequence_ID()+ " " + 
 				   SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()+" "+
@@ -355,8 +383,15 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	} else { System.out.println("ERROR: Sequence type out of range");}
 		}
 		
+		public static double[] GRAVITY_MANAGER_3D(double[] x) {
+			//------------------------------------------------------------------------------
+			//     Full 3D gravity model (work TBD on complexity) 
+			//------------------------------------------------------------------------------
+	    	g = GravityModel.get_g( x[2],  x[0], x[1],  rm,  mu, TARGET);
+	    	return g; 
+		}
 		
-		public static void GRAVITY_MANAGER(double[] x) {
+		public static void GRAVITY_MANAGER_2D(double[] x) {
 			//------------------------------------------------------------------------------
 			//     simplified 2D atmosphere model (J2 only) 
 			//------------------------------------------------------------------------------
@@ -399,7 +434,11 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------
-    	GRAVITY_MANAGER(x);
+    	if( spherical) {
+    		GRAVITY_MANAGER_2D(x);
+    	} else {
+    		GRAVITY_MANAGER_3D(x);
+    	}
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -435,7 +474,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	double r=rm;  // <-- reference radius for projection. Current projection set for mean radius 
     	double phi=x[0];
     	double theta = x[1];
-;   double dphi = Math.abs(phi-phimin);
+       double dphi = Math.abs(phi-phimin);
     	double dtheta = Math.abs(theta-tetamin); 
     	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
     	//System.out.println(ds);
@@ -443,23 +482,61 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	phimin=phi;
     	tetamin=theta; 
     	//-------------------------------------------------------------------------------------------------------------------
+    	// 					    		Force Definition  | BodyFixed Frame |
+    	//-------------------------------------------------------------------------------------------------------------------
+	   	double fT = Thrust;
+	   	 Xfo = -fT*Math.cos(Thrust_Deviation)-D;
+	   	 Yfo = 0;
+	   	 Zfo = -fT*Math.sin(Thrust_Deviation); 
+    	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
     	// Position vector
-	    dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) );
+	   	 	  // Longitude
+	    dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) ); 
+	          // Latitude
 	    dxdt[1] = x[3] * cos( x[4] ) * cos( x[5] ) / x[2] ;
-	    dxdt[2] = x[3] * sin( x[4] );
+	    	  // Radius 
+	    dxdt[2] = x[3] * sin( x[4] );												
 	    // Velocity vector
-	    if(x[3]<0) {x[3]=0;}
+	    if(spherical) {
+	    
+	    	// velocity
 	    dxdt[3] = -gr * sin( x[4] ) + gn * cos( x[5] ) * cos( x[4] ) + D / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
+	    	// flight path angle 
 	    dxdt[4] = ( x[3] / x[2] - gr/ x[3] ) * cos( x[4] ) - gn * cos( x[5] ) * sin( x[4] ) / x[3] + L / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
+	    	// local azimuth
 	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] - Ty / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
+	    
+    	V_NED_ECEF_spherical[0]=x[3];
+    	V_NED_ECEF_spherical[1]=x[4];
+    	V_NED_ECEF_spherical[2]=x[5];
+    	
+    	V_NED_ECEF_cartesian = Spherical2Cartesian(V_NED_ECEF_spherical);
+    	
+	    }else {
+	    	// u
+	    dxdt[3] = Xfo/x[6] + g[0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) - 2*omega*x[4]*Math.sin(x[1]));
+	    	// v
+	    dxdt[4] = Yfo/x[6] + g[1] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) + 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
+	    	// w
+	    dxdt[5] = Zfo/x[6] + g[2] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
+	    
+    	V_NED_ECEF_cartesian[0]=x[3];
+    	V_NED_ECEF_cartesian[1]=x[4];
+    	V_NED_ECEF_cartesian[2]=x[5];
+    	
+    	V_NED_ECEF_spherical =Cartesian2Spherical(V_NED_ECEF_cartesian);
+    	
+	    }
 	    // System mass [kg]
 	    dxdt[6] = - Thrust/(ISP*g0) ;   
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 								hah Update Event handler
+    	// 						   Update Event handler
     	//-------------------------------------------------------------------------------------------------------------------
+	    if(stophandler_ON) {
 	    for(int i=0;i<STOP_Handler.size();i++) {STOP_Handler.get(i).Update_StopCondition(t, x);}
+	    }
 }
     
 public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler){
@@ -510,7 +587,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
     	 tetamin=x1;
     	 groundtrack=0;
     	 ref_ELEVATION =  reference_elevation;
+ 		if(stophandler_ON) {
     	 STOP_Handler = Event_Handler; 
+ 		}
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -564,14 +643,27 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //----------------------------------------------------------------------------------------------
   			// 						Result vector setup - do not touch
 	        double[] y = new double[7]; // Result vector
+        	V_NED_ECEF_spherical[0]=x3;
+        	V_NED_ECEF_spherical[1]=x4;
+        	V_NED_ECEF_spherical[2]=x5;
 	// Position 
 	        y[0] = x0;
 	        y[1] = x1;
 	        y[2] = x2;
+	        
 	// Velocity
+	        if(spherical) {
+	        	
 	        y[3] = x3;
 	        y[4] = x4;
 	        y[5] = x5;
+	        
+	        } else {
+	        	V_NED_ECEF_cartesian = Spherical2Cartesian(V_NED_ECEF_spherical);
+		        y[3] = V_NED_ECEF_cartesian[0];
+		        y[4] = V_NED_ECEF_cartesian[1];
+		        y[5] = V_NED_ECEF_cartesian[2];
+	        }
 	// S/C Mass        
 	        y[6] = x6;
 			INITIALIZE_FlightController(y) ;
@@ -607,9 +699,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (y[2]-rm-ref_ELEVATION) + " " + 
 	                    		  (y[2]-rm)+ " " + 
 	                    		  y[2] + " " + 
-	                    		  y[3]+ " " + 
-	                    		  y[4] + " " + 
-	                    		  y[5] + " " + 
+	                    		  V_NED_ECEF_spherical[0]+ " " + 
+	                    		  V_NED_ECEF_spherical[1] + " " + 
+	                    		  V_NED_ECEF_spherical[2] + " " + 
 	                    		  rho + " " + 
 	                    		  D + " " +
 	                    		  L + " " +
@@ -655,13 +747,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  fpa_dot*rad2deg+" "+
 	                    		  Thrust_Deviation_dot*rad2deg+" "+
 	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "+
-	                    		  0+" "+
-	                    		  0+" "+
-	                    		  0+" "+
-	                    		  0+" "+
-	                    		  0+" "+
-	                    		  0+" "+
-	                    		  0+" "+
+	                    		  V_NED_ECEF_cartesian[0]+ " " + 
+	                    		  V_NED_ECEF_cartesian[1] + " " + 
+	                    		  V_NED_ECEF_cartesian[2] + " " + 
+	                    		  g[0]+" "+
+	                    		  g[1]+" "+
+	                    		  g[2]+" "+
+	                    		  STOP_Handler.get(1).get_StopHandler().g(t, y)+" "+
 	                    		  ISP+" "
 	                    		  );
 	                }
@@ -740,12 +832,14 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        System.out.println("------------------------------------------");
 	        System.out.println("READ successful");
 	        System.out.println("Initialization succesful");
+	        if(stophandler_ON) {
 	        for(int i=0;i<STOP_Handler.size();i++) {
 	        	EventHandler interimEvent = STOP_Handler.get(i).get_StopHandler();
-	        	dp853.addEventHandler(interimEvent,1,1.0e-3,30);
+	        	dp853.addEventHandler(interimEvent,0.1,1.0e-2,100);
 	        	System.out.println("Handler: "+STOP_Handler.get(i).get_val_condition());
 	        }
-	        dp853.addEventHandler(AltitudeHandler,1,1.0e-3,30);
+	        }
+	        dp853.addEventHandler(AltitudeHandler,1,1.0e-4,50);
 	        dp853.addEventHandler(VelocityHandler,1,1.0e-3,30);
 	        System.out.println(""+STOP_Handler.size()+" Event Handler added.");
 	        dp853.addStepHandler(WriteOut);
