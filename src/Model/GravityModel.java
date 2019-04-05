@@ -59,9 +59,9 @@ public class GravityModel  {
     	g_phi = -3 * mu * sin(phi) * cos(phi) * (rm/r) * (rm/r) * (J2 + 0.5 * J3 * ( 5*cos(phi) *cos(phi) -1) * (rm/r)/cos(phi) + (5/6) * J4 * ( 7 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) ) /(r * r);
     	
     	
-    	g[0] = g_phi*Math.cos(phi)*Math.cos(longitude)+g_r*Math.sin(phi)*Math.cos(longitude);
+    	g[2] = g_phi*Math.cos(phi)*Math.cos(longitude)+g_r*Math.sin(phi)*Math.cos(longitude);
     	g[1] = g_phi*Math.cos(phi)*Math.sin(longitude) + g_r*Math.sin(phi)*Math.sin(longitude);
-    	g[2] = -g_phi*Math.sin(phi) + g_r* Math.cos(phi);
+    	g[0] = -g_phi*Math.sin(phi) + g_r* Math.cos(phi);
     	
     	return g; 
     }

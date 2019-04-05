@@ -40,7 +40,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    public static boolean ISP_Throttle_model= false; 
 	    public static boolean stophandler_ON = true; 
 	    
-	    public static 	    boolean spherical=true;
+	    public static 	    boolean spherical=false;
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -212,7 +212,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		public static double[] Cartesian2Spherical(double[] X) {
 			double[] result = new double[3];
 			result[0]  = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
-			result[1]  = Math.acos(X[2]/result[0]);
+			result[1]  =  Math.acos(X[2]/result[0]);
 			result[2]  = Math.atan(X[1]/X[0]);
 			// Filter small errors from binary conversion: 
 			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
@@ -491,13 +491,21 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
-    	// Position vector
+    	// Position vector with respect to spherical velocity vector 
 	   	 	  // Longitude
-	    dxdt[0] = x[3] * cos( x[4] ) * sin( x[5] ) / ( x[2] * cos( x[1] ) ); 
+	    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
 	          // Latitude
-	    dxdt[1] = x[3] * cos( x[4] ) * cos( x[5] ) / x[2] ;
+	    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
 	    	  // Radius 
-	    dxdt[2] = x[3] * sin( x[4] );												
+	    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
+	    
+    	// Position vector with respect to cartesian velocity vector 
+ 	 	  // Longitude
+	    //dxdt[0] = V_NED_ECEF_cartesian[1]/(x[2]*Math.cos(x[1]));
+        // Latitude
+	   // dxdt[1] = V_NED_ECEF_cartesian[0]/x[2] ;
+  	   // Radius 
+	   // dxdt[2] = V_NED_ECEF_cartesian[2];	
 	    // Velocity vector
 	    if(spherical) {
 	    
@@ -515,13 +523,29 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	V_NED_ECEF_cartesian = Spherical2Cartesian(V_NED_ECEF_spherical);
     	
 	    }else {
+	    	int option =3;
+	    	if(option==1) {
 	    	// u
-	    dxdt[3] = Xfo/x[6] + g[0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) - 2*omega*x[4]*Math.sin(x[1]));
+	    		dxdt[3] = Xfo/x[6] + g[0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) - 2*omega*x[4]*Math.sin(x[1]));
 	    	// v
-	    dxdt[4] = Yfo/x[6] + g[1] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) + 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
+	    		dxdt[4] = Yfo/x[6] + g[1] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) + 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
 	    	// w
-	    dxdt[5] = Zfo/x[6] + g[2] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
-	    
+	    		dxdt[5] = Zfo/x[6] + g[2] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
+	    	} else if (option==2) {
+	    		// u - North
+	    		dxdt[3] = 1/x[6] * ( Xfo + g[0] - 2* omega * x[4] * Math.sin(x[1]) + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2]);
+	    		// v - East
+	    		dxdt[4] = 1/x[6] * ( Yfo + g[1] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1])) + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])));
+	    		// w - Down
+	    		dxdt[5] = 1/x[6] * ( Zfo + g[2] - 2 * omega * x[4] * Math.cos(x[1]) - (x[4]*x[4] + x[3]*x[3])/x[2] ) ;
+	    	} else if (option ==3) {
+		    	// u - North
+			    dxdt[3] = Xfo/x[6] - 2 * omega * x[4] * Math.sin(x[1]) - omega * omega * x[2] * Math.sin(x[1]) * Math.cos(x[1]) - (x[5] * Math.tan(x[1]) + x[3]*x[5])/x[2];
+		    	// v - East
+			    dxdt[4] = Yfo/x[6] - 2 * omega * (x[5]*Math.cos(x[1]) - x[3] * Math.sin(x[1])) + x[4]/x[2] * ( x[3] * Math.tan(x[1]) - x[5]);
+		    	// w - Down
+			    dxdt[5] =  - (- Zfo/x[6] + 2 * omega * x[4] * Math.cos(x[1]) + omega * omega * x[2] * Math.cos(x[1]) * Math.cos(x[1]) + (x[4]*x[4] + x[3]*x[3])/x[2]);
+	    	}
     	V_NED_ECEF_cartesian[0]=x[3];
     	V_NED_ECEF_cartesian[1]=x[4];
     	V_NED_ECEF_cartesian[2]=x[5];
@@ -753,7 +777,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  g[0]+" "+
 	                    		  g[1]+" "+
 	                    		  g[2]+" "+
-	                    		  STOP_Handler.get(1).get_StopHandler().g(t, y)+" "+
+	                    		  Math.sqrt(g[0]*g[0] + g[1]*g[1] + g[2]*g[2])+" "+
 	                    		  ISP+" "
 	                    		  );
 	                }
