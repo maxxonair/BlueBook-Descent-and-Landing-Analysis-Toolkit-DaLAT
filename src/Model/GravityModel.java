@@ -24,7 +24,7 @@ public class GravityModel  {
 	    J4   = DATA_GRAVITY[TARGET][2];    	// Planets average radius                   [m]
 }
     
-    public static double get_gr(double r, double lat, double rm, double mu, int TARGET)                          // Gravity acceleration in radial direction [m/s²]
+    public static double get_gr(double r, double lat, double rm, double mu, int TARGET)                          // Gravity acceleration in radial direction [m/sï¿½]
     {
     	SET_Constants(TARGET);
     	
@@ -34,7 +34,7 @@ public class GravityModel  {
     //System.out.println(J2 + "|" + J3 + "|" + J4 + "|" + mu + "|" + rm+ "|" + gr);
     return gr;
     }
-    public static double get_gn(double r, double lat, double rm,double mu, int TARGET)        // Gravity in north-south direction [m/s²]
+    public static double get_gn(double r, double lat, double rm,double mu, int TARGET)        // Gravity in north-south direction [m/sï¿½]
     {
     	SET_Constants(TARGET);
     double phi = PI/2-lat;             // Phi                                      [rad]
@@ -59,8 +59,8 @@ public class GravityModel  {
     	g_phi = -3 * mu * sin(phi) * cos(phi) * (rm/r) * (rm/r) * (J2 + 0.5 * J3 * ( 5*cos(phi) *cos(phi) -1) * (rm/r)/cos(phi) + (5/6) * J4 * ( 7 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) ) /(r * r);
     	
     	
-    	g[2] = g_phi*Math.cos(phi)*Math.cos(longitude)+g_r*Math.sin(phi)*Math.cos(longitude);
-    	g[1] = g_phi*Math.cos(phi)*Math.sin(longitude) + g_r*Math.sin(phi)*Math.sin(longitude);
+    	g[2] =  g_phi*Math.cos(phi)*Math.cos(longitude) + g_r*Math.sin(phi)*Math.cos(longitude);
+    	g[1] =  g_phi*Math.cos(phi)*Math.sin(longitude) + g_r*Math.sin(phi)*Math.sin(longitude);
     	g[0] = -g_phi*Math.sin(phi) + g_r* Math.cos(phi);
     	
     	return g; 

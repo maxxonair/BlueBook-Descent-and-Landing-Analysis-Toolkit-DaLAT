@@ -91,7 +91,11 @@ public class Tool{
         try {
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
+        	try {
         	InitialState = Double.parseDouble(tokens[0]);
+        	} catch (java.lang.NumberFormatException eNFE) {
+        		System.out.println("ERROR: Read proplsion value failed. Index: "+k );
+        	}
         	readINP[k]= InitialState;
         	k++;
         }

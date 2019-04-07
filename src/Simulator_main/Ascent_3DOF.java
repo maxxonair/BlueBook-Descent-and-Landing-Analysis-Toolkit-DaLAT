@@ -539,11 +539,11 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	    cntr_v_init=x3;
 		try {
 		 prop_read = Tool.READ_PROPULSION_INPUT(PropulsionInputFile);
-	    	 ISP          	  = prop_read[0];
-	    	 m_propellant_init= prop_read[1];
-	    	 Thrust_max 	  = prop_read[2];
-	    	 Thrust_min		  = prop_read[3];
-	    	 M0 			  = x6  ; 
+	    	 ISP          	  	= prop_read[0];
+	    	 m_propellant_init	= prop_read[1];
+	    	 Thrust_max 	  		= prop_read[2];
+	    	 Thrust_min		  	= prop_read[3];
+	    	 M0 			  		= x6  ; 
 	    	 mminus			  = M0  ;
 	    	 vminus			  = x3  ;
 	    	 v_touchdown	  = 0   ;

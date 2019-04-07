@@ -737,7 +737,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         
         P1_Plotpanel = new JPanel();
         P1_Plotpanel.setLayout(new BorderLayout());
-        P1_Plotpanel.setPreferredSize(new Dimension(900, exty_main));
+        P1_Plotpanel.setPreferredSize(new Dimension(900, exty_main-100));
         P1_Plotpanel.setBackground(bc_c);
         P1_Plotpanel.setForeground(Color.white);
         PageX04_Dashboard.add(P1_Plotpanel,BorderLayout.LINE_END);
