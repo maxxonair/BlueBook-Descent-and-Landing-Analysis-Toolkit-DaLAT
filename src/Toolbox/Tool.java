@@ -49,6 +49,11 @@ public class Tool{
 	//System.out.println(x1 + "|" + x2+ "|" +y1+ "|" +y2+ "|" +yvalue+ "|" +lines);
 	return yvalue;
 	}
+	//---------------------------------------------------------------------------------------------------------------------
+	//
+	//			Read data from external file: 
+	//
+	//---------------------------------------------------------------------------------------------------------------------
     public static double[] READ_INTEGRATOR_INPUT(String IntegratorInputFile) throws IOException{
     double[] readINP = new double[10];
     String INPUT_FILE = IntegratorInputFile;
@@ -134,5 +139,92 @@ public class Tool{
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Spacecraft setup read failed.");}
         return readINP;
     }
-	
+	//---------------------------------------------------------------------------------------------------------------------
+	//
+	//			Linear Algebra service functions:  
+	//
+	//---------------------------------------------------------------------------------------------------------------------    
+    public static double[][] Multiply_Matrices(double[][] A, double[][] B) {
+        int aRows = A.length;
+        int aColumns = A[0].length;
+        int bRows = B.length;
+        int bColumns = B[0].length;
+
+        if (aColumns != bRows) {
+            throw new IllegalArgumentException("A:Rows: " + aColumns + " did not match B:Columns " + bRows + ".");
+        }
+
+        double[][] C = new double[aRows][bColumns];
+        for (int i = 0; i < aRows; i++) {
+            for (int j = 0; j < bColumns; j++) {
+                C[i][j] = 0.00000;
+            }
+        }
+
+        for (int i = 0; i < aRows; i++) { // aRow
+            for (int j = 0; j < bColumns; j++) { // bColumn
+                for (int k = 0; k < aColumns; k++) { // aColumn
+                    C[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+
+        return C;
+    }
+    public static double[][] Multiply_Scalar_Matrix(double scalar, double[][] M){
+    	int rows    = M.length;
+    	int columns = M[0].length; 
+    	double[][] result = new double[rows][columns];
+        for (int i = 0; i < rows; i++) { // aRow
+            for (int j = 0; j < columns; j++) { // bColumn
+            	result[i][j] = M[i][j] * scalar; 
+            }
+            }
+    	return result; 
+    }
+    public static double[][] Substract_Matrices(double[][] A, double[][] B){
+        int aRows = A.length;
+        int aColumns = A[0].length;
+        int bRows = B.length;
+        int bColumns = B[0].length;
+    	double[][] C = new double[aRows][aColumns];
+    	
+        if (aRows!=bRows || aColumns!=bColumns) {
+        	System.out.println("ERROR: Matrix dimensions do not match");
+        	return C; 
+        } else {
+	        for (int i = 0; i < aRows; i++) { // aRow
+	            for (int j = 0; j < bColumns; j++) { // bColumn
+	                    C[i][j] = A[i][j] - B[i][j];
+	                }
+	            }
+	            return C; 
+        }
+    }
+    public static double[][] Addup_Matrices(double[][] A, double[][] B){
+        int aRows = A.length;
+        int aColumns = A[0].length;
+        int bRows = B.length;
+        int bColumns = B[0].length;
+    	double[][] C = new double[aRows][aColumns];
+    	
+        if (aRows!=bRows || aColumns!=bColumns) {
+        	System.out.println("ERROR: Matrix dimensions do not match");
+        	return C; 
+        } else {
+	        for (int i = 0; i < aRows; i++) { // aRow
+	            for (int j = 0; j < bColumns; j++) { // bColumn
+	                    C[i][j] = A[i][j] + B[i][j];
+	                }
+	            }
+	            return C; 
+        }
+    }
+    public static double[][] Inverse_Matrix(double[][] A){
+        int aRows = A.length;
+        int aColumns = A[0].length;
+    	double[][] X = new double[aRows][aColumns];
+    			
+    			return X; 
+    }
 }

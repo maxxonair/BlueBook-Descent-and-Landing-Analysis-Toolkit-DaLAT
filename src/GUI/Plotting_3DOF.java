@@ -286,7 +286,9 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Quaternion q3",
     										  "Quaternion q4",
     										  "Main engine ISP [s]",
-    										  "Event Handler 1 output [-]"
+    										  "Fx NED [N]",
+    										  "Fy NED [N]",
+    										  "Fz NED [N]"
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
