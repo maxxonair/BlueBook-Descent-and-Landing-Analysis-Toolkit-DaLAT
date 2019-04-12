@@ -39,7 +39,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    public static boolean ISP_Throttle_model= false; 
 	    public static boolean stophandler_ON = true; 
 	    
-	    public static 	    boolean spherical=false;
+	    public static 	    boolean spherical=true;
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -62,9 +62,9 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		//
 		//----------------------------------------------------------------------------------------------------------------------------
 	   	public static String[] IntegratorInputPath = {"/INP/INTEG/00_DormandPrince853Integrator.inp",
-					  "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
-					  "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
-					  "/INP/INTEG/03_AdamsBashfordIntegrator.inp"
+					  								  "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
+					  								  "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
+					  								  "/INP/INTEG/03_AdamsBashfordIntegrator.inp"
 	   					};
 	    public static String PropulsionInputFile    = "/INP/PROP/prop.inp"  ;  		// Input: target and environment
 	    
@@ -86,7 +86,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		    public static double twrite=0;
 		    public static double ref_ELEVATION = 0;
 	 	//----------------------------------------------------------------
-			public static double[] g = {0,0,0};			// Gravity vector in NED frame 				[m/s�]
+			public static double[][] g = {{0},{0},{0}};		
+			public static double[][] g_NED = {{0},{0},{0}};  // Gravity vector in NED frame 				[m/s�]
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
 			public static double rm    = 0;    	    // Planets average radius                   [m]
@@ -94,15 +95,17 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			public static double g0 = 9.81;         // For normalized ISP 			
 			public static double gn = 0;
 			public static double gr = 0;
-			public static double D = 0;
-			public static double Side_Force = 0;
-			public static double L = 0;
+			public static double DragForce = 0;
+			public static double SideForce = 0;
+			public static double LiftForce = 0;
 		    public static double Cd=0;
 		    public static double C_SF=0;
 		    public static double Cl=0;
 		    public static double qinf=0;
 		    public static double S =0;
-		    public static double bank =0;
+		    public static double BankAngle =0;
+		    public static double AngleOfAttack=0;
+		    public static double AngleOfSideslip=0; 
 		    public static double CdPar=0;
 		    public static double Thrust=0;
 		    public static double Spar=0;
@@ -115,6 +118,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		    public static double ISP = 0 ; 
 		    public static double P = 0 ;      			// static pressure [Pa]
 		    public static double cp = 0;				// 
+		    public static double m0; 
 		    public static int flowzone=0; 				// Flow zone continuum - transitional - free molecular flwo
 		    public static double Cdm = 0; 				// Drag coefficient in contiuum flow; 
 		    public static int TARGET=0;					// Target body index
@@ -166,16 +170,20 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			
 			
 			public static double[][] F_Aero_A    = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
+			public static double[][] F_Aero_NED  = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
 			public static double[][] F_Thrust_B  = {{0},{0},{0}};						// Thrust Force in body fixed system     [N]
+			public static double[][] F_Thrust_NED= {{0},{0},{0}};						// Thrust Force in NED frame    		 [N]
 			public static double[][] F_Gravity_G = {{0},{0},{0}};						// Gravity Force in ECEF coordinates     [N]
+			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
-			public static double[] EulerAngle = {0,0,0};							    // Euler Angle Vector [rad]
+			public static double[] EulerAngle = {1,2,3};							    // Euler Angle Vector [rad]
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
 			public static double[][] C_NED_B 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix body fixed to NED system
-			public static double[][] C_NED_ECEF 	= {{0,0,0},{0,0,0},{0,0,0}}; 		// Rotational matrix ECEF to NED system
+			public static double[][] C_NED_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to NED system
+			public static double[][] C_B_A 		= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Bodyfixed to Aerodynamic
 			
 			
 	        public static double elevationangle; 
@@ -197,7 +205,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
-	        public double ThrottleMODEL_get_ISP(double ISP_min, double ISP_max, double Throttle_CMD) {
+	    public double ThrottleMODEL_get_ISP(double ISP_min, double ISP_max, double Throttle_CMD) {
 	        	// input check
 	        	if(Throttle_CMD>1 || Throttle_CMD<0) {
 	        		System.out.println("ERROR: ISP model - throttle command out of range" );
@@ -221,8 +229,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    
 		public static double[] Spherical2Cartesian_Velocity(double[] X) {
 			double[] result = new double[3];
-			result[0]  = X[0] * Math.cos(X[1]) * Math.cos(X[2]);
-			result[1]  = X[0] * Math.cos(X[1]) * Math.sin(X[2]);
+			result[0]  =  X[0] * Math.cos(X[1]) * Math.cos(X[2]);
+			result[1]  =  X[0] * Math.cos(X[1]) * Math.sin(X[2]);
 			result[2]  = -X[0] * Math.sin(X[1]);
 			// Filter small errors from binary conversion: 
 			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
@@ -231,9 +239,9 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		
 		public static double[] Cartesian2Spherical_Velocity(double[] X) {
 			double[] result = new double[3];
-			result[0]  = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
-			result[1]  =  Math.acos(X[2]/result[0]);
-			result[2]  = Math.atan(X[1]/X[0]);
+			result[1] = -Math.atan(X[2]/(Math.sqrt(X[0]*X[0] + X[1]*X[1])));
+			result[0] =  Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
+			result[2] =  Math.atan(X[1]/X[0]);
 			// Filter small errors from binary conversion: 
 			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
 			return result; 
@@ -410,12 +418,12 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	} else { System.out.println("ERROR: Sequence type out of range");}
 		}
 		
-		public static double[] GRAVITY_MANAGER_3D(double[] x) {
+		public static double[][] GRAVITY_MANAGER_3D(double[] x) {
 			//------------------------------------------------------------------------------
 			//     Full 3D gravity model (work TBD on complexity) 
 			//------------------------------------------------------------------------------
 	    	//g = GravityModel.get_g( x[2],  x[0], x[1],  rm,  mu, TARGET);
-	    	g = GravityModel.get_g_ECEF(r_ECEF_spherical, r_ECEF_cartesian, rm, azimuth_inertFrame, TARGET);
+	    	g = GravityModel.get_g_ECEF(r_ECEF_spherical, r_ECEF_cartesian, rm, mu, TARGET);
 	    	return g; 
 		}
 		
@@ -424,7 +432,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			//     simplified 2D atmosphere model (J2 only) 
 			//------------------------------------------------------------------------------
 	    	gr = GravityModel.get_gr( x[2],  x[1],  rm,  mu, TARGET);
-	    	gn = GravityModel.get_gn(x[2], x[1],  rm,  mu, TARGET); 
+	    	gn = GravityModel.get_gn( x[2],  x[1],  rm,  mu, TARGET); 
 		}
 		
 		public static void ATMOSPHERE_MANAGER(double[] x) {
@@ -449,13 +457,13 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       		// Continuum flow drag coefficient [-]
 		    	 Cd 		= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
 		    	 S 		= 20;																// Projected surface area 		   [m2]
-		     	//-----------------------------------------------------------------------------------------------
-		    	 D  		= - qinf * S * Cd  - Thrust			    ;//- qinf * Spar * CdPar;        		// Aerodynamic drag Force 		   [N]
-		    	 L 		    =   qinf * S * Cl * cos( bank ) ;                            			// Aerodynamic lift Force 		   [N]
-		    	 Side_Force =   qinf * S * Cl * sin( bank ) ;                            			// Aerodynamic side Force 		   [N]
-		    	//----------------------------------------------------------------------------------------------
 		    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
 	    	}
+	     	//-----------------------------------------------------------------------------------------------
+	    	 DragForce  		= - qinf * S * Cd  - Thrust			    ;//- qinf * Spar * CdPar;        		// Aerodynamic drag Force 		   [N]
+	    	 LiftForce 		    =   qinf * S * Cl * cos( BankAngle ) ;                            			// Aerodynamic lift Force 		   [N]
+	    	 SideForce 			=   qinf * S * Cl * sin( BankAngle ) ;                            			// Aerodynamic side Force 		   [N]
+	    	//----------------------------------------------------------------------------------------------
 		}
 
 		public static void INITIALIZE_ROTATIONAL_MATRICES(double[] x, double t, double bank_angle, double[] euler_angle) {
@@ -467,7 +475,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			C_NED_A[2][0] = -Math.sin(V_NED_ECEF_spherical[1]);
 			
 			C_NED_A[0][1] = -Math.sin(V_NED_ECEF_spherical[1])*Math.cos(bank_angle) - Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(bank_angle);
-			C_NED_A[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(bank_angle) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(bank_angle);
+			C_NED_A[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(bank_angle) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(bank_angle);
 			C_NED_A[2][1] = -Math.cos(V_NED_ECEF_spherical[1])*Math.sin(bank_angle);
 			
 			C_NED_A[0][2] = -Math.sin(V_NED_ECEF_spherical[2])*Math.sin(bank_angle) + Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(bank_angle);
@@ -496,22 +504,39 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			
 			C_NED_ECEF[0][1] = -Math.sin(x[0])*Math.sin(x[1]);
 			C_NED_ECEF[1][1] =  Math.cos(x[0]);
-			C_NED_ECEF[2][1] =  Math.sin(x[0])*Math.cos(x[1]);
+			C_NED_ECEF[2][1] = -Math.sin(x[0])*Math.cos(x[1]);
 			
 			C_NED_ECEF[0][2] =  Math.cos(x[1]);
 			C_NED_ECEF[1][2] =  0;
 			C_NED_ECEF[2][2] = -Math.sin(x[1]);
+			//-------------------------------------------------------------------------------------------
+			//             Bodyfixed frame to Aerodynamic frame
+			//-------------------------------------------------------------------------------------------
+			C_B_A[0][0] =  Math.cos(AngleOfAttack)*Math.cos(AngleOfSideslip);
+			C_B_A[1][0] =  Math.sin(AngleOfSideslip);
+			C_B_A[2][0] =  Math.sin(AngleOfAttack)*Math.cos(AngleOfSideslip);
+			
+			C_B_A[0][1] =  -Math.cos(AngleOfAttack)*Math.sin(AngleOfSideslip);
+			C_B_A[1][1] =   Math.cos(AngleOfSideslip);
+			C_B_A[2][1] =  -Math.sin(AngleOfAttack)*Math.sin(AngleOfSideslip);
+			
+			C_B_A[0][2] =  -Math.sin(AngleOfAttack);
+			C_B_A[1][2] =  0;
+			C_B_A[2][2] =   Math.cos(AngleOfAttack);
+			
 		}
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------
     		GRAVITY_MANAGER_2D(x);
-    		GRAVITY_MANAGER_3D(x);
+    		g = GRAVITY_MANAGER_3D(x);    		
+    		g_NED =  Tool.Multiply_Matrices(C_NED_ECEF, g);	
     		
-	    	F_Gravity_G[0][0] = x[6]*g[0];
-	    	F_Gravity_G[1][0] = x[6]*g[1];
-	    	F_Gravity_G[2][0] = x[6]*g[2];
+	    	F_Gravity_NED[0][0] = x[6]*g_NED[0][0];
+	    	F_Gravity_NED[1][0] = x[6]*g_NED[1][0];
+	    	F_Gravity_NED[2][0] = x[6]*g_NED[2][0];
+	    	//System.out.println(F_Gravity_G[0][0] + " | "+F_Gravity_G[1][0] + " | "+F_Gravity_G[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -523,28 +548,32 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamik Forces | Aerodynamic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-    	D  		   =   qinf * S * Cd   ;//- qinf * Spar * CdPar;        			// Aerodynamic drag Force 		   [N]	
-	   	L  		   =   qinf * S * Cl   ;                            			// Aerodynamic lift Force 		   [N]
-	   	Side_Force =   qinf * S * C_SF   ;                            			// Aerodynamic side Force 		   [N]
+    	DragForce  		   =   qinf * S * Cd     ; //- qinf * Spar * CdPar; // Aerodynamic drag Force 		   [N]	
+	   	LiftForce  		   =   qinf * S * Cl     ;                          // Aerodynamic lift Force 		   [N]
+	   	SideForce 		   =   qinf * S * C_SF   ;                          // Aerodynamic side Force 		   [N]
 	   	
-	   	F_Aero_A[0][0] = - D  ;
-	   	F_Aero_A[1][0] = - Side_Force ;
-	   	F_Aero_A[2][0] = - L  ;
+	   	F_Aero_A[0][0] = - DragForce  ;
+	   	F_Aero_A[1][0] = - SideForce ;
+	   	F_Aero_A[2][0] = - LiftForce  ;
+	   	//System.out.println(F_Aero_A[0][0] + " | "+F_Aero_A[1][0] + " | "+F_Aero_A[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamik Forces | Body fixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-    	Tx  =   Thrust  ;        			// Thrust Force in x direction (B)		   [N]	
-	   	Ty  =   0  ;                        // Thrust Force in y direction (B)		   [N]
-	   	Tz =    0   ;                       // Thrust Force in z direction (B)	   	   [N]
+    	Tx  =   Thrust  ;        			 // Thrust Force in x direction (B)		   [N]	
+	   	Ty  =    0  ;                        // Thrust Force in y direction (B)		   [N]
+	   	Tz  =    0   ;                       // Thrust Force in z direction (B)	   	   [N]
 	   	
-	   	F_Thrust_B[0][0] =  Tx  ;
-	   	F_Thrust_B[1][0] =  Ty ;
-	   	F_Thrust_B[2][0] =  Tz ;
+	   	F_Thrust_B[0][0] =  0;//Tx  ;
+	   	F_Thrust_B[1][0] =  0;//Ty ;
+	   	F_Thrust_B[2][0] =  0;//Tz ;
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Rotational Matrices 
     	//-------------------------------------------------------------------------------------------------------------------
-    	INITIALIZE_ROTATIONAL_MATRICES(x, t, bank, EulerAngle); 
-    	F_total_NED = Tool.Addup_Matrices( Tool.Addup_Matrices(Tool.Multiply_Matrices(C_NED_A, F_Aero_A) , Tool.Multiply_Matrices(C_NED_B, F_Thrust_B) ), Tool.Multiply_Matrices(C_NED_ECEF, F_Gravity_G));
+    	INITIALIZE_ROTATIONAL_MATRICES(x, t, BankAngle, EulerAngle); 
+    	C_NED_A   		= Tool.Multiply_Matrices(C_NED_B, C_B_A) ;
+    	F_Aero_NED   	= Tool.Multiply_Matrices(C_NED_A, F_Aero_A) ;
+    	F_Thrust_NED 	= Tool.Multiply_Matrices(C_NED_B, F_Thrust_B) ;
+    	F_total_NED 	= Tool.Addup_Matrices(F_Aero_NED , F_Thrust_NED , F_Gravity_NED);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    				ISP model for engine throttling
     	//-------------------------------------------------------------------------------------------------------------------
@@ -568,47 +597,43 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	phimin=phi;
     	tetamin=theta; 
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    		Force Definition  | BodyFixed Frame |
-    	//-------------------------------------------------------------------------------------------------------------------
-    	/*
-	   	double fT = Thrust;
-	   	 Xfo = -fT*Math.cos(Thrust_Deviation)-D;
-	   	 Yfo = 0;
-	   	 Zfo = -fT*Math.sin(Thrust_Deviation); 
-	   	 */
-    	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
-    	// Position vector with respect to spherical velocity vector 
+    	// Position vector with respect to spherical velocity vector
+    	int optionR = 1; 
+	    if(optionR==1) {
 	   	 	  // Longitude
 	    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
 	          // Latitude
 	    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
 	    	  // Radius 
 	    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
-	    
 	    r_ECEF_spherical[0] = x[0];
 	    r_ECEF_spherical[1] = x[1];
 	    r_ECEF_spherical[2] = x[2];
-	    
+	    } else if (optionR==2) {
+	    	// Position vector with respect to cartesian velocity vector 
+	    	double radius   = Math.sqrt(x[0]*x[0] + x[1]*x[1] + x[2]*x[2]);
+	    	double latitude = Math.asin(x[2]/radius);
+	 	 	  // x
+		    dxdt[0] = V_NED_ECEF_cartesian[1]/(radius*Math.cos(latitude));
+	         // y
+		    dxdt[1] = V_NED_ECEF_cartesian[0]/radius ;
+	  	     // z
+		    dxdt[2] = V_NED_ECEF_cartesian[2];	
+	    }
 	    r_ECEF_cartesian = Spherical2Cartesian_Position(r_ECEF_spherical);
-    	// Position vector with respect to cartesian velocity vector 
- 	 	  // Longitude
-	    //dxdt[0] = V_NED_ECEF_cartesian[1]/(x[2]*Math.cos(x[1]));
-        // Latitude
-	   // dxdt[1] = V_NED_ECEF_cartesian[0]/x[2] ;
-  	   // Radius 
-	   // dxdt[2] = V_NED_ECEF_cartesian[2];	
+	
 	    // Velocity vector
+    	int optionV = 2; 
 	    if(spherical) {
-	    
 	    	// velocity
 	    dxdt[3] = -gr * sin( x[4] ) + gn * cos( x[5] ) * cos( x[4] ) + F_Aero_A[0][0] / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
 	    	// flight path angle 
 	    dxdt[4] = ( x[3] / x[2] - gr/ x[3] ) * cos( x[4] ) - gn * cos( x[5] ) * sin( x[4] ) / x[3] - F_Aero_A[2][0] / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
 	    	// local azimuth
 	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - gn * sin( x[5] ) / x[3] + F_Aero_A[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
-	    
+
     	V_NED_ECEF_spherical[0]=x[3];
     	V_NED_ECEF_spherical[1]=x[4];
     	V_NED_ECEF_spherical[2]=x[5];
@@ -616,29 +641,34 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	V_NED_ECEF_cartesian = Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
     	
 	    }else {
-	    	int option =3;
-	    	if(option==1) {
-	    	// u
-	    		dxdt[3] = Xfo/x[6] + g[0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) - 2*omega*x[4]*Math.sin(x[1]));
-	    	// v
-	    		dxdt[4] = Yfo/x[6] + g[1] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) + 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
-	    	// w
-	    		dxdt[5] = Zfo/x[6] + g[2] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
-	    	} else if (option==2) {
-	    		// u - North
-	    		dxdt[3] = 1/x[6] * ( Xfo + g[0] - 2* omega * x[4] * Math.sin(x[1]) + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2]);
-	    		// v - East
-	    		dxdt[4] = 1/x[6] * ( Yfo + g[1] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1])) + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])));
-	    		// w - Down
-	    		dxdt[5] = 1/x[6] * ( Zfo + g[2] - 2 * omega * x[4] * Math.cos(x[1]) - (x[4]*x[4] + x[3]*x[3])/x[2] ) ;
-	    	} else if (option ==3) {
-
+	    	if(optionV == 1) {
+	    		// Lisa:
+		    	// u
+	    		dxdt[3] = F_total_NED[0][0]/x[6] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) - 2*omega*x[4]*Math.sin(x[1]));
+	    		// v
+	    		dxdt[4] = F_total_NED[1][0]/x[6] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) + 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
+	    		// w
+	    		dxdt[5] = F_total_NED[2][0]/x[6] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
+	    	} else if (optionV == 2) {
+	    		// Moij:
+	    		F_total_NED[0][0]=0;
+	    		F_total_NED[1][0]=0;
+	    		F_total_NED[2][0]=0;
 		    	// u - North
-			    dxdt[3] =   Xfo/x[6] - 2 * omega * x[4] * Math.sin(x[1]) - omega * omega * x[2] * Math.sin(x[1]) * Math.cos(x[1]) - (x[5] * Math.tan(x[1]) + x[3]*x[5])/x[2];
+			    dxdt[3] =     F_total_NED[0][0]/x[6] -   2 * omega * x[4] * Math.sin(x[1]) - omega * omega * x[2] * Math.sin(x[1]) * Math.cos(x[1]) - (x[4]*x[4] * Math.tan(x[1]) + x[3]*x[5])/x[2];
 		    	// v - East
-			    dxdt[4] =   Yfo/x[6] - 2 * omega * (x[5]*Math.cos(x[1]) - x[3] * Math.sin(x[1])) + x[4]/x[2] * ( x[3] * Math.tan(x[1]) - x[5]);
+			    dxdt[4] =     F_total_NED[1][0]/x[6] -   2 * omega * (x[5]*Math.cos(x[1])  - x[3] * Math.sin(x[1])) + x[4]/x[2] * ( x[3] * Math.tan(x[1]) - x[5]);
 		    	// w - Down
-			    dxdt[5] = - Zfo/x[6] + 2 * omega * x[4] * Math.cos(x[1]) + omega * omega * x[2] * Math.cos(x[1]) * Math.cos(x[1]) + (x[4]*x[4] + x[3]*x[3])/x[2];
+			    dxdt[5] =   - F_total_NED[2][0]/x[6] +   2 * omega * x[4] * Math.cos(x[1]) + omega * omega * x[2] * Math.cos(x[1])*Math.cos(x[1]) + (x[4]*x[4] + x[3]*x[3])/x[2];
+	    	} else if (optionV==3) {
+	    		// Titterton:
+	    		// u - North
+	    		dxdt[3] = F_total_NED[0][0]/x[6] - 2 * omega * x[4] * Math.sin(x[1]) + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2];
+	    		// v - East
+	    		dxdt[4] = F_total_NED[1][0]/x[6] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1])) + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1]));
+	    		// w - Down
+	    		dxdt[5] = F_total_NED[2][0]/x[6] - 2 * omega * x[4] * Math.cos(x[1]) - (x[4]*x[4] + x[3]*x[3])/x[2]   ;
+	    		
 	    	}
     	V_NED_ECEF_cartesian[0]=x[3];
     	V_NED_ECEF_cartesian[1]=x[4];
@@ -776,13 +806,19 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	        y[5] = x5;
 	        
 	        } else {
+	        	V_NED_ECEF_spherical[0]=x3;
+	        	V_NED_ECEF_spherical[1]=x4;
+	        	V_NED_ECEF_spherical[2]=x5;
 	        	V_NED_ECEF_cartesian = Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
 		        y[3] = V_NED_ECEF_cartesian[0];
 		        y[4] = V_NED_ECEF_cartesian[1];
 		        y[5] = V_NED_ECEF_cartesian[2];
+		        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
+		        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
 	        }
 	// S/C Mass        
 	        y[6] = x6;
+	        m0 = x6;
 			INITIALIZE_FlightController(y) ;
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
@@ -799,7 +835,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                double[] y     = interpolator.getInterpolatedState();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double g_total = Math.sqrt(gr*gr+gn*gn);
-	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*y[3]*y[3]);
+	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*vel_inertFrame*vel_inertFrame);
 	                double CTRL_TM_Error =0;
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
@@ -816,13 +852,13 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (y[2]-rm-ref_ELEVATION) + " " + 
 	                    		  (y[2]-rm)+ " " + 
 	                    		  y[2] + " " + 
-	                    		  y[3]+" "+ //V_NED_ECEF_spherical[0]+ " " + 
-	                    		  y[4]+" "+ //V_NED_ECEF_spherical[1] + " " + 
-	                    		  y[5]+" "+ //V_NED_ECEF_spherical[2] + " " + 
+	                    		  V_NED_ECEF_spherical[0]+ " " + 
+	                    		  V_NED_ECEF_spherical[1] + " " + 
+	                    		  V_NED_ECEF_spherical[2] + " " + 
 	                    		  rho + " " + 
-	                    		  D + " " +
-	                    		  L + " " +
-	                    		  Side_Force + " " +
+	                    		  DragForce + " " +
+	                    		  LiftForce + " " +
+	                    		  SideForce + " " +
 	                    		  gr + " " +
 	                    		  gn + " " +
 	                    		  g_total + " " +
@@ -833,7 +869,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  P+ " " +
 	                    		  Cd+ " " +
 	                    		  Cl+ " " +
-	                    		  bank+ " " +
+	                    		  BankAngle+ " " +
 	                    		  flowzone+ " " +
 	                    		  qinf+ " " +
 	                    		  CdC+ " " +
@@ -855,9 +891,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  CTRL_Time+" "+
 	                    		  (PI-y[4]-Thrust_Deviation)+" "+
 	                    		  Thrust_Deviation+" "+
-	                    		  Xfo+" "+
-	                    		  Yfo+" "+
-	                    		  Zfo+" "+
+	                    		  C_NED_B[0][0]+" "+
+	                    		  C_NED_B[1][0]+" "+
+	                    		  C_NED_B[2][0]+" "+
 	                    		  vel_inertFrame+" "+
 	                    		  fpa_inertFrame+" "+
 	                    		  azimuth_inertFrame+" "+
@@ -867,14 +903,30 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  V_NED_ECEF_cartesian[0]+ " " + 
 	                    		  V_NED_ECEF_cartesian[1] + " " + 
 	                    		  V_NED_ECEF_cartesian[2] + " " + 
-	                    		  g[0]+" "+
-	                    		  g[1]+" "+
-	                    		  g[2]+" "+
-	                    		  Math.sqrt(g[0]*g[0] + g[1]*g[1] + g[2]*g[2])+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  0+" "+
 	                    		  ISP+" "+
 	                    		  F_total_NED[0][0]+" "+
 	                    		  F_total_NED[1][0]+" "+
-	                    		  F_total_NED[2][0]+" "
+	                    		  F_total_NED[2][0]+" "+
+	                    		  g_NED[0][0]+" "+
+	                    		  g_NED[1][0]+" "+
+	                    		  g_NED[2][0]+" "+
+	                    		  Math.sqrt(g_NED[0][0]*g_NED[0][0] + g_NED[1][0]*g_NED[1][0] + g_NED[2][0]*g_NED[2][0])+" "+
+	                    		  F_Aero_NED[0][0]+" "+
+	                    		  F_Aero_NED[1][0]+" "+
+	                    		  F_Aero_NED[2][0]+" "+
+	                    		  F_Thrust_NED[0][0]+" "+
+	                    		  F_Thrust_NED[1][0]+" "+
+	                    		  F_Thrust_NED[2][0]+" "+
+	                    		  F_Gravity_NED[0][0]+" "+
+	                    		  F_Gravity_NED[1][0]+" "+
+	                    		  F_Gravity_NED[2][0]+" "+
+	                    		  r_ECEF_cartesian[0]+" "+
+	                    		  r_ECEF_cartesian[1]+" "+
+	                    		  r_ECEF_cartesian[2]+" "
 	                    		  );
 	                }
 	              

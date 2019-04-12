@@ -201,22 +201,36 @@ public class Tool{
 	            return C; 
         }
     }
-    public static double[][] Addup_Matrices(double[][] A, double[][] B){
-        int aRows = A.length;
-        int aColumns = A[0].length;
-        int bRows = B.length;
-        int bColumns = B[0].length;
-    	double[][] C = new double[aRows][aColumns];
-    	
-        if (aRows!=bRows || aColumns!=bColumns) {
-        	System.out.println("ERROR: Matrix dimensions do not match");
+    @SuppressWarnings("unused")
+	public static double[][] Addup_Matrices(double[][] ...M){
+        boolean error_missmatch = false;
+        int Rows = 0, Columns = 0; 
+      //---------------------------------------------------------------------
+      //   check that all input matrices have the same dimensions: 
+      //---------------------------------------------------------------------
+        for(double[][] I: M) {
+        	Rows = I.length;
+        	Columns = I[0].length;
+        	for(double[][] J: M) {
+                if(Rows!=J.length || Columns!=J[0].length) {
+                	System.out.println("ERROR: Matrix dimensions do not match "+Rows+", "+Columns);
+                	error_missmatch=true;
+                }
+        	}
+        }
+       //---------------------------------------------------------------------
+    	double[][] C = new double[Rows][Columns];
+        if (error_missmatch) {
+        	//System.out.println("ERROR: Matrix dimensions do not match "+Rows+", "+Columns);
         	return C; 
         } else {
-	        for (int i = 0; i < aRows; i++) { // aRow
-	            for (int j = 0; j < bColumns; j++) { // bColumn
-	                    C[i][j] = A[i][j] + B[i][j];
-	                }
+	        for (int i = 0; i < Rows; i++) { // aRow
+	            for (int j = 0; j < Columns; j++) { // bColumn
+	            	for(double[][] I: M) {
+	                    C[i][j] = C[i][j] + I[i][j];
+	            	}
 	            }
+	        }
 	            return C; 
         }
     }

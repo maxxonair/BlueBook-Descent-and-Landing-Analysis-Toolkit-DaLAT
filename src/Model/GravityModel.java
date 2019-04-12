@@ -61,31 +61,30 @@ public class GravityModel  {
     	
     	g[2] =  g_phi*Math.cos(phi)*Math.cos(longitude) + g_r*Math.sin(phi)*Math.cos(longitude);
     	g[1] =  g_phi*Math.cos(phi)*Math.sin(longitude) + g_r*Math.sin(phi)*Math.sin(longitude);
-    	g[0] = -g_phi*Math.sin(phi) + g_r* Math.cos(phi);
+    	g[0] =  g_phi*Math.sin(phi) + g_r* Math.cos(phi);
     	
     	return g; 
     }
-    public static double[] get_g_ECEF(double[] r_spherical,double[] r_cartesian , double rm, double mu, int TARGET) {
-    	double[] GRAVITY_VECTOR = new double[3]; 
+    public static double[][] get_g_ECEF(double[] r_spherical,double[] r_cartesian , double rm, double mu, int TARGET) {
+    	double[][] GRAVITY_VECTOR = new double[3][1]; 
     	SET_Constants(TARGET);
     	//double longitude = r_spherical[0];
-    	double latitude  = r_spherical[1];
-    	double r 		 = r_spherical[2];
+    	//double latitude  = r_spherical[1];
+    	double r = r_spherical[2];
     	
     	double x = r_cartesian[0];
     	double y = r_cartesian[1];
     	double z = r_cartesian[2];
     	
-    	 double phi = PI/2-latitude; 
-    	 double g_r = mu * ( 1 - 1.5 * J2 * ( 3 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) - 2 * J3 * cos(phi) * (5 * cos(phi) * cos(phi) - 3) * (rm/r) * (rm/r) * (rm/r) - (5/8) * J4 * (35 * cos(phi) * cos(phi) * cos(phi) * cos(phi) - 30 * cos(phi) * cos(phi) + 3) * (rm/r) * (rm/r) * (rm/r) * (rm/r) )/(r * r);
-    	 double g_phi = -3 * mu * sin(phi) * cos(phi) * (rm/r) * (rm/r) * (J2 + 0.5 * J3 * ( 5*cos(phi) *cos(phi) -1) * (rm/r)/cos(phi) + (5/6) * J4 * ( 7 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) ) /(r * r);
+    	// double phi = PI/2-latitude; 
+    	// double g_r = mu * ( 1 - 1.5 * J2 * ( 3 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) - 2 * J3 * cos(phi) * (5 * cos(phi) * cos(phi) - 3) * (rm/r) * (rm/r) * (rm/r) - (5/8) * J4 * (35 * cos(phi) * cos(phi) * cos(phi) * cos(phi) - 30 * cos(phi) * cos(phi) + 3) * (rm/r) * (rm/r) * (rm/r) * (rm/r) )/(r * r);
+    	// double g_phi = -3 * mu * sin(phi) * cos(phi) * (rm/r) * (rm/r) * (J2 + 0.5 * J3 * ( 5*cos(phi) *cos(phi) -1) * (rm/r)/cos(phi) + (5/6) * J4 * ( 7 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) ) /(r * r);
     	
-    	 double Q = 1 + 3*J2/2*(rm/r)*(rm/r)*(1-5*z*z/(r*r))+5*J3/2*(rm/r)*(rm/r)*(rm/r)*(3-7*z*z/(r*r))*z/r - 35*J4/8*(rm/r)*(rm/r)*(rm/r)*(rm/r)*(9*z*z*z*z/(r*r*r*r)-6*z*z/(r*r)+3/7);
-    	 
-    	 
-    	 GRAVITY_VECTOR[0] = -mu*x/(r*r*r)*Q;
-    	 GRAVITY_VECTOR[1] = -mu*y/(r*r*r)*Q;
-    	 GRAVITY_VECTOR[2] = -mu/(r*r)*((1 + 3*J2/2*(rm/r)*(rm/r)*(3-5*(z/r)*(z/r)))*z/r) - mu/(r*r)*(5*J3/2*(rm/r)*(rm/r)*(rm/r)*(6*z*z/(r*r)-7*(z/r)*(z/r)*(z/r)*(z/r)-3/5))-mu/(r*r)*(-35*J4/8*(rm/r)*(rm/r)*(rm/r)*(rm/r)*(15/7-10*(z/r)*(z/r)+9*(z/r)*(z/r)*(z/r)*(z/r))*(z/r));
+    	 double Q = 1 + 3*J2/2*(rm/r)*(rm/r) * (1-5*(z*z)/(r*r)) + 5*J3/2*(rm/r)*(rm/r)*(rm/r)*(3-7*z*z/(r*r))*z/r - 35*J4/8*(rm/r)*(rm/r)*(rm/r)*(rm/r)*(9*z*z*z*z/(r*r*r*r)-6*z*z/(r*r)+3/7);
+    	     	 
+    	 GRAVITY_VECTOR[0][0] = -mu*x/(r*r*r)*Q;
+    	 GRAVITY_VECTOR[1][0] = -mu*y/(r*r*r)*Q;
+    	 GRAVITY_VECTOR[2][0] = -mu/(r*r)*(((1 + 3*J2/2*(rm/r)*(rm/r)*(3-5*(z/r)*(z/r)))*z/r) + (5*J3/2*(rm/r)*(rm/r)*(rm/r)*(6*z*z/(r*r)-7*(z/r)*(z/r)*(z/r)*(z/r)-3/5)) + (-35*J4/8*(rm/r)*(rm/r)*(rm/r)*(rm/r)*(15/7-10*(z/r)*(z/r)+9*(z/r)*(z/r)*(z/r)*(z/r))*(z/r)));
     	 
     	return GRAVITY_VECTOR;
     }

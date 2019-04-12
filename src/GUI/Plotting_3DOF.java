@@ -269,9 +269,9 @@ public class Plotting_3DOF implements  ActionListener {
     										  "CNTRL Time [s]",
     										  "Thrust Elevation [deg]",
     										  "Thrust Deviation [deg]",
-    										  "Xfo [N]",
-    										  "Yfo [N]",
-    										  "Zfo [N]",
+    										  "Thrust Force x B [N]",
+    										  "Thrust Force y B [N]",
+    										  "Thrust Force z B [N]",
     										  "Vel NED/ECI [m/s]",
     										  "FPA NED/ECI [m/s",
     										  "AZ  NED/ECI [m/s]",
@@ -288,7 +288,23 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Main engine ISP [s]",
     										  "Fx NED [N]",
     										  "Fy NED [N]",
-    										  "Fz NED [N]"
+    										  "Fz NED [N]",
+    										  "Gx NED [m/s2]",
+    										  "Gy NED [m/s2]",
+    										  "Gz NED [m/s2]",
+    										  "G total [m/s2]",
+    										  "Force Aero x NED [N]",
+    										  "Force Aero y NED [N]",
+    										  "Force Aero z NED [N]",
+    										  "Force Thrust x NED [N]",
+    										  "Force Thrust y NED [N]",
+    										  "Force Thrust z NED [N]",
+    										  "Force Gravity x NED [N]",
+    										  "Force Gravity y NED [N]",
+    										  "Force Gravity z NED [N]",
+    										  "Position x ECEF [m]",
+    										  "Position y ECEF [m]",
+    										  "Position z ECEF [m]",
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
@@ -358,9 +374,9 @@ public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
 										 "SquareRoot Velocity-Altitude",
 										 "Hover Parabolic entry"
 };
-public static String[] SequenceTVCFC    = { ""};
+public static String[] SequenceTVCFC     = { ""};
 public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
-											"Spherical Coordinate Frame (NED)"};
+											 "Spherical Coordinate Frame (NED)"};
 
 
     public static double h_init;
@@ -1486,9 +1502,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
   				X[1]= Double.parseDouble(INPUT_FPA_Rs.getText())*deg2rad;
   				X[2]= Double.parseDouble(INPUT_AZI_Rs.getText())*deg2rad;
   				double[] res =  Spherical2Cartesian(X);
-  				INPUT_VEL_Rs.setText(""+res[0]);
-  				INPUT_FPA_Rs.setText(""+res[1]);
-  				INPUT_AZI_Rs.setText(""+res[2]);
+  				INPUT_VEL_Rs.setText(""+String.format("%.5f",  res[0]));
+  				INPUT_FPA_Rs.setText(""+String.format("%.5f",  res[1]));
+  				INPUT_AZI_Rs.setText(""+String.format("%.5f",  res[2]));
   				vel_frame_hist=VelocityFrame_chooser.getSelectedIndex();
   			} else if(VelocityFrame_chooser.getSelectedIndex()==1 && vel_frame_hist==0) {
   				// Cartesian to Spherical 
@@ -1497,9 +1513,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
   				X[1]= Double.parseDouble(INPUT_FPA_Rs.getText());
   				X[2]= Double.parseDouble(INPUT_AZI_Rs.getText());
   				X =  Cartesian2Spherical(X);
-  				INPUT_VEL_Rs.setText(""+X[0]);
-  				INPUT_FPA_Rs.setText(""+X[1]*rad2deg);
-  				INPUT_AZI_Rs.setText(""+X[2]*rad2deg);
+  				INPUT_VEL_Rs.setText(""+String.format("%.5f",  X[0]));
+  				INPUT_FPA_Rs.setText(""+String.format("%.5f",  X[1]*rad2deg));
+  				INPUT_AZI_Rs.setText(""+String.format("%.5f",  X[2]*rad2deg));
   				vel_frame_hist=VelocityFrame_chooser.getSelectedIndex();
   			}
     	  }
@@ -4080,8 +4096,8 @@ public static void EXPORT_Case() {
 
 	public static double[] Spherical2Cartesian(double[] X) {
 	double[] result = new double[3];
-	result[0]  = X[0] * Math.cos(X[1]) * Math.cos(X[2]);
-	result[1]  = X[0] * Math.cos(X[1]) * Math.sin(X[2]);
+	result[0]  =  X[0] * Math.cos(X[1]) * Math.cos(X[2]);
+	result[1]  =  X[0] * Math.cos(X[1]) * Math.sin(X[2]);
 	result[2]  = -X[0] * Math.sin(X[1]);
 	// Filter small errors from binary conversion: 
 	for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
@@ -4090,9 +4106,9 @@ public static void EXPORT_Case() {
 	
 	public static double[] Cartesian2Spherical(double[] X) {
 	double[] result = new double[3];
-	result[0]  = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
-	result[1]  = Math.acos(X[2]/result[0]);
-	result[2]  = Math.atan(X[1]/X[0]);
+	result[1] = -Math.atan(X[2]/(Math.sqrt(X[0]*X[0] + X[1]*X[1])));
+	result[0] = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
+	result[2] = Math.atan(X[1]/X[0]);
 	// Filter small errors from binary conversion: 
 	for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
 	return result; 
