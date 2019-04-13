@@ -440,8 +440,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    		// Set atmosphere properties to zero: 
 		    		rho   = 0; 																// Density 							[kg/m3]
 		    		qinf  = 0;																// Dynamic pressure 				[Pa]
-		    		T     = 0 ; 															// Temperature 						[K]
-		    		gamma = 0 ; 															// Heat capacity ratio 				[-]
+		    		T     = 0 ; 																// Temperature 						[K]
+		    		gamma = 0 ; 																// Heat capacity ratio 				[-]
 		    		R	  = 0; 																// Gas constant 					[J/kgK]
 		    		Ma 	  = 0; 																// Mach number 						[-]
 		      	//----------------------------------------------------------------------------------------------
@@ -449,12 +449,12 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;       					// density                         [kg/m3]
 		    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         		// Dynamic pressure                [Pa]
 		    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		// Temperature                     [K]
-		    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        // Heat capacity ratio			   [-]
+		    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        		// Heat capacity ratio			   [-]
 		    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                        // Gas Constant                    [J/kgK]
 		    	 P      = rho * R * T;														// Ambient pressure 			   [Pa]
 		    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 		// Mach number                     [-]
 	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
-	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       		// Continuum flow drag coefficient [-]
+	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       			// Continuum flow drag coefficient [-]
 		    	 Cd 		= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
 		    	 S 		= 20;																// Projected surface area 		   [m2]
 		    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
@@ -546,20 +546,20 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	ATMOSPHERE_MANAGER(x);
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    Force Definition - Aerodynamik Forces | Aerodynamic Frame |
+    	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
     	DragForce  		   =   qinf * S * Cd     ; //- qinf * Spar * CdPar; // Aerodynamic drag Force 		   [N]	
 	   	LiftForce  		   =   qinf * S * Cl     ;                          // Aerodynamic lift Force 		   [N]
 	   	SideForce 		   =   qinf * S * C_SF   ;                          // Aerodynamic side Force 		   [N]
 	   	
-	   	F_Aero_A[0][0] = - DragForce  ;
+	   	F_Aero_A[0][0] = - DragForce - Thrust  ;
 	   	F_Aero_A[1][0] = - SideForce ;
 	   	F_Aero_A[2][0] = - LiftForce  ;
 	   	//System.out.println(F_Aero_A[0][0] + " | "+F_Aero_A[1][0] + " | "+F_Aero_A[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    Force Definition - Aerodynamik Forces | Body fixed Frame |
+    	// 					    Force Definition - Aerodynamic Forces | Body fixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-    	Tx  =   Thrust  ;        			 // Thrust Force in x direction (B)		   [N]	
+	   	Tx  =   Thrust  ;        			 // Thrust Force in x direction (B)		   [N]	
 	   	Ty  =    0  ;                        // Thrust Force in y direction (B)		   [N]
 	   	Tz  =    0   ;                       // Thrust Force in z direction (B)	   	   [N]
 	   	
@@ -608,20 +608,17 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
 	    	  // Radius 
 	    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
+	    } else if (optionR==2) {
+	 	 	  // longitude/ tau
+		    dxdt[0] = x[4]/(x[2]*Math.cos(x[1]));
+	         // latitude - delta
+		    dxdt[1] = x[3]/x[2];
+	  	     // radius - r
+		    dxdt[2] = x[4];	
+	    }
 	    r_ECEF_spherical[0] = x[0];
 	    r_ECEF_spherical[1] = x[1];
 	    r_ECEF_spherical[2] = x[2];
-	    } else if (optionR==2) {
-	    	// Position vector with respect to cartesian velocity vector 
-	    	double radius   = Math.sqrt(x[0]*x[0] + x[1]*x[1] + x[2]*x[2]);
-	    	double latitude = Math.asin(x[2]/radius);
-	 	 	  // x
-		    dxdt[0] = V_NED_ECEF_cartesian[1]/(radius*Math.cos(latitude));
-	         // y
-		    dxdt[1] = V_NED_ECEF_cartesian[0]/radius ;
-	  	     // z
-		    dxdt[2] = V_NED_ECEF_cartesian[2];	
-	    }
 	    r_ECEF_cartesian = Spherical2Cartesian_Position(r_ECEF_spherical);
 	
 	    // Velocity vector
@@ -650,10 +647,10 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    		// w
 	    		dxdt[5] = F_total_NED[2][0]/x[6] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) - 2*omega*x[4]*Math.cos(x[1]);
 	    	} else if (optionV == 2) {
-	    		// Moij:
-	    		F_total_NED[0][0]=0;
-	    		F_total_NED[1][0]=0;
-	    		F_total_NED[2][0]=0;
+	    		// Mooij:
+	    		//F_total_NED[0][0]=0;
+	    		//F_total_NED[1][0]=0;
+	    		//F_total_NED[2][0]=0;
 		    	// u - North
 			    dxdt[3] =     F_total_NED[0][0]/x[6] -   2 * omega * x[4] * Math.sin(x[1]) - omega * omega * x[2] * Math.sin(x[1]) * Math.cos(x[1]) - (x[4]*x[4] * Math.tan(x[1]) + x[3]*x[5])/x[2];
 		    	// v - East

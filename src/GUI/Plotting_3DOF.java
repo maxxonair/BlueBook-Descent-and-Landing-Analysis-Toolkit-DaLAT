@@ -4167,18 +4167,24 @@ public static void EXPORT_Case() {
 		            ctrl_t_end				 = Double.parseDouble(sequ_tokens[10]);
 		            ctrl_fpa_end			 = Double.parseDouble(sequ_tokens[11]);
 		            
-		           } catch (java.lang.IndexOutOfBoundsException eIOBE){System.out.println(eIOBE);}
+		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
+		        	   //System.out.println(eIOBE);
+		        	   }
 		           
 		    		    if  (ctrl_TVC_curve==0) {
 		    		    	xyseries_FPA_cmd.add(t  , 0); 
 		   		        } else if (ctrl_TVC_curve==1) {
 		   		        	fpa_cmd =    PitchCurve.SquareRootPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
 		   		        	if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
-		  		             try { xyseries_FPA_cmd.add(t  , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		  		             try { xyseries_FPA_cmd.add(t  , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {
+		  		            	// System.out.println(eSE);
+		  		            	 }
 		    		    } else if (ctrl_TVC_curve==2) {
 		    		    		fpa_cmd =   PitchCurve.LinearPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
 		    		    		if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
-		    		    	 		try { xyseries_FPA_cmd.add(t , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    	 		try { xyseries_FPA_cmd.add(t , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {
+		    		    	 			//System.out.println(eSE);
+		    		    	 			}
 		    		    } 
 		           
 		           //--------------------------------------------------------
@@ -4188,21 +4194,33 @@ public static void EXPORT_Case() {
 		   		        } else if (ctrl_curve==1) {
 		    		         xx =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
 		    		         //if(Double.isNaN(xx)) {xx=0;}
-		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
+		  		            	 //System.out.println(eSE);
+		  		            	 }
 		    		    } else if (ctrl_curve==2) {
 		    		    	 	xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
 		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
-		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
+		    		    	 			//System.out.println(eSE);
+		    		    	 			}
 		    		    } else if (ctrl_curve==3) {
 		    		    	 	xx =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
 		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
-		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
+		    		    	 			//System.out.println(eSE);
+		    		    	 			}
 		    		    } 
-		           } else {try {xyseries10.add(x  , 0);  } catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}}
+		           } else {try {xyseries10.add(x  , 0);  } catch(org.jfree.data.general.SeriesException eSE) {
+		        	   //System.out.println(eSE);
+		        	   }}
 		           
-		           try {xyseries11.add(x  , y);} catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		           try {xyseries11.add(x  , y);} catch(org.jfree.data.general.SeriesException eSE) {
+		        	   //System.out.println(eSE);
+		        	   }
 		           
-		           try {xyseries_FPA_is.add(t,fpa);} catch(org.jfree.data.general.SeriesException eSE) {System.out.println(eSE);}
+		           try {xyseries_FPA_is.add(t,fpa);} catch(org.jfree.data.general.SeriesException eSE) {
+		        	   //System.out.println(eSE);
+		        	   }
 		        	   
 		           }
 	              
@@ -4215,8 +4233,12 @@ public static void EXPORT_Case() {
 		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
 		   // CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_cmd);
 		    
-	              } catch (NullPointerException  eNPE) { System.out.println(eNPE);System.out.println("Dashboard chart, Nullpointerexception");
-					}catch(IllegalArgumentException eIAE) {System.out.println("Dashboard chart, illegal argument error");}
+	              } catch (NullPointerException  eNPE) { 
+	            	  //System.out.println(eNPE);
+	            	  System.out.println("Dashboard chart, Nullpointerexception");
+					}catch(IllegalArgumentException eIAE) {
+						System.out.println("Dashboard chart, illegal argument error");
+						}
 					
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }
@@ -4490,7 +4512,9 @@ public static void EXPORT_Case() {
 					           }
 	       in.close();
 	    ResultSet_FlexibleChart.addSeries(xyseries10); 
-	              } catch (NullPointerException eNPE) { System.out.println(eNPE);}
+	              } catch (NullPointerException eNPE) { 
+	            	 // System.out.println(eNPE);
+	            	  }
 	    return ResultSet_FlexibleChart;
 	   }
 	public void SET_MAP(int TARGET) throws URISyntaxException, IOException{
@@ -4517,7 +4541,7 @@ public static void EXPORT_Case() {
 		         BufferedImage myImage = ImageIO.read(new File(MAP_MARS));
 		         plot2.setBackgroundImage(myImage); 
 			  } catch(IIOException eIIO) {
-				  System.out.println(eIIO);
+				  //System.out.println(eIIO);
 				  System.out.println("ERROR: Reading maps failed.");
 			  }
 		  } else if(TARGET==3){
@@ -4525,7 +4549,7 @@ public static void EXPORT_Case() {
 		         BufferedImage myImage = ImageIO.read(new File(MAP_VENUS));
 		         plot2.setBackgroundImage(myImage); 
 		  } catch(IIOException eIIO) {
-			  System.out.println(eIIO);
+			  //System.out.println(eIIO);
 			  System.out.println("ERROR: Reading maps failed.");
 		  }
 		  }
@@ -4555,14 +4579,14 @@ public static void EXPORT_Case() {
 		           try{
 		           xyseries_FlightPath.add(x,y);
 		           } catch ( org.jfree.data.general.SeriesException eSE){
-		        	  System.out.println(eSE); 
+		        	 // System.out.println(eSE); 
 		           }
 		           try{
 		           double local_elevation = Double.parseDouble(tokens2[0]);
 		           xyseries_Elevation.add(x,local_elevation);
 		           xyseries_Delta.add(x,y-local_elevation);
 		           } catch ( org.jfree.data.general.SeriesException eSE){
-		        	  System.out.println(eSE); 
+		        	  //System.out.println(eSE); 
 		           }
                   }
            in.close();
