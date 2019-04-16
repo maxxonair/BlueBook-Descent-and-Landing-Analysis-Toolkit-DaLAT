@@ -73,6 +73,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JSeparator;
 import javax.swing.JSplitPane;
@@ -112,6 +113,7 @@ import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
+import javax.swing.*;  
 
 import Model.atm_dataset;
 import Sequence.SequenceElement;
@@ -141,15 +143,16 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String Elevation_File_RES64 	= "/ELEVATION/LRO_16.csv";
 	public static String Elevation_File_RES128 	= "/ELEVATION/LRO_128.csv";
 	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   		//
-    public static String Init_File   			= "/INP/init.inp" ;		    	// Input: Initial state
+    public static String Init_File   			= "/INP/init.inp" ;		    		// Input: Initial state
     public static String RES_File    			= "/results.txt"  ;       	 	// Input: result file 
     public static String CTR_001_File			= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
+    public static String SC_file 				= "/INP/SC/sc.inp";
     public static String ICON_File   	 		= "/lib/BB_icon.png";
-    public static String ERROR_File 			= "/INP/ErrorFile.inp";
+    public static String ERROR_File 				= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
-    public static String CONTROLLER_File		= "CTRL/ctrl_main.inp";
+    public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
 	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
 	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
 	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
@@ -438,10 +441,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JTextField INPUT_LONG_Rs,INPUT_LAT_Rs,INPUT_ALT_Rs,INPUT_VEL_Rs,INPUT_FPA_Rs,INPUT_AZI_Rs;   // Input vector rotating Frame / spherical coordinates -> Rs
     public static JTextField INPUT_TIME; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
-    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV,INPUT_ISPMIN;
+    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV,INPUT_ISPMIN, INPUT_SURFACEAREA, INPUT_BALLISTICCOEFFICIENT;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator,Module_Indicator;
     public static JLabel LABEL_IntegratorSetting_01, LABEL_IntegratorSetting_02, LABEL_IntegratorSetting_03, LABEL_IntegratorSetting_04, LABEL_IntegratorSetting_05; 
     public static JTextField INPUT_IntegratorSetting_01, INPUT_IntegratorSetting_02, INPUT_IntegratorSetting_03, INPUT_IntegratorSetting_04, INPUT_IntegratorSetting_05;
+    public static JRadioButton RB_SurfaceArea, RB_BallisticCoefficient;
     public static int vel_frame_hist = 1; 
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
@@ -510,6 +514,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	 ICON_File = dir + ICON_File; 
     	 SEQUENCE_File = dir +SEQUENCE_File; 
     	 ERROR_File = dir + ERROR_File; 
+    	 SC_file = dir + SC_file;
     	 Elevation_File_RES4 = dir + Elevation_File_RES4 ;
     	 Elevation_File_RES16 = dir + Elevation_File_RES16 ;
     	 Elevation_File_RES64 = dir + Elevation_File_RES64 ;
@@ -1108,7 +1113,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 //								Console Window        
 //-----------------------------------------------------------------------------------------------
         int console_size_x = 390;
-        int console_size_y = 340; 
+        int console_size_y = 270; 
         JLabel LABEL_CONSOLE = new JLabel("Console:");
         LABEL_CONSOLE.setLocation(5, uy_p41 + 25 *17 );
         LABEL_CONSOLE.setSize(200, 20);
@@ -1189,7 +1194,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       int SidePanel_Width = 505; 
       JPanel PANEL_LEFT_InputSection = new JPanel();
       PANEL_LEFT_InputSection.setLayout(null);
-      PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1250));
+      PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1350));
       PANEL_LEFT_InputSection.setBackground(bc_c);
       PANEL_LEFT_InputSection.setForeground(l_c);
       
@@ -1978,7 +1983,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  
       JPanel SpaceCraftInputPanel = new JPanel();
       SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-      SpaceCraftInputPanel.setSize(SidePanel_Width, 650);
+      SpaceCraftInputPanel.setSize(SidePanel_Width, 750);
       SpaceCraftInputPanel.setBackground(Color.white);
       SpaceCraftInputPanel.setForeground(Color.white);
       SpaceCraftInputPanel.setLayout(null);
@@ -2044,6 +2049,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_ME_ISP_min.setBackground(Color.white);
       LABEL_ME_ISP_min.setForeground(Color.black);
       SpaceCraftInputPanel.add(LABEL_ME_ISP_min);
+      
+      JLabel LABEL_SurfaceArea = new JLabel("S/C Surface Area [m\u00b2]");
+      LABEL_SurfaceArea.setLocation(INPUT_width+35, uy_p41 + 25 * 10 );
+      LABEL_SurfaceArea.setSize(300, 20);
+      LABEL_SurfaceArea.setBackground(Color.white);
+      LABEL_SurfaceArea.setForeground(Color.black);
+      SpaceCraftInputPanel.add(LABEL_SurfaceArea);
+      
+      JLabel LABEL_BallisticCoefficient = new JLabel("Ballistic Coefficient [kg/m\u00b2]");
+      LABEL_BallisticCoefficient.setLocation(INPUT_width+35, uy_p41 + 25 * 11 );
+      LABEL_BallisticCoefficient.setSize(300, 20);
+      LABEL_BallisticCoefficient.setBackground(Color.white);
+      LABEL_BallisticCoefficient.setForeground(Color.black);
+      SpaceCraftInputPanel.add(LABEL_BallisticCoefficient);
 	 
       
       INPUT_M0 = new JTextField(10);
@@ -2162,6 +2181,110 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
    	  
      });
      SpaceCraftInputPanel.add(INPUT_ISPMIN);
+     
+     INPUT_SURFACEAREA = new JTextField(10);
+     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 10 );;
+     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
+     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
+     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_SC();
+			EvaluateSurfaceAreaSetup() ;
+		}
+   	  
+     });
+     SpaceCraftInputPanel.add(INPUT_SURFACEAREA);
+     
+     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
+     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 11 );
+     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
+     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
+     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			WRITE_SC();
+			EvaluateSurfaceAreaSetup() ;
+		}
+   	  
+     });
+     SpaceCraftInputPanel.add(INPUT_BALLISTICCOEFFICIENT);
+     
+      RB_SurfaceArea =new JRadioButton("");    
+      RB_BallisticCoefficient =new JRadioButton("");    
+     //r1.setBounds(75,50,100,30);    
+      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 10 );
+      RB_SurfaceArea.setSize(20,20);
+     //r2.setBounds(75,100,100,30); 
+      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 11 );
+      RB_BallisticCoefficient.setSize(20,20);
+     ButtonGroup bg=new ButtonGroup();    
+     bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
+     SpaceCraftInputPanel.add(RB_SurfaceArea);
+     SpaceCraftInputPanel.add(RB_BallisticCoefficient);
+     RB_SurfaceArea.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(RB_SurfaceArea.isSelected()) {
+				double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
+				double mass = Double.parseDouble(INPUT_M0.getText());
+	    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
+	    		INPUT_BALLISTICCOEFFICIENT.setText("");
+	    		
+	    		INPUT_SURFACEAREA.setEditable(true);
+	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+	    		
+			} else if (RB_BallisticCoefficient.isSelected()) {
+				double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
+				double mass = Double.parseDouble(INPUT_M0.getText());
+	    		INPUT_SURFACEAREA.setText("");
+			INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
+			
+	    		INPUT_SURFACEAREA.setEditable(false);
+	    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+			}
+			
+		}
+    	 
+     });
+     RB_BallisticCoefficient.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(RB_SurfaceArea.isSelected()) {
+				double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
+				double mass = Double.parseDouble(INPUT_M0.getText());
+	    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
+	    		INPUT_BALLISTICCOEFFICIENT.setText("");
+	    		
+	    		INPUT_SURFACEAREA.setEditable(true);
+	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+	    		
+			} else if (RB_BallisticCoefficient.isSelected()) {
+				double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
+				double mass = Double.parseDouble(INPUT_M0.getText());
+	    		INPUT_SURFACEAREA.setText("");
+			INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
+			
+	    		INPUT_SURFACEAREA.setEditable(false);
+	    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+	    		
+			}
+		}
+    	 
+     });
+
      
 	  //-------------------------------------------- 
 	  //   Right side :
@@ -3580,6 +3703,51 @@ try {
   fstream.close();
   } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
   //-------------------------------------------------------------------------------------------------------------------
+  try {
+      fstream = new FileInputStream(SC_file);
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
+in3 = new DataInputStream(fstream);
+@SuppressWarnings("resource")
+BufferedReader br6 = new BufferedReader(new InputStreamReader(in3));
+k = 0;
+try {
+while ((strLine3 = br6.readLine()) != null )   {
+	String[] tokens = strLine3.split(" ");
+	InitialState = Double.parseDouble(tokens[0]);
+  if (k==0){
+  		INPUT_SURFACEAREA.setText(""+(InitialState)); 
+  		if(InitialState!=0) {
+  			RB_SurfaceArea.setSelected(true);
+  			INPUT_SURFACEAREA.setEditable(true);
+  			INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+  		}
+	} else if (k==1){
+		INPUT_BALLISTICCOEFFICIENT.setText(""+(InitialState)); 
+  		if(InitialState!=0) {
+  			RB_BallisticCoefficient.setSelected(true);
+  			INPUT_SURFACEAREA.setEditable(false);
+  			INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+  		}
+	} else if (k==2){
+
+	} else if (k==3){
+
+	} else if (k==4){
+	
+	} else if (k==5){
+
+	} else if (k==6){
+
+	} else if (k==7){
+
+	}
+	k++;
+}
+EvaluateSurfaceAreaSetup() ;
+in3.close();
+br5.close();
+fstream.close();
+} catch (NullPointerException eNPE) { System.out.println(eNPE);} 
     }
     
     public static void READ_INTEG() {
@@ -3759,6 +3927,47 @@ try {
             }
     }
     
+    public static void WRITE_SC() {
+    try {
+            File fac = new File(SC_file);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            //System.out.println("\n----------------------------------");
+            //System.out.println("The file has been created.");
+            //System.out.println("------------------------------------");
+            double r = 0;
+            FileWriter wr = new FileWriter(fac);
+            for (int i = 0; i<=15; i++)
+            {
+        			if (i == 0 ){
+        				if(INPUT_SURFACEAREA.getText().isEmpty()) {
+		        			r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}else {
+		        			r = Double.parseDouble(INPUT_SURFACEAREA.getText()) ;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
+        			} else if (i ==1 ){
+        				if(INPUT_BALLISTICCOEFFICIENT.getText().isEmpty()) {
+		        			r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}else {
+		        			r = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText()) ;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
+        			} 
+            }
+            wr.close();
+      } catch (IOException eIO) {
+      System.out.println(eIO);
+      }
+    }
+    
     public static void WRITE_INTEG() {
     	String integ_file = null;  
     	int steps =0 ; 
@@ -3885,6 +4094,18 @@ try {
             }
     }
     
+    public static void EvaluateSurfaceAreaSetup() {
+	    	if(INPUT_SURFACEAREA.getText().equals("0")) {	    		
+	    		INPUT_SURFACEAREA.setText("");
+	    		INPUT_SURFACEAREA.setEditable(false);
+	    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);
+	    	} else if (INPUT_BALLISTICCOEFFICIENT.getText().equals("0")) {
+	    		INPUT_BALLISTICCOEFFICIENT.setText("");
+	    		INPUT_SURFACEAREA.setEditable(true);
+	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	    		
+	    	}
+    	}
+    
     public static ArrayList<String> Read_SEQU(){
    	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
      try {
@@ -3927,6 +4148,7 @@ public static void IMPORT_Case() throws IOException {
     String strLine;
     int indx_init=0;
     int indx_prop=0;
+    int indx_sc=0;
     int data_column=2;              // Data column of one column data files [-]
     @SuppressWarnings("unused")
 	int k = 0 ; 
@@ -3955,7 +4177,14 @@ public static void IMPORT_Case() throws IOException {
 			 	 } else if (indx_prop==3){INPUT_THRUSTMIN.setText(decf.format(Double.parseDouble(tokens[data_column])));
 			 	 } 			     
 		indx_prop++;
-	    } else if(tokens[0].equals("|CTRL|")) {
+	    } else if(tokens[0].equals("|SC|")) {
+            if (indx_sc==0){INPUT_SURFACEAREA.setText(decf.format(Double.parseDouble(tokens[data_column])));
+  	 } else if (indx_sc==1){INPUT_BALLISTICCOEFFICIENT.setText(decf.format(Double.parseDouble(tokens[data_column])));
+ 	 } else if (indx_sc==2){
+ 	 } else if (indx_sc==3){
+ 	 } 			     
+            indx_sc++;
+	    } 	else if(tokens[0].equals("|CTRL|")) {
 	    	ROW_CONTROLLER[0] = ""+Integer.parseInt(tokens[1]);
 	    	ROW_CONTROLLER[1] = ""+Integer.parseInt(tokens[2]);
 	    	ROW_CONTROLLER[2] = ""+Double.parseDouble(tokens[3]);
@@ -4088,7 +4317,31 @@ public static void EXPORT_Case() {
     	    os.println("");
     	}
     
-
+    	for (int i = 0; i < 3; i++) {  // 					sc.inp
+    		os.print("|SC|" + BB_delimiter);
+		               if (i==0){
+		            	   double r=0;
+	        				if(INPUT_SURFACEAREA.getText().isEmpty()) {
+			        			r = 0;
+	        				}else {
+			        			r = Double.parseDouble(INPUT_SURFACEAREA.getText()) ;
+	        				}
+		            	   os.print("|SURFACEAREA[m2]|"+ BB_delimiter+r);
+		     	} else if (i==1){
+		            	   double r=0;
+	        				if(INPUT_BALLISTICCOEFFICIENT.getText().isEmpty()) {
+			        			r = 0;
+	        				}else {
+			        			r = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText()) ;
+	        				}
+		            	   os.print("|BC[Kgm-2]|"+ BB_delimiter+r);
+		     	} else if (i==2){
+		     	} else if (i==3){
+		     	} else if (i==4){
+		     	} else if (i==5){
+		    	}
+	        os.println("");
+    	}
        os.close();   
        System.out.println("File "+CurrentWorkfile_Name+" saved.");
 	}

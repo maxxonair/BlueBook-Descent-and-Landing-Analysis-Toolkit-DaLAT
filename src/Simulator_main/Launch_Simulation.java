@@ -175,6 +175,42 @@ public class Launch_Simulation implements ActionListener{
 	  br.close();
 	  return engine_toff; 
 }
+    public static double READ_SCFile(double M0) throws IOException{
+    	double SurfaceArea = 0;
+	   	 String dir = System.getProperty("user.dir");
+ 	   	 INPUT_FILE = dir+"/INP/SC/sc.inp";
+ 	   	 BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
+ 	   	 String strLine;
+ 	   	 double A=0; double BC=0;
+      try { 
+    	  int k=0;
+			      while ((strLine = br.readLine()) != null )   {
+			      	String[] tokens = strLine.split(" ");
+			      	if(k==0) {
+			      		if(tokens[0].isEmpty()) {
+			      			A=0;
+			      		} else {
+			      			A = Double.parseDouble(tokens[0]);
+			      		}
+			      	} else if (k==1) {
+			      		if(tokens[0].isEmpty()) {
+			      			BC = 0;
+			      		} else {
+			      			BC= Double.parseDouble(tokens[0]);
+			      		}
+			      	}
+			k++;
+			      }
+			      if(A==0) {
+			    	  	SurfaceArea = M0/BC;
+			      } else {
+			    	  	SurfaceArea = A;
+			      }
+	  }catch(NullPointerException eNPE) { System.out.println(eNPE);}
+	  br.close();
+	  return SurfaceArea; 
+}
+    
 
     public static void main(String[] args) throws IOException {
     	System.out.println("Simulation started");
@@ -197,6 +233,7 @@ public class Launch_Simulation implements ActionListener{
     	//-----------------------------------------
 	boolean inp_read_success = READ_INPUT();
 		if(inp_read_success) { 
+		double SurfaceArea = READ_SCFile(x_init[6]) ;
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
 	    	double[] engine_off = READ_ErrorFile();
@@ -211,6 +248,7 @@ public class Launch_Simulation implements ActionListener{
 	    		//												3 Degree of Freedom EDL module
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("EDL 3DOF Module running");
+	    		System.out.println(""+SurfaceArea);
 	    		EDL_3DOF.Launch_Integrator(
 	    												INTEGRATOR, 		     	 // Integrator Index 					 [-]
 														target, 				 	 // Target index 						 [-]
@@ -226,7 +264,8 @@ public class Launch_Simulation implements ActionListener{
 														x_init[11],				 	 // Reference Elevation  				 [m]
 														SEQUENCE_DATA,			 	 // Sequence data set	LIST			 [-]
 												  (int) x_init[12],				 	 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
-														STOP_Handler			     // Event Handler 	LIST			 	 [-]
+														STOP_Handler	,		     // Event Handler 	LIST			 	 [-]
+														SurfaceArea
 														);
 	    	} else if (descent_ascent_switch ==1) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------

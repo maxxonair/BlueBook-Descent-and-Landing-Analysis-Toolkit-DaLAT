@@ -102,7 +102,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		    public static double C_SF=0;
 		    public static double Cl=0;
 		    public static double qinf=0;
-		    public static double S =0;
+		    public static double SurfaceArea =0;
 		    public static double BankAngle =0;
 		    public static double AngleOfAttack=0;
 		    public static double AngleOfSideslip=0; 
@@ -456,13 +456,12 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
 	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       			// Continuum flow drag coefficient [-]
 		    	 Cd 		= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
-		    	 S 		= 20;																// Projected surface area 		   [m2]
 		    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
 	    	}
 	     	//-----------------------------------------------------------------------------------------------
-	    	 DragForce  		= - qinf * S * Cd  - Thrust			    ;//- qinf * Spar * CdPar;        		// Aerodynamic drag Force 		   [N]
-	    	 LiftForce 		    =   qinf * S * Cl * cos( BankAngle ) ;                            			// Aerodynamic lift Force 		   [N]
-	    	 SideForce 			=   qinf * S * Cl * sin( BankAngle ) ;                            			// Aerodynamic side Force 		   [N]
+	    	 DragForce  			= - qinf * SurfaceArea * Cd  - Thrust			    ;//- qinf * Spar * CdPar;        		// Aerodynamic drag Force 		   [N]
+	    	 LiftForce 		    =   qinf * SurfaceArea * Cl * cos( BankAngle ) ;                            			// Aerodynamic lift Force 		   [N]
+	    	 SideForce 			=   qinf * SurfaceArea * Cl * sin( BankAngle ) ;                            			// Aerodynamic side Force 		   [N]
 	    	//----------------------------------------------------------------------------------------------
 		}
 
@@ -548,9 +547,9 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-    	DragForce  		   =   qinf * S * Cd     ; //- qinf * Spar * CdPar; // Aerodynamic drag Force 		   [N]	
-	   	LiftForce  		   =   qinf * S * Cl     ;                          // Aerodynamic lift Force 		   [N]
-	   	SideForce 		   =   qinf * S * C_SF   ;                          // Aerodynamic side Force 		   [N]
+    		DragForce  		   =   qinf * SurfaceArea * Cd     ; //- qinf * Spar * CdPar; // Aerodynamic drag Force 		   [N]	
+	   	LiftForce  		   =   qinf * SurfaceArea * Cl     ;                          // Aerodynamic lift Force 		   [N]
+	   	SideForce 		   =   qinf * SurfaceArea * C_SF   ;                          // Aerodynamic side Force 		   [N]
 	   	
 	   	F_Aero_A[0][0] = - DragForce - Thrust  ;
 	   	F_Aero_A[1][0] = - SideForce ;
@@ -684,7 +683,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    }
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -717,9 +716,10 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	    		 ISP_min = prop_read[5];
 	    		 ISP_Throttle_model=true; 
 	    	 }
+	    	 SurfaceArea 			  = SurfaceArea_INP;
 	    	 M0 			  = x6  ; 
-	    	 mminus			  = M0  ;
-	    	 vminus			  = x3  ;
+	    	 mminus	  	  = M0  ;
+	    	 vminus		  = x3  ;
 	    	 v_touchdown	  = 0   ;
 	    	 PROPread		  = true; 
 		} catch (IOException e) {
