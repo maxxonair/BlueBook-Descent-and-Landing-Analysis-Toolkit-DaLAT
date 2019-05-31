@@ -2223,9 +2223,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      //r1.setBounds(75,50,100,30);    
       RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 10 );
       RB_SurfaceArea.setSize(20,20);
+      RB_SurfaceArea.setBackground(Color.white);
      //r2.setBounds(75,100,100,30); 
       RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 11 );
       RB_BallisticCoefficient.setSize(20,20);
+      RB_BallisticCoefficient.setBackground(Color.white);
      ButtonGroup bg=new ButtonGroup();    
      bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
      SpaceCraftInputPanel.add(RB_SurfaceArea);

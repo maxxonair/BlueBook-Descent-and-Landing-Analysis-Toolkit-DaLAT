@@ -49,8 +49,8 @@ public class GravityModel  {
         return gw;
     }
     
-    public static double[] get_g(double r, double longitude, double latitude, double rm, double mu, int TARGET) {
-    	double[] g = new double[3] ; 
+    public static double[][] get_g(double r, double longitude, double latitude, double rm, double mu, int TARGET) {
+    	double[][] g = new double[3][1] ; 
     	SET_Constants(TARGET);
     	double g_phi = 0;
     	double g_r = 0 ;
@@ -59,9 +59,9 @@ public class GravityModel  {
     	g_phi = -3 * mu * sin(phi) * cos(phi) * (rm/r) * (rm/r) * (J2 + 0.5 * J3 * ( 5*cos(phi) *cos(phi) -1) * (rm/r)/cos(phi) + (5/6) * J4 * ( 7 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) ) /(r * r);
     	
     	
-    	g[2] =  g_phi*Math.cos(phi)*Math.cos(longitude) + g_r*Math.sin(phi)*Math.cos(longitude);
-    	g[1] =  g_phi*Math.cos(phi)*Math.sin(longitude) + g_r*Math.sin(phi)*Math.sin(longitude);
-    	g[0] =  g_phi*Math.sin(phi) + g_r* Math.cos(phi);
+    	g[2][0] =  g_phi*Math.cos(phi)*Math.cos(longitude) + g_r*Math.sin(phi)*Math.cos(longitude);
+    	g[1][0] =  g_phi*Math.cos(phi)*Math.sin(longitude) + g_r*Math.sin(phi)*Math.sin(longitude);
+    	g[0][0] =  g_phi*Math.sin(phi) + g_r* Math.cos(phi);
     	
     	return g; 
     }
