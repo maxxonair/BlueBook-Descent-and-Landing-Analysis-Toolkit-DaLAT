@@ -552,8 +552,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	   	LiftForce  		   =   qinf * SurfaceArea * Cl     ;                          // Aerodynamic lift Force 		   [N]
 	   	SideForce 		   =   qinf * SurfaceArea * C_SF   ;                          // Aerodynamic side Force 		   [N]
 	   	
-	   	F_Aero_A[0][0] = - DragForce - Thrust  ;
-	   	F_Aero_A[1][0] = - SideForce ;
+	   	F_Aero_A[0][0] = - DragForce  ;
+	   	F_Aero_A[1][0] = - SideForce  ;
 	   	F_Aero_A[2][0] = - LiftForce  ;
 	   	//System.out.println(F_Aero_A[0][0] + " | "+F_Aero_A[1][0] + " | "+F_Aero_A[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
@@ -563,7 +563,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	   	Ty  =    0  ;                        // Thrust Force in y direction (B)		   [N]
 	   	Tz  =    0   ;                       // Thrust Force in z direction (B)	   	   [N]
 	   	
-	   	F_Thrust_B[0][0] =  0;//Tx  ;
+	   	F_Thrust_B[0][0] =  Tx;//Tx  ;
 	   	F_Thrust_B[1][0] =  0;//Ty ;
 	   	F_Thrust_B[2][0] =  0;//Tz ;
     	//-------------------------------------------------------------------------------------------------------------------
@@ -574,6 +574,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	F_Aero_NED   	= Tool.Multiply_Matrices(C_NED_A, F_Aero_A) ;
     	F_Thrust_NED 	= Tool.Multiply_Matrices(C_NED_B, F_Thrust_B) ;
     	F_total_NED 	= Tool.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
+    // 	F_total_NED 	= F_Aero_NED   ;
+    // 	F_total_NED 	= F_Thrust_NED ;
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    				ISP model for engine throttling
     	//-------------------------------------------------------------------------------------------------------------------
@@ -600,22 +602,16 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
     	// Position vector with respect to spherical velocity vector
-    	int optionR = 3; 
+    	int optionR = 2; 
 	    if(optionR==1) {
 	   	 	  // Longitude
-	    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
-	          // Latitude
-	    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
-	    	  // Radius 
-	    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
+		    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
+		          // Latitude
+		    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
+		    	  // Radius 
+		    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
+	   	
 	    } else if (optionR==2) {
-	 	 	  // longitude/ tau
-		    dxdt[0] =   x[4] / (x[2]*Math.cos(x[1]));
-	         // latitude - delta
-		    dxdt[1] =   x[3]  /x[2];
-	  	     // radius - r
-		    dxdt[2] = - x[5];	
-	    } else if (optionR==3) {
 	 	 	  // longitude/ tau
 		    dxdt[0] = 	V_NED_ECEF_cartesian[1] / (x[2]*Math.cos(x[1]));
 	         // latitude - delta
@@ -648,27 +644,27 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	if(optionV == 1) {
 	    		// Lisa:
 		    	// u
-	    		dxdt[3] = 	  F_total_NED[0][0]/x[6] + g_NED[0][0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) 	- 2*omega*x[4]*Math.sin(x[1]));
+	    		//dxdt[3] = 	  F_total_NED[0][0]/x[6] + g_NED[0][0] + 1/x[2]*(x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]) 	- 2*omega*x[4]*Math.sin(x[1]));
 	    		// v
-	    		dxdt[4] = 	  F_total_NED[1][0]/x[6] + g_NED[1][0] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) 	+ 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
+	    		//dxdt[4] = 	  F_total_NED[1][0]/x[6] + g_NED[1][0] + 1/x[2]*(x[3]*x[4]*Math.tan(x[1] + x[4]*x[5]) 	+ 2*omega*(x[5]*Math.cos(x[1] + x[3]*Math.sin(x[1]))));
 	    		// w
-	    		dxdt[5] = 	  F_total_NED[2][0]/x[6] + g_NED[2][0] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) 				- 2*omega*x[4]*Math.cos(x[1]);
+	    		//dxdt[5] = 	  F_total_NED[2][0]/x[6] + g_NED[2][0] - 1/x[2]*(x[3]*x[3] + x[4]*x[4]) 				- 2*omega*x[4]*Math.cos(x[1]);
 	    	} else if (optionV == 2) {
 	    		// Mooij:
 	    		//F_total_NED[0][0]=0;
 	    		//F_total_NED[1][0]=0;
 	    		//F_total_NED[2][0]=0;
 		    	// u - North 
-			    dxdt[3] =     F_total_NED[0][0]/x[6]  -   2 * omega * x[4] * Math.sin(x[1]) - omega * omega * x[2] * Math.sin(x[1]) * Math.cos(x[1]) - (x[4]*x[4] * Math.tan(x[1]) + x[3]*x[5])/x[2];
+			   // dxdt[3] =     F_total_NED[0][0]/x[6]  -   2 * omega * x[4] * Math.sin(x[1]) - omega * omega * x[2] * Math.sin(x[1]) * Math.cos(x[1]) - (x[4]*x[4] * Math.tan(x[1]) + x[3]*x[5])/x[2];
 		    	// v - East
-			    dxdt[4] =     F_total_NED[1][0]/x[6]  -   2 * omega * (x[5]*Math.cos(x[1])  - x[3] * Math.sin(x[1])) + x[4]/x[2] * ( x[3] * Math.tan(x[1]) - x[5]);
+			    //dxdt[4] =     F_total_NED[1][0]/x[6]  -   2 * omega * (x[5]*Math.cos(x[1])  - x[3] * Math.sin(x[1])) + x[4]/x[2] * ( x[3] * Math.tan(x[1]) - x[5]);
 		    	// w - Down
-			    dxdt[5] =   - F_total_NED[2][0]/x[6]  +   2 * omega * x[4] * Math.cos(x[1]) + omega * omega * x[2] * Math.cos(x[1])*Math.cos(x[1]) + (x[4]*x[4] + x[3]*x[3])/x[2];
+			   // dxdt[5] =   - F_total_NED[2][0]/x[6]  +   2 * omega * x[4] * Math.cos(x[1]) + omega * omega * x[2] * Math.cos(x[1])*Math.cos(x[1]) + (x[4]*x[4] + x[3]*x[3])/x[2];
 	    	} else if (optionV==3) {
 	    		// Titterton:
-	    		F_total_NED[0][0]=0;
-	    		F_total_NED[1][0]=0;
-	    		F_total_NED[2][0]=0;
+	    		//F_total_NED[0][0]=0;
+	    		//F_total_NED[1][0]=0;
+	    		//F_total_NED[2][0]=0;
 	    		//g_NED[0][0] = 0.0001;
 	    		//g_NED[1][0] = 0.1;
 	    		//g_NED[2][0] = 3.155;
@@ -677,7 +673,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    		double g_w = gr;
 	    								
 	    		// u - North
-	    		dxdt[3] = F_total_NED[0][0]/x[6] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	+ g_u - omega*omega*x[2]/2*Math.sin(2*x[1]);
+	    		dxdt[3] = F_total_NED[0][0]/x[6] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	    + g_u - omega*omega*x[2]/2*Math.sin(2*x[1]);
 	    		// v - East
 	    		dxdt[4] = F_total_NED[1][0]/x[6] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1])) + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])) 		- g_v;
 	    		// w - Down

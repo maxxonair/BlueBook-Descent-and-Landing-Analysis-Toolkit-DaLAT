@@ -3672,7 +3672,7 @@ try {
 	}
     try {
         fstream = new FileInputStream(integ_file);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
+} catch(IOException | NullPointerException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
   in3 = new DataInputStream(fstream);
   @SuppressWarnings("resource")
   BufferedReader br5 = new BufferedReader(new InputStreamReader(in3));

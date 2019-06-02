@@ -66,7 +66,11 @@ public class Launch_Simulation implements ActionListener{
         while ((strLine = br.readLine()) != null )   {
         	String[] tokens = strLine.split(" ");
         	InitialState = Double.parseDouble(tokens[0]);
+        	try {
         	x_init[k]= InitialState;
+        	} catch(ArrayIndexOutOfBoundsException eIOOO) {
+        		System.out.println("Array index out of bounds detected");
+        	}
         	//System.out.println("" +k+"   "+InitialState);
         	k++;
         }
