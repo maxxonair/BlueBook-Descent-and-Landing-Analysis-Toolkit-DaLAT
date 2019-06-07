@@ -1,5 +1,6 @@
 package Simulator_main; 
 
+//import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.tan;
@@ -235,8 +236,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			// Filter small errors from binary conversion: 
 			for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
 			return result; 
-			}
-		
+			}		
 		public static double[] Cartesian2Spherical_Velocity(double[] X) {
 			double[] result = new double[3];
 			result[1] = -Math.atan(X[2]/(Math.sqrt(X[0]*X[0] + X[1]*X[1])));
@@ -306,37 +306,37 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 				int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
 				double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
 				if(isFirstSequence) {
-					cntr_v_init = x[3];
-					cntr_h_init = x[2]-rm-ref_ELEVATION;
+					cntr_v_init = V_NED_ECEF_spherical[0];
+					cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
 					cntr_t_init = t;
-					cntr_fpa_init = x[4];
+					cntr_fpa_init = V_NED_ECEF_spherical[1];
 					SequenceWriteOut_addRow();
 					isFirstSequence=false; 
 				}
 				if(trigger_type==0) {
 						if(Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME()>trigger_value) {
 							active_sequence++;
-							cntr_v_init = x[3];
-							cntr_h_init = x[2]-rm-ref_ELEVATION;
+							cntr_v_init = V_NED_ECEF_spherical[0];
+							cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
 							cntr_t_init = t;
-							cntr_fpa_init = x[4];
+							cntr_fpa_init = V_NED_ECEF_spherical[1];
 							SequenceWriteOut_addRow();
 						}
 				} else if (trigger_type==1) {
 						if( (x[2]-rm-ref_ELEVATION)<trigger_value) {
 							active_sequence++;
-							cntr_v_init = x[3];
-							cntr_h_init = x[2]-rm-ref_ELEVATION;
+							cntr_v_init = V_NED_ECEF_spherical[0];
+							cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
 							cntr_t_init = t;
-							cntr_fpa_init = x[4];
+							cntr_fpa_init = V_NED_ECEF_spherical[1];
 							SequenceWriteOut_addRow();}
 				} else if (trigger_type==2) {
-						if( x[3]<trigger_value) {
+						if( V_NED_ECEF_spherical[0]<trigger_value) {
 							active_sequence++;
-							cntr_v_init = x[3];
-							cntr_h_init = x[2]-rm-ref_ELEVATION;
+							cntr_v_init = V_NED_ECEF_spherical[0];
+							cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
 							cntr_t_init = t;
-							cntr_fpa_init = x[4];
+							cntr_fpa_init = V_NED_ECEF_spherical[1];
 							SequenceWriteOut_addRow();}
 	     		}
 	    	}
@@ -344,8 +344,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	//                   Last Sequence reached -> write SEQU.res
 	    	//-------------------------------------------------------------------------------------------------------------
 	    	if(active_sequence ==  (SEQUENCE_DATA_main.size()-1) && Sequence_RES_closed==false){
-				cntr_v_init = x[3];
-				cntr_h_init = x[2]-rm-ref_ELEVATION;
+				cntr_v_init = V_NED_ECEF_spherical[0];
+				cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
 				cntr_t_init = t;
 				cntr_fpa_init = x[4];
 	    		System.out.println("Write: Sequence result file ");
@@ -422,8 +422,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			//------------------------------------------------------------------------------
 			//     Full 3D gravity model (work TBD on complexity) 
 			//------------------------------------------------------------------------------
-	    	g = GravityModel.get_g( r_ECEF_spherical[2],  r_ECEF_spherical[0], r_ECEF_spherical[1],  rm,  mu, TARGET);
-	    	//g = GravityModel.get_g_ECEF(r_ECEF_spherical, r_ECEF_cartesian, rm, mu, TARGET);
+	    	//g = GravityModel.get_g( x[2],  x[0], x[1],  rm,  mu, TARGET);
+	    	g = GravityModel.get_g_ECEF(x[2], r_ECEF_cartesian, rm, mu, TARGET);
 	    	return g; 
 		}
 		
@@ -440,28 +440,28 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    		// Set atmosphere properties to zero: 
 		    		rho   = 0; 																// Density 							[kg/m3]
 		    		qinf  = 0;																// Dynamic pressure 				[Pa]
-		    		T     = 0 ; 																// Temperature 						[K]
-		    		gamma = 0 ; 																// Heat capacity ratio 				[-]
+		    		T     = 0 ; 															// Temperature 						[K]
+		    		gamma = 0 ; 															// Heat capacity ratio 				[-]
 		    		R	  = 0; 																// Gas constant 					[J/kgK]
 		    		Ma 	  = 0; 																// Mach number 						[-]
 		      	//----------------------------------------------------------------------------------------------
 	    	} else { // In atmosphere conditions (if any)
-		    	 rho    = AtmosphereModel.atm_read(1, x[2] - rm ) ;       					// density                         [kg/m3]
-		    	 qinf   = 0.5 * rho * ( x[3] * x[3]) ;               		         		// Dynamic pressure                [Pa]
-		    	 T      = AtmosphereModel.atm_read(2, x[2] - rm) ;                   		// Temperature                     [K]
-		    	 gamma  = AtmosphereModel.atm_read(4, x[2] - rm) ;              	        		// Heat capacity ratio			   [-]
-		    	 R      = AtmosphereModel.atm_read(3,  x[2] - rm ) ;                        // Gas Constant                    [J/kgK]
-		    	 P      = rho * R * T;														// Ambient pressure 			   [Pa]
-		    	 Ma     = x[3] / Math.sqrt( T * gamma * R);                  		 		// Mach number                     [-]
-	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             	// Parachute Drag coefficient      [-]
-	    	     CdC    = AtmosphereModel.get_CdC(x[2]-rm,0);                       			// Continuum flow drag coefficient [-]
-		    	 Cd 		= AtmosphereModel.load_Drag(x[3], x[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
-		    	  flowzone = AtmosphereModel.calc_flowzone(x[3], x[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
+		    	 rho    = AtmosphereModel.atm_read(1, r_ECEF_spherical[2] - rm ) ;       					// density                         [kg/m3]
+		    	 qinf   = 0.5 * rho * ( V_NED_ECEF_spherical[0] * V_NED_ECEF_spherical[0]) ;               	// Dynamic pressure                [Pa]
+		    	 T      = AtmosphereModel.atm_read(2, r_ECEF_spherical[2] - rm) ;                   		// Temperature                     [K]
+		    	 gamma  = AtmosphereModel.atm_read(4, r_ECEF_spherical[2] - rm) ;              	        	// Heat capacity ratio			   [-]
+		    	 R      = AtmosphereModel.atm_read(3, r_ECEF_spherical[2] - rm ) ;                        	// Gas Constant                    [J/kgK]
+		    	 P      = rho * R * T;																		// Ambient pressure 			   [Pa]
+		    	 Ma     = V_NED_ECEF_spherical[0] / Math.sqrt( T * gamma * R);                  		 	// Mach number                     [-]
+	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             					// Parachute Drag coefficient      [-]
+	    	     CdC    = AtmosphereModel.get_CdC(r_ECEF_spherical[2]-rm,0);                       			// Continuum flow drag coefficient [-]
+		    	 Cd 		= AtmosphereModel.load_Drag(V_NED_ECEF_spherical[0], r_ECEF_spherical[2]-rm, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
+		    	 flowzone = AtmosphereModel.calc_flowzone(V_NED_ECEF_spherical[0], r_ECEF_spherical[2]-rm, P, T, Lt);        // Continous/Transition/Free molecular flow [-]
 	    	}
 	     	//-----------------------------------------------------------------------------------------------
-	    	 DragForce  			= - qinf * SurfaceArea * Cd  - Thrust			    ;//- qinf * Spar * CdPar;        		// Aerodynamic drag Force 		   [N]
-	    	 LiftForce 		    =   qinf * SurfaceArea * Cl * cos( BankAngle ) ;                            			// Aerodynamic lift Force 		   [N]
-	    	 SideForce 			=   qinf * SurfaceArea * Cl * sin( BankAngle ) ;                            			// Aerodynamic side Force 		   [N]
+	    	 DragForce  			=  -qinf * SurfaceArea * Cd     		       ;										// Aerodynamic drag Force 		   [N]
+	    	 LiftForce 		    	=   qinf * SurfaceArea * Cl * cos( BankAngle ) ;                            			// Aerodynamic lift Force 		   [N]
+	    	 SideForce 				=   qinf * SurfaceArea * Cl * sin( BankAngle ) ;                            			// Aerodynamic side Force 		   [N]
 	    	//----------------------------------------------------------------------------------------------
 		}
 
@@ -528,15 +528,13 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------
-    		GRAVITY_MANAGER_2D(x);
-    		g = GRAVITY_MANAGER_3D(x);    		
-    		g_NED =  Tool.Multiply_Matrices(C_NED_ECEF, g);	
+    		g = GRAVITY_MANAGER_3D(x); 
+    		if(spherical) {GRAVITY_MANAGER_2D(x);};
+    		g_NED   =  Tool.Multiply_Matrices(C_NED_ECEF, g);	
     		
 	    	F_Gravity_NED[0][0] = x[6]*g_NED[0][0];
 	    	F_Gravity_NED[1][0] = x[6]*g_NED[1][0];
 	    	F_Gravity_NED[2][0] = x[6]*g_NED[2][0];
-	    	//System.out.println(F_Gravity_G[0][0] + " | "+F_Gravity_G[1][0] + " | "+F_Gravity_G[2][0] + " | ");
-	    	//System.out.println(g_NED[0][0] + " | "+g_NED[1][0] + " | "+g_NED[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -548,13 +546,13 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-    		DragForce  		   =   qinf * SurfaceArea * Cd     ; //- qinf * Spar * CdPar; // Aerodynamic drag Force 		   [N]	
-	   	LiftForce  		   =   qinf * SurfaceArea * Cl     ;                          // Aerodynamic lift Force 		   [N]
-	   	SideForce 		   =   qinf * SurfaceArea * C_SF   ;                          // Aerodynamic side Force 		   [N]
+    	//DragForce  		   =   qinf * SurfaceArea * Cd     ; //- qinf * Spar * CdPar; // Aerodynamic drag Force 		   [N]	
+	   	//LiftForce  		   =   qinf * SurfaceArea * Cl     ;                          // Aerodynamic lift Force 		   [N]
+	  // 	SideForce 		   =   qinf * SurfaceArea * C_SF   ;                          // Aerodynamic side Force 		   [N]
 	   	
-	   	F_Aero_A[0][0] = - DragForce  ;
-	   	F_Aero_A[1][0] = - SideForce  ;
-	   	F_Aero_A[2][0] = - LiftForce  ;
+	   	F_Aero_A[0][0] = -  DragForce  ;
+	   	F_Aero_A[1][0] = -  SideForce  ;
+	   	F_Aero_A[2][0] = -  LiftForce  ;
 	   	//System.out.println(F_Aero_A[0][0] + " | "+F_Aero_A[1][0] + " | "+F_Aero_A[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamic Forces | Body fixed Frame |
@@ -563,9 +561,9 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	   	Ty  =    0  ;                        // Thrust Force in y direction (B)		   [N]
 	   	Tz  =    0   ;                       // Thrust Force in z direction (B)	   	   [N]
 	   	
-	   	F_Thrust_B[0][0] =  Tx;//Tx  ;
-	   	F_Thrust_B[1][0] =  0;//Ty ;
-	   	F_Thrust_B[2][0] =  0;//Tz ;
+	   	F_Thrust_B[0][0] =  Tx;  //Tx  ;
+	   	F_Thrust_B[1][0] =  0;   //Ty ;
+	   	F_Thrust_B[2][0] =  0;   //Tz ;
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Rotational Matrices 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -602,7 +600,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
     	// Position vector with respect to spherical velocity vector
-    	int optionR = 2; 
+    	int optionR = 1; 
 	    if(optionR==1) {
 	   	 	  // Longitude
 		    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
@@ -662,22 +660,13 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			   // dxdt[5] =   - F_total_NED[2][0]/x[6]  +   2 * omega * x[4] * Math.cos(x[1]) + omega * omega * x[2] * Math.cos(x[1])*Math.cos(x[1]) + (x[4]*x[4] + x[3]*x[3])/x[2];
 	    	} else if (optionV==3) {
 	    		// Titterton:
-	    		//F_total_NED[0][0]=0;
-	    		//F_total_NED[1][0]=0;
-	    		//F_total_NED[2][0]=0;
-	    		//g_NED[0][0] = 0.0001;
-	    		//g_NED[1][0] = 0.1;
-	    		//g_NED[2][0] = 3.155;
-	    		double g_u = 0;
-	    		double g_v = 0;
-	    		double g_w = gr;
 	    								
 	    		// u - North
-	    		dxdt[3] = F_total_NED[0][0]/x[6] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	    + g_u - omega*omega*x[2]/2*Math.sin(2*x[1]);
+	    		dxdt[3] = F_total_NED[0][0]/x[6] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	    + g_NED[0][0] - omega*omega*x[2]/2*Math.sin(2*x[1])      ;
 	    		// v - East
-	    		dxdt[4] = F_total_NED[1][0]/x[6] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1])) + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])) 		- g_v;
+	    		dxdt[4] = F_total_NED[1][0]/x[6] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1]))   + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])) 			- g_NED[1][0]											 ;
 	    		// w - Down
-	    		dxdt[5] = F_total_NED[2][0]/x[6] - 2 * omega * x[4]   * Math.cos(x[1])   						  - (x[4]*x[4] + x[3]*x[3])/x[2]   					+ g_w - omega*omega*x[2]/2*(1 + Math.cos(2*x[1]));
+	    		dxdt[5] = F_total_NED[2][0]/x[6] - 2 * omega * x[4]   * Math.cos(x[1])   						  - (x[4]*x[4] + x[3]*x[3])/x[2]   						+ g_NED[2][0] - omega*omega*x[2]/2*(1 + Math.cos(2*x[1])) ;
 	    		
 	    	}
     	V_NED_ECEF_cartesian[0]=x[3];

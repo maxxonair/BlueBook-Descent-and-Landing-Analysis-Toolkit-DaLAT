@@ -65,13 +65,12 @@ public class GravityModel  {
     	
     	return g; 
     }
-    public static double[][] get_g_ECEF(double[] r_spherical,double[] r_cartesian , double rm, double mu, int TARGET) {
+    public static double[][] get_g_ECEF(double r ,double[] r_cartesian , double rm, double mu, int TARGET) {
     	double[][] GRAVITY_VECTOR = new double[3][1]; 
     	SET_Constants(TARGET);
     	//double longitude = r_spherical[0];
     	//double latitude  = r_spherical[1];
-    	double r = r_spherical[2];
-    	
+
     	double x = r_cartesian[0];
     	double y = r_cartesian[1];
     	double z = r_cartesian[2];
