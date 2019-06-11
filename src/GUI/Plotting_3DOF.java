@@ -4369,11 +4369,6 @@ public static void EXPORT_Case() {
 	result[1] = -Math.atan(X[2]/(Math.sqrt(X[0]*X[0] + X[1]*X[1])));
 	result[0] = Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
 	result[2] = Math.atan2(X[1],X[0]);
-	if(X[1]<0 && X[0]>0) {
-		result[2]= PI + Math.abs(result[2]);
-	} else if (X[1]<0 && X[0]<0) {
-		result[2]= PI/2 + Math.abs(result[2]);
-	}
 
 	// Filter small errors from binary conversion: 
 	for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}

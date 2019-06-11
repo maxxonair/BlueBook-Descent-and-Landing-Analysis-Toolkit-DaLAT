@@ -40,7 +40,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    public static boolean ISP_Throttle_model= false; 
 	    public static boolean stophandler_ON = true; 
 	    
-	    public static 	    boolean spherical=false;
+	    public static 	    boolean spherical=false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
+	    public static 		boolean is_6DOF = false;      // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
 		//............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -240,7 +241,11 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	        	return ISP; 
 	        }
 	    public int getDimension() {
-	        return 7;
+	    	if(is_6DOF) {
+	    		return 13; // 6 DOF model 
+	        } else {
+	    		return 7; // 3 DOF model 
+	    	}
 	    }
 	    
 		public static double[] Spherical2Cartesian_Velocity(double[] X) {
@@ -810,37 +815,83 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 			}
 //----------------------------------------------------------------------------------------------
   			// 						Result vector setup - DO NOT TOUCH
-	        double[] y = new double[7]; // Result vector
-        	V_NED_ECEF_spherical[0]=x3;
-        	V_NED_ECEF_spherical[1]=x4;
-        	V_NED_ECEF_spherical[2]=x5;
-	// Position 
-	        y[0] = x0;
-	        y[1] = x1;
-	        y[2] = x2;
-	        
-	// Velocity
-	        if(spherical) {
-	        	
-	        y[3] = x3;
-	        y[4] = x4;
-	        y[5] = x5;
-	        
-	        } else {
-	        	V_NED_ECEF_spherical[0]=x3;
-	        	V_NED_ECEF_spherical[1]=x4;
-	        	V_NED_ECEF_spherical[2]=x5;
-	        	V_NED_ECEF_cartesian = Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
-		        y[3] = V_NED_ECEF_cartesian[0];
-		        y[4] = V_NED_ECEF_cartesian[1];
-		        y[5] = V_NED_ECEF_cartesian[2];
-		        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
-		        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
+  			int dimension = 0;
+	    	if(is_6DOF) { dimension =  13; // 6 DOF model 
+	        } else {dimension =  7; // 3 DOF model 
 	        }
-	// S/C Mass        
-	        y[6] = x6;
-	        m0 = x6;
-			INITIALIZE_FlightController(y) ;
+		        double[] y = new double[dimension]; // Result vector
+  			if(is_6DOF) {
+	  		       // double[] y = new double[13]; // Result vector
+	  	        	V_NED_ECEF_spherical[0]=x3;
+	  	        	V_NED_ECEF_spherical[1]=x4;
+	  	        	V_NED_ECEF_spherical[2]=x5;
+	  		// Position 
+	  		        y[0] = x0;
+	  		        y[1] = x1;
+	  		        y[2] = x2;
+	  		        
+	  		// Velocity
+			  		        if(spherical) {
+			  		        	
+			  		        y[3] = x3;
+			  		        y[4] = x4;
+			  		        y[5] = x5;
+			  		        
+			  		        } else {
+			  		        	V_NED_ECEF_spherical[0]=x3;
+			  		        	V_NED_ECEF_spherical[1]=x4;
+			  		        	V_NED_ECEF_spherical[2]=x5;
+			  		        	V_NED_ECEF_cartesian = Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
+			  			        y[3] = V_NED_ECEF_cartesian[0];
+			  			        y[4] = V_NED_ECEF_cartesian[1];
+			  			        y[5] = V_NED_ECEF_cartesian[2];
+			  			        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
+			  			        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
+			  		        }
+	  		// S/C Mass        
+	  		        y[6] = x6;
+	  		        m0 = x6;
+	  				INITIALIZE_FlightController(y) ;
+	  				
+	  				y[7]  = 0;
+	  				y[8]  = 0;
+	  				y[9]  = 0;
+	  				y[10] = 0;
+	  				y[11] = 0;	
+  				
+  			} else { // 3DOF case
+			      //  double[] y = new double[7]; // Result vector
+		        	V_NED_ECEF_spherical[0]=x3;
+		        	V_NED_ECEF_spherical[1]=x4;
+		        	V_NED_ECEF_spherical[2]=x5;
+			// Position 
+			        y[0] = x0;
+			        y[1] = x1;
+			        y[2] = x2;
+			        
+			// Velocity
+			        if(spherical) {
+			        	
+			        y[3] = x3;
+			        y[4] = x4;
+			        y[5] = x5;
+			        
+			        } else {
+			        	V_NED_ECEF_spherical[0]=x3;
+			        	V_NED_ECEF_spherical[1]=x4;
+			        	V_NED_ECEF_spherical[2]=x5;
+			        	V_NED_ECEF_cartesian = Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
+				        y[3] = V_NED_ECEF_cartesian[0];
+				        y[4] = V_NED_ECEF_cartesian[1];
+				        y[5] = V_NED_ECEF_cartesian[2];
+				        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
+				        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
+			        }
+			// S/C Mass        
+			        y[6] = x6;
+			        m0 = x6;
+					INITIALIZE_FlightController(y) ;
+  			}
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
 
