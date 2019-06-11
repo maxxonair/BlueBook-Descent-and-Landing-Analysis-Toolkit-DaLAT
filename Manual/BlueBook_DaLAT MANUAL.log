@@ -1,0 +1,1448 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.19 (MiKTeX 2.9.6930) (preloaded format=pdflatex 2019.6.11)  11 JUN 2019 22:42
+entering extended mode
+**"./BlueBook_DaLAT MANUAL.tex"
+("BlueBook_DaLAT MANUAL.tex"
+LaTeX2e <2018-12-01>
+(tufte-book.cls
+Document Class: tufte-book 2015/06/30 v3.5.3 Tufte-book class
+(tufte-common.def
+File: tufte-common.def 2015/06/21 v3.5.2 Common code for the Tufte-LaTeX styles
+
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/xkeyval/
+xkeyval.sty"
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/xkeyva
+l/xkeyval.tex"
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/xkeyva
+l/xkvutils.tex"
+\XKV@toks=\toks14
+\XKV@tempa@toks=\toks15
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/xkeyva
+l/keyval.tex"))
+\XKV@depth=\count80
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/xifthen/
+xifthen.sty"
+Package: xifthen 2015/11/05 v1.4.0 Extended ifthen features
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/tools/ca
+lc.sty"
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count81
+\calc@Bcount=\count82
+\calc@Adimen=\dimen102
+\calc@Bdimen=\dimen103
+\calc@Askip=\skip41
+\calc@Bskip=\skip42
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count83
+\calc@Cskip=\skip43
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/ift
+hen.sty"
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/ifmtarg/
+ifmtarg.sty"
+Package: ifmtarg 2018/04/16 v1.2b check for an empty argument
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/hardwrap
+/hardwrap.sty"
+Package: hardwrap 2011/02/12 v0.2 Hard wrap messages
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/ifplatfo
+rm/ifplatform.sty"
+Package: ifplatform 2017/10/13 v0.4a Testing for the operating system
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/tools/sh
+ellesc.sty"
+Package: shellesc 2016/06/07 v0.02a unified shell escape interface for LaTeX
+Package shellesc Info: Restricted shell escape enabled on input line 69.
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/pdftexcmds.sty"
+Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
+)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/infwarerr.sty"
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/ifluatex.sty"
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/ltxcmds.sty"
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/ifpdf.sty"
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/catchfile.sty"
+Package: catchfile 2016/05/16 v1.7 Catch the contents of a file (HO)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/etexcmds.sty"
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+))
+
+Package ifplatform Warning: 
+    shell escape is disabled, so I can only detect \ifwindows.
+
+
+Package ifplatform Warning: 
+    I can't tell if this is Windows or *nix; you appear to be neither.
+
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/ifxete
+x/ifxetex.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+\hw@charcount=\count84
+\hw@wordcount=\count85
+\hw@maxprintline=\count86
+)
+Class tufte-book Info: Loading the base class `book'
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/boo
+k.cls"
+Document Class: book 2018/09/03 v1.4i Standard LaTeX document class
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/bk1
+0.clo"
+File: bk10.clo 2018/09/03 v1.4i Standard LaTeX file (size option)
+)
+\c@part=\count87
+\c@chapter=\count88
+\c@section=\count89
+\c@subsection=\count90
+\c@subsubsection=\count91
+\c@paragraph=\count92
+\c@subparagraph=\count93
+\c@figure=\count94
+\c@table=\count95
+\abovecaptionskip=\skip44
+\belowcaptionskip=\skip45
+\bibindent=\dimen104
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/titlesec
+/titlesec.sty"
+Package: titlesec 2016/03/21 v2.10.2 Sectioning titles
+\ttl@box=\box27
+\beforetitleunit=\skip46
+\aftertitleunit=\skip47
+\ttl@plus=\dimen105
+\ttl@minus=\dimen106
+\ttl@toksa=\toks16
+\titlewidth=\dimen107
+\titlewidthlast=\dimen108
+\titlewidthfirst=\dimen109
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/titlesec
+/titletoc.sty"
+Package: titletoc 2011/12/15 v1.6 TOC entries
+\ttl@leftsep=\dimen110
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/hyperref
+/hyperref.sty"
+Package: hyperref 2018/11/30 v6.88e Hypertext links for LaTeX
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/hobsub-hyperref.sty"
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
+
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/hobsub-generic.sty"
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
+Package hobsub Info: Skipping package `infwarerr' (already loaded).
+Package hobsub Info: Skipping package `ltxcmds' (already loaded).
+Package hobsub Info: Skipping package `ifluatex' (already loaded).
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package hobsub Info: Skipping package `ifpdf' (already loaded).
+Package hobsub Info: Skipping package `etexcmds' (already loaded).
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+Package hobsub Info: Skipping package `pdftexcmds' (already loaded).
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package atveryend Info: \enddocument detected (standard20110627).
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/oberdiek
+/auxhook.sty"
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/oberdiek
+/kvoptions.sty"
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+)
+\@linkdim=\dimen111
+\Hy@linkcounter=\count96
+\Hy@pagecounter=\count97
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/hyperref
+/pd1enc.def"
+File: pd1enc.def 2018/11/30 v6.88e Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+\Hy@SavedSpaceFactor=\count98
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/00miktex
+/hyperref.cfg"
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Option `unicode' set `true' on input line 4393.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/hyperref
+/puenc.def"
+File: puenc.def 2018/11/30 v6.88e Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Option `hyperfootnotes' set `false' on input line 4393.
+Package hyperref Info: Hyper figures OFF on input line 4519.
+Package hyperref Info: Link nesting OFF on input line 4524.
+Package hyperref Info: Hyper index ON on input line 4527.
+Package hyperref Info: Plain pages OFF on input line 4534.
+Package hyperref Info: Backreferencing OFF on input line 4539.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4772.
+\c@Hy@tempcnt=\count99
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/url/url.
+sty"
+\Urlmuskip=\muskip10
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5125.
+\XeTeXLinkMargin=\dimen112
+\Fld@menulength=\count100
+\Field@Width=\dimen113
+\Fld@charsize=\dimen114
+Package hyperref Info: Hyper figures OFF on input line 6380.
+Package hyperref Info: Link nesting OFF on input line 6385.
+Package hyperref Info: Hyper index ON on input line 6388.
+Package hyperref Info: backreferencing OFF on input line 6395.
+Package hyperref Info: Link coloring OFF on input line 6400.
+Package hyperref Info: Link coloring with OCG OFF on input line 6405.
+Package hyperref Info: PDF/A mode OFF on input line 6410.
+LaTeX Info: Redefining \ref on input line 6450.
+LaTeX Info: Redefining \pageref on input line 6454.
+\Hy@abspage=\count101
+\c@Item=\count102
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/hyperref
+/hpdftex.def"
+File: hpdftex.def 2018/11/30 v6.88e Hyperref driver for pdfTeX
+\Fld@listcount=\count103
+\c@bookmark@seq@number=\count104
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/oberdiek
+/rerunfilecheck.sty"
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip48
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/ms/ragge
+d2e.sty"
+Package: ragged2e 2009/05/21 v2.1 ragged2e Package (MS)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/ms/every
+sel.sty"
+Package: everysel 2011/10/28 v1.2 EverySelectfont Package (MS)
+)
+\CenteringLeftskip=\skip49
+\RaggedLeftLeftskip=\skip50
+\RaggedRightLeftskip=\skip51
+\CenteringRightskip=\skip52
+\RaggedLeftRightskip=\skip53
+\RaggedRightRightskip=\skip54
+\CenteringParfillskip=\skip55
+\RaggedLeftParfillskip=\skip56
+\RaggedRightParfillskip=\skip57
+\JustifyingParfillskip=\skip58
+\CenteringParindent=\skip59
+\RaggedLeftParindent=\skip60
+\RaggedRightParindent=\skip61
+\JustifyingParindent=\skip62
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/geometry
+-de/geometry.sty"
+Package: geometry 2010/09/12 v5.6 Page Geometry
+\Gm@cnth=\count105
+\Gm@cntv=\count106
+\c@Gm@tempcnt=\count107
+\Gm@bindingoffset=\dimen115
+\Gm@wd@mp=\dimen116
+\Gm@odd@mp=\dimen117
+\Gm@even@mp=\dimen118
+\Gm@layoutwidth=\dimen119
+\Gm@layoutheight=\dimen120
+\Gm@layouthoffset=\dimen121
+\Gm@layoutvoffset=\dimen122
+\Gm@dimlist=\toks17
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/geometry
+/geometry.cfg"))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/changepa
+ge/changepage.sty"
+Package: changepage 2009/10/20 v1.0c check page and change page layout
+\c@cp@cntr=\count108
+\cp@tempcnt=\count109
+)
+\@tufte@overhang=\skip63
+\@tufte@fullwidth=\skip64
+\@tufte@caption@fill=\skip65
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/paralist
+/paralist.sty"
+Package: paralist 2017/01/22 v2.7 Extended list environments
+\pltopsep=\skip66
+\plpartopsep=\skip67
+\plitemsep=\skip68
+\plparsep=\skip69
+\pl@lab=\toks18
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/textcase
+/textcase.sty"
+Package: textcase 2004/10/07 v0.07 Text only upper/lower case changing (DPC)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/microtyp
+e/letterspace.sty"
+Package: letterspace 2018/01/14 v2.7a Robust letterspacing (RS)
+LaTeX Info: Redefining \lsstyle on input line 345.
+LaTeX Info: Redefining \lslig on input line 346.
+LaTeX Info: Redefining \textls on input line 371.
+\MT@outer@kern=\dimen123
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/setspace
+/setspace.sty"
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/xcolor/x
+color.sty"
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+-cfg/color.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+-def/pdftex.def"
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+/dvipsnam.def"
+File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/xcolor/s
+vgnam.def"
+File: svgnam.def 2016/05/11 v2.12 Predefined colors according to SVG 1.1 (UK)
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/natbib/n
+atbib.sty"
+Package: natbib 2010/09/13 8.31b (PWD, AO)
+\bibhang=\skip70
+\bibsep=\skip71
+LaTeX Info: Redefining \cite on input line 694.
+\c@NAT@ctr=\count110
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/natbib/b
+ibentry.sty"
+Package: bibentry 2007/10/30 1.5 (PWD)
+) ("BlueBook_DaLAT MANUAL.bbl")
+\c@@tufte@num@bibkeys=\count111
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/sauerj/o
+ptparams.sty"
+Package: optparams 2004/08/14 v0.9 multiple optional parameters in macros
+)
+\@tufte@sidenote@vertical@offset=\skip72
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/placeins
+/placeins.sty"
+Package: placeins 2005/04/18  v 2.2
+)
+\@tufte@margin@floatbox=\box28
+\@tufte@figure@box=\box29
+\@tufte@caption@box=\box30
+\@tufte@caption@vertical@offset=\skip73
+\@tufte@float@contents@width=\skip74
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/m
+athpazo.sty"
+Package: mathpazo 2005/04/12 PSNFSS-v9.2a Palatino w/ Pazo Math (D.Puga, WaS) 
+\symupright=\mathgroup4
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/h
+elvet.sty"
+Package: helvet 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/bera/ber
+amono.sty"
+Package: beramono 2004/01/31 (WaS)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/fon
+tenc.sty"
+Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/t1e
+nc.def"
+File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/tex
+tcomp.sty"
+Package: textcomp 2018/08/11 v2.0j Standard LaTeX package
+Package textcomp Info: Sub-encoding information:
+(textcomp)               5 = only ISO-Adobe without \textcurrency
+(textcomp)               4 = 5 + \texteuro
+(textcomp)               3 = 4 + \textohm
+(textcomp)               2 = 3 + \textestimated + \textcurrency
+(textcomp)               1 = TS1 - \textcircled - \t
+(textcomp)               0 = TS1 (full)
+(textcomp)             Font families with sub-encoding setting implement
+(textcomp)             only a restricted character set as indicated.
+(textcomp)             Family '?' is the default used for unknown fonts.
+(textcomp)             See the documentation for details.
+Package textcomp Info: Setting ? sub-encoding to TS1/1 on input line 79.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/ts1
+enc.def"
+File: ts1enc.def 2001/06/05 v3.0e (jk/car/fm) Standard LaTeX file
+Now handling font encoding TS1 ...
+... processing UTF-8 mapping file for font encoding TS1
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/ts1
+enc.dfu"
+File: ts1enc.dfu 2018/10/05 v1.2f UTF-8 support for inputenc
+   defining Unicode char U+00A2 (decimal 162)
+   defining Unicode char U+00A3 (decimal 163)
+   defining Unicode char U+00A4 (decimal 164)
+   defining Unicode char U+00A5 (decimal 165)
+   defining Unicode char U+00A6 (decimal 166)
+   defining Unicode char U+00A7 (decimal 167)
+   defining Unicode char U+00A8 (decimal 168)
+   defining Unicode char U+00A9 (decimal 169)
+   defining Unicode char U+00AA (decimal 170)
+   defining Unicode char U+00AC (decimal 172)
+   defining Unicode char U+00AE (decimal 174)
+   defining Unicode char U+00AF (decimal 175)
+   defining Unicode char U+00B0 (decimal 176)
+   defining Unicode char U+00B1 (decimal 177)
+   defining Unicode char U+00B2 (decimal 178)
+   defining Unicode char U+00B3 (decimal 179)
+   defining Unicode char U+00B4 (decimal 180)
+   defining Unicode char U+00B5 (decimal 181)
+   defining Unicode char U+00B6 (decimal 182)
+   defining Unicode char U+00B7 (decimal 183)
+   defining Unicode char U+00B9 (decimal 185)
+   defining Unicode char U+00BA (decimal 186)
+   defining Unicode char U+00BC (decimal 188)
+   defining Unicode char U+00BD (decimal 189)
+   defining Unicode char U+00BE (decimal 190)
+   defining Unicode char U+00D7 (decimal 215)
+   defining Unicode char U+00F7 (decimal 247)
+   defining Unicode char U+0192 (decimal 402)
+   defining Unicode char U+02C7 (decimal 711)
+   defining Unicode char U+02D8 (decimal 728)
+   defining Unicode char U+02DD (decimal 733)
+   defining Unicode char U+0E3F (decimal 3647)
+   defining Unicode char U+2016 (decimal 8214)
+   defining Unicode char U+2020 (decimal 8224)
+   defining Unicode char U+2021 (decimal 8225)
+   defining Unicode char U+2022 (decimal 8226)
+   defining Unicode char U+2030 (decimal 8240)
+   defining Unicode char U+2031 (decimal 8241)
+   defining Unicode char U+203B (decimal 8251)
+   defining Unicode char U+203D (decimal 8253)
+   defining Unicode char U+2044 (decimal 8260)
+   defining Unicode char U+204E (decimal 8270)
+   defining Unicode char U+2052 (decimal 8274)
+   defining Unicode char U+20A1 (decimal 8353)
+   defining Unicode char U+20A4 (decimal 8356)
+   defining Unicode char U+20A6 (decimal 8358)
+   defining Unicode char U+20A9 (decimal 8361)
+   defining Unicode char U+20AB (decimal 8363)
+   defining Unicode char U+20AC (decimal 8364)
+   defining Unicode char U+20B1 (decimal 8369)
+   defining Unicode char U+2103 (decimal 8451)
+   defining Unicode char U+2116 (decimal 8470)
+   defining Unicode char U+2117 (decimal 8471)
+   defining Unicode char U+211E (decimal 8478)
+   defining Unicode char U+2120 (decimal 8480)
+   defining Unicode char U+2122 (decimal 8482)
+   defining Unicode char U+2126 (decimal 8486)
+   defining Unicode char U+2127 (decimal 8487)
+   defining Unicode char U+212E (decimal 8494)
+   defining Unicode char U+2190 (decimal 8592)
+   defining Unicode char U+2191 (decimal 8593)
+   defining Unicode char U+2192 (decimal 8594)
+   defining Unicode char U+2193 (decimal 8595)
+   defining Unicode char U+2329 (decimal 9001)
+   defining Unicode char U+232A (decimal 9002)
+   defining Unicode char U+2422 (decimal 9250)
+   defining Unicode char U+25E6 (decimal 9702)
+   defining Unicode char U+25EF (decimal 9711)
+   defining Unicode char U+266A (decimal 9834)
+   defining Unicode char U+FEFF (decimal 65279)
+))
+LaTeX Info: Redefining \oldstylenums on input line 334.
+Package textcomp Info: Setting cmr sub-encoding to TS1/0 on input line 349.
+Package textcomp Info: Setting cmss sub-encoding to TS1/0 on input line 350.
+Package textcomp Info: Setting cmtt sub-encoding to TS1/0 on input line 351.
+Package textcomp Info: Setting cmvtt sub-encoding to TS1/0 on input line 352.
+Package textcomp Info: Setting cmbr sub-encoding to TS1/0 on input line 353.
+Package textcomp Info: Setting cmtl sub-encoding to TS1/0 on input line 354.
+Package textcomp Info: Setting ccr sub-encoding to TS1/0 on input line 355.
+Package textcomp Info: Setting ptm sub-encoding to TS1/4 on input line 356.
+Package textcomp Info: Setting pcr sub-encoding to TS1/4 on input line 357.
+Package textcomp Info: Setting phv sub-encoding to TS1/4 on input line 358.
+Package textcomp Info: Setting ppl sub-encoding to TS1/3 on input line 359.
+Package textcomp Info: Setting pag sub-encoding to TS1/4 on input line 360.
+Package textcomp Info: Setting pbk sub-encoding to TS1/4 on input line 361.
+Package textcomp Info: Setting pnc sub-encoding to TS1/4 on input line 362.
+Package textcomp Info: Setting pzc sub-encoding to TS1/4 on input line 363.
+Package textcomp Info: Setting bch sub-encoding to TS1/4 on input line 364.
+Package textcomp Info: Setting put sub-encoding to TS1/5 on input line 365.
+Package textcomp Info: Setting uag sub-encoding to TS1/5 on input line 366.
+Package textcomp Info: Setting ugq sub-encoding to TS1/5 on input line 367.
+Package textcomp Info: Setting ul8 sub-encoding to TS1/4 on input line 368.
+Package textcomp Info: Setting ul9 sub-encoding to TS1/4 on input line 369.
+Package textcomp Info: Setting augie sub-encoding to TS1/5 on input line 370.
+Package textcomp Info: Setting dayrom sub-encoding to TS1/3 on input line 371.
+Package textcomp Info: Setting dayroms sub-encoding to TS1/3 on input line 372.
+
+Package textcomp Info: Setting pxr sub-encoding to TS1/0 on input line 373.
+Package textcomp Info: Setting pxss sub-encoding to TS1/0 on input line 374.
+Package textcomp Info: Setting pxtt sub-encoding to TS1/0 on input line 375.
+Package textcomp Info: Setting txr sub-encoding to TS1/0 on input line 376.
+Package textcomp Info: Setting txss sub-encoding to TS1/0 on input line 377.
+Package textcomp Info: Setting txtt sub-encoding to TS1/0 on input line 378.
+Package textcomp Info: Setting lmr sub-encoding to TS1/0 on input line 379.
+Package textcomp Info: Setting lmdh sub-encoding to TS1/0 on input line 380.
+Package textcomp Info: Setting lmss sub-encoding to TS1/0 on input line 381.
+Package textcomp Info: Setting lmssq sub-encoding to TS1/0 on input line 382.
+Package textcomp Info: Setting lmvtt sub-encoding to TS1/0 on input line 383.
+Package textcomp Info: Setting lmtt sub-encoding to TS1/0 on input line 384.
+Package textcomp Info: Setting qhv sub-encoding to TS1/0 on input line 385.
+Package textcomp Info: Setting qag sub-encoding to TS1/0 on input line 386.
+Package textcomp Info: Setting qbk sub-encoding to TS1/0 on input line 387.
+Package textcomp Info: Setting qcr sub-encoding to TS1/0 on input line 388.
+Package textcomp Info: Setting qcs sub-encoding to TS1/0 on input line 389.
+Package textcomp Info: Setting qpl sub-encoding to TS1/0 on input line 390.
+Package textcomp Info: Setting qtm sub-encoding to TS1/0 on input line 391.
+Package textcomp Info: Setting qzc sub-encoding to TS1/0 on input line 392.
+Package textcomp Info: Setting qhvc sub-encoding to TS1/0 on input line 393.
+Package textcomp Info: Setting futs sub-encoding to TS1/4 on input line 394.
+Package textcomp Info: Setting futx sub-encoding to TS1/4 on input line 395.
+Package textcomp Info: Setting futj sub-encoding to TS1/4 on input line 396.
+Package textcomp Info: Setting hlh sub-encoding to TS1/3 on input line 397.
+Package textcomp Info: Setting hls sub-encoding to TS1/3 on input line 398.
+Package textcomp Info: Setting hlst sub-encoding to TS1/3 on input line 399.
+Package textcomp Info: Setting hlct sub-encoding to TS1/5 on input line 400.
+Package textcomp Info: Setting hlx sub-encoding to TS1/5 on input line 401.
+Package textcomp Info: Setting hlce sub-encoding to TS1/5 on input line 402.
+Package textcomp Info: Setting hlcn sub-encoding to TS1/5 on input line 403.
+Package textcomp Info: Setting hlcw sub-encoding to TS1/5 on input line 404.
+Package textcomp Info: Setting hlcf sub-encoding to TS1/5 on input line 405.
+Package textcomp Info: Setting pplx sub-encoding to TS1/3 on input line 406.
+Package textcomp Info: Setting pplj sub-encoding to TS1/3 on input line 407.
+Package textcomp Info: Setting ptmx sub-encoding to TS1/4 on input line 408.
+Package textcomp Info: Setting ptmj sub-encoding to TS1/4 on input line 409.
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fancyhdr
+/fancyhdr.sty"
+Package: fancyhdr 2019/01/31 v3.10 Extensive control of page headers and footer
+s
+\f@nch@headwidth=\skip75
+\f@nch@O@elh=\skip76
+\f@nch@O@erh=\skip77
+\f@nch@O@olh=\skip78
+\f@nch@O@orh=\skip79
+\f@nch@O@elf=\skip80
+\f@nch@O@erf=\skip81
+\f@nch@O@olf=\skip82
+\f@nch@O@orf=\skip83
+)
+\tufteskipamount=\skip84
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/tools/mu
+lticol.sty"
+Package: multicol 2018/12/27 v1.8v multicolumn formatting (FMi)
+\c@tracingmulticols=\count112
+\mult@box=\box31
+\multicol@leftmargin=\dimen124
+\c@unbalance=\count113
+\c@collectmore=\count114
+\doublecol@number=\count115
+\multicoltolerance=\count116
+\multicolpretolerance=\count117
+\full@width=\dimen125
+\page@free=\dimen126
+\premulticols=\dimen127
+\postmulticols=\dimen128
+\multicolsep=\skip85
+\multicolbaselineskip=\skip86
+\partial@page=\box32
+\last@line=\box33
+\maxbalancingoverflow=\dimen129
+\mult@rightbox=\box34
+\mult@grightbox=\box35
+\mult@gfirstbox=\box36
+\mult@firstbox=\box37
+\@tempa=\box38
+\@tempa=\box39
+\@tempa=\box40
+\@tempa=\box41
+\@tempa=\box42
+\@tempa=\box43
+\@tempa=\box44
+\@tempa=\box45
+\@tempa=\box46
+\@tempa=\box47
+\@tempa=\box48
+\@tempa=\box49
+\@tempa=\box50
+\@tempa=\box51
+\@tempa=\box52
+\@tempa=\box53
+\@tempa=\box54
+\c@columnbadness=\count118
+\c@finalcolumnbadness=\count119
+\last@try=\dimen130
+\multicolovershoot=\dimen131
+\multicolundershoot=\dimen132
+\mult@nat@firstbox=\box55
+\colbreak@box=\box56
+\mc@col@check@num=\count120
+)))
+Package hyperref Info: Option `colorlinks' set `true' on input line 3.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/lipsum/l
+ipsum.sty"
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3kernel
+/expl3.sty"
+Package: expl3 2019-01-13 L3 programming layer (loader) 
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3kernel
+/expl3-code.tex"
+Package: expl3 2019-01-13 L3 programming layer (code)
+\c_max_int=\count121
+\l_tmpa_int=\count122
+\l_tmpb_int=\count123
+\g_tmpa_int=\count124
+\g_tmpb_int=\count125
+\g__kernel_prg_map_int=\count126
+\c_log_iow=\count127
+\l_iow_line_count_int=\count128
+\l__iow_line_target_int=\count129
+\l__iow_one_indent_int=\count130
+\l__iow_indent_int=\count131
+\c_zero_dim=\dimen133
+\c_max_dim=\dimen134
+\l_tmpa_dim=\dimen135
+\l_tmpb_dim=\dimen136
+\g_tmpa_dim=\dimen137
+\g_tmpb_dim=\dimen138
+\c_zero_skip=\skip87
+\c_max_skip=\skip88
+\l_tmpa_skip=\skip89
+\l_tmpb_skip=\skip90
+\g_tmpa_skip=\skip91
+\g_tmpb_skip=\skip92
+\c_zero_muskip=\muskip11
+\c_max_muskip=\muskip12
+\l_tmpa_muskip=\muskip13
+\l_tmpb_muskip=\muskip14
+\g_tmpa_muskip=\muskip15
+\g_tmpb_muskip=\muskip16
+\l_keys_choice_int=\count132
+\l__intarray_loop_int=\count133
+\c__intarray_sp_dim=\dimen139
+\g__intarray_font_int=\count134
+\c__fp_leading_shift_int=\count135
+\c__fp_middle_shift_int=\count136
+\c__fp_trailing_shift_int=\count137
+\c__fp_big_leading_shift_int=\count138
+\c__fp_big_middle_shift_int=\count139
+\c__fp_big_trailing_shift_int=\count140
+\c__fp_Bigg_leading_shift_int=\count141
+\c__fp_Bigg_middle_shift_int=\count142
+\c__fp_Bigg_trailing_shift_int=\count143
+\c__kernel_randint_max_int=\count144
+\g__fp_array_int=\count145
+\l__fp_array_loop_int=\count146
+\l__sort_length_int=\count147
+\l__sort_min_int=\count148
+\l__sort_top_int=\count149
+\l__sort_max_int=\count150
+\l__sort_true_max_int=\count151
+\l__sort_block_int=\count152
+\l__sort_begin_int=\count153
+\l__sort_end_int=\count154
+\l__sort_A_int=\count155
+\l__sort_B_int=\count156
+\l__sort_C_int=\count157
+\l__tl_analysis_normal_int=\count158
+\l__tl_analysis_index_int=\count159
+\l__tl_analysis_nesting_int=\count160
+\l__tl_analysis_type_int=\count161
+\l__regex_internal_a_int=\count162
+\l__regex_internal_b_int=\count163
+\l__regex_internal_c_int=\count164
+\l__regex_balance_int=\count165
+\l__regex_group_level_int=\count166
+\l__regex_mode_int=\count167
+\c__regex_cs_in_class_mode_int=\count168
+\c__regex_cs_mode_int=\count169
+\l__regex_catcodes_int=\count170
+\l__regex_default_catcodes_int=\count171
+\c__regex_catcode_D_int=\count172
+\c__regex_catcode_S_int=\count173
+\c__regex_catcode_L_int=\count174
+\c__regex_catcode_O_int=\count175
+\c__regex_catcode_A_int=\count176
+\c__regex_all_catcodes_int=\count177
+\l__regex_show_lines_int=\count178
+\l__regex_min_state_int=\count179
+\l__regex_max_state_int=\count180
+\l__regex_left_state_int=\count181
+\l__regex_right_state_int=\count182
+\l__regex_capturing_group_int=\count183
+\l__regex_min_pos_int=\count184
+\l__regex_max_pos_int=\count185
+\l__regex_curr_pos_int=\count186
+\l__regex_start_pos_int=\count187
+\l__regex_success_pos_int=\count188
+\l__regex_curr_char_int=\count189
+\l__regex_curr_catcode_int=\count190
+\l__regex_last_char_int=\count191
+\l__regex_case_changed_char_int=\count192
+\l__regex_curr_state_int=\count193
+\l__regex_step_int=\count194
+\l__regex_min_active_int=\count195
+\l__regex_max_active_int=\count196
+\l__regex_replacement_csnames_int=\count197
+\l__regex_match_count_int=\count198
+\l__regex_min_submatch_int=\count199
+\l__regex_submatch_int=\count266
+\l__regex_zeroth_submatch_int=\count267
+\g__regex_trace_regex_int=\count268
+\c_empty_box=\box57
+\l_tmpa_box=\box58
+\l_tmpb_box=\box59
+\g_tmpa_box=\box60
+\g_tmpb_box=\box61
+\l__box_top_dim=\dimen140
+\l__box_bottom_dim=\dimen141
+\l__box_left_dim=\dimen142
+\l__box_right_dim=\dimen143
+\l__box_top_new_dim=\dimen144
+\l__box_bottom_new_dim=\dimen145
+\l__box_left_new_dim=\dimen146
+\l__box_right_new_dim=\dimen147
+\l__box_internal_box=\box62
+\l__coffin_internal_box=\box63
+\l__coffin_internal_dim=\dimen148
+\l__coffin_offset_x_dim=\dimen149
+\l__coffin_offset_y_dim=\dimen150
+\l__coffin_x_dim=\dimen151
+\l__coffin_y_dim=\dimen152
+\l__coffin_x_prime_dim=\dimen153
+\l__coffin_y_prime_dim=\dimen154
+\c_empty_coffin=\box64
+\l__coffin_aligned_coffin=\box65
+\l__coffin_aligned_internal_coffin=\box66
+\l_tmpa_coffin=\box67
+\l_tmpb_coffin=\box68
+\l__coffin_display_coffin=\box69
+\l__coffin_display_coord_coffin=\box70
+\l__coffin_display_pole_coffin=\box71
+\l__coffin_display_offset_dim=\dimen155
+\l__coffin_display_x_dim=\dimen156
+\l__coffin_display_y_dim=\dimen157
+\g__file_internal_ior=\read1
+\l__coffin_bounding_shift_dim=\dimen158
+\l__coffin_left_corner_dim=\dimen159
+\l__coffin_right_corner_dim=\dimen160
+\l__coffin_bottom_corner_dim=\dimen161
+\l__coffin_top_corner_dim=\dimen162
+\l__coffin_scaled_total_height_dim=\dimen163
+\l__coffin_scaled_width_dim=\dimen164
+\l__seq_internal_a_int=\count269
+\l__seq_internal_b_int=\count270
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3kernel
+/l3pdfmode.def"
+File: l3pdfmode.def 2019-01-13 v L3 Experimental driver: PDF mode
+\l__driver_color_stack_int=\count271
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/l3packag
+es/xparse/xparse.sty"
+Package: xparse 2018-10-17 L3 Experimental document command parser
+\l__xparse_current_arg_int=\count272
+\g__xparse_grabber_int=\count273
+\l__xparse_m_args_int=\count274
+\l__xparse_mandatory_args_int=\count275
+\l__xparse_v_nesting_int=\count276
+)
+Package: lipsum 2019/01/02 v2.2 150 paragraphs of Lorem Ipsum dummy text
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/lipsum/l
+ipsum.ltd.tex"
+File: lipsum.ltd.tex 2019/01/02 v2.2 The Lorem ipsum dummy text
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/booktabs
+/booktabs.sty"
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen165
+\lightrulewidth=\dimen166
+\cmidrulewidth=\dimen167
+\belowrulesep=\dimen168
+\belowbottomsep=\dimen169
+\aboverulesep=\dimen170
+\abovetopsep=\dimen171
+\cmidrulesep=\dimen172
+\cmidrulekern=\dimen173
+\defaultaddspace=\dimen174
+\@cmidla=\count277
+\@cmidlb=\count278
+\@aboverulesep=\dimen175
+\@belowrulesep=\dimen176
+\@thisruleclass=\count279
+\@lastruleclass=\count280
+\@thisrulewidth=\dimen177
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+/graphicx.sty"
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+/graphics.sty"
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+/trig.sty"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/graphics
+-cfg/graphics.cfg"
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+)
+\Gin@req@height=\dimen178
+\Gin@req@width=\dimen179
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/fancyvrb
+/fancyvrb.sty"
+Package: fancyvrb 2019/01/15
+ Style option: `fancyvrb' v3.2a <2019/01/15> (tvz)
+\FV@CodeLineNo=\count281
+\FV@InFile=\read2
+\FV@TabBox=\box72
+\c@FancyVerbLine=\count282
+\FV@StepNumber=\count283
+\FV@OutFile=\write3
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/tools/xs
+pace.sty"
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/units/un
+its.sty"
+Package: units 1998/08/04 v0.9b Typesetting units
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/units/ni
+cefrac.sty"
+Package: nicefrac 1998/08/04 v0.9b Nice fractions
+\L@UnitsRaiseDisplaystyle=\skip93
+\L@UnitsRaiseTextstyle=\skip94
+\L@UnitsRaiseScriptstyle=\skip95
+))
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/mak
+eidx.sty"
+Package: makeidx 2014/09/29 v1.0m Standard LaTeX package
+)
+\@indexfile=\write4
+\openout4 = `"BlueBook_DaLAT MANUAL.idx"'.
+
+
+Writing index file "BlueBook_DaLAT MANUAL".idx
+("BlueBook_DaLAT MANUAL.aux"
+
+LaTeX Warning: Label `fig:marginfig' multiply defined.
+
+)
+\openout1 = `"BlueBook_DaLAT MANUAL.aux"'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 146.
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 146.
+LaTeX Font Info:    Try loading font information for TS1+cmr on input line 146.
+
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/base/ts1
+cmr.fd"
+File: ts1cmr.fd 2014/09/29 v2.5h Standard LaTeX font definitions
+)
+LaTeX Font Info:    ... okay on input line 146.
+LaTeX Font Info:    Try loading font information for T1+pplj on input line 146.
+
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/t
+1pplj.fd"
+File: t1pplj.fd 2004/09/06 font definitions for T1/pplj.
+)
+\AtBeginShipoutBox=\box73
+Package hyperref Info: Link coloring ON on input line 146.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/hyperref
+/nameref.sty"
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/generic/oberdi
+ek/gettitlestring.sty"
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count284
+)
+LaTeX Info: Redefining \ref on input line 146.
+LaTeX Info: Redefining \pageref on input line 146.
+LaTeX Info: Redefining \nameref on input line 146.
+ ("BlueBook_DaLAT MANUAL.out")
+("BlueBook_DaLAT MANUAL.out")
+\@outlinefile=\write5
+\openout5 = `"BlueBook_DaLAT MANUAL.out"'.
+
+ ABD: EverySelectfont initializing macros
+LaTeX Info: Redefining \selectfont on input line 146.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: letterpaper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside asymmetric 
+* h-part:(L,W,R)=(72.26999pt, 312.0pt, 230.02501pt)
+* v-part:(T,H,B)=(72.26999pt, 616.0pt, 106.7pt)
+* \paperwidth=614.295pt
+* \paperheight=794.96999pt
+* \textwidth=312.0pt
+* \textheight=616.0pt
+* \oddsidemargin=0.0pt
+* \evensidemargin=0.0pt
+* \topmargin=-42.0pt
+* \headheight=14.0pt
+* \headsep=28.0pt
+* \topskip=10.0pt
+* \footskip=25.29494pt
+* \marginparwidth=144.0pt
+* \marginparsep=24.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/context/base/s
+upp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count285
+\scratchdimen=\dimen180
+\scratchbox=\box74
+\nofMPsegments=\count286
+\nofMParguments=\count287
+\everyMPshowfont=\toks19
+\MPscratchCnt=\count288
+\MPscratchDim=\dimen181
+\MPnumerator=\count289
+\makeMPintoPDFobject=\count290
+\everyMPtoPDFconversion=\toks20
+)
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/oberdiek
+/epstopdf-base.sty"
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/oberdiek
+/grfext.sty"
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+)
+\big@size=\dimen182
+\langwohyphens=\language1
+LaTeX Font Info:    Try loading font information for T1+phv on input line 152.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/t
+1phv.fd"
+File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
+)
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 8.99994pt on input line 152.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 16.19989pt on input line 152.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 32.39978pt on input line 152.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 12.59991pt on input line 152.
+ [1
+
+
+{/Users/x/Library/Application Support/MiKTeX/texmfs/data/pdftex/config/pdftex.m
+ap}]
+LaTeX Font Info:    Try loading font information for TS1+pplj on input line 162
+.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/t
+s1pplj.fd"
+File: ts1pplj.fd 2004/09/06 font definitions for TS1/pplj.
+)
+LaTeX Font Info:    Try loading font information for T1+fvm on input line 170.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/bera/t1f
+vm.fd"
+File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
+)
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 8.50006pt on input line 170.
+LaTeX Font Info:    Try loading font information for OT1+pplx on input line 170
+.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/o
+t1pplx.fd"
+File: ot1pplx.fd 2004/09/06 font definitions for OT1/pplx.
+)
+LaTeX Font Info:    Try loading font information for OML+zplm on input line 170
+.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/o
+mlzplm.fd"
+File: omlzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OML/zplm.
+)
+LaTeX Font Info:    Try loading font information for OMS+zplm on input line 170
+.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/o
+mszplm.fd"
+File: omszplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMS/zplm.
+)
+LaTeX Font Info:    Try loading font information for OMX+zplm on input line 170
+.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/o
+mxzplm.fd"
+File: omxzplm.fd 2002/09/08 Fontinst v1.914 font definitions for OMX/zplm.
+)
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 170
+.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/o
+t1zplm.fd"
+File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
+)
+Overfull \hbox (13.6897pt too wide) in paragraph at lines 168--176
+[]\T1/pplj/m/n/10 Licensed under the Apache License, Version 2.0 (the ``License
+''); you may not use this file except in compliance 
+ []
+
+[2
+
+] ("BlueBook_DaLAT MANUAL.toc")
+\tf@toc=\write6
+\openout6 = `"BlueBook_DaLAT MANUAL.toc"'.
+
+ [3
+
+] [4
+
+] ("BlueBook_DaLAT MANUAL.lof"
+Overfull \hbox (0.66245pt too wide) in paragraph at lines 4--4
+ [][] [][][]\T1/pplj/m/n/10 This is a margin figure. The helix is defined by $\
+OML/zplm/m/it/10 x \OT1/zplm/m/n/10 = [](\OT1/pplx/m/n/10 2\OML/zplm/m/it/10 z
+\OT1/zplm/m/n/10 )$\T1/pplj/m/n/10 , $\OML/zplm/m/it/10 y \OT1/zplm/m/n/10 =
+ []
+
+
+Overfull \hbox (1.91158pt too wide) in paragraph at lines 4--4
+ []\OT1/zplm/m/n/10 (\OT1/pplx/m/n/10 2\OML/zplm/m/it/10 z\OT1/zplm/m/n/10 )$\
+T1/pplj/m/n/10 , and $\OML/zplm/m/it/10 z \OT1/zplm/m/n/10 = [\OT1/pplx/m/n/10 
+0, 2.7\OT1/zplm/m/n/10 ]$\T1/pplj/m/n/10 . The figure was drawn using Asymptote
+
+ []
+
+)
+\tf@lof=\write7
+\openout7 = `"BlueBook_DaLAT MANUAL.lof"'.
+
+ [5] [6
+
+] ("BlueBook_DaLAT MANUAL.lot"
+Overfull \hbox (58.32143pt too wide) in paragraph at lines 2--2
+ [][] [][][]\T1/pplj/m/n/10 A list of L[]T[]X font sizes as defined by the Tuft
+e-L[]T[]X document classes.[][] 12 
+ []
+
+
+Overfull \hbox (2.00974pt too wide) in paragraph at lines 6--6
+ [][] [][][]\T1/pplj/m/n/10 Here are the dimensions of the various margins used
+ in the Tufte-
+ []
+
+)
+\tf@lot=\write8
+\openout8 = `"BlueBook_DaLAT MANUAL.lot"'.
+
+ [7] [8
+
+] [9] [10
+
+]
+<graphics/001_ECI.png, id=202, 853.1875pt x 726.715pt>
+File: graphics/001_ECI.png Graphic file (type png)
+<use graphics/001_ECI.png>
+Package pdftex.def Info: graphics/001_ECI.png  used on input line 208.
+(pdftex.def)             Requested size: 143.99846pt x 122.6528pt.
+
+Overfull \hbox (12.0pt too wide) in paragraph at lines 214--237
+[]$[]$  
+ []
+
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 6.80005pt on input line 268.
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+
+Underfull \vbox (badness 1082) has occurred while \output is active []
+
+ [11
+
+ <./graphics/001_ECI.png>]
+
+LaTeX Warning: Marginpar on page 12 moved.
+
+
+Overfull \hbox (8.62123pt too wide) in paragraph at lines 322--332
+ [] 
+ []
+
+[12]
+LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <20.74> not available
+(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 338.
+LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
+(Font)              scaled to size 17.62912pt on input line 338.
+
+Overfull \hbox (7.68355pt too wide) in paragraph at lines 350--352
+\T1/pplj/m/n/10 This style provides \T1/pplj/m/sc/10/50ls a\T1/pplj/m/n/10 - an
+d \T1/pplj/m/sc/10/50ls b\T1/pplj/m/n/10 -heads (that is, [] and []), 
+ []
+
+
+Package natbib Warning: Citation `Bringhurst2005' undefined on input line 356.
+
+
+LaTeX Warning: Marginpar on page 13 moved.
+
+
+Package natbib Warning: Citation `Tufte2006' undefined on input line 363.
+
+
+LaTeX Warning: Marginpar on page 13 moved.
+
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 7.65005pt on input line 367.
+
+LaTeX Warning: Marginpar on page 13 moved.
+
+[13
+
+]
+
+LaTeX Warning: Marginpar on page 14 moved.
+
+
+Overfull \hbox (4.29976pt too wide) in paragraph at lines 393--397
+[]\T1/pplj/m/n/10 Sometimes a sidenote may run over the top of other text or gr
+aphics 
+ []
+
+
+LaTeX Warning: Marginpar on page 14 moved.
+
+
+Package natbib Warning: Citation `Tufte2006' undefined on input line 433.
+
+pdfTeX warning (ext4): destination with the same identifier (name{cite.Tufte200
+6}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.433 ...ite[-3\baselineskip]{Tufte2006,Tufte1990}
+                                                   you can
+
+Package natbib Warning: Citation `Tufte1990' undefined on input line 433.
+
+[14]
+<graphics/helix.pdf, id=228, 221.8689pt x 201.71361pt>
+File: graphics/helix.pdf Graphic file (type pdf)
+<use graphics/helix.pdf>
+Package pdftex.def Info: graphics/helix.pdf  used on input line 452.
+(pdftex.def)             Requested size: 144.00317pt x 130.92145pt.
+<graphics/sine.pdf, id=233, 505.89pt x 51.04068pt>
+File: graphics/sine.pdf Graphic file (type pdf)
+<use graphics/sine.pdf>
+Package pdftex.def Info: graphics/sine.pdf  used on input line 483.
+(pdftex.def)             Requested size: 480.0061pt x 48.42917pt.
+<graphics/hilbertcurves.pdf, id=234, 308.47346pt x 76.72565pt>
+File: graphics/hilbertcurves.pdf Graphic file (type pdf)
+<use graphics/hilbertcurves.pdf>
+Package pdftex.def Info: graphics/hilbertcurves.pdf  used on input line 490.
+(pdftex.def)             Requested size: 312.0029pt x 77.6035pt.
+
+Underfull \hbox (badness 10000) in paragraph at lines 490--495
+
+ []
+
+[15 <./graphics/helix.pdf> <./graphics/sine.pdf> <./graphics/hilbertcurves.pdf>
+]
+LaTeX Font Info:    Try loading font information for T1+ppl on input line 526.
+
+("/Users/x/Library/Application Support/MiKTeX/texmfs/install/tex/latex/psnfss/t
+1ppl.fd"
+File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
+)
+Overfull \hbox (6.44302pt too wide) in paragraph at lines 553--556
+\T1/pplj/m/n/10 this limitation, the Tufte-L[]T[]X document classes provide a [
+]\T1/fvm/m/n/10 \morefloats[][][] 
+ []
+
+[16]
+Overfull \hbox (10.3598pt too wide) in paragraph at lines 569--573
+\T1/pplj/m/n/10 start a new paragraph, you should place this command at the beg
+inning 
+ []
+
+
+Overfull \hbox (56.13647pt too wide) in paragraph at lines 590--593
+[] []\T1/pplj/m/it/10 Vertical alignment[] \T1/pplj/m/n/10 To override the vert
+ical alignment, use the \T1/fvm/m/n/10 \setfloatalignment[] 
+ []
+
+[17]
+Overfull \hbox (24.33975pt too wide) in paragraph at lines 661--663
+\T1/pplj/m/n/10 This document class includes two new commands and some improvem
+ents 
+ []
+
+
+Package natbib Warning: Citation `Bringhurst2005' undefined on input line 666.
+
+pdfTeX warning (ext4): destination with the same identifier (name{cite.Bringhur
+st2005}) has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.666 increased slightly.\cite{Bringhurst2005}
+                                                The \doccmddef{allcaps} comm...
+
+Overfull \hbox (0.95978pt too wide) in paragraph at lines 664--671
+\T1/pplj/m/n/10 spacing---that is, the spacing between the letters---should be 
+increased 
+ []
+
+
+LaTeX Warning: Marginpar on page 18 moved.
+
+
+Overfull \hbox (20.36906pt too wide) in paragraph at lines 672--676
+[]\T1/pplj/m/n/10 The []\T1/fvm/m/n/10 \textsc[][][] \T1/pplj/m/n/10 command ha
+s also been redefined to include letterspacing. 
+ []
+
+
+Overfull \hbox (7.3508pt too wide) in paragraph at lines 672--676
+\T1/pplj/m/n/10 one to use both uppercase and lowercase letters: \T1/pplj/m/sc/
+10/50ls The Initial Letters 
+ []
+
+[18]
+Overfull \hbox (5.6498pt too wide) in paragraph at lines 697--701
+\T1/pplj/m/n/10 of the page. This is how books are traditionally printed, but i
+s contrary 
+ []
+
+
+Overfull \hbox (17.34483pt too wide) in paragraph at lines 717--722
+[]\T1/pplj/m/n/10 The []\T1/fvm/m/n/10 nofonts[][][][] \T1/pplj/m/n/10 option p
+revents the Tufte-L[]T[]X classes from automatically 
+ []
+
+
+Overfull \hbox (1.73906pt too wide) in paragraph at lines 729--734
+\T1/pplj/m/n/10 and the \T1/fvm/m/n/10 handout \T1/pplj/m/n/10 class defaults t
+o the title block. There is an analogous 
+ []
+
+
+Underfull \vbox (badness 10000) has occurred while \output is active []
+
+ [19]
+[20]
+LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <10> not available
+(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 769.
+LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
+(Font)              scaled to size 8.50006pt on input line 769.
+ [21
+
+]
+
+Package natbib Warning: Citation `pkg-geometry' undefined on input line 831.
+
+
+LaTeX Warning: Marginpar on page 22 moved.
+
+[22]
+Overfull \hbox (29.76787pt too wide) in paragraph at lines 870--872
+[]\T1/fvm/m/n/9 \documentclass[symmetric,justified,marginals=raggedouter]{tufte
+-book}  
+ []
+
+[23] [24
+
+]
+LaTeX Font Info:    Font shape `T1/fvm/m/it' in size <12> not available
+(Font)              Font shape `T1/fvm/m/sl' tried instead on input line 904.
+LaTeX Font Info:    Font shape `T1/fvm/m/sl' will be
+(Font)              scaled to size 10.20007pt on input line 904.
+ [25] [26
+
+] [27] [28] [29] [30
+
+] ("BlueBook_DaLAT MANUAL.bbl"
+
+Package natbib Warning: Empty `thebibliography' environment on input line 8.
+
+)
+No file "BlueBook_DaLAT MANUAL".ind.
+
+Package natbib Warning: There were undefined citations.
+
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 1043.
+[31
+
+]
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 1043.
+ ("BlueBook_DaLAT MANUAL.aux")
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 1043.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 1043.
+
+Package rerunfilecheck Info: File `"BlueBook_DaLAT MANUAL".out' has not changed
+.
+(rerunfilecheck)             Checksum: 6E9FEA7FDDB1D17DDF68966B5D64556D;4677.
+
+
+LaTeX Warning: There were multiply-defined labels.
+
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 1043.
+ ) 
+Here is how much of TeX's memory you used:
+ 22739 strings out of 494865
+ 384639 string characters out of 3176869
+ 712499 words of memory out of 3000000
+ 25969 multiletter control sequences out of 15000+200000
+ 643054 words of font info for 174 fonts, out of 3000000 for 9000
+ 0 hyphenation exceptions out of 8191
+ 45i,14n,63p,437b,470s stack positions out of 5000i,500n,10000p,200000b,50000s
+{/Users/x/Library/Application Support/MiKTeX/texmfs/install/fonts/enc/dvips/b
+ase/8r.enc}</Users/x/Library/Application Support/MiKTeX/texmfs/install/fonts/ty
+pe1/public/amsfonts/cm/cmr10.pfb></Users/x/Library/Application Support/MiKTeX/t
+exmfs/install/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/x/Library/Appli
+cation Support/MiKTeX/texmfs/install/fonts/type1/public/mathpazo/fplmri.pfb></U
+sers/x/Library/Application Support/MiKTeX/texmfs/install/fonts/type1/public/fpl
+/fplrc8a.pfb></Users/x/Library/Application Support/MiKTeX/texmfs/install/fonts/
+type1/public/fpl/fplrij8a.pfb></Users/x/Library/Application Support/MiKTeX/texm
+fs/install/fonts/type1/bera/fvmr8a.pfb></Users/x/Library/Application Support/Mi
+KTeX/texmfs/install/fonts/type1/bera/fvmro8a.pfb></Users/x/Library/Application 
+Support/MiKTeX/texmfs/install/fonts/type1/urw/helvetic/uhvr8a.pfb></Users/x/Lib
+rary/Application Support/MiKTeX/texmfs/install/fonts/type1/urw/palatino/uplr8a.
+pfb></Users/x/Library/Application Support/MiKTeX/texmfs/install/fonts/type1/urw
+/palatino/uplri8a.pfb>
+Output written on "BlueBook_DaLAT MANUAL.pdf" (31 pages, 282680 bytes).
+PDF statistics:
+ 406 PDF objects out of 1000 (max. 8388607)
+ 77 named destinations out of 1000 (max. 500000)
+ 4349 words of extra memory for PDF output out of 10000 (max. 10000000)
+
