@@ -1,0 +1,3971 @@
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2019.6.12)  12 JUN 2019 13:44
+entering extended mode
+**"./DaLAT Manual.tex"
+("DaLAT Manual.tex"
+LaTeX2e <2018-12-01>
+(kaobook.cls
+Document Class: kaobook 2019/06/05 v1.0 kaobook class v1.0
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rbook.cls"
+Document Class: scrbook 2019/02/01 v3.26b KOMA-Script document class (book)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rkbase.sty"
+Package: scrkbase 2019/02/01 v3.26b KOMA-Script package (KOMA-Script-dependent 
+basics and keyval usage)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rbase.sty"
+Package: scrbase 2019/02/01 v3.26b KOMA-Script package (KOMA-Script-independent
+ basics and keyval usage)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\keyva
+l.sty"
+Package: keyval 2014/10/28 v1.15 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rlfile.sty"
+Package: scrlfile 2019/02/01 v3.26b KOMA-Script package (loading files)
+)))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\to
+cbasic.sty"
+Package: tocbasic 2019/02/01 v3.26b KOMA-Script package (handling toc-files)
+\scr@dte@tocline@numberwidth=\skip41
+\scr@dte@tocline@numbox=\box27
+)
+Package tocbasic Info: omitting babel extension for `toc'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `toc' on input line 136.
+Class scrbook Info: File `scrsize10pt.clo' used to setup font sizes on input li
+ne 2376.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rsize10pt.clo"
+File: scrsize10pt.clo 2019/02/01 v3.26b KOMA-Script font size class option (10p
+t)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\ty
+pearea.sty"
+Package: typearea 2019/02/01 v3.26b KOMA-Script package (type area)
+\ta@bcor=\skip42
+\ta@div=\count80
+\ta@hblk=\skip43
+\ta@vblk=\skip44
+\ta@temp=\skip45
+\footheight=\skip46
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 8
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50793pt
+(typearea)              \textwidth      = 373.44246pt
+(typearea)              DIV departure   = -4%
+(typearea)              \evensidemargin = 77.107pt
+(typearea)              \oddsidemargin  = 2.4185pt
+(typearea)             \paperheight     = 845.04694pt
+(typearea)              \textheight     = 538.0pt
+(typearea)              \topmargin      = 0.36087pt
+(typearea)              \headheight     = 15.0pt
+(typearea)              \headsep        = 18.0pt
+(typearea)              \topskip        = 10.0pt
+(typearea)              \footskip       = 42.0pt
+(typearea)              \baselineskip   = 12.0pt
+(typearea)              on input line 1715.
+)
+\c@part=\count81
+\c@chapter=\count82
+\c@section=\count83
+\c@subsection=\count84
+\c@subsubsection=\count85
+\c@paragraph=\count86
+\c@subparagraph=\count87
+\scr@dte@chapter@maxnumwidth=\skip47
+Class scrbook Info: using compatibility default `afterindent=bysign'
+(scrbook)           for `\chapter on input line 5303.
+\scr@dte@section@maxnumwidth=\skip48
+Class scrbook Info: using compatibility default `runin=bysign'
+(scrbook)           for `\section on input line 5313.
+Class scrbook Info: using compatibility default `afterindent=bysign'
+(scrbook)           for `\section on input line 5313.
+\scr@dte@part@maxnumwidth=\skip49
+Class scrbook Info: using compatibility default `afterindent=true'
+(scrbook)           for `\part on input line 5322.
+\scr@dte@subsection@maxnumwidth=\skip50
+Class scrbook Info: using compatibility default `runin=bysign'
+(scrbook)           for `\subsection on input line 5332.
+Class scrbook Info: using compatibility default `afterindent=bysign'
+(scrbook)           for `\subsection on input line 5332.
+\scr@dte@subsubsection@maxnumwidth=\skip51
+Class scrbook Info: using compatibility default `runin=bysign'
+(scrbook)           for `\subsubsection on input line 5342.
+Class scrbook Info: using compatibility default `afterindent=bysign'
+(scrbook)           for `\subsubsection on input line 5342.
+\scr@dte@paragraph@maxnumwidth=\skip52
+Class scrbook Info: using compatibility default `runin=bysign'
+(scrbook)           for `\paragraph on input line 5352.
+Class scrbook Info: using compatibility default `afterindent=bysign'
+(scrbook)           for `\paragraph on input line 5352.
+\scr@dte@subparagraph@maxnumwidth=\skip53
+Class scrbook Info: using compatibility default `runin=bysign'
+(scrbook)           for `\subparagraph on input line 5362.
+Class scrbook Info: using compatibility default `afterindent=bysign'
+(scrbook)           for `\subparagraph on input line 5362.
+\abovecaptionskip=\skip54
+\belowcaptionskip=\skip55
+\c@pti@nb@sid@b@x=\box28
+Package tocbasic Info: omitting babel extension for `lof'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lof' on input line 6617.
+\scr@dte@figure@maxnumwidth=\skip56
+\c@figure=\count88
+Package tocbasic Info: omitting babel extension for `lot'
+(tocbasic)             because of feature `nobabel' available
+(tocbasic)             for `lot' on input line 6638.
+\scr@dte@table@maxnumwidth=\skip57
+\c@table=\count89
+Class scrbook Info: Redefining `\numberline' on input line 6811.
+\bibindent=\dimen102
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/etoolbox\etool
+box.sty"
+Package: etoolbox 2018/08/19 v2.5f e-TeX tools for LaTeX (JAW)
+\etb@tempcnta=\count90
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\calc.sty
+"
+Package: calc 2017/05/25 v4.3 Infix arithmetic (KKT,FJ)
+\calc@Acount=\count91
+\calc@Bcount=\count92
+\calc@Adimen=\dimen103
+\calc@Bdimen=\dimen104
+\calc@Askip=\skip58
+\calc@Bskip=\skip59
+LaTeX Info: Redefining \setlength on input line 80.
+LaTeX Info: Redefining \addtolength on input line 81.
+\calc@Ccount=\count93
+\calc@Cskip=\skip60
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xifthen\xifthe
+n.sty"
+Package: xifthen 2015/11/05 v1.4.0 Extended ifthen features
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\ifthen.st
+y"
+Package: ifthen 2014/09/29 v1.1c Standard LaTeX ifthen package (DPC)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ifmtarg\ifmtar
+g.sty"
+Package: ifmtarg 2018/04/16 v1.2b check for an empty argument
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xkeyval\xkeyva
+l.sty"
+Package: xkeyval 2014/12/03 v2.7a package option processing (HA)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkey
+val.tex"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/xkeyval\xkvu
+tils.tex"
+\XKV@toks=\toks15
+\XKV@tempa@toks=\toks16
+)
+\XKV@depth=\count94
+File: xkeyval.tex 2014/12/03 v2.7a key=value parser (HA)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/l3packages/xpa
+rse\xparse.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/l3kernel\expl3
+.sty"
+Package: expl3 2019-05-28 L3 programming layer (loader) 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/l3kernel\expl3
+-code.tex"
+Package: expl3 2019-05-28 L3 programming layer (code)
+\c_max_int=\count95
+\l_tmpa_int=\count96
+\l_tmpb_int=\count97
+\g_tmpa_int=\count98
+\g_tmpb_int=\count99
+\g__kernel_prg_map_int=\count100
+\c__ior_term_ior=\count101
+\c_log_iow=\count102
+\l_iow_line_count_int=\count103
+\l__iow_line_target_int=\count104
+\l__iow_one_indent_int=\count105
+\l__iow_indent_int=\count106
+\c_zero_dim=\dimen105
+\c_max_dim=\dimen106
+\l_tmpa_dim=\dimen107
+\l_tmpb_dim=\dimen108
+\g_tmpa_dim=\dimen109
+\g_tmpb_dim=\dimen110
+\c_zero_skip=\skip61
+\c_max_skip=\skip62
+\l_tmpa_skip=\skip63
+\l_tmpb_skip=\skip64
+\g_tmpa_skip=\skip65
+\g_tmpb_skip=\skip66
+\c_zero_muskip=\muskip10
+\c_max_muskip=\muskip11
+\l_tmpa_muskip=\muskip12
+\l_tmpb_muskip=\muskip13
+\g_tmpa_muskip=\muskip14
+\g_tmpb_muskip=\muskip15
+\l_keys_choice_int=\count107
+\l__intarray_loop_int=\count108
+\c__intarray_sp_dim=\dimen111
+\g__intarray_font_int=\count109
+\c__fp_leading_shift_int=\count110
+\c__fp_middle_shift_int=\count111
+\c__fp_trailing_shift_int=\count112
+\c__fp_big_leading_shift_int=\count113
+\c__fp_big_middle_shift_int=\count114
+\c__fp_big_trailing_shift_int=\count115
+\c__fp_Bigg_leading_shift_int=\count116
+\c__fp_Bigg_middle_shift_int=\count117
+\c__fp_Bigg_trailing_shift_int=\count118
+\c__kernel_randint_max_int=\count119
+\g__fp_array_int=\count120
+\l__fp_array_loop_int=\count121
+\l__sort_length_int=\count122
+\l__sort_min_int=\count123
+\l__sort_top_int=\count124
+\l__sort_max_int=\count125
+\l__sort_true_max_int=\count126
+\l__sort_block_int=\count127
+\l__sort_begin_int=\count128
+\l__sort_end_int=\count129
+\l__sort_A_int=\count130
+\l__sort_B_int=\count131
+\l__sort_C_int=\count132
+\l__tl_analysis_normal_int=\count133
+\l__tl_analysis_index_int=\count134
+\l__tl_analysis_nesting_int=\count135
+\l__tl_analysis_type_int=\count136
+\l__regex_internal_a_int=\count137
+\l__regex_internal_b_int=\count138
+\l__regex_internal_c_int=\count139
+\l__regex_balance_int=\count140
+\l__regex_group_level_int=\count141
+\l__regex_mode_int=\count142
+\c__regex_cs_in_class_mode_int=\count143
+\c__regex_cs_mode_int=\count144
+\l__regex_catcodes_int=\count145
+\l__regex_default_catcodes_int=\count146
+\c__regex_catcode_D_int=\count147
+\c__regex_catcode_S_int=\count148
+\c__regex_catcode_L_int=\count149
+\c__regex_catcode_O_int=\count150
+\c__regex_catcode_A_int=\count151
+\c__regex_all_catcodes_int=\count152
+\l__regex_show_lines_int=\count153
+\l__regex_min_state_int=\count154
+\l__regex_max_state_int=\count155
+\l__regex_left_state_int=\count156
+\l__regex_right_state_int=\count157
+\l__regex_capturing_group_int=\count158
+\l__regex_min_pos_int=\count159
+\l__regex_max_pos_int=\count160
+\l__regex_curr_pos_int=\count161
+\l__regex_start_pos_int=\count162
+\l__regex_success_pos_int=\count163
+\l__regex_curr_char_int=\count164
+\l__regex_curr_catcode_int=\count165
+\l__regex_last_char_int=\count166
+\l__regex_case_changed_char_int=\count167
+\l__regex_curr_state_int=\count168
+\l__regex_step_int=\count169
+\l__regex_min_active_int=\count170
+\l__regex_max_active_int=\count171
+\l__regex_replacement_csnames_int=\count172
+\l__regex_match_count_int=\count173
+\l__regex_min_submatch_int=\count174
+\l__regex_submatch_int=\count175
+\l__regex_zeroth_submatch_int=\count176
+\g__regex_trace_regex_int=\count177
+\c_empty_box=\box29
+\l_tmpa_box=\box30
+\l_tmpb_box=\box31
+\g_tmpa_box=\box32
+\g_tmpb_box=\box33
+\l__box_top_dim=\dimen112
+\l__box_bottom_dim=\dimen113
+\l__box_left_dim=\dimen114
+\l__box_right_dim=\dimen115
+\l__box_top_new_dim=\dimen116
+\l__box_bottom_new_dim=\dimen117
+\l__box_left_new_dim=\dimen118
+\l__box_right_new_dim=\dimen119
+\l__box_internal_box=\box34
+\l__coffin_internal_box=\box35
+\l__coffin_internal_dim=\dimen120
+\l__coffin_offset_x_dim=\dimen121
+\l__coffin_offset_y_dim=\dimen122
+\l__coffin_x_dim=\dimen123
+\l__coffin_y_dim=\dimen124
+\l__coffin_x_prime_dim=\dimen125
+\l__coffin_y_prime_dim=\dimen126
+\c_empty_coffin=\box36
+\l__coffin_aligned_coffin=\box37
+\l__coffin_aligned_internal_coffin=\box38
+\l_tmpa_coffin=\box39
+\l_tmpb_coffin=\box40
+\g_tmpa_coffin=\box41
+\g_tmpb_coffin=\box42
+\l__coffin_bounding_shift_dim=\dimen127
+\l__coffin_left_corner_dim=\dimen128
+\l__coffin_right_corner_dim=\dimen129
+\l__coffin_bottom_corner_dim=\dimen130
+\l__coffin_top_corner_dim=\dimen131
+\l__coffin_scaled_total_height_dim=\dimen132
+\l__coffin_scaled_width_dim=\dimen133
+\c__coffin_empty_coffin=\box43
+\l__coffin_display_coffin=\box44
+\l__coffin_display_coord_coffin=\box45
+\l__coffin_display_pole_coffin=\box46
+\l__coffin_display_offset_dim=\dimen134
+\l__coffin_display_x_dim=\dimen135
+\l__coffin_display_y_dim=\dimen136
+\g__file_internal_ior=\read1
+\l__seq_internal_a_int=\count178
+\l__seq_internal_b_int=\count179
+\c__deprecation_minus_one=\count180
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/l3kernel\l3pdf
+mode.def"
+File: l3pdfmode.def 2019-04-06 v L3 Experimental driver: PDF mode
+\l__driver_internal_box=\box47
+\l__driver_color_stack_int=\count181
+))
+Package: xparse 2019-05-28 L3 Experimental document command parser
+\l__xparse_current_arg_int=\count182
+\g__xparse_grabber_int=\count183
+\l__xparse_m_args_int=\count184
+\l__xparse_v_nesting_int=\count185
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xstring\xstrin
+g.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/xstring\xstr
+ing.tex"
+\integerpart=\count186
+\decimalpart=\count187
+)
+Package: xstring 2019/02/06 v1.83 String manipulations (CT)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ms\ragged2e.st
+y"
+Package: ragged2e 2009/05/21 v2.1 ragged2e Package (MS)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ms\everysel.st
+y"
+Package: everysel 2011/10/28 v1.2 EverySelectfont Package (MS)
+)
+\CenteringLeftskip=\skip67
+\RaggedLeftLeftskip=\skip68
+\RaggedRightLeftskip=\skip69
+\CenteringRightskip=\skip70
+\RaggedLeftRightskip=\skip71
+\RaggedRightRightskip=\skip72
+\CenteringParfillskip=\skip73
+\RaggedLeftParfillskip=\skip74
+\RaggedRightParfillskip=\skip75
+\JustifyingParfillskip=\skip76
+\CenteringParindent=\skip77
+\RaggedLeftParindent=\skip78
+\RaggedRightParindent=\skip79
+\JustifyingParindent=\skip80
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/setspace\setsp
+ace.sty"
+Package: setspace 2011/12/19 v6.7a set line spacing
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyphenat\hyphe
+nat.sty"
+Package: hyphenat 2009/09/02 v2.3c hyphenation utilities
+\langwohyphens=\language82
+LaTeX Info: Redefining \_ on input line 43.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/microtype\micr
+otype.sty"
+Package: microtype 2019/02/28 v2.7b Micro-typographical refinements (RS)
+\MT@toks=\toks17
+\MT@count=\count188
+LaTeX Info: Redefining \textls on input line 790.
+\MT@outer@kern=\dimen137
+LaTeX Info: Redefining \textmicrotypecontext on input line 1336.
+\MT@listname@count=\count189
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/microtype\micr
+otype-pdftex.def"
+File: microtype-pdftex.def 2019/02/28 v2.7b Definitions specific to pdftex (RS)
+
+LaTeX Info: Redefining \lsstyle on input line 914.
+LaTeX Info: Redefining \lslig on input line 914.
+\MT@outer@space=\skip81
+)
+Package microtype Info: Loading configuration file microtype.cfg.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/microtype\micr
+otype.cfg"
+File: microtype.cfg 2019/02/28 v2.7b microtype main configuration file (RS)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/needspace\need
+space.sty"
+Package: needspace 2010/09/12 v1.3d reserve vertical space
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\xspace.s
+ty"
+Package: xspace 2014/10/28 v1.13 Space after command names (DPC,MH)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xcolor\xcolor.
+sty"
+Package: xcolor 2016/05/11 v2.12 LaTeX color extensions (UK)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics-cfg\c
+olor.cfg"
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Package option `usenames' ignored on input line 216.
+Package xcolor Info: Driver file: pdftex.def on input line 225.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics-def\p
+dftex.def"
+File: pdftex.def 2018/01/08 v1.0l Graphics/color driver for pdftex
+)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1348.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1352.
+Package xcolor Info: Model `RGB' extended on input line 1364.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1366.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1367.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1370.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1371.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\dvips
+nam.def"
+File: dvipsnam.def 2016/06/17 v3.0m Driver-dependent file (DPC,SPQR)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/placeins\place
+ins.sty"
+Package: placeins 2005/04/18  v 2.2
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/footmisc\footm
+isc.sty"
+Package: footmisc 2011/06/06 v5.5b a miscellany of footnote facilities
+\FN@temptoken=\toks18
+\footnotemargin=\dimen138
+\c@pp@next@reset=\count190
+\c@@fnserial=\count191
+Package footmisc Info: Declaring symbol style bringhurst on input line 855.
+Package footmisc Info: Declaring symbol style chicago on input line 863.
+Package footmisc Info: Declaring symbol style wiley on input line 872.
+Package footmisc Info: Declaring symbol style lamport-robust on input line 883.
+
+Package footmisc Info: Declaring symbol style lamport* on input line 903.
+Package footmisc Info: Declaring symbol style lamport*-robust on input line 924
+.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/footnotebackre
+f\footnotebackref.sty"
+Package: footnotebackref 2012/07/01 v1.0 Backreferences for footnotes (Holger L
+ange)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\letlt
+xmacro.sty"
+Package: letltxmacro 2016/05/16 v1.5 Let assignment for LaTeX macros (HO)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\hyper
+ref.sty"
+Package: hyperref 2018/11/30 v6.88e Hypertext links for LaTeX
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\hob
+sub-hyperref.sty"
+Package: hobsub-hyperref 2016/05/16 v1.14 Bundle oberdiek, subset hyperref (HO)
+
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\hob
+sub-generic.sty"
+Package: hobsub-generic 2016/05/16 v1.14 Bundle oberdiek, subset generic (HO)
+Package: hobsub 2016/05/16 v1.14 Construct package bundles (HO)
+Package: infwarerr 2016/05/16 v1.4 Providing info/warning/error messages (HO)
+Package: ltxcmds 2016/05/16 v1.23 LaTeX kernel commands for general use (HO)
+Package: ifluatex 2016/05/16 v1.4 Provides the ifluatex switch (HO)
+Package ifluatex Info: LuaTeX not detected.
+Package: ifvtex 2016/05/16 v1.6 Detect VTeX and its facilities (HO)
+Package ifvtex Info: VTeX not detected.
+Package: intcalc 2016/05/16 v1.2 Expandable calculations with integers (HO)
+Package: ifpdf 2018/09/07 v3.3 Provides the ifpdf switch
+Package: etexcmds 2016/05/16 v1.6 Avoid name clashes with e-TeX commands (HO)
+Package: kvsetkeys 2016/05/16 v1.17 Key value parser (HO)
+Package: kvdefinekeys 2016/05/16 v1.4 Define keys (HO)
+Package: pdftexcmds 2018/09/10 v0.29 Utility functions of pdfTeX for LuaTeX (HO
+)
+Package pdftexcmds Info: LuaTeX not detected.
+Package pdftexcmds Info: \pdf@primitive is available.
+Package pdftexcmds Info: \pdf@ifprimitive is available.
+Package pdftexcmds Info: \pdfdraftmode found.
+Package: pdfescape 2016/05/16 v1.14 Implements pdfTeX's escape features (HO)
+Package: bigintcalc 2016/05/16 v1.4 Expandable calculations on big integers (HO
+)
+Package: bitset 2016/05/16 v1.2 Handle bit-vector datatype (HO)
+Package: uniquecounter 2016/05/16 v1.3 Provide unlimited unique counter (HO)
+)
+Package hobsub Info: Skipping package `hobsub' (already loaded).
+Package hobsub Info: Skipping package `letltxmacro' (already loaded).
+Package: hopatch 2016/05/16 v1.3 Wrapper for package hooks (HO)
+Package: xcolor-patch 2016/05/16 xcolor patch
+Package: atveryend 2016/05/16 v1.9 Hooks at the very end of document (HO)
+Package: atbegshi 2016/06/09 v1.18 At begin shipout hook (HO)
+Package: refcount 2016/05/16 v3.5 Data extraction from label references (HO)
+Package: hycolor 2016/05/16 v1.8 Color options for hyperref/bookmark (HO)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/ifxetex\ifxe
+tex.sty"
+Package: ifxetex 2010/09/12 v0.6 Provides ifxetex conditional
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\auxho
+ok.sty"
+Package: auxhook 2016/05/16 v1.4 Hooks for auxiliary files (HO)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\kvopt
+ions.sty"
+Package: kvoptions 2016/05/16 v3.12 Key value format for package options (HO)
+)
+\@linkdim=\dimen139
+\Hy@linkcounter=\count192
+\Hy@pagecounter=\count193
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\pd1en
+c.def"
+File: pd1enc.def 2018/11/30 v6.88e Hyperref: PDFDocEncoding definition (HO)
+Now handling font encoding PD1 ...
+... no UTF-8 mapping file for font encoding PD1
+)
+\Hy@SavedSpaceFactor=\count194
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/00miktex\hyper
+ref.cfg"
+File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
+)
+Package hyperref Info: Hyper figures OFF on input line 4519.
+Package hyperref Info: Link nesting OFF on input line 4524.
+Package hyperref Info: Hyper index ON on input line 4527.
+Package hyperref Info: Plain pages OFF on input line 4534.
+Package hyperref Info: Backreferencing OFF on input line 4539.
+Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
+Package hyperref Info: Bookmarks ON on input line 4772.
+\c@Hy@tempcnt=\count195
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/url\url.sty"
+\Urlmuskip=\muskip16
+Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
+)
+LaTeX Info: Redefining \url on input line 5125.
+\XeTeXLinkMargin=\dimen140
+\Fld@menulength=\count196
+\Field@Width=\dimen141
+\Fld@charsize=\dimen142
+Package hyperref Info: Hyper figures OFF on input line 6380.
+Package hyperref Info: Link nesting OFF on input line 6385.
+Package hyperref Info: Hyper index ON on input line 6388.
+Package hyperref Info: backreferencing OFF on input line 6395.
+Package hyperref Info: Link coloring OFF on input line 6400.
+Package hyperref Info: Link coloring with OCG OFF on input line 6405.
+Package hyperref Info: PDF/A mode OFF on input line 6410.
+LaTeX Info: Redefining \ref on input line 6450.
+LaTeX Info: Redefining \pageref on input line 6454.
+\Hy@abspage=\count197
+\c@Item=\count198
+\c@Hfootnote=\count199
+)
+Package hyperref Info: Driver (autodetected): hpdftex.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\hpdft
+ex.def"
+File: hpdftex.def 2018/11/30 v6.88e Hyperref driver for pdfTeX
+\Fld@listcount=\count266
+\c@bookmark@seq@number=\count267
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\rerun
+filecheck.sty"
+Package: rerunfilecheck 2016/05/16 v1.8 Rerun checks for auxiliary files (HO)
+Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
+82.
+)
+\Hy@SectionHShift=\skip82
+)
+\c@BackrefHyperFootnoteCounter=\count268
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/marginnote\mar
+ginnote.sty"
+Package: marginnote 2018/08/09 v1.4b non floating margin notes for LaTeX
+\c@mn@abspage=\count269
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/marginfix\marg
+infix.sty"
+Package: marginfix 2013/09/08 v1.1 Fix Margin Paragraphs
+\Mfx@inject@insert=\insert252
+\Mfx@marginbox=\box48
+\Mfx@marginpos@min=\dimen143
+\Mfx@marginpos@max=\dimen144
+\Mfx@marginspace=\dimen145
+\Mfx@marginheight=\dimen146
+\Mfx@piece@content=\box49
+\Mfx@piece@count=\count270
+\Mfx@mparshift=\dimen147
+\marginheightadjustment=\dimen148
+\marginposadjustment=\dimen149
+\Mfx@strutheight=\dimen150
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/snotez\snotez.
+sty"
+Package: snotez 2013/04/21 v0.3 sidenote support for LaTeX 2e (CN)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgfopts\pgfopt
+s.sty"
+Package: pgfopts 2014/07/10 v2.1a LaTeX package options with pgfkeys
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/utilities\
+pgfkeys.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfkeys.code.tex"
+\pgfkeys@pathtoks=\toks19
+\pgfkeys@temptoks=\toks20
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfkeysfiltered.code.tex"
+\pgfkeys@tmptoks=\toks21
+)))
+\pgfopts@list@add@a@toks=\toks22
+\pgfopts@list@add@b@toks=\toks23
+)
+\c@sidenote=\count271
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\graph
+icx.sty"
+Package: graphicx 2017/06/01 v1.1a Enhanced LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\graph
+ics.sty"
+Package: graphics 2017/06/25 v1.2c Standard LaTeX Graphics (DPC,SPQR)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\trig.
+sty"
+Package: trig 2016/01/03 v1.10 sin cos tan (DPC)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics-cfg\g
+raphics.cfg"
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: pdftex.def on input line 99.
+)
+\Gin@req@height=\dimen151
+\Gin@req@width=\dimen152
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/frontendla
+yer\tikz.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/basiclayer
+\pgf.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/utilities\
+pgfrcs.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfutil-common.tex"
+\pgfutil@everybye=\toks24
+\pgfutil@tempdima=\dimen153
+\pgfutil@tempdimb=\dimen154
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfutil-common-lists.tex"))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfutil-latex.def"
+\pgfutil@abb=\box50
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ms\everyshi.st
+y"
+Package: everyshi 2001/05/15 v3.00 EveryShipout Package (MS)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfrcs.code.tex"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf\pgf.revi
+sion.tex")
+Package: pgfrcs 2019/05/09 v3.1.3 (3.1.3)
+))
+Package: pgf 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/basiclayer
+\pgfcore.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/systemlaye
+r\pgfsys.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/systemla
+yer\pgfsys.code.tex"
+Package: pgfsys 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgfkeys.code.tex")
+\pgf@x=\dimen155
+\pgf@y=\dimen156
+\pgf@xa=\dimen157
+\pgf@ya=\dimen158
+\pgf@xb=\dimen159
+\pgf@yb=\dimen160
+\pgf@xc=\dimen161
+\pgf@yc=\dimen162
+\pgf@xd=\dimen163
+\pgf@yd=\dimen164
+\w@pgf@writea=\write3
+\r@pgf@reada=\read2
+\c@pgf@counta=\count272
+\c@pgf@countb=\count273
+\c@pgf@countc=\count274
+\c@pgf@countd=\count275
+\t@pgf@toka=\toks25
+\t@pgf@tokb=\toks26
+\t@pgf@tokc=\toks27
+\pgf@sys@id@count=\count276
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/systemla
+yer\pgf.cfg"
+File: pgf.cfg 2019/05/09 v3.1.3 (3.1.3)
+)
+Driver file for pgf: pgfsys-pdftex.def
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/systemla
+yer\pgfsys-pdftex.def"
+File: pgfsys-pdftex.def 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/systemla
+yer\pgfsys-common-pdf.def"
+File: pgfsys-common-pdf.def 2019/05/09 v3.1.3 (3.1.3)
+)))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/systemla
+yer\pgfsyssoftpath.code.tex"
+File: pgfsyssoftpath.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgfsyssoftpath@smallbuffer@items=\count277
+\pgfsyssoftpath@bigbuffer@items=\count278
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/systemla
+yer\pgfsysprotocol.code.tex"
+File: pgfsysprotocol.code.tex 2019/05/09 v3.1.3 (3.1.3)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcore.code.tex"
+Package: pgfcore 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+math.code.tex"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathcalc.code.tex"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathutil.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathparser.code.tex"
+\pgfmath@dimen=\dimen165
+\pgfmath@count=\count279
+\pgfmath@box=\box51
+\pgfmath@toks=\toks28
+\pgfmath@stack@operand=\toks29
+\pgfmath@stack@operation=\toks30
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.code.tex"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.basic.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.trigonometric.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.random.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.comparison.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.base.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.round.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.misc.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfunctions.integerarithmetics.code.tex")))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+mathfloat.code.tex"
+\c@pgfmathroundto@lastzeros=\count280
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+int.code.tex")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorepoints.code.tex"
+File: pgfcorepoints.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgf@picminx=\dimen166
+\pgf@picmaxx=\dimen167
+\pgf@picminy=\dimen168
+\pgf@picmaxy=\dimen169
+\pgf@pathminx=\dimen170
+\pgf@pathmaxx=\dimen171
+\pgf@pathminy=\dimen172
+\pgf@pathmaxy=\dimen173
+\pgf@xx=\dimen174
+\pgf@xy=\dimen175
+\pgf@yx=\dimen176
+\pgf@yy=\dimen177
+\pgf@zx=\dimen178
+\pgf@zy=\dimen179
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorepathconstruct.code.tex"
+File: pgfcorepathconstruct.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgf@path@lastx=\dimen180
+\pgf@path@lasty=\dimen181
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorepathusage.code.tex"
+File: pgfcorepathusage.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgf@shorten@end@additional=\dimen182
+\pgf@shorten@start@additional=\dimen183
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorescopes.code.tex"
+File: pgfcorescopes.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgfpic=\box52
+\pgf@hbox=\box53
+\pgf@layerbox@main=\box54
+\pgf@picture@serial@count=\count281
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoregraphicstate.code.tex"
+File: pgfcoregraphicstate.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgflinewidth=\dimen184
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoretransformations.code.tex"
+File: pgfcoretransformations.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgf@pt@x=\dimen185
+\pgf@pt@y=\dimen186
+\pgf@pt@temp=\dimen187
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorequick.code.tex"
+File: pgfcorequick.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoreobjects.code.tex"
+File: pgfcoreobjects.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorepathprocessing.code.tex"
+File: pgfcorepathprocessing.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorearrows.code.tex"
+File: pgfcorearrows.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgfarrowsep=\dimen188
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoreshade.code.tex"
+File: pgfcoreshade.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgf@max=\dimen189
+\pgf@sys@shading@range@num=\count282
+\pgf@shadingcount=\count283
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoreimage.code.tex"
+File: pgfcoreimage.code.tex 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoreexternal.code.tex"
+File: pgfcoreexternal.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgfexternal@startupbox=\box55
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorelayers.code.tex"
+File: pgfcorelayers.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcoretransparency.code.tex"
+File: pgfcoretransparency.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorepatterns.code.tex"
+File: pgfcorepatterns.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/basiclay
+er\pgfcorerdf.code.tex"
+File: pgfcorerdf.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/modules\
+pgfmoduleshapes.code.tex"
+File: pgfmoduleshapes.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgfnodeparttextbox=\box56
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/modules\
+pgfmoduleplot.code.tex"
+File: pgfmoduleplot.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/compatibil
+ity\pgfcomp-version-0-65.sty"
+Package: pgfcomp-version-0-65 2019/05/09 v3.1.3 (3.1.3)
+\pgf@nodesepstart=\dimen190
+\pgf@nodesepend=\dimen191
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/compatibil
+ity\pgfcomp-version-1-18.sty"
+Package: pgfcomp-version-1-18 2019/05/09 v3.1.3 (3.1.3)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/utilities\
+pgffor.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pgf/math\pgfma
+th.sty"
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+math.code.tex"))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/utilitie
+s\pgffor.code.tex"
+Package: pgffor 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/math\pgf
+math.code.tex")
+\pgffor@iter=\dimen192
+\pgffor@skip=\dimen193
+\pgffor@stack=\toks31
+\pgffor@toks=\toks32
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/frontend
+layer/tikz\tikz.code.tex"
+Package: tikz 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/librarie
+s\pgflibraryplothandlers.code.tex"
+File: pgflibraryplothandlers.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgf@plot@mark@count=\count284
+\pgfplotmarksize=\dimen194
+)
+\tikz@lastx=\dimen195
+\tikz@lasty=\dimen196
+\tikz@lastxsaved=\dimen197
+\tikz@lastysaved=\dimen198
+\tikzleveldistance=\dimen199
+\tikzsiblingdistance=\dimen256
+\tikz@figbox=\box57
+\tikz@figbox@bg=\box58
+\tikz@tempbox=\box59
+\tikz@tempbox@bg=\box60
+\tikztreelevel=\count285
+\tikznumberofchildren=\count286
+\tikznumberofcurrentchild=\count287
+\tikz@fig@count=\count288
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/modules\
+pgfmodulematrix.code.tex"
+File: pgfmodulematrix.code.tex 2019/05/09 v3.1.3 (3.1.3)
+\pgfmatrixcurrentrow=\count289
+\pgfmatrixcurrentcolumn=\count290
+\pgf@matrix@numberofcolumns=\count291
+)
+\tikz@expandcount=\count292
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/frontend
+layer/tikz/libraries\tikzlibrarytopaths.code.tex"
+File: tikzlibrarytopaths.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/booktabs\bookt
+abs.sty"
+Package: booktabs 2005/04/14 v1.61803 publication quality tables
+\heavyrulewidth=\dimen257
+\lightrulewidth=\dimen258
+\cmidrulewidth=\dimen259
+\belowrulesep=\dimen260
+\belowbottomsep=\dimen261
+\aboverulesep=\dimen262
+\abovetopsep=\dimen263
+\cmidrulesep=\dimen264
+\cmidrulekern=\dimen265
+\defaultaddspace=\dimen266
+\@cmidla=\count293
+\@cmidlb=\count294
+\@aboverulesep=\dimen267
+\@belowrulesep=\dimen268
+\@thisruleclass=\count295
+\@lastruleclass=\count296
+\@thisrulewidth=\dimen269
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/multirow\multi
+row.sty"
+Package: multirow 2019/05/31 v2.5 Span multiple rows of a table
+\multirow@colwidth=\skip83
+\multirow@cntb=\count297
+\multirow@dima=\skip84
+\bigstrutjot=\dimen270
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\multicol
+.sty"
+Package: multicol 2018/12/27 v1.8v multicolumn formatting (FMi)
+\c@tracingmulticols=\count298
+\mult@box=\box61
+\multicol@leftmargin=\dimen271
+\c@unbalance=\count299
+\c@collectmore=\count300
+\doublecol@number=\count301
+\multicoltolerance=\count302
+\multicolpretolerance=\count303
+\full@width=\dimen272
+\page@free=\dimen273
+\premulticols=\dimen274
+\postmulticols=\dimen275
+\multicolsep=\skip85
+\multicolbaselineskip=\skip86
+\partial@page=\box62
+\last@line=\box63
+\maxbalancingoverflow=\dimen276
+\mult@rightbox=\box64
+\mult@grightbox=\box65
+\mult@gfirstbox=\box66
+\mult@firstbox=\box67
+\@tempa=\box68
+\@tempa=\box69
+\@tempa=\box70
+\@tempa=\box71
+\@tempa=\box72
+\@tempa=\box73
+\@tempa=\box74
+\@tempa=\box75
+\@tempa=\box76
+\@tempa=\box77
+\@tempa=\box78
+\@tempa=\box79
+\@tempa=\box80
+\@tempa=\box81
+\@tempa=\box82
+\@tempa=\box83
+\@tempa=\box84
+\c@columnbadness=\count304
+\c@finalcolumnbadness=\count305
+\last@try=\dimen277
+\multicolovershoot=\dimen278
+\multicolundershoot=\dimen279
+\mult@nat@firstbox=\box85
+\colbreak@box=\box86
+\mc@col@check@num=\count306
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/caption\captio
+n.sty"
+Package: caption 2018/10/06 v3.3-154 Customizing captions (AR)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/caption\captio
+n3.sty"
+Package: caption3 2018/09/12 v1.8c caption3 kernel (AR)
+Package caption3 Info: TeX engine: e-TeX on input line 64.
+\captionmargin=\dimen280
+\captionmargin@=\dimen281
+\captionwidth=\dimen282
+\caption@tempdima=\dimen283
+\caption@indent=\dimen284
+\caption@parindent=\dimen285
+\caption@hangindent=\dimen286
+)
+Package caption Info: KOMA-Script document class.
+\c@caption@flags=\count307
+\c@ContinuedFloat=\count308
+Package caption Info: hyperref package is loaded.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/bigfoot\perpag
+e.sty"
+Package: perpage 2014/10/25 2.0 Reset/sort counters per page
+\c@abspage=\count309
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rhack.sty"
+Package: scrhack 2019/02/01 v3.26b KOMA-Script package 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xpatch\xpatch.
+sty"
+Package: xpatch 2012/10/02 v0.3 Extending etoolbox patching commands
+)
+Package scrhack Info: hyperref hack deactivated because of
+(scrhack)             detection of hyperref version, that doesn't
+(scrhack)             need that hack, on input line 160.
+Package scrhack Info: loading setspace hack on input line 195.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\se
+tspace.hak"
+File: setspace.hak 2019/02/01 v3.26b KOMA-Script package (hacking package setsp
+ace)
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/floatrow\float
+row.sty"
+Package: floatrow 2008/08/02 v0.3b floatrow: float package extension
+\c@float@type=\count310
+\float@exts=\toks33
+\float@box=\box87
+\@floatcapt=\box88
+Package floatrow Info: Modified float package code loaded on input line 455.
+Package floatrow Info: Modified rotfloat package code loaded on input line 473.
+
+\FR@everyfloat=\toks34
+\flrow@foot=\insert251
+\FB@wd=\dimen287
+\FBo@wd=\dimen288
+\FBc@wd=\dimen289
+\FBo@ht=\skip87
+\FBc@ht=\skip88
+\FBf@ht=\skip89
+\FBo@max=\skip90
+\FBc@max=\skip91
+\FBf@max=\skip92
+\c@FBl@b=\count311
+\floatbox@depth=\count312
+\c@FRobj=\count313
+\c@FRsobj=\count314
+\Xhsize=\skip93
+\sXhsize=\skip94
+\Zhsize=\skip95
+\sZhsize=\skip96
+\flrow@rowbox=\box89
+\FR@Zunitlength=\dimen290
+\c@FBcnt=\count315
+\FPOScnt=\count316
+\LTleft=\skip97
+\LTright=\skip98
+\LTleft=\skip99
+\LTright=\skip100
+\flrow@types=\toks35
+)
+Package scrhack Info: loading floatrow hack on input line 270.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\fl
+oatrow.hak"
+File: floatrow.hak 2019/02/01 v3.26b KOMA-Script package (hacking package float
+row)
+Package scrhack Info: redefining \DeclareNewFloatType on input line 150.
+Package scrhack Info: redefining \listof on input line 150.
+Package scrhack Info: undefining \float@addtolists on input line 150.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/dblfloatfix\db
+lfloatfix.sty"
+Package: dblfloatfix 2012/12/31 v1.0a (JAW)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\fixltx2e.
+sty"
+Package: fixltx2e 2016/12/29 v2.1a fixes to LaTeX (obsolete)
+Applying: [2015/01/01] Old fixltx2e package on input line 46.
+
+
+Package fixltx2e Warning: fixltx2e is not required with releases after 2015
+(fixltx2e)                All fixes are now in the LaTeX kernel.
+(fixltx2e)                See the latexrelease package for details.
+
+Already applied: [0000/00/00] Old fixltx2e package on input line 53.
+)
+\@dblbotnum=\count317
+\c@dblbotnumber=\count318
+)
+\@sidenotes@marginfigurebox=\box90
+\@sidenotes@margintablebox=\box91
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/etoc\etoc.sty"
+Package: etoc 2019/03/09 v1.09 Completely customisable TOCs (JFB)
+\Etoc@toctoks=\toks36
+\c@etoc@tocid=\count319
+\c@etoc@tocdepth=\count320
+\etoc@framed@titlebox=\box92
+\etoc@framed@contentsbox=\box93
+)
+\mtocshift=\skip101
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex\bibla
+tex.sty"
+Package: biblatex 2018/11/02 v3.12 programmable bibliographies (PK/MW)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/logreq\logreq.
+sty"
+Package: logreq 2010/08/04 v1.0 xml request logger
+\lrq@indent=\count321
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/logreq\logreq.
+def"
+File: logreq.def 2010/08/04 v1.0 logreq spec v1.0
+))
+\c@tabx@nest=\count322
+\c@listtotal=\count323
+\c@listcount=\count324
+\c@liststart=\count325
+\c@liststop=\count326
+\c@citecount=\count327
+\c@citetotal=\count328
+\c@multicitecount=\count329
+\c@multicitetotal=\count330
+\c@instcount=\count331
+\c@maxnames=\count332
+\c@minnames=\count333
+\c@maxitems=\count334
+\c@minitems=\count335
+\c@citecounter=\count336
+\c@maxcitecounter=\count337
+\c@savedcitecounter=\count338
+\c@uniquelist=\count339
+\c@uniquename=\count340
+\c@refsection=\count341
+\c@refsegment=\count342
+\c@maxextratitle=\count343
+\c@maxextratitleyear=\count344
+\c@maxextraname=\count345
+\c@maxextradate=\count346
+\c@maxextraalpha=\count347
+\c@abbrvpenalty=\count348
+\c@highnamepenalty=\count349
+\c@lownamepenalty=\count350
+\c@maxparens=\count351
+\c@parenlevel=\count352
+\blx@tempcnta=\count353
+\blx@tempcntb=\count354
+\blx@tempcntc=\count355
+\blx@maxsection=\count356
+\blx@maxsegment@0=\count357
+\blx@notetype=\count358
+\blx@parenlevel@text=\count359
+\blx@parenlevel@foot=\count360
+\blx@sectionciteorder@0=\count361
+\blx@entrysetcounter=\count362
+\labelnumberwidth=\skip102
+\labelalphawidth=\skip103
+\biblabelsep=\skip104
+\bibitemsep=\skip105
+\bibnamesep=\skip106
+\bibinitsep=\skip107
+\bibparsep=\skip108
+\bibhang=\skip109
+\blx@bcfin=\read3
+\blx@bcfout=\write4
+\c@mincomprange=\count363
+\c@maxcomprange=\count364
+\c@mincompwidth=\count365
+Package biblatex Info: Trying to load biblatex default data model...
+Package biblatex Info: ... file 'blx-dm.def' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex\blx-d
+m.def"
+File: blx-dm.def 2018/11/02 v3.12 biblatex localization (PK/MW)
+)
+Package biblatex Info: Trying to load biblatex citestyle data model...
+Package biblatex Info: ... file 'numeric-comp.dbx' not found.
+Package biblatex Info: Trying to load biblatex bibstyle data model...
+Package biblatex Info: ... file 'numeric.dbx' not found.
+Package biblatex Info: Trying to load biblatex custom data model...
+Package biblatex Info: ... file 'biblatex-dm.cfg' not found.
+\c@afterword=\count366
+\c@savedafterword=\count367
+\c@annotator=\count368
+\c@savedannotator=\count369
+\c@author=\count370
+\c@savedauthor=\count371
+\c@bookauthor=\count372
+\c@savedbookauthor=\count373
+\c@commentator=\count374
+\c@savedcommentator=\count375
+\c@editor=\count376
+\c@savededitor=\count377
+\c@editora=\count378
+\c@savededitora=\count379
+\c@editorb=\count380
+\c@savededitorb=\count381
+\c@editorc=\count382
+\c@savededitorc=\count383
+\c@foreword=\count384
+\c@savedforeword=\count385
+\c@holder=\count386
+\c@savedholder=\count387
+\c@introduction=\count388
+\c@savedintroduction=\count389
+\c@namea=\count390
+\c@savednamea=\count391
+\c@nameb=\count392
+\c@savednameb=\count393
+\c@namec=\count394
+\c@savednamec=\count395
+\c@translator=\count396
+\c@savedtranslator=\count397
+\c@shortauthor=\count398
+\c@savedshortauthor=\count399
+\c@shorteditor=\count400
+\c@savedshorteditor=\count401
+\c@labelname=\count402
+\c@savedlabelname=\count403
+\c@institution=\count404
+\c@savedinstitution=\count405
+\c@lista=\count406
+\c@savedlista=\count407
+\c@listb=\count408
+\c@savedlistb=\count409
+\c@listc=\count410
+\c@savedlistc=\count411
+\c@listd=\count412
+\c@savedlistd=\count413
+\c@liste=\count414
+\c@savedliste=\count415
+\c@listf=\count416
+\c@savedlistf=\count417
+\c@location=\count418
+\c@savedlocation=\count419
+\c@organization=\count420
+\c@savedorganization=\count421
+\c@origlocation=\count422
+\c@savedoriglocation=\count423
+\c@origpublisher=\count424
+\c@savedorigpublisher=\count425
+\c@publisher=\count426
+\c@savedpublisher=\count427
+\c@language=\count428
+\c@savedlanguage=\count429
+\c@origlanguage=\count430
+\c@savedoriglanguage=\count431
+\c@pageref=\count432
+\c@savedpageref=\count433
+\shorthandwidth=\skip110
+\shortjournalwidth=\skip111
+\shortserieswidth=\skip112
+\shorttitlewidth=\skip113
+\shortauthorwidth=\skip114
+\shorteditorwidth=\skip115
+\locallabelnumberwidth=\skip116
+\locallabelalphawidth=\skip117
+\localshorthandwidth=\skip118
+\localshortjournalwidth=\skip119
+\localshortserieswidth=\skip120
+\localshorttitlewidth=\skip121
+\localshortauthorwidth=\skip122
+\localshorteditorwidth=\skip123
+Package biblatex Info: Trying to load compatibility code...
+Package biblatex Info: ... file 'blx-compat.def' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex\blx-c
+ompat.def"
+File: blx-compat.def 2018/11/02 v3.12 biblatex compatibility (PK/MW)
+)
+Package biblatex Info: Trying to load generic definitions...
+Package biblatex Info: ... file 'biblatex.def' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex\bibla
+tex.def"
+File: biblatex.def 2018/11/02 v3.12 biblatex compatibility (PK/MW)
+\c@textcitecount=\count434
+\c@textcitetotal=\count435
+\c@textcitemaxnames=\count436
+\c@biburlnumpenalty=\count437
+\c@biburlucpenalty=\count438
+\c@biburllcpenalty=\count439
+\c@smartand=\count440
+)
+Package biblatex Info: Trying to load bibliography style 'numeric'...
+Package biblatex Info: ... file 'numeric.bbx' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex/bbx\n
+umeric.bbx"
+File: numeric.bbx 2018/11/02 v3.12 biblatex bibliography style (PK/MW)
+Package biblatex Info: Trying to load bibliography style 'standard'...
+Package biblatex Info: ... file 'standard.bbx' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex/bbx\s
+tandard.bbx"
+File: standard.bbx 2018/11/02 v3.12 biblatex bibliography style (PK/MW)
+\c@bbx:relatedcount=\count441
+\c@bbx:relatedtotal=\count442
+))
+Package biblatex Info: Trying to load citation style 'numeric-comp'...
+Package biblatex Info: ... file 'numeric-comp.cbx' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex/cbx\n
+umeric-comp.cbx"
+File: numeric-comp.cbx 2018/11/02 v3.12 biblatex citation style (PK/MW)
+\c@cbx@tempcnta=\count443
+\c@cbx@tempcntb=\count444
+Package biblatex Info: Redefining '\cite'.
+Package biblatex Info: Redefining '\parencite'.
+Package biblatex Info: Redefining '\footcite'.
+Package biblatex Info: Redefining '\footcitetext'.
+Package biblatex Info: Redefining '\smartcite'.
+Package biblatex Info: Redefining '\supercite'.
+Package biblatex Info: Redefining '\textcite'.
+Package biblatex Info: Redefining '\textcites'.
+Package biblatex Info: Redefining '\cites'.
+Package biblatex Info: Redefining '\parencites'.
+Package biblatex Info: Redefining '\smartcites'.
+)
+Package biblatex Info: Trying to load configuration file...
+Package biblatex Info: ... file 'biblatex.cfg' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex\bibla
+tex.cfg"
+File: biblatex.cfg 
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\bookm
+ark.sty"
+Package: bookmark 2016/05/17 v1.26 PDF bookmarks (HO)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\bkm-p
+dftex.def"
+File: bkm-pdftex.def 2016/05/17 v1.26 bookmark driver for pdfTeX (HO)
+\BKM@id=\count445
+))
+Package hyperref Info: Option `unicode' set `true' on input line 531.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\puenc
+.def"
+File: puenc.def 2018/11/30 v6.88e Hyperref: PDF Unicode definition (HO)
+Now handling font encoding PU ...
+... no UTF-8 mapping file for font encoding PU
+)
+Package hyperref Info: Option `bookmarksopen' set `true' on input line 531.
+Package hyperref Info: Option `breaklinks' set `true' on input line 531.
+Package hyperref Info: Option `colorlinks' set `true' on input line 531.
+ (styles/references.sty
+Package: styles/references 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\varioref
+.sty"
+Package: varioref 2016/02/16 v1.5c package for extended references (FMi)
+\c@vrcnt=\count446
+)) (styles/packages.sty
+Package: styles/packages 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdfpages\pdfpa
+ges.sty"
+Package: pdfpages 2017/10/31 v0.5l Insert pages of external PDF documents (AM)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/eso-pic\eso-pi
+c.sty"
+Package: eso-pic 2018/04/12 v2.0h eso-pic (RN)
+)
+\AM@pagewidth=\dimen291
+\AM@pageheight=\dimen292
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/pdfpages\pppdf
+tex.def"
+File: pppdftex.def 2017/10/31 v0.5l Pdfpages driver for pdfTeX (AM)
+)
+\AM@pagebox=\box94
+\AM@global@opts=\toks37
+\AM@toc@title=\toks38
+\c@AM@survey=\count447
+\AM@templatesizebox=\box95
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/subfiles\subfi
+les.sty"
+Package: subfiles 2018/07/31 Federico Garcia, Gernot Salzer
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\verbatim
+.sty"
+Package: verbatim 2014/10/28 v1.5q LaTeX2e package for verbatim enhancements
+\every@verbatim=\toks39
+\verbatim@line=\toks40
+\verbatim@in@stream=\read4
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/todonotes\todo
+notes.sty"
+Package: todonotes 2019/01/24 v1.1.2 Todonotes source and documentation.
+Package: todonotes 2018/11/22
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/frontend
+layer/tikz/libraries\tikzlibrarypositioning.code.tex"
+File: tikzlibrarypositioning.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/frontend
+layer/tikz/libraries\tikzlibraryshadows.code.tex"
+File: tikzlibraryshadows.code.tex 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/frontend
+layer/tikz/libraries\tikzlibraryfadings.code.tex"
+File: tikzlibraryfadings.code.tex 2019/05/09 v3.1.3 (3.1.3)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/pgf/librarie
+s\pgflibraryfadings.code.tex"
+File: pgflibraryfadings.code.tex 2019/05/09 v3.1.3 (3.1.3)
+)))
+\c@@todonotes@numberoftodonotes=\count448
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\listi
+ngs.sty"
+\lst@mode=\count449
+\lst@gtempboxa=\box96
+\lst@token=\toks41
+\lst@length=\count450
+\lst@currlwidth=\dimen293
+\lst@column=\count451
+\lst@pos=\count452
+\lst@lostspace=\dimen294
+\lst@width=\dimen295
+\lst@newlines=\count453
+\lst@lineno=\count454
+\lst@maxwidth=\dimen296
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\lstmi
+sc.sty"
+File: lstmisc.sty 2019/02/27 1.8b (Carsten Heinz)
+\c@lstnumber=\count455
+\lst@skipnumbers=\count456
+\lst@framebox=\box97
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/listings\listi
+ngs.cfg"
+File: listings.cfg 2019/02/27 1.8b listings configuration
+))
+Package scrhack Info: loading listings hack on input line 11.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\li
+stings.hak"
+File: listings.hak 2019/02/01 v3.26b KOMA-Script package (hacking package listi
+ngs)
+Package tocbasic Info: setting babel extension for `lol' on input line 137.
+Package scrhack Info: redefining \lstlistoflistings on input line 137.
+)
+Package: listings 2019/02/27 1.8b (Carsten Heinz)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/algorithm2e\al
+gorithm2e.sty"
+Package: algorithm2e 2017/07/18 v5.2 algorithms environments
+\c@AlgoLine=\count457
+\algocf@hangindent=\skip124
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ifoddpage\ifod
+dpage.sty"
+Package: ifoddpage 2016/04/23 v1.1 Conditionals for odd/even page detection
+\c@checkoddpage=\count458
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/relsize\relsiz
+e.sty"
+Package: relsize 2013/03/29 ver 4.1
+)
+\skiptotal=\skip125
+\skiplinenumber=\skip126
+\skiprule=\skip127
+\skiphlne=\skip128
+\skiptext=\skip129
+\skiplength=\skip130
+\algomargin=\skip131
+\skipalgocfslide=\skip132
+\algowidth=\dimen297
+\inoutsize=\dimen298
+\inoutindent=\dimen299
+\interspacetitleruled=\dimen300
+\interspacealgoruled=\dimen301
+\interspacetitleboxruled=\dimen302
+\algocf@ruledwidth=\skip133
+\algocf@inoutbox=\box98
+\algocf@inputbox=\box99
+\AlCapSkip=\skip134
+\AlCapHSkip=\skip135
+\algoskipindent=\skip136
+\algocf@nlbox=\box100
+\algocf@hangingbox=\box101
+\algocf@untilbox=\box102
+\algocf@skipuntil=\skip137
+\algocf@capbox=\box103
+\algocf@lcaptionbox=\skip138
+\algoheightruledefault=\skip139
+\algoheightrule=\skip140
+\algotitleheightruledefault=\skip141
+\algotitleheightrule=\skip142
+\c@algocfline=\count459
+\c@algocfproc=\count460
+\c@algocf=\count461
+\algocf@algoframe=\box104
+\algocf@algobox=\box105
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/ccicons\ccicon
+s.sty"
+Package: ccicons 2017/10/30 v1.6 LaTeX support for Creative Commons icons
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/metalogo\metal
+ogo.sty"
+Package: metalogo 2010/05/29 v0.12 Extended TeX logo macros
+\xl@everylogo=\toks42
+\xl@@everylogo=\toks43
+LaTeX Info: Redefining \TeX on input line 193.
+LaTeX Info: Redefining \LaTeX on input line 202.
+LaTeX Info: Redefining \LaTeXe on input line 219.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/imakeidx\imake
+idx.sty"
+Package: imakeidx 2016/10/15 v1.3e Package for typesetting indices in a synchro
+nous mode
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/bas
+e\glossaries.sty"
+Package: glossaries 2019/01/06 v4.42 (NLCT)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/mfirstuc\mfirs
+tuc.sty"
+Package: mfirstuc 2017/11/14 v2.06 (NLCT)
+\@glsmfirst=\toks44
+\@glsmrest=\toks45
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/textcase\textc
+ase.sty"
+Package: textcase 2004/10/07 v0.07 Text only upper/lower case changing (DPC)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/xfor\xfor.sty"
+Package: xfor 2009/02/05 v1.05 (NLCT)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/datatool\datat
+ool-base.sty"
+Package: datatool-base 2018/12/07 v2.31 (NLCT)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsmat
+h.sty"
+Package: amsmath 2018/12/01 v2.17b AMS math features
+\@mathmargin=\skip143
+
+For additional information on amsmath, use the `?' option.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amstex
+t.sty"
+Package: amstext 2000/06/29 v2.01 AMS text
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsgen
+.sty"
+File: amsgen.sty 1999/11/30 v2.0 generic functions
+\@emptytoks=\toks46
+\ex@=\dimen303
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsbsy
+.sty"
+Package: amsbsy 1999/11/29 v1.2d Bold Symbols
+\pmbraise@=\dimen304
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsmath\amsopn
+.sty"
+Package: amsopn 2016/03/08 v2.02 operator names
+)
+\inf@bad=\count462
+LaTeX Info: Redefining \frac on input line 223.
+\uproot@=\count463
+\leftroot@=\count464
+LaTeX Info: Redefining \overline on input line 385.
+\classnum@=\count465
+\DOTSCASE@=\count466
+LaTeX Info: Redefining \ldots on input line 482.
+LaTeX Info: Redefining \dots on input line 485.
+LaTeX Info: Redefining \cdots on input line 606.
+\Mathstrutbox@=\box106
+\strutbox@=\box107
+\big@size=\dimen305
+LaTeX Font Info:    Redeclaring font encoding OML on input line 729.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 730.
+\macc@depth=\count467
+\c@MaxMatrixCols=\count468
+\dotsspace@=\muskip17
+\c@parentequation=\count469
+\dspbrk@lvl=\count470
+\tag@help=\toks47
+\row@=\count471
+\column@=\count472
+\maxfields@=\count473
+\andhelp@=\toks48
+\eqnshift@=\dimen306
+\alignsep@=\dimen307
+\tagshift@=\dimen308
+\tagwidth@=\dimen309
+\totwidth@=\dimen310
+\lineht@=\dimen311
+\@envbody=\toks49
+\multlinegap=\skip144
+\multlinetaggap=\skip145
+\mathdisplay@stack=\toks50
+LaTeX Info: Redefining \[ on input line 2844.
+LaTeX Info: Redefining \] on input line 2845.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/substr\substr.
+sty"
+Package: substr 2009/10/20 v1.2 Handle substrings
+\c@su@anzahl=\count474
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/datatool\datat
+ool-fp.sty"
+Package: datatool-fp 2018/12/07 v2.31 (NLCT)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp.sty"
+Package: fp 1995/04/02
+
+`Fixed Point Package', Version 0.8, April 2, 1995 (C) Michael Mehlich
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\defpattern.
+sty"
+Package: defpattern 1994/10/12
+\actioncount=\count475
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-basic.st
+y"
+Package: fp-basic 1996/05/13
+\FP@xs=\count476
+\FP@xia=\count477
+\FP@xib=\count478
+\FP@xfa=\count479
+\FP@xfb=\count480
+\FP@rega=\count481
+\FP@regb=\count482
+\FP@regs=\count483
+\FP@times=\count484
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-addons.s
+ty"
+Package: fp-addons 1995/03/15
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-snap.sty
+"
+Package: fp-snap 1995/04/05
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-exp.sty"
+Package: fp-exp 1995/04/03
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-trigo.st
+y"
+Package: fp-trigo 1995/04/14
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-pas.sty"
+Package: fp-pas 1994/08/29
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-random.s
+ty"
+Package: fp-random 1995/02/23
+\FPseed=\count485
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-eqn.sty"
+Package: fp-eqn 1995/04/03
+) ("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-upn.st
+y"
+Package: fp-upn 1996/10/21
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/fp\fp-eval.sty
+"
+Package: fp-eval 1995/04/03
+)))
+\@dtl@toks=\toks51
+\@dtl@tmpcount=\count486
+\dtl@tmplength=\skip146
+\dtl@sortresult=\count487
+\@dtl@numgrpsepcount=\count488
+\@dtl@datatype=\count489
+\dtl@codeA=\count490
+\dtl@codeB=\count491
+\@dtl@foreach@level=\count492
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/bas
+e\glossaries-compatible-307.sty"
+Package: glossaries-compatible-307 2019/01/06 v4.42 (NLCT)
+)
+\gls@level=\count493
+\@gls@tmpb=\toks52
+\gls@tmplen=\skip147
+\glskeylisttok=\toks53
+\glslabeltok=\toks54
+\glsshorttok=\toks55
+\glslongtok=\toks56
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/sty
+les\glossary-hypernav.sty"
+Package: glossary-hypernav 2019/01/06 v4.42 (NLCT)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/sty
+les\glossary-list.sty"
+Package: glossary-list 2019/01/06 v4.42 (NLCT)
+\glslistdottedwidth=\skip148
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/sty
+les\glossary-long.sty"
+Package: glossary-long 2019/01/06 v4.42 (NLCT)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/tools\longtabl
+e.sty"
+Package: longtable 2014/10/28 v4.11 Multi-page Table package (DPC)+ FMi change
+\LTleft=\skip149
+\LTright=\skip150
+\LTpre=\skip151
+\LTpost=\skip152
+\LTchunksize=\count494
+\LTcapwidth=\dimen312
+\LT@head=\box108
+\LT@firsthead=\box109
+\LT@foot=\box110
+\LT@lastfoot=\box111
+\LT@cols=\count495
+\LT@rows=\count496
+\c@LT@tables=\count497
+\c@LT@chunks=\count498
+\LT@p@ftn=\toks57
+)
+Class scrbook Info: longtable captions redefined on input line 43.
+\glsdescwidth=\skip153
+\glspagelistwidth=\skip154
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/sty
+les\glossary-super.sty"
+Package: glossary-super 2019/01/06 v4.42 (NLCT)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/supertabular\s
+upertabular.sty"
+Package: supertabular 2004/02/20 v4.1e the supertabular environment
+\c@tracingst=\count499
+\ST@wd=\dimen313
+\ST@rightskip=\skip155
+\ST@leftskip=\skip156
+\ST@parfillskip=\skip157
+\ST@pageleft=\dimen314
+\ST@headht=\dimen315
+\ST@tailht=\dimen316
+\ST@pagesofar=\dimen317
+\ST@pboxht=\dimen318
+\ST@lineht=\dimen319
+\ST@stretchht=\dimen320
+\ST@prevht=\dimen321
+\ST@toadd=\dimen322
+\ST@dimen=\dimen323
+\ST@pbox=\box112
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/glossaries/sty
+les\glossary-tree.sty"
+Package: glossary-tree 2019/01/06 v4.42 (NLCT)
+\glstreeindent=\skip158
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/nomencl\nomenc
+l.sty"
+Package: nomencl 2019/05/05 v5.2 Nomenclature package
+Package tocbasic Info: setting babel extension for `nlo' on input line 155.
+Package tocbasic Info: setting babel extension for `nls' on input line 156.
+\nomlabelwidth=\dimen324
+\nom@tempdim=\dimen325
+\nomitemsep=\skip159
+))) (styles/style.sty
+Package: styles/style 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/geometry\geome
+try.sty"
+Package: geometry 2018/04/16 v5.8 Page Geometry
+\Gm@cnth=\count500
+\Gm@cntv=\count501
+\c@Gm@tempcnt=\count502
+\Gm@bindingoffset=\dimen326
+\Gm@wd@mp=\dimen327
+\Gm@odd@mp=\dimen328
+\Gm@even@mp=\dimen329
+\Gm@layoutwidth=\dimen330
+\Gm@layoutheight=\dimen331
+\Gm@layouthoffset=\dimen332
+\Gm@layoutvoffset=\dimen333
+\Gm@dimlist=\toks58
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/geometry\geome
+try.cfg"))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rlayer-scrpage.sty"
+Package: scrlayer-scrpage 2019/02/01 v3.26b KOMA-Script package (end user inter
+face for scrlayer)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\sc
+rlayer.sty"
+Package: scrlayer 2019/02/01 v3.26b KOMA-Script package (defining layers and pa
+ge styles)
+Package scrlayer Info: Using already defined \footheight
+(scrlayer)             hoping, that this is a length and
+(scrlayer)             not only a macro on input line 109.
+Package scrlayer Info: patching LaTeX kernel macro \pagestyle on input line 208
+3.
+)
+Package scrlayer-scrpage Info: Makeing stand-alone element `pagehead' from
+(scrlayer-scrpage)             alias to `pageheadfoot' on input line 1241.
+Package scrlayer-scrpage Info: deactivating warning for font element
+(scrlayer-scrpage)             `pagefoot' on input line 1268.
+)
+Package scrlayer-scrpage Info: auto-selection of `pagestyleset=KOMA-Script'.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\babel.
+sty"
+Package: babel 2019/06/03 3.32 The Babel package
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\switch
+.def"
+File: switch.def 2019/06/03 3.32 Babel switching mechanism
+)
+*************************************
+* Local config file bblopts.cfg used
+*
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/arabi\bblopts.
+cfg"
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/babel-english\
+english.ldf"
+Language: english 2017/06/06 v3.3r English support from the babel system
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\babel.
+def"
+File: babel.def 2019/06/03 3.32 Babel common definitions
+\babel@savecnt=\count503
+\U@D=\dimen334
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/babel\txtbab
+el.def")
+\bbl@dirlevel=\count504
+)
+\l@canadian = a dialect from \language\l@american 
+\l@australian = a dialect from \language\l@british 
+\l@newzealand = a dialect from \language\l@british 
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\fontenc.s
+ty"
+Package: fontenc 2018/08/11 v2.0j Standard LaTeX package
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\t1enc.def
+"
+File: t1enc.def 2018/08/11 v2.0j Standard LaTeX file
+LaTeX Font Info:    Redeclaring font encoding T1 on input line 48.
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/base\inputenc.
+sty"
+Package: inputenc 2018/08/11 v1.3c Input encoding file
+\inpenc@prehook=\toks59
+\inpenc@posthook=\toks60
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/csquotes\csquo
+tes.sty"
+Package: csquotes 2019/05/10 v5.2e context-sensitive quotations (JAW)
+\csq@reset=\count505
+\csq@gtype=\count506
+\csq@glevel=\count507
+\csq@qlevel=\count508
+\csq@maxlvl=\count509
+\csq@tshold=\count510
+\csq@ltx@everypar=\toks61
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/csquotes\csquo
+tes.def"
+File: csquotes.def 2019/05/10 v5.2e csquotes generic definitions (JAW)
+)
+Package csquotes Info: Trying to load configuration file 'csquotes.cfg'...
+Package csquotes Info: ... configuration file loaded successfully.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/csquotes\csquo
+tes.cfg"
+File: csquotes.cfg 
+)
+Package csquotes Info: Redefining alias 'english' -> 'english/british'.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\mathpaz
+o.sty"
+Package: mathpazo 2005/04/12 PSNFSS-v9.2a Palatino w/ Pazo Math (D.Puga, WaS) 
+\symupright=\mathgroup4
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\helvet.
+sty"
+Package: helvet 2005/04/12 PSNFSS-v9.2a (WaS) 
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/bera\beramono.
+sty"
+Package: beramono 2004/01/31 (WaS)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/mathalpha\math
+alfa.sty")
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/mathalpha\math
+alpha.sty"
+Package: mathalpha 2019/05/20 - 1.12mathalpha (License LPPL) Michael Sharpe
+ `mathalpha' v1.12, 2019/05/20, a renaming of mathalfa (msharpe)
+LaTeX Font Info:    Redeclaring math alphabet \mathcal on input line 297.
+LaTeX Font Info:    Overwriting math alphabet `\mathcal' in version `bold'
+(Font)                  U/BOONDOX-calo/m/n --> U/BOONDOX-calo/b/n on input line
+ 298.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\newtxmat
+h.sty"
+Package: newtxmath 2018/05/15 v1.553
+
+`newtxmath' v1.553, 2018/05/15 Math macros based originally on txfonts (msharpe
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\cente
+rnot.sty"
+Package: centernot 2016/05/16 v1.4 Centers the not symbol horizontally (HO)
+)
+\tx@cntz=\count511
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/binhex\binhe
+x.tex")
+\tx@Isdigit=\count512
+\tx@IsAlNum=\count513
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 171.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
+(Font)                  OT1/ppl/m/n --> OT1/ppl/m/n on input line 171.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/ppl/b/n --> OT1/ppl/m/n on input line 171.
+LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
+(Font)                  OT1/ppl/m/n --> OT1/ppl/b/n on input line 172.
+LaTeX Font Info:    Redeclaring math alphabet \mathsf on input line 180.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
+(Font)                  OT1/cmss/m/n --> T1/phv/m/n on input line 180.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  OT1/cmss/bx/n --> T1/phv/m/n on input line 180.
+LaTeX Font Info:    Redeclaring math alphabet \mathit on input line 181.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
+(Font)                  OT1/ppl/m/it --> OT1/ppl/m/it on input line 181.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/ppl/b/it --> OT1/ppl/m/it on input line 181.
+LaTeX Font Info:    Redeclaring math alphabet \mathtt on input line 182.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
+(Font)                  OT1/cmtt/m/n --> T1/fvm/m/n on input line 182.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  OT1/cmtt/m/n --> T1/fvm/m/n on input line 182.
+LaTeX Font Info:    Redeclaring math alphabet \mathbf on input line 184.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
+(Font)                  OT1/zplm/b/n --> OT1/ppl/b/n on input line 184.
+LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `bold'
+(Font)                  OT1/zplm/b/n --> OT1/ppl/b/n on input line 184.
+LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
+(Font)                  OT1/ppl/m/it --> OT1/ppl/b/it on input line 185.
+LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
+(Font)                  T1/phv/m/n --> T1/phv/b/n on input line 186.
+LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
+(Font)                  T1/fvm/m/n --> T1/fvm/b/n on input line 187.
+LaTeX Font Info:    Redeclaring symbol font `letters' on input line 243.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `normal'
+(Font)                  OML/zplm/m/it --> OML/ntxmi/m/it on input line 243.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/zplm/b/it --> OML/ntxmi/m/it on input line 243.
+LaTeX Font Info:    Overwriting symbol font `letters' in version `bold'
+(Font)                  OML/ntxmi/m/it --> OML/ntxmi/b/it on input line 244.
+\symlettersA=\mathgroup5
+LaTeX Font Info:    Overwriting symbol font `lettersA' in version `bold'
+(Font)                  U/ntxmia/m/it --> U/ntxmia/b/it on input line 261.
+Now handling font encoding LMS ...
+... no UTF-8 mapping file for font encoding LMS
+LaTeX Font Info:    Redeclaring symbol font `symbols' on input line 282.
+LaTeX Font Info:    Encoding `OMS' has changed to `LMS' for symbol font
+(Font)              `symbols' in the math version `normal' on input line 282.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `normal'
+(Font)                  OMS/zplm/m/n --> LMS/ntxsy/m/n on input line 282.
+LaTeX Font Info:    Encoding `OMS' has changed to `LMS' for symbol font
+(Font)              `symbols' in the math version `bold' on input line 282.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  OMS/zplm/b/n --> LMS/ntxsy/m/n on input line 282.
+LaTeX Font Info:    Overwriting symbol font `symbols' in version `bold'
+(Font)                  LMS/ntxsy/m/n --> LMS/ntxsy/b/n on input line 283.
+\symAMSm=\mathgroup6
+LaTeX Font Info:    Overwriting symbol font `AMSm' in version `bold'
+(Font)                  U/ntxsym/m/n --> U/ntxsym/b/n on input line 306.
+\symsymbolsC=\mathgroup7
+LaTeX Font Info:    Overwriting symbol font `symbolsC' in version `bold'
+(Font)                  U/ntxsyc/m/n --> U/ntxsyc/b/n on input line 327.
+Now handling font encoding LMX ...
+... no UTF-8 mapping file for font encoding LMX
+LaTeX Font Info:    Redeclaring symbol font `largesymbols' on input line 340.
+LaTeX Font Info:    Encoding `OMX' has changed to `LMX' for symbol font
+(Font)              `largesymbols' in the math version `normal' on input line 3
+40.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `normal'
+(Font)                  OMX/zplm/m/n --> LMX/ntxexx/m/n on input line 340.
+LaTeX Font Info:    Encoding `OMX' has changed to `LMX' for symbol font
+(Font)              `largesymbols' in the math version `bold' on input line 340
+.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  OMX/zplm/m/n --> LMX/ntxexx/m/n on input line 340.
+LaTeX Font Info:    Overwriting symbol font `largesymbols' in version `bold'
+(Font)                  LMX/ntxexx/m/n --> LMX/ntxexx/b/n on input line 341.
+\symlargesymbolsTXA=\mathgroup8
+LaTeX Font Info:    Overwriting symbol font `largesymbolsTXA' in version `bold'
+
+(Font)                  U/ntxexa/m/n --> U/ntxexa/b/n on input line 355.
+LaTeX Font Info:    Redeclaring math delimiter \lgroup on input line 548.
+LaTeX Font Info:    Redeclaring math delimiter \rgroup on input line 549.
+LaTeX Font Info:    Redeclaring math delimiter \lmoustache on input line 550.
+LaTeX Font Info:    Redeclaring math delimiter \rmoustache on input line 551.
+LaTeX Font Info:    Redeclaring math delimiter \lfloor on input line 557.
+LaTeX Font Info:    Redeclaring math delimiter \rfloor on input line 558.
+LaTeX Font Info:    Redeclaring math delimiter \lceil on input line 559.
+LaTeX Font Info:    Redeclaring math delimiter \rceil on input line 560.
+LaTeX Font Info:    Redeclaring math delimiter \lbrace on input line 561.
+LaTeX Font Info:    Redeclaring math delimiter \rbrace on input line 562.
+LaTeX Font Info:    Redeclaring math delimiter \langle on input line 563.
+LaTeX Font Info:    Redeclaring math delimiter \rangle on input line 565.
+LaTeX Font Info:    Redeclaring math symbol \mid on input line 567.
+LaTeX Font Info:    Redeclaring math delimiter \arrowvert on input line 569.
+LaTeX Font Info:    Redeclaring math delimiter \vert on input line 570.
+LaTeX Font Info:    Redeclaring math symbol \parallel on input line 571.
+LaTeX Font Info:    Redeclaring math delimiter \Arrowvert on input line 572.
+LaTeX Font Info:    Redeclaring math delimiter \Vert on input line 573.
+LaTeX Font Info:    Redeclaring math delimiter \updownarrow on input line 575.
+LaTeX Font Info:    Redeclaring math delimiter \Updownarrow on input line 576.
+LaTeX Font Info:    Redeclaring math delimiter \lvert on input line 581.
+LaTeX Font Info:    Redeclaring math delimiter \rvert on input line 582.
+LaTeX Font Info:    Redeclaring math delimiter \lVert on input line 583.
+LaTeX Font Info:    Redeclaring math delimiter \rVert on input line 584.
+LaTeX Font Info:    Redeclaring math symbol \m@thbbch@rA on input line 1929.
+\ntx@numstart=\count514
+\ntx@UCstart=\count515
+\ntx@lcstart=\count516
+\ntx@tmpc=\count517
+\ntx@imath=\count518
+\ntx@jmath=\count519
+LaTeX Info: Redefining \not on input line 2322.
+)) (styles/environments.sty
+Package: styles/environments 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsfonts\amssy
+mb.sty"
+Package: amssymb 2013/01/14 v3.01 AMS font symbols
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amsfonts\amsfo
+nts.sty"
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
+\symAMSa=\mathgroup9
+\symAMSb=\mathgroup10
+LaTeX Font Info:    Redeclaring math delimiter \ulcorner on input line 74.
+LaTeX Font Info:    Redeclaring math delimiter \urcorner on input line 75.
+LaTeX Font Info:    Redeclaring math delimiter \llcorner on input line 76.
+LaTeX Font Info:    Redeclaring math delimiter \lrcorner on input line 77.
+LaTeX Font Info:    Redeclaring math symbol \square on input line 141.
+LaTeX Font Info:    Redeclaring math symbol \lozenge on input line 142.
+)
+LaTeX Font Info:    Redeclaring math symbol \boxdot on input line 44.
+LaTeX Font Info:    Redeclaring math symbol \boxplus on input line 45.
+LaTeX Font Info:    Redeclaring math symbol \boxtimes on input line 46.
+LaTeX Font Info:    Redeclaring math symbol \blacksquare on input line 48.
+LaTeX Font Info:    Redeclaring math symbol \centerdot on input line 49.
+LaTeX Font Info:    Redeclaring math symbol \blacklozenge on input line 51.
+LaTeX Font Info:    Redeclaring math symbol \circlearrowright on input line 52.
+
+LaTeX Font Info:    Redeclaring math symbol \circlearrowleft on input line 53.
+LaTeX Font Info:    Redeclaring math symbol \leftrightharpoons on input line 56
+.
+LaTeX Font Info:    Redeclaring math symbol \boxminus on input line 57.
+LaTeX Font Info:    Redeclaring math symbol \Vdash on input line 58.
+LaTeX Font Info:    Redeclaring math symbol \Vvdash on input line 59.
+LaTeX Font Info:    Redeclaring math symbol \vDash on input line 60.
+LaTeX Font Info:    Redeclaring math symbol \twoheadrightarrow on input line 61
+.
+LaTeX Font Info:    Redeclaring math symbol \twoheadleftarrow on input line 62.
+
+LaTeX Font Info:    Redeclaring math symbol \leftleftarrows on input line 63.
+LaTeX Font Info:    Redeclaring math symbol \rightrightarrows on input line 64.
+
+LaTeX Font Info:    Redeclaring math symbol \upuparrows on input line 65.
+LaTeX Font Info:    Redeclaring math symbol \downdownarrows on input line 66.
+LaTeX Font Info:    Redeclaring math symbol \upharpoonright on input line 67.
+LaTeX Font Info:    Redeclaring math symbol \downharpoonright on input line 69.
+
+LaTeX Font Info:    Redeclaring math symbol \upharpoonleft on input line 70.
+LaTeX Font Info:    Redeclaring math symbol \downharpoonleft on input line 71.
+LaTeX Font Info:    Redeclaring math symbol \rightarrowtail on input line 72.
+LaTeX Font Info:    Redeclaring math symbol \leftarrowtail on input line 73.
+LaTeX Font Info:    Redeclaring math symbol \leftrightarrows on input line 74.
+LaTeX Font Info:    Redeclaring math symbol \rightleftarrows on input line 75.
+LaTeX Font Info:    Redeclaring math symbol \Lsh on input line 76.
+LaTeX Font Info:    Redeclaring math symbol \Rsh on input line 77.
+LaTeX Font Info:    Redeclaring math symbol \leftrightsquigarrow on input line 
+79.
+LaTeX Font Info:    Redeclaring math symbol \looparrowleft on input line 80.
+LaTeX Font Info:    Redeclaring math symbol \looparrowright on input line 81.
+LaTeX Font Info:    Redeclaring math symbol \circeq on input line 82.
+LaTeX Font Info:    Redeclaring math symbol \succsim on input line 83.
+LaTeX Font Info:    Redeclaring math symbol \gtrsim on input line 84.
+LaTeX Font Info:    Redeclaring math symbol \gtrapprox on input line 85.
+LaTeX Font Info:    Redeclaring math symbol \multimap on input line 86.
+LaTeX Font Info:    Redeclaring math symbol \therefore on input line 87.
+LaTeX Font Info:    Redeclaring math symbol \because on input line 88.
+LaTeX Font Info:    Redeclaring math symbol \doteqdot on input line 89.
+LaTeX Font Info:    Redeclaring math symbol \triangleq on input line 91.
+LaTeX Font Info:    Redeclaring math symbol \precsim on input line 92.
+LaTeX Font Info:    Redeclaring math symbol \lesssim on input line 93.
+LaTeX Font Info:    Redeclaring math symbol \lessapprox on input line 94.
+LaTeX Font Info:    Redeclaring math symbol \eqslantless on input line 95.
+LaTeX Font Info:    Redeclaring math symbol \eqslantgtr on input line 96.
+LaTeX Font Info:    Redeclaring math symbol \curlyeqprec on input line 97.
+LaTeX Font Info:    Redeclaring math symbol \curlyeqsucc on input line 98.
+LaTeX Font Info:    Redeclaring math symbol \preccurlyeq on input line 99.
+LaTeX Font Info:    Redeclaring math symbol \leqq on input line 100.
+LaTeX Font Info:    Redeclaring math symbol \leqslant on input line 101.
+LaTeX Font Info:    Redeclaring math symbol \lessgtr on input line 102.
+LaTeX Font Info:    Redeclaring math symbol \backprime on input line 103.
+LaTeX Font Info:    Redeclaring math symbol \risingdotseq on input line 104.
+LaTeX Font Info:    Redeclaring math symbol \fallingdotseq on input line 105.
+LaTeX Font Info:    Redeclaring math symbol \succcurlyeq on input line 106.
+LaTeX Font Info:    Redeclaring math symbol \geqq on input line 107.
+LaTeX Font Info:    Redeclaring math symbol \geqslant on input line 108.
+LaTeX Font Info:    Redeclaring math symbol \gtrless on input line 109.
+LaTeX Font Info:    Redeclaring math symbol \bigstar on input line 117.
+LaTeX Font Info:    Redeclaring math symbol \between on input line 118.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangledown on input line 11
+9.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangleright on input line 1
+20.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangleleft on input line 12
+1.
+LaTeX Font Info:    Redeclaring math symbol \vartriangle on input line 122.
+LaTeX Font Info:    Redeclaring math symbol \blacktriangle on input line 123.
+LaTeX Font Info:    Redeclaring math symbol \triangledown on input line 124.
+LaTeX Font Info:    Redeclaring math symbol \eqcirc on input line 125.
+LaTeX Font Info:    Redeclaring math symbol \lesseqgtr on input line 126.
+LaTeX Font Info:    Redeclaring math symbol \gtreqless on input line 127.
+LaTeX Font Info:    Redeclaring math symbol \lesseqqgtr on input line 128.
+LaTeX Font Info:    Redeclaring math symbol \gtreqqless on input line 129.
+LaTeX Font Info:    Redeclaring math symbol \Rrightarrow on input line 130.
+LaTeX Font Info:    Redeclaring math symbol \Lleftarrow on input line 131.
+LaTeX Font Info:    Redeclaring math symbol \veebar on input line 132.
+LaTeX Font Info:    Redeclaring math symbol \barwedge on input line 133.
+LaTeX Font Info:    Redeclaring math symbol \doublebarwedge on input line 134.
+LaTeX Font Info:    Redeclaring math symbol \measuredangle on input line 137.
+LaTeX Font Info:    Redeclaring math symbol \sphericalangle on input line 138.
+LaTeX Font Info:    Redeclaring math symbol \varpropto on input line 139.
+LaTeX Font Info:    Redeclaring math symbol \smallsmile on input line 140.
+LaTeX Font Info:    Redeclaring math symbol \smallfrown on input line 141.
+LaTeX Font Info:    Redeclaring math symbol \Subset on input line 142.
+LaTeX Font Info:    Redeclaring math symbol \Supset on input line 143.
+LaTeX Font Info:    Redeclaring math symbol \Cup on input line 144.
+LaTeX Font Info:    Redeclaring math symbol \Cap on input line 146.
+LaTeX Font Info:    Redeclaring math symbol \curlywedge on input line 148.
+LaTeX Font Info:    Redeclaring math symbol \curlyvee on input line 149.
+LaTeX Font Info:    Redeclaring math symbol \leftthreetimes on input line 150.
+LaTeX Font Info:    Redeclaring math symbol \rightthreetimes on input line 151.
+
+LaTeX Font Info:    Redeclaring math symbol \subseteqq on input line 152.
+LaTeX Font Info:    Redeclaring math symbol \supseteqq on input line 153.
+LaTeX Font Info:    Redeclaring math symbol \bumpeq on input line 154.
+LaTeX Font Info:    Redeclaring math symbol \Bumpeq on input line 155.
+LaTeX Font Info:    Redeclaring math symbol \lll on input line 156.
+LaTeX Font Info:    Redeclaring math symbol \ggg on input line 158.
+LaTeX Font Info:    Redeclaring math symbol \circledS on input line 160.
+LaTeX Font Info:    Redeclaring math symbol \pitchfork on input line 161.
+LaTeX Font Info:    Redeclaring math symbol \dotplus on input line 162.
+LaTeX Font Info:    Redeclaring math symbol \backsim on input line 163.
+LaTeX Font Info:    Redeclaring math symbol \backsimeq on input line 164.
+LaTeX Font Info:    Redeclaring math symbol \complement on input line 165.
+LaTeX Font Info:    Redeclaring math symbol \intercal on input line 166.
+LaTeX Font Info:    Redeclaring math symbol \circledcirc on input line 167.
+LaTeX Font Info:    Redeclaring math symbol \circledast on input line 168.
+LaTeX Font Info:    Redeclaring math symbol \circleddash on input line 169.
+LaTeX Font Info:    Redeclaring math symbol \lvertneqq on input line 171.
+LaTeX Font Info:    Redeclaring math symbol \gvertneqq on input line 172.
+LaTeX Font Info:    Redeclaring math symbol \nleq on input line 173.
+LaTeX Font Info:    Redeclaring math symbol \ngeq on input line 174.
+LaTeX Font Info:    Redeclaring math symbol \nless on input line 175.
+LaTeX Font Info:    Redeclaring math symbol \ngtr on input line 176.
+LaTeX Font Info:    Redeclaring math symbol \nprec on input line 177.
+LaTeX Font Info:    Redeclaring math symbol \nsucc on input line 178.
+LaTeX Font Info:    Redeclaring math symbol \lneqq on input line 179.
+LaTeX Font Info:    Redeclaring math symbol \gneqq on input line 180.
+LaTeX Font Info:    Redeclaring math symbol \nleqslant on input line 181.
+LaTeX Font Info:    Redeclaring math symbol \ngeqslant on input line 182.
+LaTeX Font Info:    Redeclaring math symbol \lneq on input line 183.
+LaTeX Font Info:    Redeclaring math symbol \gneq on input line 184.
+LaTeX Font Info:    Redeclaring math symbol \npreceq on input line 185.
+LaTeX Font Info:    Redeclaring math symbol \nsucceq on input line 186.
+LaTeX Font Info:    Redeclaring math symbol \precnsim on input line 187.
+LaTeX Font Info:    Redeclaring math symbol \succnsim on input line 188.
+LaTeX Font Info:    Redeclaring math symbol \lnsim on input line 189.
+LaTeX Font Info:    Redeclaring math symbol \gnsim on input line 190.
+LaTeX Font Info:    Redeclaring math symbol \nleqq on input line 191.
+LaTeX Font Info:    Redeclaring math symbol \ngeqq on input line 192.
+LaTeX Font Info:    Redeclaring math symbol \precneqq on input line 193.
+LaTeX Font Info:    Redeclaring math symbol \succneqq on input line 194.
+LaTeX Font Info:    Redeclaring math symbol \precnapprox on input line 195.
+LaTeX Font Info:    Redeclaring math symbol \succnapprox on input line 196.
+LaTeX Font Info:    Redeclaring math symbol \lnapprox on input line 197.
+LaTeX Font Info:    Redeclaring math symbol \gnapprox on input line 198.
+LaTeX Font Info:    Redeclaring math symbol \nsim on input line 199.
+LaTeX Font Info:    Redeclaring math symbol \ncong on input line 200.
+LaTeX Font Info:    Redeclaring math symbol \diagup on input line 201.
+LaTeX Font Info:    Redeclaring math symbol \diagdown on input line 202.
+LaTeX Font Info:    Redeclaring math symbol \varsubsetneq on input line 203.
+LaTeX Font Info:    Redeclaring math symbol \varsupsetneq on input line 204.
+LaTeX Font Info:    Redeclaring math symbol \nsubseteqq on input line 205.
+LaTeX Font Info:    Redeclaring math symbol \nsupseteqq on input line 206.
+LaTeX Font Info:    Redeclaring math symbol \subsetneqq on input line 207.
+LaTeX Font Info:    Redeclaring math symbol \supsetneqq on input line 208.
+LaTeX Font Info:    Redeclaring math symbol \varsubsetneqq on input line 209.
+LaTeX Font Info:    Redeclaring math symbol \varsupsetneqq on input line 210.
+LaTeX Font Info:    Redeclaring math symbol \subsetneq on input line 211.
+LaTeX Font Info:    Redeclaring math symbol \supsetneq on input line 212.
+LaTeX Font Info:    Redeclaring math symbol \nsubseteq on input line 213.
+LaTeX Font Info:    Redeclaring math symbol \nsupseteq on input line 214.
+LaTeX Font Info:    Redeclaring math symbol \nparallel on input line 215.
+LaTeX Font Info:    Redeclaring math symbol \nmid on input line 216.
+LaTeX Font Info:    Redeclaring math symbol \nshortmid on input line 217.
+LaTeX Font Info:    Redeclaring math symbol \nshortparallel on input line 218.
+LaTeX Font Info:    Redeclaring math symbol \nvdash on input line 219.
+LaTeX Font Info:    Redeclaring math symbol \nVdash on input line 220.
+LaTeX Font Info:    Redeclaring math symbol \nvDash on input line 221.
+LaTeX Font Info:    Redeclaring math symbol \nVDash on input line 222.
+LaTeX Font Info:    Redeclaring math symbol \ntrianglerighteq on input line 223
+.
+LaTeX Font Info:    Redeclaring math symbol \ntrianglelefteq on input line 224.
+
+LaTeX Font Info:    Redeclaring math symbol \ntriangleleft on input line 225.
+LaTeX Font Info:    Redeclaring math symbol \ntriangleright on input line 226.
+LaTeX Font Info:    Redeclaring math symbol \nleftarrow on input line 227.
+LaTeX Font Info:    Redeclaring math symbol \nrightarrow on input line 228.
+LaTeX Font Info:    Redeclaring math symbol \nLeftarrow on input line 229.
+LaTeX Font Info:    Redeclaring math symbol \nRightarrow on input line 230.
+LaTeX Font Info:    Redeclaring math symbol \nLeftrightarrow on input line 231.
+
+LaTeX Font Info:    Redeclaring math symbol \nleftrightarrow on input line 232.
+
+LaTeX Font Info:    Redeclaring math symbol \divideontimes on input line 233.
+LaTeX Font Info:    Redeclaring math symbol \varnothing on input line 234.
+LaTeX Font Info:    Redeclaring math symbol \nexists on input line 235.
+LaTeX Font Info:    Redeclaring math symbol \Finv on input line 236.
+LaTeX Font Info:    Redeclaring math symbol \Game on input line 237.
+LaTeX Font Info:    Redeclaring math symbol \eth on input line 240.
+LaTeX Font Info:    Redeclaring math symbol \eqsim on input line 241.
+LaTeX Font Info:    Redeclaring math symbol \beth on input line 242.
+LaTeX Font Info:    Redeclaring math symbol \gimel on input line 243.
+LaTeX Font Info:    Redeclaring math symbol \daleth on input line 244.
+LaTeX Font Info:    Redeclaring math symbol \lessdot on input line 245.
+LaTeX Font Info:    Redeclaring math symbol \gtrdot on input line 246.
+LaTeX Font Info:    Redeclaring math symbol \ltimes on input line 247.
+LaTeX Font Info:    Redeclaring math symbol \rtimes on input line 248.
+LaTeX Font Info:    Redeclaring math symbol \shortmid on input line 249.
+LaTeX Font Info:    Redeclaring math symbol \shortparallel on input line 250.
+LaTeX Font Info:    Redeclaring math symbol \smallsetminus on input line 251.
+LaTeX Font Info:    Redeclaring math symbol \thicksim on input line 252.
+LaTeX Font Info:    Redeclaring math symbol \thickapprox on input line 253.
+LaTeX Font Info:    Redeclaring math symbol \approxeq on input line 254.
+LaTeX Font Info:    Redeclaring math symbol \succapprox on input line 255.
+LaTeX Font Info:    Redeclaring math symbol \precapprox on input line 256.
+LaTeX Font Info:    Redeclaring math symbol \curvearrowleft on input line 257.
+LaTeX Font Info:    Redeclaring math symbol \curvearrowright on input line 258.
+
+LaTeX Font Info:    Redeclaring math symbol \digamma on input line 259.
+LaTeX Font Info:    Redeclaring math symbol \varkappa on input line 260.
+LaTeX Font Info:    Redeclaring math symbol \Bbbk on input line 261.
+LaTeX Font Info:    Redeclaring math symbol \hslash on input line 262.
+LaTeX Font Info:    Redeclaring math symbol \backepsilon on input line 265.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/enumitem\enumi
+tem.sty"
+Package: enumitem 2019/02/04 v3.8 Customized lists
+\labelindent=\skip160
+\enit@outerparindent=\dimen335
+\enit@toks=\toks62
+\enit@inbox=\box113
+\enit@count@id=\count520
+\enitdp@description=\count521
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/mdframed\mdfra
+med.sty"
+Package: mdframed 2013/07/01 1.9b: mdframed
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\zref-
+abspage.sty"
+Package: zref-abspage 2018/11/21 v2.27 Module abspage for zref (HO)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\zref-
+base.sty"
+Package: zref-base 2018/11/21 v2.27 Module base for zref (HO)
+Package zref Info: New property list: main on input line 759.
+Package zref Info: New property: default on input line 760.
+Package zref Info: New property: page on input line 761.
+)
+\c@abspage=\count522
+Package zref Info: New property: abspage on input line 62.
+)
+\mdf@templength=\skip161
+\c@mdf@globalstyle@cnt=\count523
+\mdf@skipabove@length=\skip162
+\mdf@skipbelow@length=\skip163
+\mdf@leftmargin@length=\skip164
+\mdf@rightmargin@length=\skip165
+\mdf@innerleftmargin@length=\skip166
+\mdf@innerrightmargin@length=\skip167
+\mdf@innertopmargin@length=\skip168
+\mdf@innerbottommargin@length=\skip169
+\mdf@splittopskip@length=\skip170
+\mdf@splitbottomskip@length=\skip171
+\mdf@outermargin@length=\skip172
+\mdf@innermargin@length=\skip173
+\mdf@linewidth@length=\skip174
+\mdf@innerlinewidth@length=\skip175
+\mdf@middlelinewidth@length=\skip176
+\mdf@outerlinewidth@length=\skip177
+\mdf@roundcorner@length=\skip178
+\mdf@footenotedistance@length=\skip179
+\mdf@userdefinedwidth@length=\skip180
+\mdf@needspace@length=\skip181
+\mdf@frametitleaboveskip@length=\skip182
+\mdf@frametitlebelowskip@length=\skip183
+\mdf@frametitlerulewidth@length=\skip184
+\mdf@frametitleleftmargin@length=\skip185
+\mdf@frametitlerightmargin@length=\skip186
+\mdf@shadowsize@length=\skip187
+\mdf@extratopheight@length=\skip188
+\mdf@subtitleabovelinewidth@length=\skip189
+\mdf@subtitlebelowlinewidth@length=\skip190
+\mdf@subtitleaboveskip@length=\skip191
+\mdf@subtitlebelowskip@length=\skip192
+\mdf@subtitleinneraboveskip@length=\skip193
+\mdf@subtitleinnerbelowskip@length=\skip194
+\mdf@subsubtitleabovelinewidth@length=\skip195
+\mdf@subsubtitlebelowlinewidth@length=\skip196
+\mdf@subsubtitleaboveskip@length=\skip197
+\mdf@subsubtitlebelowskip@length=\skip198
+\mdf@subsubtitleinneraboveskip@length=\skip199
+\mdf@subsubtitleinnerbelowskip@length=\skip256
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/mdframed\md-fr
+ame-1.mdf"
+File: md-frame-1.mdf 2013/07/01\ 1.9b: md-frame-1
+)
+\mdf@frametitlebox=\box114
+\mdf@footnotebox=\box115
+\mdf@splitbox@one=\box116
+\mdf@splitbox@two=\box117
+\mdf@splitbox@save=\box118
+\mdfsplitboxwidth=\skip257
+\mdfsplitboxtotalwidth=\skip258
+\mdfsplitboxheight=\skip259
+\mdfsplitboxdepth=\skip260
+\mdfsplitboxtotalheight=\skip261
+\mdfframetitleboxwidth=\skip262
+\mdfframetitleboxtotalwidth=\skip263
+\mdfframetitleboxheight=\skip264
+\mdfframetitleboxdepth=\skip265
+\mdfframetitleboxtotalheight=\skip266
+\mdffootnoteboxwidth=\skip267
+\mdffootnoteboxtotalwidth=\skip268
+\mdffootnoteboxheight=\skip269
+\mdffootnoteboxdepth=\skip270
+\mdffootnoteboxtotalheight=\skip271
+\mdftotallinewidth=\skip272
+\mdfboundingboxwidth=\skip273
+\mdfboundingboxtotalwidth=\skip274
+\mdfboundingboxheight=\skip275
+\mdfboundingboxdepth=\skip276
+\mdfboundingboxtotalheight=\skip277
+\mdf@freevspace@length=\skip278
+\mdf@horizontalwidthofbox@length=\skip279
+\mdf@verticalmarginwhole@length=\skip280
+\mdf@horizontalspaceofbox=\skip281
+\mdfsubtitleheight=\skip282
+\mdfsubsubtitleheight=\skip283
+\c@mdfcountframes=\count524
+
+****** mdframed patching \endmdf@trivlist
+
+****** -- success******
+
+\mdf@envdepth=\count525
+\c@mdf@env@i=\count526
+\c@mdf@env@ii=\count527
+\c@mdf@zref@counter=\count528
+Package zref Info: New property: mdf@pagevalue on input line 895.
+)
+\c@kaocounter=\count529
+Package tocbasic Info: setting babel extension for `loi' on input line 89.
+Package biblatex Info: Redefining '\fullcite' on input line 102.
+) (styles/mdftheorems.sty
+Package: styles/mdftheorems 
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/amscls\amsthm.
+sty"
+Package: amsthm 2017/10/31 v2.20.4
+\thm@style=\toks63
+\thm@bodyfont=\toks64
+\thm@headfont=\toks65
+\thm@notefont=\toks66
+\thm@headpunct=\toks67
+\thm@preskip=\skip284
+\thm@postskip=\skip285
+\thm@headsep=\skip286
+\dth@everypar=\toks68
+LaTeX Info: Redefining \textsquare on input line 428.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thmto
+ols.sty"
+Package: thmtools 2014/04/21 v66
+\thmt@toks=\toks69
+\c@thmt@dummyctr=\count530
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thm-p
+atch.sty"
+Package: thm-patch 2014/04/21 v66
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\parse
+args.sty"
+Package: parseargs 2014/04/21 v66
+\@parsespec=\toks70
+))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thm-k
+v.sty"
+Package: thm-kv 2014/04/21 v66
+Package thm-kv Info: Theorem names will be uppercased on input line 40.
+Package thm-kv Info: kvsetkeys patch (v1.16 or later) on input line 156.
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thm-a
+utoref.sty"
+Package: thm-autoref 2014/04/21 v66
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\alias
+ctr.sty"
+Package: aliasctr 2014/04/21 v66
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/carlisle\remre
+set.sty"
+
+Package remreset Warning: The remreset package is obsolete:
+(remreset)                \@removefomresset is defined.
+
+)))
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thm-l
+istof.sty"
+Package: thm-listof 2014/04/21 v66
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thm-r
+estate.sty"
+Package: thm-restate 2014/04/21 v66
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thm-a
+msthm.sty"
+Package: thm-amsthm 2014/04/21 v66
+\thmt@style@headstyle=\toks71
+))
+Package thmtools Info: Automatically pulling in `thmdef-mdframed' on input line
+ 105.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/thmtools\thmde
+f-mdframed.sty"
+Package: thmdef-mdframed 2014/04/21 v66
+)
+\c@theorem=\count531
+\c@definition=\count532
+\c@remark=\count533
+\c@example=\count534
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/blindtext\blin
+dtext.sty"
+Package: blindtext 2012/01/06 V2.0 blindtext-Package
+\c@blindtext=\count535
+\c@Blindtext=\count536
+\c@blind@countparstart=\count537
+\blind@countxx=\count538
+\blindtext@numBlindtext=\count539
+\blind@countyy=\count540
+\c@blindlist=\count541
+\c@blindlistlevel=\count542
+\c@blindlist@level=\count543
+\blind@listitem=\count544
+\c@blind@listcount=\count545
+\c@blind@levelcount=\count546
+\blind@mathformula=\count547
+\blind@Mathformula=\count548
+\c@blind@randomcount=\count549
+\c@blind@randommax=\count550
+\c@blind@pangramcount=\count551
+\c@blind@pangrammax=\count552
+)
+\"DaLAT Manual"@idxfile=\write5
+\openout5 = `"DaLAT Manual.idx"'.
+
+
+Writing index file "DaLAT Manual".idx
+\glswrite=\write6
+\glo@main@file=\write7
+\openout7 = `"DaLAT Manual.glo"'.
+
+Package glossaries Info: Writing glossary file "DaLAT Manual".glo on input line
+ 56.
+\@nomenclaturefile=\write8
+\openout8 = `"DaLAT Manual.nlo"'.
+
+Package nomencl Info: Writing nomenclature file "DaLAT Manual".nlo on input lin
+e 58.
+\c@pp@a@sidenote=\count553
+Package biblatex Info: Trying to load language 'english'...
+Package biblatex Info: ... file 'english.lbx' found.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/biblatex/lbx\e
+nglish.lbx"
+File: english.lbx 2018/11/02 v3.12 biblatex localization (PK/MW)
+)
+Package csquotes Info: Checking for multilingual support...
+Package csquotes Info: ... found 'babel' package.
+Package csquotes Info: Adjusting default style.
+Package csquotes Info: Redefining alias 'default' -> 'english'.
+ ("DaLAT Manual.aux")
+\openout1 = `"DaLAT Manual.aux"'.
+
+LaTeX Font Info:    Checking defaults for OML/ntxmi/m/it on input line 62.
+LaTeX Font Info:    Try loading font information for OML+ntxmi on input line 62
+.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\omlntxmi
+.fd"
+File: omlntxmi.fd 2015/08/25 Fontinst v1.933 font definitions for OML/ntxmi.
+)
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for U/ntxexa/m/n on input line 62.
+LaTeX Font Info:    Try loading font information for U+ntxexa on input line 62.
+
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\untxexa.
+fd"
+File: untxexa.fd 2012/04/16 Fontinst v1.933 font definitions for U/ntxexa.
+)
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 62.
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for LMS/ntxsy/m/n on input line 62.
+LaTeX Font Info:    Try loading font information for LMS+ntxsy on input line 62
+.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\lmsntxsy
+.fd"
+File: lmsntxsy.fd 2016/07/02 Fontinst v1.933 font definitions for LMS/ntxsy.
+)
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Checking defaults for LMX/ntxexx/m/n on input line 62.
+LaTeX Font Info:    Try loading font information for LMX+ntxexx on input line 6
+2.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\lmxntxex
+x.fd"
+File: lmxntxexx.fd 2016/07/03 Fontinst v1.933 font definitions for LMX/ntxexx.
+)
+LaTeX Font Info:    ... okay on input line 62.
+LaTeX Font Info:    Try loading font information for T1+ppl on input line 62.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1ppl.f
+d"
+File: t1ppl.fd 2001/06/04 font definitions for T1/ppl.
+) ABD: EverySelectfont initializing macros
+LaTeX Info: Redefining \selectfont on input line 62.
+LaTeX Info: Redefining \microtypecontext on input line 62.
+Package microtype Info: Generating PDF output.
+Package microtype Info: Character protrusion enabled (level 2).
+Package microtype Info: Using default protrusion set `alltext'.
+Package microtype Info: Automatic font expansion enabled (level 2),
+(microtype)             stretch: 20, shrink: 20, step: 1, non-selected.
+Package microtype Info: Using default expansion set `basictext'.
+Package microtype Info: No adjustment of tracking.
+Package microtype Info: No adjustment of interword spacing.
+Package microtype Info: No adjustment of character kerning.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/microtype\mt-p
+pl.cfg"
+File: mt-ppl.cfg 2005/11/16 v1.6 microtype config. file: Palatino (RS)
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/context/base/mkii\su
+pp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count554
+\scratchdimen=\dimen336
+\scratchbox=\box119
+\nofMPsegments=\count555
+\nofMParguments=\count556
+\everyMPshowfont=\toks72
+\MPscratchCnt=\count557
+\MPscratchDim=\dimen337
+\MPnumerator=\count558
+\makeMPintoPDFobject=\count559
+\everyMPtoPDFconversion=\toks73
+)
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\epsto
+pdf-base.sty"
+Package: epstopdf-base 2016/05/15 v2.6 Base part for package epstopdf
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\grfex
+t.sty"
+Package: grfext 2016/05/16 v1.2 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+38.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 456.
+)
+\AtBeginShipoutBox=\box120
+Package hyperref Info: Link coloring ON on input line 62.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/hyperref\namer
+ef.sty"
+Package: nameref 2016/05/21 v2.44 Cross-referencing by name of section
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/generic/oberdiek\get
+titlestring.sty"
+Package: gettitlestring 2016/05/16 v1.5 Cleanup title references (HO)
+)
+\c@section@level=\count560
+LaTeX Info: Redefining \Ref on input line 515.
+)
+LaTeX Info: Redefining \ref on input line 62.
+LaTeX Info: Redefining \pageref on input line 62.
+LaTeX Info: Redefining \nameref on input line 62.
+LaTeX Info: Redefining \Ref on input line 62.
+Package snotez Info: All sidenotes are now using \marginnote
+ instead of \marginpar on input line 62.
+ ABD: EveryShipout initializing macros
+Package caption Info: Begin \AtBeginDocument code.
+Package caption Info: float package is loaded.
+Package caption Info: floatrow package is loaded.
+Package caption Info: listings package is loaded.
+Package caption Info: longtable package is loaded.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/caption\ltcapt
+ion.sty"
+Package: ltcaption 2018/08/26 v1.4-95 longtable captions (AR)
+)
+Package caption Info: supertabular package is loaded.
+Package caption Info: End \AtBeginDocument code.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/floatrow\fr-lo
+ngtable.sty"
+Package: fr-longtable 2007/11/28 v0.1b (beta) floatrow: additions for longtable
+
+\flrow@LT@lasthead=\box121
+\flrow@LT@prelastfoot=\box122
+\c@FBLTpage=\count561
+)
+\Etoc@tf=\read5
+Package biblatex Info: Input encoding 'utf8' detected.
+Package biblatex Info: Automatic encoding selection.
+(biblatex)             Assuming data encoding 'utf8'.
+\openout4 = `"DaLAT Manual.bcf"'.
+
+Package biblatex Info: Trying to load bibliographic data...
+Package biblatex Info: ... file '"DaLAT Manual".bbl' not found.
+
+No file "DaLAT Manual".bbl.
+Package biblatex Info: Reference section=0 on input line 62.
+Package biblatex Info: Reference segment=0 on input line 62.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/oberdiek\pdfls
+cape.sty"
+Package: pdflscape 2016/05/14 v0.11 Display of landscape pages in PDF (HO)
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/graphics\lscap
+e.sty"
+Package: lscape 2000/10/22 v3.01 Landscape Pages (DPC)
+)
+Package scrhack Info: loading lscape hack on input line 76.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/koma-script\ls
+cape.hak"
+File: lscape.hak 2019/02/01 v3.26b KOMA-Script package (hacking package lscape)
+
+Package scrhack Info: \landscape patched to make \textheight change optional on
+ input line 90.
+\scrh@LT@textheight=\skip287
+)
+Package pdflscape Info: Auto-detected driver: pdftex on input line 81.
+)
+\c@lstlisting=\count562
+Package scrhack Info: undefining \float@addtolists on input line 62.
+ ("DaLAT Manual.glsdefs")
+*geometry* driver: auto-detecting
+*geometry* detected driver: pdftex
+*geometry* verbose mode - [ preamble ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includemp twoside 
+* h-part:(L,W,R)=(70.56284pt, 468.3323pt, 58.61273pt)
+* v-part:(T,H,B)=(101.40665pt, 665.67967pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=304.44447pt
+* \textheight=665.67967pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=150.23058pt
+* \topmargin=-3.86334pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=140.5566pt
+* \marginparsep=23.33124pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package scrbase Info: activating english \contentsname on input line 62.
+Package scrbase Info: activating english \listfigurename on input line 62.
+Package scrbase Info: activating english \listtablename on input line 62.
+Package scrbase Info: activating english \listtheoremname on input line 62.
+\overflowingheadlen=\skip288
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(70.56284pt, 456.3822pt, 70.56284pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=456.3822pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=-1.70715pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 8
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50787pt
+(typearea)              \textwidth      = 373.44244pt
+(typearea)              DIV departure   = 0%
+(typearea)              \evensidemargin = 39.76273pt
+(typearea)              \oddsidemargin  = 39.76273pt
+(typearea)             \paperheight     = 845.04684pt
+(typearea)              \textheight     = 538.00293pt
+(typearea)              \topmargin      = -2.93935pt
+(typearea)              \headheight     = 16.50009pt
+(typearea)              \headsep        = 19.80011pt
+(typearea)              \topskip        = 10.0pt
+(typearea)              \footskip       = 46.20026pt
+(typearea)              \baselineskip   = 13.20007pt
+(typearea)              on input line 151.
+Package typearea Info: Using dirty hack to recalculate internal output
+(typearea)             dimensions of LaTeX on input line 151.
+LaTeX Font Info:    Try loading font information for T1+phv on input line 153.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\t1phv.f
+d"
+File: t1phv.fd 2001/06/04 scalable font definitions for T1/phv.
+)
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 9.49997pt on input line 153.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `phv' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <10> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 153.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 9.49997pt on input line 153.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <20.74> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 153.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 19.70294pt on input line 153.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <12> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 153.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 11.39996pt on input line 153.
+LaTeX Font Info:    Try loading font information for OT1+ppl on input line 153.
+
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\ot1ppl.
+fd"
+File: ot1ppl.fd 2001/06/04 font definitions for OT1/ppl.
+)
+LaTeX Font Info:    Try loading font information for OT1+zplm on input line 153
+.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\ot1zplm
+.fd"
+File: ot1zplm.fd 2002/09/08 Fontinst v1.914 font definitions for OT1/zplm.
+)
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `zplm' (encoding: OT1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Try loading font information for U+ntxmia on input line 153
+.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\untxmia.
+fd"
+File: untxmia.fd 2018/04/14 Fontinst v1.933 font definitions for U/ntxmia.
+)
+LaTeX Font Info:    Try loading font information for U+ntxsym on input line 153
+.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\untxsym.
+fd"
+File: untxsym.fd 2015/03/20 Fontinst v1.933 font definitions for U/ntxsym.
+)
+LaTeX Font Info:    Try loading font information for U+ntxsyc on input line 153
+.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/newtx\untxsyc.
+fd"
+File: untxsyc.fd 2012/04/12 Fontinst v1.933 font definitions for U/ntxsyc.
+)
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 15.0049pt on input line 153.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/microtype\mt-m
+sa.cfg"
+File: mt-msa.cfg 2006/02/04 v1.1 microtype config. file: AMS symbols (a) (RS)
+)
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 10.94107pt on input line 153.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 8.23184pt on input line 153.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 15.0049pt on input line 153.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/microtype\mt-m
+sb.cfg"
+File: mt-msb.cfg 2005/06/01 v1.0 microtype config. file: AMS symbols (b) (RS)
+)
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 10.94107pt on input line 153.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 8.23184pt on input line 153.
+ [1
+
+\openout6 = `"DaLAT Manual.xdy"'.
+
+
+
+
+
+
+
+
+{C:/Users/Max Braun/AppData/Local/MiKTeX/2.9/pdftex/config/pdftex.map}]
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 153.
+LaTeX Font Info:    Font shape `U/ccicons/m/n' will be
+(Font)              scaled to size 10.0pt on input line 153.
+LaTeX Font Info:    Try loading font information for T1+fvm on input line 153.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/bera\t1fvm.fd"
+File: t1fvm.fd 2004/09/07 scalable font definitions for T1/fvm.
+)
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 8.50006pt on input line 153.
+Package microtype Info: Loading generic protrusion settings for font family
+(microtype)             `fvm' (encoding: T1).
+(microtype)             For optimal results, create family-specific settings.
+(microtype)             See the microtype manual for details.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 10.42007pt on input line 153.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 7.60664pt on input line 153.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 5.73103pt on input line 153.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 10.42007pt on input line 153.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 7.60664pt on input line 153.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 5.73103pt on input line 153.
+ [2
+
+]
+Package typearea Info: These are the values describing the layout:
+(typearea)             DIV  = 8
+(typearea)             BCOR = 0.0pt
+(typearea)             \paperwidth      = 597.50787pt
+(typearea)              \textwidth      = 373.44244pt
+(typearea)              DIV departure   = 0%
+(typearea)              \evensidemargin = 39.76273pt
+(typearea)              \oddsidemargin  = 39.76273pt
+(typearea)             \paperheight     = 845.04684pt
+(typearea)              \textheight     = 538.00293pt
+(typearea)              \topmargin      = -2.93935pt
+(typearea)              \headheight     = 16.50009pt
+(typearea)              \headsep        = 19.80011pt
+(typearea)              \topskip        = 10.0pt
+(typearea)              \footskip       = 46.20026pt
+(typearea)              \baselineskip   = 13.20007pt
+(typearea)              on input line 153.
+Package typearea Info: Using dirty hack to recalculate internal output
+(typearea)             dimensions of LaTeX on input line 153.
+ (chapters/preface.tex
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <20.74> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 1.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 9.37807pt on input line 13.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 9.37807pt on input line 13.
+)
+\tf@toc=\write9
+\openout9 = `"DaLAT Manual.toc"'.
+
+ [3
+
+
+
+]
+Package tocbasic Info: character protrusion at toc deactivated on input line 17
+7.
+LaTeX Font Info:    Font shape `T1/ppl/bx/sc' in size <12> not available
+(Font)              Font shape `T1/ppl/b/sc' tried instead on input line 177.
+ [4
+
+
+] [5]
+Package tocbasic Info: character protrusion at lof deactivated on input line 17
+8.
+ ("DaLAT Manual.lof")
+\tf@lof=\write10
+\openout10 = `"DaLAT Manual.lof"'.
+
+Package tocbasic Info: character protrusion at lot deactivated on input line 18
+4.
+ ("DaLAT Manual.lot")
+\tf@lot=\write11
+\openout11 = `"DaLAT Manual.lot"'.
+
+ [6
+
+
+]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includemp twoside 
+* h-part:(L,W,R)=(70.56284pt, 468.3323pt, 58.61273pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=304.44447pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=150.23058pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=140.5566pt
+* \marginparsep=23.33124pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+ (chapters/introduction.tex
+chapter 1.
+
+Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
+[][]
+ []
+
+Package marginnote Info: Margin note 7.1 is on absolute page 7 on input line 3.
+
+Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
+LaTeX Font Info:    Font shape `T1/phv/m/n' will be
+(Font)              scaled to size 7.59998pt on input line 3.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <8> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 3.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 7.59998pt on input line 3.
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <8> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 3.
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <9> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 3.
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 6.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 13.67995pt on input line 6.
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <14.4> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 6.
+
+LaTeX Warning: Hyper reference `sec:doesnot' on page 1 undefined on input line 
+16.
+
+
+LaTeX Warning: Hyper reference `sec:doesnot' on page 1 undefined on input line 
+16.
+
+
+LaTeX Warning: Reference `sec:doesnot' on page 1 undefined on input line 16.
+
+Package marginnote Info: Margin note 7.2 is on absolute page 7 on input line 33
+.
+Package marginnote Info: xpos seems to be 126.65268pt on input line 33.
+
+Overfull \hbox (1.97098pt too wide) in paragraph at lines 34--40
+[]\T1/ppl/m/n/10 (-20) The com-mands \T1/fvm/m/n/10 \frontmatter\T1/ppl/m/n/10 
+(-20) , \T1/fvm/m/n/10 \mainmatter \T1/ppl/m/n/10 (-20) and \T1/fvm/m/n/10 \bac
+kmatter
+ []
+
+Package marginnote Info: Margin note 7.3 is on absolute page 7 on input line 43
+.
+Package marginnote Info: xpos seems to be 202.41144pt on input line 43.
+[1
+
+
+
+
+]
+<images/monalisa.jpg, id=257, 403.5075pt x 601.24625pt>
+File: images/monalisa.jpg Graphic file (type jpg)
+<use images/monalisa.jpg>
+Package pdftex.def Info: images/monalisa.jpg  used on input line 64.
+(pdftex.def)             Requested size: 140.55862pt x 209.43933pt.
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 6.80005pt on input line 66.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 8.33606pt on input line 66.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 6.46043pt on input line 66.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 8.33606pt on input line 66.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 6.46043pt on input line 66.
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--66
+[][]$\T1/fvm/m/n/8 https : / / commons . wikimedia . org /
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 66--66
+\T1/fvm/m/n/8 wiki / File : Mona _ Lisa ,[] _by _ Leonardo _
+ []
+
+) [2 <./images/monalisa.jpg>]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(70.56284pt, 456.3822pt, 70.56284pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=456.3822pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=-1.70715pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+part without number
+LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <24.88> not available
+(Font)              Font shape `T1/phv/b/n' tried instead on input line 197.
+LaTeX Font Info:    Font shape `T1/phv/b/n' will be
+(Font)              scaled to size 23.63593pt on input line 197.
+LaTeX Font Info:    Font shape `T1/ppl/bx/sc' in size <24.88> not available
+(Font)              Font shape `T1/ppl/b/sc' tried instead on input line 197.
+[3
+
+
+
+] [4]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includemp twoside 
+* h-part:(L,W,R)=(70.56284pt, 468.3323pt, 58.61273pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=304.44447pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=150.23058pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=140.5566pt
+* \marginparsep=23.33124pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+ (chapters/options.tex
+chapter 2.
+<images/004_Headerchapter1.png, id=275, 1719.42375pt x 513.41812pt>
+File: images/004_Headerchapter1.png Graphic file (type png)
+<use images/004_Headerchapter1.png>
+Package pdftex.def Info: images/004_Headerchapter1.png  used on input line 3.
+(pdftex.def)             Requested size: 597.5046pt x 247.5425pt.
+
+Overfull \hbox (222.12117pt too wide) in paragraph at lines 3--3
+[]|  [] 
+ []
+
+Class scrbook Info: preamble before chapter is 0.00363pt to high.
+(scrbook)           Tolerated without warning because of
+(scrbook)           \vfuzz = 0.1pt >= 0.00363pt on input line 3.
+Package marginnote Info: Margin note 11.1 is on absolute page 11 on input line 
+3.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
+
+Underfull \hbox (badness 1009) in paragraph at lines 3--3
+[][] [][]\T1/ppl/b/n/9 Earth Cen-tered Earth Fixed -
+ []
+
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 20.
+<images/001_ECI.png, id=293, 853.1875pt x 726.715pt>
+File: images/001_ECI.png Graphic file (type png)
+<use images/001_ECI.png>
+Package pdftex.def Info: images/001_ECI.png  used on input line 23.
+(pdftex.def)             Requested size: 136.99448pt x 116.68706pt.
+Package mdframed Info: mdframed works in twoside mode on input line 30.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 30.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 32.
+[5
+
+
+
+ <./images/004_Headerchapter1.png> <./images/001_ECI.png>])
+(chapters/textnotes.tex [6]
+chapter 3.
+Package marginnote Info: Margin note 13.1 is on absolute page 13 on input line 
+2.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 2.
+Package marginnote Info: Margin note 13.2 is on absolute page 13 on input line 
+15.
+Package marginnote Info: xpos seems to be 324.06961pt on input line 15.
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 7.65005pt on input line 19.
+Package marginnote Info: Margin note 13.3 is on absolute page 13 on input line 
+26.
+Package marginnote Info: xpos seems to be 208.0414pt on input line 26.
+Package marginnote Info: Margin note 13.4 is on absolute page 14 on input line 
+57.
+Package marginnote Info: xpos seems to be 496.4393pt on input line 57.
+[7
+
+
+]
+Package mdframed Info: mdframed works in twoside mode on input line 64.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 64.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 69.
+
+Overfull \hbox (5.28227pt too wide) in paragraph at lines 71--78
+\T1/ppl/m/n/10 (-20) (\T1/fvm/m/n/10 \renewcommand{\marginnotevadjust}{3pt}\T1/
+ppl/m/n/10 (-20) ) in or-der to allineate them
+ []
+
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 89.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\omsppl.
+fd"
+File: omsppl.fd 
+)
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <7.3> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 89.
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <6.2> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 89.
+Package marginnote Info: Margin note 14.1 is on absolute page 14 on input line 
+106.
+Package marginnote Info: xpos seems to be 222.50056pt on input line 106.
+) (chapters/figsntabs.tex [8]
+chapter 4.
+<images/seaside.jpeg, id=344, 1283.79625pt x 553.06625pt>
+File: images/seaside.jpeg Graphic file (type jpg)
+<use images/seaside.jpeg>
+Package pdftex.def Info: images/seaside.jpeg  used on input line 3.
+(pdftex.def)             Requested size: 597.52718pt x 261.764pt.
+
+Overfull \hbox (222.14375pt too wide) in paragraph at lines 3--3
+[]|  [] 
+ []
+
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 21.61124pt on input line 3.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 16.77632pt on input line 3.
+LaTeX Font Info:    Font shape `U/msa/m/n' will be
+(Font)              scaled to size 11.87888pt on input line 3.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 21.61124pt on input line 3.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 16.77632pt on input line 3.
+LaTeX Font Info:    Font shape `U/msb/m/n' will be
+(Font)              scaled to size 11.87888pt on input line 3.
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <16.1> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 3.
+Package marginnote Info: Margin note 15.1 is on absolute page 15 on input line 
+3.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
+pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
+ has been already used, duplicate ignored
+<to be read again> 
+                   \relax 
+l.7 ....wikimedia.org/w/index.php?curid=68724647}}
+                                                  
+File: images/monalisa.jpg Graphic file (type jpg)
+<use images/monalisa.jpg>
+Package pdftex.def Info: images/monalisa.jpg  used on input line 27.
+(pdftex.def)             Requested size: 136.99986pt x 204.13661pt.
+ [9
+
+
+ <./images/seaside.jpeg>]
+LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
+(Font)              scaled to size 5.95004pt on input line 41.
+
+[10]
+Package hyperref Info: bookmark level for unknown todo defaults to 0 on input l
+ine 127.
+File: images/seaside.jpeg Graphic file (type jpg)
+<use images/seaside.jpeg>
+Package pdftex.def Info: images/seaside.jpeg  used on input line 133.
+(pdftex.def)             Requested size: 468.31729pt x 201.75357pt.
+) (chapters/references.tex
+Overfull \hbox (156.52655pt too wide) has occurred while \output is active
+[][][] 
+ []
+
+[11] [12
+
+
+]
+chapter 5.
+
+Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
+[][]
+ []
+
+
+LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
+
+Package marginnote Info: Margin note 19.1 is on absolute page 19 on input line 
+9.
+Package marginnote Info: xpos seems to be 269.42896pt on input line 9.
+
+LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--9
+[]| \T1/ppl/m/n/8 (+20) [[]]: []
+ []
+
+
+Underfull \hbox (badness 5726) in paragraph at lines 9--9
+\T1/ppl/m/n/8 (+20) [[]]: [] ([]),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--9
+
+ []
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
+
+Package marginnote Info: Margin note 19.2 is on absolute page 19 on input line 
+15.
+Package marginnote Info: xpos seems to be 183.85548pt on input line 15.
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
+
+
+LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
+
+
+Underfull \hbox (badness 5726) in paragraph at lines 15--15
+[]| \T1/ppl/m/n/8 (+20) [[]]: [] ([]),
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 15--15
+
+ []
+
+Package marginnote Info: Margin note 19.3 is on absolute page 19 on input line 
+37.
+Package marginnote Info: xpos seems to be 90.77275pt on input line 37.
+Package marginnote Info: Margin note 19.4 is on absolute page 19 on input line 
+57.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 57.
+[13]
+Package marginnote Info: Margin note 20.1 is on absolute page 20 on input line 
+88.
+Package marginnote Info: xpos seems to be 222.50056pt on input line 88.
+
+Overfull \hbox (6.52838pt too wide) in paragraph at lines 140--143
+[][][][][][][][][][][][][][][] \T1/ppl/m/n/10 (-20) and it looks like this: [][
+]Chap-ter [][]5[][] ([][]Ref-er-ences[][])[] on page [][]13[][][][][]. 
+ []
+
+[14])
+Overfull \hbox (156.52655pt too wide) has occurred while \output is active
+[][][] 
+ []
+
+[15]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(70.56284pt, 456.3822pt, 70.56284pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=456.3822pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=-1.70715pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+ [16
+
+
+
+]
+part without number
+[17] [18]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includemp twoside 
+* h-part:(L,W,R)=(70.56284pt, 468.3323pt, 58.61273pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=304.44447pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=150.23058pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=140.5566pt
+* \marginparsep=23.33124pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+ (chapters/layout.tex
+chapter 6.
+File: images/seaside.jpeg Graphic file (type jpg)
+<use images/seaside.jpeg>
+Package pdftex.def Info: images/seaside.jpeg  used on input line 3.
+(pdftex.def)             Requested size: 597.52718pt x 247.53569pt.
+
+Overfull \hbox (222.14375pt too wide) in paragraph at lines 3--3
+[]|  [] 
+ []
+
+Package marginnote Info: Margin note 25.1 is on absolute page 25 on input line 
+3.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
+Package marginnote Info: Margin note 25.2 is on absolute page 25 on input line 
+17.
+Package marginnote Info: xpos seems to be 331.8894pt on input line 17.
+Package marginnote Info: Margin note 25.3 is on absolute page 25 on input line 
+29.
+Package marginnote Info: xpos seems to be 146.39046pt on input line 29.
+Package marginnote Info: Margin note 25.4 is on absolute page 26 on input line 
+53.
+Package marginnote Info: xpos seems to be 377.49673pt on input line 53.
+[19
+
+
+
+]
+Overfull \hbox (17.36574pt too wide) in paragraph at lines 65--73
+\T1/ppl/m/n/10 (-20) Headers and foot-ers in \T1/phv/m/n/10 (-20) KOMA-Script \
+T1/ppl/m/n/10 (-20) are han-dled by the \T1/fvm/m/n/10 scrlayer-scrpage
+ []
+
+
+Overfull \hbox (3.9227pt too wide) in paragraph at lines 65--73
+\T1/ppl/m/n/10 (-20) pack-age. There are two ba-sic style: `  scr-head-ings' an
+d `  plain.scrheadings'.
+ []
+
+Package mdframed Info: mdframed works in twoside mode on input line 79.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 79.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 82.
+Package marginnote Info: Margin note 26.1 is on absolute page 26 on input line 
+96.
+Package marginnote Info: xpos seems to be 249.96504pt on input line 96.
+Package marginnote Info: Margin note 26.2 is on absolute page 26 on input line 
+102.
+Package marginnote Info: xpos seems to be 356.25pt on input line 102.
+
+Overfull \hbox (22.21349pt too wide) in paragraph at lines 111--120
+ [][] 
+ []
+
+Package marginnote Info: Margin note 26.3 is on absolute page 27 on input line 
+134.
+Package marginnote Info: xpos seems to be 104.12244pt on input line 134.
+[20]
+Overfull \hbox (2.81065pt too wide) in paragraph at lines 164--166
+[]\T1/ppl/m/n/10 (-20) By de-fault, dis-po-si-tions are num-bered up to the sec
+-tion. This is achieved
+ []
+
+Package marginnote Info: Margin note 27.1 is on absolute page 28 on input line 
+189.
+Package marginnote Info: xpos seems to be 334.14926pt on input line 189.
+
+Overfull \hbox (156.52655pt too wide) has occurred while \output is active
+[][][] 
+ []
+
+[21]
+LaTeX Font Info:    Font shape `T1/ppl/bx/it' in size <10> not available
+(Font)              Font shape `T1/ppl/b/it' tried instead on input line 207.
+) (chapters/mathematics.tex [22]
+chapter 7.
+
+Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
+[][]
+ []
+
+Package marginnote Info: Margin note 29.1 is on absolute page 29 on input line 
+3.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
+Package marginnote Info: Margin note 29.2 is on absolute page 29 on input line 
+15.
+Package marginnote Info: xpos seems to be 230.40108pt on input line 15.
+Package mdframed Info: mdframed works in twoside mode on input line 18.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 18.
+Package hyperref Info: bookmark level for unknown definition defaults to 0 on i
+nput line 18.
+Package mdframed Info: mdframed works in twoside mode on input line 30.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 30.
+Package hyperref Info: bookmark level for unknown theorem defaults to 0 on inpu
+t line 30.
+Package mdframed Info: mdframed works in twoside mode on input line 36.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 36.
+Package hyperref Info: bookmark level for unknown proposition defaults to 0 on 
+input line 36.
+Package marginnote Info: Margin note 29.3 is on absolute page 29 on input line 
+39.
+Package marginnote Info: xpos seems to be 206.93144pt on input line 39.
+Package mdframed Info: mdframed works in twoside mode on input line 43.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 43.
+Package hyperref Info: bookmark level for unknown lemma defaults to 0 on input 
+line 43.
+Package mdframed Info: mdframed works in twoside mode on input line 54.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 54.
+Package hyperref Info: bookmark level for unknown corollary defaults to 0 on in
+put line 54.
+[23
+
+
+]
+Package mdframed Info: mdframed works in twoside mode on input line 65.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 65.
+Package marginnote Info: Margin note 30.1 is on absolute page 30 on input line 
+75.
+Package marginnote Info: xpos seems to be 493.74394pt on input line 75.
+Package mdframed Info: mdframed works in twoside mode on input line 79.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 79.
+Package hyperref Info: bookmark level for unknown example defaults to 0 on inpu
+t line 79.
+Package mdframed Info: mdframed works in twoside mode on input line 86.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 86.
+Package hyperref Info: bookmark level for unknown remark defaults to 0 on input
+ line 86.
+Package mdframed Info: mdframed works in twoside mode on input line 97.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 97.
+Package marginnote Info: Margin note 30.2 is on absolute page 30 on input line 
+107.
+Package marginnote Info: xpos seems to be 222.50056pt on input line 107.
+LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10.5> not available
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 115.
+Package marginnote Info: Margin note 30.3 is on absolute page 30 on input line 
+115.
+Package marginnote Info: xpos seems to be 467.4844pt on input line 115.
+Package mdframed Info: mdframed works in twoside mode on input line 123.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 123.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 125.
+ [24]
+Package mdframed Info: mdframed works in twoside mode on input line 130.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 130.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 132.
+Package marginnote Info: Margin note 31.1 is on absolute page 31 on input line 
+145.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 145.
+Package mdframed Info: mdframed works in twoside mode on input line 145.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 145.
+Package mdframed Info: mdframed detected package amsthm 
+ changed the theorem header of amsthm
+(mdframed)              on input line 145.
+Package mdframed Info: mdframed inside a box 
+ mdframed uses option nobreak mdframed on input line 145.
+)
+Overfull \hbox (156.52655pt too wide) has occurred while \output is active
+[][][] 
+ []
+
+[25]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(70.56284pt, 456.3822pt, 70.56284pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=456.3822pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=-1.70715pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+ [26
+
+
+
+]
+part without number
+[27] [28]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: includemp twoside 
+* h-part:(L,W,R)=(70.56284pt, 468.3323pt, 58.61273pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=304.44447pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=150.23058pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=140.5566pt
+* \marginparsep=23.33124pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+ (chapters/appendix.tex
+chapter A.
+
+Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
+[][]  
+ []
+
+
+Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
+[][]  
+ []
+
+
+Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
+[][]
+ []
+
+[29
+
+
+
+]
+LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10> not available
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 3.
+ [30])
+Overfull \hbox (156.52655pt too wide) has occurred while \output is active
+[][][] 
+ []
+
+[31] [32
+
+
+]
+*geometry* verbose mode - [ newgeometry ] result:
+* driver: pdftex
+* paper: a4paper
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: twoside 
+* h-part:(L,W,R)=(70.56284pt, 456.3822pt, 70.56284pt)
+* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
+* \paperwidth=597.50787pt
+* \paperheight=845.04684pt
+* \textwidth=456.3822pt
+* \textheight=689.1258pt
+* \oddsidemargin=-1.70715pt
+* \evensidemargin=-1.70715pt
+* \topmargin=-127.30946pt
+* \headheight=115.0pt
+* \headsep=18.0pt
+* \topskip=10.0pt
+* \footskip=42.0pt
+* \marginparwidth=0.0pt
+* \marginparsep=0.0pt
+* \columnsep=10.0pt
+* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidetrue
+* \@mparswitchtrue
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
+
+
+LaTeX Warning: Empty bibliography on input line 233.
+
+No file "DaLAT Manual".nls.
+
+Underfull \hbox (badness 10000) in paragraph at lines 256--257
+
+ []
+
+\@gls@deffile=\write12
+\openout12 = `"DaLAT Manual.glsdefs"'.
+
+No file "DaLAT Manual".gls.
+[33
+
+] [34
+
+
+]
+runsystem(makeindex "DaLAT Manual".idx)...executed (allowed).
+
+ ("DaLAT Manual.ind") [35
+
+
+]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 320.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 320.
+ ("DaLAT Manual.aux")
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 320.
+Package atveryend Info: Empty hook `AtEndAfterFileList' on input line 320.
+
+
+LaTeX Warning: There were undefined references.
+
+
+LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
+
+
+Package biblatex Warning: Please (re)run Biber on the file:
+(biblatex)                "DaLAT Manual"
+(biblatex)                and rerun LaTeX afterwards.
+
+Package logreq Info: Writing requests to '"DaLAT Manual".run.xml'.
+\openout1 = `"DaLAT Manual.run.xml"'.
+
+ ) 
+Here is how much of TeX's memory you used:
+ 59123 strings out of 492895
+ 1110917 string characters out of 3121865
+ 1799897 words of memory out of 3000000
+ 61505 multiletter control sequences out of 15000+200000
+ 670075 words of font info for 437 fonts, out of 3000000 for 9000
+ 1141 hyphenation exceptions out of 8191
+ 110i,20n,105p,9096b,2226s stack positions out of 5000i,500n,10000p,200000b,50000s
+pdfTeX warning (dest): name{glo:tocLabel} has been referenced but does not ex
+ist, replaced by a fixed one
+
+{C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.e
+nc}<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/cci
+cons/ccicons.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Max Braun/AppData/Local/Programs/Mi
+KTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/Max Braun/AppData/L
+ocal/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/Max
+ Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/bera/fvmr8a.pfb><C:/Users/
+Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols
+/msam10.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/p
+ublic/newtx/rntxmi7.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/f
+onts/type1/public/txfonts/rtxmi.pfb><C:/Users/Max Braun/AppData/Local/Programs/
+MiKTeX 2.9/fonts/type1/public/txfonts/rtxr.pfb><C:/Users/Max Braun/AppData/Loca
+l/Programs/MiKTeX 2.9/fonts/type1/public/newtx/txexs.pfb><C:/Users/Max Braun/Ap
+pData/Local/Programs/MiKTeX 2.9/fonts/type1/public/txfonts/txmia.pfb><C:/Users/
+Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/newtx/txsys.pfb>
+<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/
+uhvb8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/ur
+w/helvetic/uhvr8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fon
+ts/type1/urw/palatino/uplb8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiK
+TeX 2.9/fonts/type1/urw/palatino/uplbi8a.pfb><C:/Users/Max Braun/AppData/Local/
+Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Max Braun/App
+Data/Local/Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Ma
+x Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplri8a.pfb>
+<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/times/utm
+ri8a.pfb>
+Output written on "DaLAT Manual.pdf" (41 pages, 1004211 bytes).
+PDF statistics:
+ 913 PDF objects out of 1000 (max. 8388607)
+ 245 named destinations out of 1000 (max. 500000)
+ 65985 words of extra memory for PDF output out of 74296 (max. 10000000)
+

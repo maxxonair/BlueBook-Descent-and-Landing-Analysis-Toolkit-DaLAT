@@ -1,0 +1,75 @@
+\setchapterstyle{kao}
+\setchapterpreamble[u]{\margintoc}
+\chapter{Introduction}
+\labch{intro}
+
+\section{The Main Ideas}
+
+This document is intended to provide the physical and mathematical background concerning this simulation tool kit. It will provide the necessary information to operate the tool, tailor it to specific use cases, and develop the source code to augment it.
+
+\section{What This Toolkit Does}
+\labsec{does}
+
+The \Class{kaobook} class focuses more about the document structure than 
+about the style. Indeed, it is a well-known \LaTeX\xspace principle that 
+structure and style should be separated as much as possible (see also 
+\vrefsec{doesnot}). This means that this class will only provide 
+commands, environments and in general, the opportunity to do things, 
+which the user may or may not use. Actually, some stylistic matters are 
+embedded in the class, but the user is able to customise them with ease.
+
+The main features are the following:
+
+\begin{description}
+	\item[Page Layout] The text width is reduced to improve readability 
+	and make space for the margins, where any sort of elements can be 
+	displayed.
+	\item[Chapter Headings] As opposed to Tufte-Latex, we provide a 
+	variety of chapter headings among which to choose; examples will be 
+	seen in later chapters.
+	\item[Page Headers] They span the whole page, margins included, and, 
+	in twoside mode, display alternatively the chapter and the section 
+	name.\sidenote[-2mm][]{This is another departure from Tufte's 
+	design.}
+	\item[Matters] The commands \Command{frontmatter}, 
+	\Command{mainmatter} and \Command{backmatter} have been redefined in 
+	order to have automatically wide margins in the main matter, and 
+	narrow margins in the front and back matters. However, the page 
+	style can be changed at any moment, even in the middle of the 
+	document.
+	\item[Margin text] We provide commands \Command{sidenote} and 
+	\Command{marginnote} to put text in the 
+	margins.\sidenote[-2mm][]{Sidenotes (like this!) are numbered while 
+	marginnotes are not}
+	\item[Margin figs/tabs] A couple of useful environments is 
+	\Environment{marginfigure} and \Environment{margintable}, which, not 
+	surprisingly, allow you to put figures and tables in the margins 
+	(\cfr \reffig{marginmonalisa}).
+	\item[Margin toc] Finally, since we have wide margins, why don't add 
+	a little table of contents in them? See \Command{margintoc} for 
+	that.
+	\item[Hyperref] \Package{hyperref} is loaded and by default we try 
+	to add bookmarks in a sensible way; in particular, the bookmarks 
+	levels are automatically reset at \Command{appendix} and 
+	\Command{backmatter}. Moreover, we also provide a small package to 
+	ease the hyperreferencing of other parts of the text.
+	\item[Bibliography] We want the reader to be able to know what has 
+	been cited without having to go to the end of the document every 
+	time, so citations go in the margins as well as at the end, as in 
+	Tufte-Latex. Unlike that class, however, you are free to customise 
+	the citations as you wish.
+\end{description}
+
+\begin{marginfigure}[-5.5cm]
+	\includegraphics{monalisa}
+	\caption[The Mona Lisa]{The Mona Lisa.\\ 
+	\url{https://commons.wikimedia.org/wiki/File:Mona_Lisa,_by_Leonardo_da_Vinci,_from_C2RMF_retouched.jpg}}
+	\labfig{marginmonalisa}
+\end{marginfigure}
+
+The order of the title pages, table of contents and preface can be 
+easily changed, as in aly \LaTeX\ document. In addition, the class is 
+based on \KOMAScript's \Class{scrbook}, therefore it inherits all the 
+goodies of that.
+
+
