@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2019.6.12)  12 JUN 2019 17:03
+This is pdfTeX, Version 3.14159265-2.6-1.40.20 (MiKTeX 2.9.7050 64-bit) (preloaded format=pdflatex 2019.6.12)  13 JUN 2019 11:00
 entering extended mode
 **"./DaLAT Manual.tex"
 ("DaLAT Manual.tex"
@@ -3020,7 +3020,7 @@ LaTeX Font Info:    Font shape `T1/ppl/bx/sc' in size <12> not available
  [4
 
 
-] [5]
+]
 Package tocbasic Info: character protrusion at lof deactivated on input line 17
 8.
  ("DaLAT Manual.lof")
@@ -3033,7 +3033,8 @@ Package tocbasic Info: character protrusion at lot deactivated on input line 18
 \tf@lot=\write11
 \openout11 = `"DaLAT Manual.lot"'.
 
- [6
+
+[5
 
 
 ]
@@ -3076,9 +3077,8 @@ Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
 [][]
  []
 
-Package marginnote Info: Margin note 7.1 is on absolute page 7 on input line 3.
+Package marginnote Info: Margin note 6.1 is on absolute page 6 on input line 3.
 
-Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
 LaTeX Font Info:    Font shape `T1/phv/m/n' will be
 (Font)              scaled to size 7.59998pt on input line 3.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <8> not available
@@ -3089,6 +3089,7 @@ LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <8> not available
 (Font)              Font shape `T1/ppl/b/n' tried instead on input line 3.
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <9> not available
 (Font)              Font shape `T1/ppl/b/n' tried instead on input line 3.
+Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
 LaTeX Font Info:    Font shape `T1/phv/bx/n' in size <14.4> not available
 (Font)              Font shape `T1/phv/b/n' tried instead on input line 6.
 LaTeX Font Info:    Font shape `T1/phv/b/n' will be
@@ -3106,7 +3107,7 @@ LaTeX Warning: Hyper reference `sec:doesnot' on page 1 undefined on input line
 
 LaTeX Warning: Reference `sec:doesnot' on page 1 undefined on input line 20.
 
-Package marginnote Info: Margin note 7.2 is on absolute page 7 on input line 37
+Package marginnote Info: Margin note 6.2 is on absolute page 6 on input line 37
 .
 Package marginnote Info: xpos seems to be 126.65268pt on input line 37.
 
@@ -3122,10 +3123,22 @@ kmatter
 
 
 ]
+
+Package marginnote Warning: Consecutive odd pages found.
+(marginnote)                Note, it is not recommended to use consecutive
+(marginnote)                odd pages in a double-ended document.
+(marginnote)                The pages of your document should always
+(marginnote)                be a sequence: odd-even-odd-even-...
+(marginnote)                Maybe you've forgotten a \cleardoubleoddpage before
+
+(marginnote)                changing the page numbering on page 1.
+
+Package marginnote Info: Using workaround for absolute page number on input lin
+e 44.
 Package marginnote Info: Margin note 8.1 is on absolute page 8 on input line 47
 .
 Package marginnote Info: xpos seems to be 354.34917pt on input line 47.
-<images/monalisa.jpg, id=262, 403.5075pt x 601.24625pt>
+<images/monalisa.jpg, id=206, 403.5075pt x 601.24625pt>
 File: images/monalisa.jpg Graphic file (type jpg)
 <use images/monalisa.jpg>
 Package pdftex.def Info: images/monalisa.jpg  used on input line 68.
@@ -3228,18 +3241,21 @@ LaTeX Font Info:    Font shape `T1/ppl/bx/sc' in size <24.88> not available
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
- (chapters/options.tex
+ (chapters/MathPysBackground.tex
 chapter 2.
-<images/004_Headerchapter1.png, id=281, 1595.20969pt x 558.58687pt>
+<images/004_Headerchapter1.png, id=226, 1568.86125pt x 546.54187pt>
 File: images/004_Headerchapter1.png Graphic file (type png)
 <use images/004_Headerchapter1.png>
 Package pdftex.def Info: images/004_Headerchapter1.png  used on input line 3.
-(pdftex.def)             Requested size: 597.49629pt x 247.53479pt.
+(pdftex.def)             Requested size: 597.51405pt x 247.54276pt.
 
-Overfull \hbox (222.11287pt too wide) in paragraph at lines 3--3
+Overfull \hbox (222.13063pt too wide) in paragraph at lines 3--3
 []|  [] 
  []
 
+Class scrbook Info: preamble before chapter is 0.00389pt to high.
+(scrbook)           Tolerated without warning because of
+(scrbook)           \vfuzz = 0.1pt >= 0.00389pt on input line 3.
 Package marginnote Info: Margin note 11.1 is on absolute page 11 on input line 
 3.
 Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
@@ -3248,237 +3264,35 @@ Underfull \hbox (badness 1009) in paragraph at lines 3--3
 [][] [][]\T1/ppl/b/n/9 Earth Cen-tered Earth Fixed -
  []
 
+
+Underfull \hbox (badness 1675) in paragraph at lines 3--3
+[][] [][]\T1/ppl/b/n/9 Equa-tions of Ro-ta-tional Mo-
+ []
+
 LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <12> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 20.
-<images/001_ECI.png, id=299, 853.1875pt x 726.715pt>
+(Font)              Font shape `T1/ppl/b/n' tried instead on input line 14.
+<images/001_ECI.png, id=276, 853.1875pt x 726.715pt>
 File: images/001_ECI.png Graphic file (type png)
 <use images/001_ECI.png>
-Package pdftex.def Info: images/001_ECI.png  used on input line 23.
+Package pdftex.def Info: images/001_ECI.png  used on input line 27.
 (pdftex.def)             Requested size: 136.99448pt x 116.68706pt.
-Package mdframed Info: mdframed works in twoside mode on input line 30.
+Package mdframed Info: mdframed works in twoside mode on input line 34.
 Package mdframed Info: mdframed detected package amsthm 
  changed the theorem header of amsthm
-(mdframed)              on input line 30.
+(mdframed)              on input line 34.
 Package mdframed Info: mdframed detected package amsthm 
  changed the theorem header of amsthm
-(mdframed)              on input line 32.
+(mdframed)              on input line 36.
 [5
 
 
 
- <./images/004_Headerchapter1.png> <./images/001_ECI.png>])
-(chapters/textnotes.tex [6]
-chapter 3.
-Package marginnote Info: Margin note 13.1 is on absolute page 13 on input line 
-2.
-Package marginnote Info: xpos seems to be 70.56284pt on input line 2.
-Package marginnote Info: Margin note 13.2 is on absolute page 13 on input line 
-15.
-Package marginnote Info: xpos seems to be 324.06961pt on input line 15.
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 7.65005pt on input line 19.
-Package marginnote Info: Margin note 13.3 is on absolute page 13 on input line 
-26.
-Package marginnote Info: xpos seems to be 208.0414pt on input line 26.
-Package marginnote Info: Margin note 13.4 is on absolute page 14 on input line 
-57.
-Package marginnote Info: xpos seems to be 496.4393pt on input line 57.
-[7
-
-
-]
-Package mdframed Info: mdframed works in twoside mode on input line 64.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 64.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 69.
-
-Overfull \hbox (5.28227pt too wide) in paragraph at lines 71--78
-\T1/ppl/m/n/10 (-20) (\T1/fvm/m/n/10 \renewcommand{\marginnotevadjust}{3pt}\T1/
-ppl/m/n/10 (-20) ) in or-der to allineate them
- []
-
-LaTeX Font Info:    Try loading font information for OMS+ppl on input line 89.
-
-("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\omsppl.
-fd"
-File: omsppl.fd 
-)
-LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <7.3> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 89.
-LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <6.2> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 89.
-Package marginnote Info: Margin note 14.1 is on absolute page 14 on input line 
-106.
-Package marginnote Info: xpos seems to be 222.50056pt on input line 106.
-) (chapters/figsntabs.tex [8]
-chapter 4.
-<images/seaside.jpeg, id=350, 1283.79625pt x 553.06625pt>
-File: images/seaside.jpeg Graphic file (type jpg)
-<use images/seaside.jpeg>
-Package pdftex.def Info: images/seaside.jpeg  used on input line 3.
-(pdftex.def)             Requested size: 597.52718pt x 261.764pt.
-
-Overfull \hbox (222.14375pt too wide) in paragraph at lines 3--3
-[]|  [] 
- []
-
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 21.61124pt on input line 3.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 16.77632pt on input line 3.
-LaTeX Font Info:    Font shape `U/msa/m/n' will be
-(Font)              scaled to size 11.87888pt on input line 3.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 21.61124pt on input line 3.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 16.77632pt on input line 3.
-LaTeX Font Info:    Font shape `U/msb/m/n' will be
-(Font)              scaled to size 11.87888pt on input line 3.
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <16.1> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 3.
-Package marginnote Info: Margin note 15.1 is on absolute page 15 on input line 
-3.
-Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
-pdfTeX warning (ext4): destination with the same identifier (name{Hfootnote.1})
- has been already used, duplicate ignored
-<to be read again> 
-                   \relax 
-l.7 ....wikimedia.org/w/index.php?curid=68724647}}
-                                                  
-File: images/monalisa.jpg Graphic file (type jpg)
-<use images/monalisa.jpg>
-Package pdftex.def Info: images/monalisa.jpg  used on input line 27.
-(pdftex.def)             Requested size: 136.99986pt x 204.13661pt.
- [9
-
-
- <./images/seaside.jpeg>]
-LaTeX Font Info:    Font shape `T1/fvm/m/n' will be
-(Font)              scaled to size 5.95004pt on input line 41.
-
-[10]
-Package hyperref Info: bookmark level for unknown todo defaults to 0 on input l
-ine 127.
-File: images/seaside.jpeg Graphic file (type jpg)
-<use images/seaside.jpeg>
-Package pdftex.def Info: images/seaside.jpeg  used on input line 133.
-(pdftex.def)             Requested size: 468.31729pt x 201.75357pt.
-) (chapters/references.tex
+ <./images/004_Headerchapter1.png>] [6 <./images/001_ECI.png>])
 Overfull \hbox (156.52655pt too wide) has occurred while \output is active
 [][][] 
  []
 
-[11] [12
-
-
-]
-chapter 5.
-
-Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
-[][]
- []
-
-
-LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
-
-Package marginnote Info: Margin note 19.1 is on absolute page 19 on input line 
-9.
-Package marginnote Info: xpos seems to be 269.42896pt on input line 9.
-
-LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'Visscher2008' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 9.
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 9--9
-[]| \T1/ppl/m/n/8 (+20) [[]]: []
- []
-
-
-Underfull \hbox (badness 5726) in paragraph at lines 9--9
-\T1/ppl/m/n/8 (+20) [[]]: [] ([]),
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 9--9
-
- []
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
-
-Package marginnote Info: Margin note 19.2 is on absolute page 19 on input line 
-15.
-Package marginnote Info: xpos seems to be 183.85548pt on input line 15.
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
-
-
-LaTeX Warning: Citation 'James2013' on page 13 undefined on input line 15.
-
-
-Underfull \hbox (badness 5726) in paragraph at lines 15--15
-[]| \T1/ppl/m/n/8 (+20) [[]]: [] ([]),
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 15--15
-
- []
-
-Package marginnote Info: Margin note 19.3 is on absolute page 19 on input line 
-37.
-Package marginnote Info: xpos seems to be 90.77275pt on input line 37.
-Package marginnote Info: Margin note 19.4 is on absolute page 19 on input line 
-57.
-Package marginnote Info: xpos seems to be 70.56284pt on input line 57.
-[13]
-Package marginnote Info: Margin note 20.1 is on absolute page 20 on input line 
-88.
-Package marginnote Info: xpos seems to be 222.50056pt on input line 88.
-
-Overfull \hbox (6.52838pt too wide) in paragraph at lines 140--143
-[][][][][][][][][][][][][][][] \T1/ppl/m/n/10 (-20) and it looks like this: [][
-]Chap-ter [][]5[][] ([][]Ref-er-ences[][])[] on page [][]13[][][][][]. 
- []
-
-[14])
-Overfull \hbox (156.52655pt too wide) has occurred while \output is active
-[][][] 
- []
-
-[15]
+[7]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: a4paper
@@ -3511,275 +3325,13 @@ Overfull \hbox (156.52655pt too wide) has occurred while \output is active
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
- [16
+ [8
 
 
 
 ]
 part without number
-[17] [18]
-*geometry* verbose mode - [ newgeometry ] result:
-* driver: pdftex
-* paper: a4paper
-* layout: <same size as paper>
-* layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: includemp twoside 
-* h-part:(L,W,R)=(70.56284pt, 468.3323pt, 58.61273pt)
-* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
-* \paperwidth=597.50787pt
-* \paperheight=845.04684pt
-* \textwidth=304.44447pt
-* \textheight=689.1258pt
-* \oddsidemargin=-1.70715pt
-* \evensidemargin=150.23058pt
-* \topmargin=-127.30946pt
-* \headheight=115.0pt
-* \headsep=18.0pt
-* \topskip=10.0pt
-* \footskip=42.0pt
-* \marginparwidth=140.5566pt
-* \marginparsep=23.33124pt
-* \columnsep=10.0pt
-* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
-* \hoffset=0.0pt
-* \voffset=0.0pt
-* \mag=1000
-* \@twocolumnfalse
-* \@twosidetrue
-* \@mparswitchtrue
-* \@reversemarginfalse
-* (1in=72.27pt=25.4mm, 1cm=28.453pt)
-
- (chapters/layout.tex
-chapter 6.
-File: images/seaside.jpeg Graphic file (type jpg)
-<use images/seaside.jpeg>
-Package pdftex.def Info: images/seaside.jpeg  used on input line 3.
-(pdftex.def)             Requested size: 597.52718pt x 247.53569pt.
-
-Overfull \hbox (222.14375pt too wide) in paragraph at lines 3--3
-[]|  [] 
- []
-
-Package marginnote Info: Margin note 25.1 is on absolute page 25 on input line 
-3.
-Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
-Package marginnote Info: Margin note 25.2 is on absolute page 25 on input line 
-17.
-Package marginnote Info: xpos seems to be 331.8894pt on input line 17.
-Package marginnote Info: Margin note 25.3 is on absolute page 25 on input line 
-29.
-Package marginnote Info: xpos seems to be 146.39046pt on input line 29.
-Package marginnote Info: Margin note 25.4 is on absolute page 26 on input line 
-53.
-Package marginnote Info: xpos seems to be 377.49673pt on input line 53.
-[19
-
-
-
-]
-Overfull \hbox (17.36574pt too wide) in paragraph at lines 65--73
-\T1/ppl/m/n/10 (-20) Headers and foot-ers in \T1/phv/m/n/10 (-20) KOMA-Script \
-T1/ppl/m/n/10 (-20) are han-dled by the \T1/fvm/m/n/10 scrlayer-scrpage
- []
-
-
-Overfull \hbox (3.9227pt too wide) in paragraph at lines 65--73
-\T1/ppl/m/n/10 (-20) pack-age. There are two ba-sic style: `  scr-head-ings' an
-d `  plain.scrheadings'.
- []
-
-Package mdframed Info: mdframed works in twoside mode on input line 79.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 79.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 82.
-Package marginnote Info: Margin note 26.1 is on absolute page 26 on input line 
-96.
-Package marginnote Info: xpos seems to be 249.96504pt on input line 96.
-Package marginnote Info: Margin note 26.2 is on absolute page 26 on input line 
-102.
-Package marginnote Info: xpos seems to be 356.25pt on input line 102.
-
-Overfull \hbox (22.21349pt too wide) in paragraph at lines 111--120
- [][] 
- []
-
-Package marginnote Info: Margin note 26.3 is on absolute page 27 on input line 
-134.
-Package marginnote Info: xpos seems to be 104.12244pt on input line 134.
-[20]
-Overfull \hbox (2.81065pt too wide) in paragraph at lines 164--166
-[]\T1/ppl/m/n/10 (-20) By de-fault, dis-po-si-tions are num-bered up to the sec
--tion. This is achieved
- []
-
-Package marginnote Info: Margin note 27.1 is on absolute page 28 on input line 
-189.
-Package marginnote Info: xpos seems to be 334.14926pt on input line 189.
-
-Overfull \hbox (156.52655pt too wide) has occurred while \output is active
-[][][] 
- []
-
-[21]
-LaTeX Font Info:    Font shape `T1/ppl/bx/it' in size <10> not available
-(Font)              Font shape `T1/ppl/b/it' tried instead on input line 207.
-) (chapters/mathematics.tex [22]
-chapter 7.
-
-Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
-[][]
- []
-
-Package marginnote Info: Margin note 29.1 is on absolute page 29 on input line 
-3.
-Package marginnote Info: xpos seems to be 70.56284pt on input line 3.
-Package marginnote Info: Margin note 29.2 is on absolute page 29 on input line 
-15.
-Package marginnote Info: xpos seems to be 230.40108pt on input line 15.
-Package mdframed Info: mdframed works in twoside mode on input line 18.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 18.
-Package hyperref Info: bookmark level for unknown definition defaults to 0 on i
-nput line 18.
-Package mdframed Info: mdframed works in twoside mode on input line 30.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 30.
-Package hyperref Info: bookmark level for unknown theorem defaults to 0 on inpu
-t line 30.
-Package mdframed Info: mdframed works in twoside mode on input line 36.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 36.
-Package hyperref Info: bookmark level for unknown proposition defaults to 0 on 
-input line 36.
-Package marginnote Info: Margin note 29.3 is on absolute page 29 on input line 
-39.
-Package marginnote Info: xpos seems to be 206.93144pt on input line 39.
-Package mdframed Info: mdframed works in twoside mode on input line 43.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 43.
-Package hyperref Info: bookmark level for unknown lemma defaults to 0 on input 
-line 43.
-Package mdframed Info: mdframed works in twoside mode on input line 54.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 54.
-Package hyperref Info: bookmark level for unknown corollary defaults to 0 on in
-put line 54.
-[23
-
-
-]
-Package mdframed Info: mdframed works in twoside mode on input line 65.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 65.
-Package marginnote Info: Margin note 30.1 is on absolute page 30 on input line 
-75.
-Package marginnote Info: xpos seems to be 493.74394pt on input line 75.
-Package mdframed Info: mdframed works in twoside mode on input line 79.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 79.
-Package hyperref Info: bookmark level for unknown example defaults to 0 on inpu
-t line 79.
-Package mdframed Info: mdframed works in twoside mode on input line 86.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 86.
-Package hyperref Info: bookmark level for unknown remark defaults to 0 on input
- line 86.
-Package mdframed Info: mdframed works in twoside mode on input line 97.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 97.
-Package marginnote Info: Margin note 30.2 is on absolute page 30 on input line 
-107.
-Package marginnote Info: xpos seems to be 222.50056pt on input line 107.
-LaTeX Font Info:    Font shape `T1/ppl/bx/n' in size <10.5> not available
-(Font)              Font shape `T1/ppl/b/n' tried instead on input line 115.
-Package marginnote Info: Margin note 30.3 is on absolute page 30 on input line 
-115.
-Package marginnote Info: xpos seems to be 467.4844pt on input line 115.
-Package mdframed Info: mdframed works in twoside mode on input line 123.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 123.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 125.
- [24]
-Package mdframed Info: mdframed works in twoside mode on input line 130.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 130.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 132.
-Package marginnote Info: Margin note 31.1 is on absolute page 31 on input line 
-145.
-Package marginnote Info: xpos seems to be 70.56284pt on input line 145.
-Package mdframed Info: mdframed works in twoside mode on input line 145.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 145.
-Package mdframed Info: mdframed detected package amsthm 
- changed the theorem header of amsthm
-(mdframed)              on input line 145.
-Package mdframed Info: mdframed inside a box 
- mdframed uses option nobreak mdframed on input line 145.
-)
-Overfull \hbox (156.52655pt too wide) has occurred while \output is active
-[][][] 
- []
-
-[25]
-*geometry* verbose mode - [ newgeometry ] result:
-* driver: pdftex
-* paper: a4paper
-* layout: <same size as paper>
-* layoutoffset:(h,v)=(0.0pt,0.0pt)
-* modes: twoside 
-* h-part:(L,W,R)=(70.56284pt, 456.3822pt, 70.56284pt)
-* v-part:(T,H,B)=(77.96053pt, 689.1258pt, 77.96053pt)
-* \paperwidth=597.50787pt
-* \paperheight=845.04684pt
-* \textwidth=456.3822pt
-* \textheight=689.1258pt
-* \oddsidemargin=-1.70715pt
-* \evensidemargin=-1.70715pt
-* \topmargin=-127.30946pt
-* \headheight=115.0pt
-* \headsep=18.0pt
-* \topskip=10.0pt
-* \footskip=42.0pt
-* \marginparwidth=0.0pt
-* \marginparsep=0.0pt
-* \columnsep=10.0pt
-* \skip\footins=9.0pt plus 4.0pt minus 2.0pt
-* \hoffset=0.0pt
-* \voffset=0.0pt
-* \mag=1000
-* \@twocolumnfalse
-* \@twosidetrue
-* \@mparswitchtrue
-* \@reversemarginfalse
-* (1in=72.27pt=25.4mm, 1cm=28.453pt)
-
- [26
-
-
-
-]
-part without number
-[27] [28]
+[9] [10]
 *geometry* verbose mode - [ newgeometry ] result:
 * driver: pdftex
 * paper: a4paper
@@ -3829,19 +3381,25 @@ Overfull \hbox (163.88783pt too wide) in paragraph at lines 3--3
 [][]
  []
 
-[29
+[11
 
 
 
 ]
+LaTeX Font Info:    Try loading font information for OMS+ppl on input line 3.
+
+("C:\Users\Max Braun\AppData\Local\Programs\MiKTeX 2.9\tex/latex/psnfss\omsppl.
+fd"
+File: omsppl.fd 
+)
 LaTeX Font Info:    Font shape `OMS/ppl/m/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 3.
- [30])
+ [12])
 Overfull \hbox (156.52655pt too wide) has occurred while \output is active
 [][][] 
  []
 
-[31] [32
+[13] [14
 
 
 ]
@@ -3891,18 +3449,15 @@ Underfull \hbox (badness 10000) in paragraph at lines 256--257
 \openout12 = `"DaLAT Manual.glsdefs"'.
 
 No file "DaLAT Manual".gls.
-[33
+[15
 
-] [34
+] [16
 
 
 ]
 runsystem(makeindex "DaLAT Manual".idx)...executed (allowed).
 
- ("DaLAT Manual.ind") [35
-
-
-]
+ ("DaLAT Manual.ind")
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 320.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 320.
  ("DaLAT Manual.aux")
@@ -3915,54 +3470,36 @@ LaTeX Warning: There were undefined references.
 
 LaTeX Warning: Label(s) may have changed. Rerun to get cross-references right.
 
-
-Package biblatex Warning: Please (re)run Biber on the file:
-(biblatex)                "DaLAT Manual"
-(biblatex)                and rerun LaTeX afterwards.
-
 Package logreq Info: Writing requests to '"DaLAT Manual".run.xml'.
 \openout1 = `"DaLAT Manual.run.xml"'.
 
  ) 
 Here is how much of TeX's memory you used:
- 59125 strings out of 492895
- 1110659 string characters out of 3121865
- 1799958 words of memory out of 3000000
- 61506 multiletter control sequences out of 15000+200000
- 670075 words of font info for 437 fonts, out of 3000000 for 9000
+ 58030 strings out of 492895
+ 1095165 string characters out of 3121865
+ 1738006 words of memory out of 3000000
+ 60747 multiletter control sequences out of 15000+200000
+ 632021 words of font info for 278 fonts, out of 3000000 for 9000
  1141 hyphenation exceptions out of 8191
- 110i,20n,105p,9096b,2226s stack positions out of 5000i,500n,10000p,200000b,50000s
-pdfTeX warning (dest): name{glo:tocLabel} has been referenced but does not ex
-ist, replaced by a fixed one
-
-{C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r.e
-nc}<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/cci
-cons/ccicons.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/ty
-pe1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Max Braun/AppData/Local/Programs/Mi
-KTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy6.pfb><C:/Users/Max Braun/AppData/L
-ocal/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/cm/cmsy7.pfb><C:/Users/Max
- Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/bera/fvmr8a.pfb><C:/Users/
-Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols
-/msam10.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/p
-ublic/newtx/rntxmi7.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/f
-onts/type1/public/txfonts/rtxmi.pfb><C:/Users/Max Braun/AppData/Local/Programs/
-MiKTeX 2.9/fonts/type1/public/txfonts/rtxr.pfb><C:/Users/Max Braun/AppData/Loca
-l/Programs/MiKTeX 2.9/fonts/type1/public/newtx/txexs.pfb><C:/Users/Max Braun/Ap
-pData/Local/Programs/MiKTeX 2.9/fonts/type1/public/txfonts/txmia.pfb><C:/Users/
-Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/newtx/txsys.pfb>
-<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/helvetic/
-uhvb8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/ur
-w/helvetic/uhvr8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fon
-ts/type1/urw/palatino/uplb8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiK
-TeX 2.9/fonts/type1/urw/palatino/uplbi8a.pfb><C:/Users/Max Braun/AppData/Local/
-Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Max Braun/App
-Data/Local/Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Ma
-x Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplri8a.pfb>
-<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/times/utm
-ri8a.pfb>
-Output written on "DaLAT Manual.pdf" (41 pages, 1003084 bytes).
+ 110i,19n,105p,9096b,2226s stack positions out of 5000i,500n,10000p,200000b,50000s
+{C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/enc/dvips/base/8r
+.enc}<C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/c
+cicons/ccicons.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/
+type1/public/amsfonts/cm/cmsy10.pfb><C:/Users/Max Braun/AppData/Local/Programs/
+MiKTeX 2.9/fonts/type1/bera/fvmr8a.pfb><C:/Users/Max Braun/AppData/Local/Progra
+ms/MiKTeX 2.9/fonts/type1/public/amsfonts/symbols/msam10.pfb><C:/Users/Max Brau
+n/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/txfonts/rtxmi.pfb><C:/Us
+ers/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/public/txfonts/txmi
+a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/hel
+vetic/uhvb8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2.9/fonts/ty
+pe1/urw/helvetic/uhvr8a.pfb><C:/Users/Max Braun/AppData/Local/Programs/MiKTeX 2
+.9/fonts/type1/urw/palatino/uplb8a.pfb><C:/Users/Max Braun/AppData/Local/Progra
+ms/MiKTeX 2.9/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Max Braun/AppData/L
+ocal/Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplr8a.pfb><C:/Users/Max Brau
+n/AppData/Local/Programs/MiKTeX 2.9/fonts/type1/urw/palatino/uplri8a.pfb>
+Output written on "DaLAT Manual.pdf" (21 pages, 644727 bytes).
 PDF statistics:
- 922 PDF objects out of 1000 (max. 8388607)
- 246 named destinations out of 1000 (max. 500000)
- 65993 words of extra memory for PDF output out of 74296 (max. 10000000)
+ 475 PDF objects out of 1000 (max. 8388607)
+ 89 named destinations out of 1000 (max. 500000)
+ 57620 words of extra memory for PDF output out of 61914 (max. 10000000)
 
