@@ -191,6 +191,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			
 			// 6 DOF Attitude variables: 
 			public static double[][] q_vector = {{0},{0},{0},{0}}; 						// Quarternion vector
+			public static double[][] AngularVelocity = {{0},{0},{0}};					// Angular Velcity {P, Q, R}T [rad/s] 
 			
 			
 			//__________________________
@@ -264,7 +265,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			double[] result = new double[3];
 			result[1] = -Math.atan(X[2]/(Math.sqrt(X[0]*X[0] + X[1]*X[1])));
 			result[0] =  Math.sqrt(X[0]*X[0] + X[1]*X[1] + X[2]*X[2]);
-			result[2] = Math.atan2(X[1],X[0]);
+			result[2] =  Math.atan2(X[1],X[0]);
 			/*
 			if(X[1]<0 && X[0]>0) {
 				result[2]= PI + Math.abs(result[2]);
@@ -492,7 +493,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	     	//-----------------------------------------------------------------------------------------------
 	    	 DragForce  			=   qinf * SurfaceArea * Cd     		       ;								// Aerodynamic drag Force 		   [N]
 	    	 LiftForce 		    	=   qinf * SurfaceArea * Cl * cos( BankAngle ) ;                        // Aerodynamic lift Force 		   [N]
-	    	 SideForce 			=   qinf * SurfaceArea * Cl * sin( BankAngle ) ;                        // Aerodynamic side Force 		   [N]
+	    	 SideForce 		    	=   qinf * SurfaceArea * Cl * sin( BankAngle ) ;                        // Aerodynamic side Force 		   [N]
 	    	//----------------------------------------------------------------------------------------------
 		}
 
@@ -514,6 +515,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			//-------------------------------------------------------------------------------------------
 			//             Body fixed frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
+			// Euler Angle Representation: 
+			
 			C_NED_B[0][0] =  Math.cos(euler_angle[2])*Math.cos(euler_angle[1]); 
 			C_NED_B[1][0] =  Math.sin(euler_angle[2])*Math.cos(euler_angle[1]);
 			C_NED_B[2][0] = -Math.sin(euler_angle[1]);
@@ -525,6 +528,22 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			C_NED_B[0][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[0])+Math.cos(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0]); 
 			C_NED_B[1][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0])-Math.cos(euler_angle[2])*Math.sin(euler_angle[0]);
 			C_NED_B[2][2] = Math.cos(euler_angle[1])*Math.cos(euler_angle[0]);
+			
+			//-----------------------------------------------------------------------
+			// Quaternion Representation: 
+			/*
+			C_NED_B[0][0] =    (q_vector[0][0]*q_vector[0][0] + q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]); 
+			C_NED_B[1][0] =  2*(q_vector[1][0]*q_vector[2][0] + q_vector[0][0]*q_vector[3][0]);
+			C_NED_B[2][0] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]);
+			
+			C_NED_B[0][1] =  2*(q_vector[1][0]*q_vector[2][0] - q_vector[0][0]*q_vector[3][0]); 
+			C_NED_B[1][1] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] + q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]);
+			C_NED_B[2][1] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
+			
+			C_NED_B[0][2] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]); 
+			C_NED_B[1][2] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
+			C_NED_B[2][2] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] + q_vector[3][0]*q_vector[3][0]);
+			*/
 			//-------------------------------------------------------------------------------------------
 			//             ECEF frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
@@ -622,6 +641,10 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
+    	//
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 									     Translatoric Motion
+    	//-------------------------------------------------------------------------------------------------------------------
     	// Position vector with respect to spherical velocity vector
     	int optionR = 1; 
 	    if(optionR==1) {
@@ -704,6 +727,21 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    }	    
 	    // System mass [kg]
 	    dxdt[6] = - Thrust/(ISP*g0) ;   
+    	//-------------------------------------------------------------------------------------------------------------------
+    	// 						   Rotataional motion
+    	//-------------------------------------------------------------------------------------------------------------------
+	    if(is_6DOF) {
+	    	// Quaternions:
+	    dxdt[7] = 0.5*(-  x[8]  * AngularVelocity[0][0]  - x[9]  * AngularVelocity[1][0]  - x[10] * AngularVelocity[2][0]);
+	    dxdt[8] = 0.5*(   x[7]  * AngularVelocity[0][0]  - x[10] * AngularVelocity[1][0]  + x[9]  * AngularVelocity[2][0]);
+	    dxdt[9] = 0.5*(   x[10] * AngularVelocity[0][0]  + x[7]  * AngularVelocity[1][0]  - x[8]  * AngularVelocity[2][0]);
+	    dxdt[10]= 0.5*(-  x[9]  * AngularVelocity[0][0]  + x[8]  * AngularVelocity[1][0]  + x[7]  * AngularVelocity[2][0]);
+	    
+	    	// Angular Velocity: 
+	    dxdt[11] = 0;
+	    dxdt[12] = 0;
+	    dxdt[13] = 0;
+	    }
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Update Event handler
     	//-------------------------------------------------------------------------------------------------------------------

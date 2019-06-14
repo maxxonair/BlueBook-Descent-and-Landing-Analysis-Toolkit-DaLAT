@@ -36,23 +36,23 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {subsection}{\nonumberline Earth Centered Inertial - ECI}{5}{section*.12}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Earth Centered Earth Fixed - ECEF}{5}{section*.14}% 
+\contentsline {subsection}{\nonumberline Earth Centered Earth Fixed - ECEF}{6}{section*.14}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline North East Down - NED}{6}{section*.15}% 
+\contentsline {subsection}{\nonumberline North East Down - NED}{7}{section*.16}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Aerodynamic Frame - A}{6}{section*.16}% 
+\contentsline {subsection}{\nonumberline Aerodynamic Frame - A}{7}{section*.17}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Bodyfixed Frame - B}{6}{section*.17}% 
+\contentsline {subsection}{\nonumberline Bodyfixed Frame - B}{7}{section*.18}% 
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {2.3}Coordinate Frame Transformation}{7}{section.2.3}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Spherical to Cartesian Coordinates}{7}{section*.18}% 
+\contentsline {subsection}{\nonumberline Spherical to Cartesian Coordinates}{7}{section*.19}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Cartesian to Spherical Coordinates}{7}{section*.19}% 
+\contentsline {subsection}{\nonumberline Cartesian to Spherical Coordinates}{7}{section*.20}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline ECI to ECEF}{7}{section*.20}% 
+\contentsline {subsection}{\nonumberline ECI to ECEF}{7}{section*.21}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline B to NED}{7}{section*.21}% 
+\contentsline {subsection}{\nonumberline B to NED}{7}{section*.22}% 
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {2.4}Equations of Translational Motion}{7}{section.2.4}% 
 \defcounter {refsection}{0}\relax 
@@ -60,32 +60,42 @@
 \defcounter {refsection}{0}\relax 
 \contentsline {section}{\numberline {2.6}External Forces}{7}{section.2.6}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Gravitational Forces}{7}{section*.22}% 
+\contentsline {subsection}{\nonumberline Gravitational Forces}{7}{section*.23}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Aerodynamic Forces}{7}{section*.23}% 
+\contentsline {subsection}{\nonumberline Aerodynamic Forces}{7}{section*.24}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {part}{\nonumberline Appendix}{9}{part*.25}% 
+\contentsline {chapter}{\numberline {3}Figures and Tables}{9}{chapter.3}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {chapter}{\numberline {A}Heading on Level\xspace 0 (chapter)}{11}{appendix.A}% 
+\etoc@startlocaltoc {4}
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {A.1}Heading on Level\xspace 1 (section)}{11}{section.A.1}% 
+\contentsline {section}{\numberline {3.1}Normal Figures and Tables}{9}{section.3.1}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Heading on Level\xspace 2 (subsection)}{11}{section*.26}% 
+\contentsline {section}{\numberline {3.2}Margin Figures and Tables}{10}{section.3.2}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\nonumberline Heading on Level\xspace 3 (subsubsection)}{11}{section*.27}% 
+\contentsline {section}{\numberline {3.3}Wide Figures and Tables}{11}{section.3.3}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {paragraph}{\nonumberline Heading on Level\xspace 4 (paragraph)}{12}{section*.28}% 
+\contentsline {part}{\nonumberline Appendix}{13}{part*.31}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {section}{\numberline {A.2}Lists}{12}{section.A.2}% 
+\contentsline {chapter}{\numberline {A}Heading on Level\xspace 0 (chapter)}{15}{appendix.A}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Example for list\xspace (itemize)}{12}{section*.29}% 
+\contentsline {section}{\numberline {A.1}Heading on Level\xspace 1 (section)}{15}{section.A.1}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\nonumberline Example for list\xspace (4*itemize)}{12}{section*.30}% 
+\contentsline {subsection}{\nonumberline Heading on Level\xspace 2 (subsection)}{15}{section*.32}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Example for list\xspace (enumerate)}{12}{section*.31}% 
+\contentsline {subsubsection}{\nonumberline Heading on Level\xspace 3 (subsubsection)}{15}{section*.33}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\nonumberline Example for list\xspace (4*enumerate)}{13}{section*.32}% 
+\contentsline {paragraph}{\nonumberline Heading on Level\xspace 4 (paragraph)}{16}{section*.34}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsection}{\nonumberline Example for list\xspace (description)}{13}{section*.33}% 
+\contentsline {section}{\numberline {A.2}Lists}{16}{section.A.2}% 
 \defcounter {refsection}{0}\relax 
-\contentsline {subsubsection}{\nonumberline Example for list\xspace (4*description)}{13}{section*.34}% 
+\contentsline {subsection}{\nonumberline Example for list\xspace (itemize)}{16}{section*.35}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline Example for list\xspace (4*itemize)}{16}{section*.36}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\nonumberline Example for list\xspace (enumerate)}{16}{section*.37}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline Example for list\xspace (4*enumerate)}{17}{section*.38}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsection}{\nonumberline Example for list\xspace (description)}{17}{section*.39}% 
+\defcounter {refsection}{0}\relax 
+\contentsline {subsubsection}{\nonumberline Example for list\xspace (4*description)}{17}{section*.40}% 

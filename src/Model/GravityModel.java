@@ -14,7 +14,7 @@ public class GravityModel  {
 		};
 	
 	
-	static double       J2    = 0;             // First Jeofreys? Constant                 [??]
+	static double       J2    = 0;             			  // First Jeofreys? Constant                 [??]
     static double       J3    = 0;                        // Second ...
     static double       J4    = 0;                        // Third ...
     
