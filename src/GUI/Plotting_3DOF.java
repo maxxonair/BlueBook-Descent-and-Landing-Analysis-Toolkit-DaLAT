@@ -406,6 +406,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JPanel PageX04_Map;
     public static JPanel PageX04_3;
     public static JPanel PageX04_SimSetup; 
+    public static JPanel PageX04_RawDATA; 
     public static JPanel PageX04_PolarMap;
     public static JPanel PolarMapContainer; 
     public static JPanel PageX04_GroundClearance; 
@@ -447,6 +448,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JTextField INPUT_IntegratorSetting_01, INPUT_IntegratorSetting_02, INPUT_IntegratorSetting_03, INPUT_IntegratorSetting_04, INPUT_IntegratorSetting_05;
     public static JRadioButton RB_SurfaceArea, RB_BallisticCoefficient;
     public static int vel_frame_hist = 1; 
+    
+    static DefaultTableModel MODEL_RAWData;
+    static JTable TABLE_RAWData; 
+    
+    
 	 static int c_SEQUENCE = 12;
 	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
 	 static DefaultTableModel MODEL_SEQUENCE;
@@ -749,6 +755,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         PageX04_GroundClearance.setLayout(new BorderLayout());
         PageX04_GroundClearance.setBackground(bc_c);
         PageX04_GroundClearance.setForeground(l_c);
+        PageX04_RawDATA = new JPanel();
+        PageX04_RawDATA.setLocation(0, 0);
+        PageX04_RawDATA.setPreferredSize(new Dimension(extx_main, exty_main));
+        PageX04_RawDATA.setLayout(new BorderLayout());
+        PageX04_RawDATA.setBackground(bc_c);
+        PageX04_RawDATA.setForeground(l_c);
 
         // Page 4.1
         P1_SidePanel = new JPanel();
@@ -1078,6 +1090,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         ButtonUpdate.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) {
         		  UPDATE_Page01();
+        		 // READ_RAWDATA() ;
         	}} );
         P1_SidePanel.add(ButtonUpdate);
         
@@ -2942,6 +2955,41 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        PolarMapContainer.setPreferredSize(new Dimension(extx_main, exty_main));
        PolarMapContainer.setBackground(bc_c);
        PageX04_PolarMap.add(PolarMapContainer, BorderLayout.CENTER);
+ 	  //-----------------------------------------------------------------------------------------
+ 	  // 										Page: Raw Data
+ 	  //-----------------------------------------------------------------------------------------
+       
+	    TABLE_RAWData = new JTable();	    
+	    MODEL_RAWData = new DefaultTableModel(){
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+	        public boolean isCellEditable(int row, int column) {
+	           //all cells false
+					return false;
+	        }
+	    }; 
+	    MODEL_RAWData.setColumnIdentifiers(Axis_Option_NR);
+	    TABLE_RAWData.setModel(MODEL_RAWData);
+	    TABLE_RAWData.setBackground(Color.white);
+	    TABLE_RAWData.setBackground(Color.white);
+	    TABLE_RAWData.setForeground(Color.black);
+	    TABLE_RAWData.getTableHeader().setReorderingAllowed(false);
+	    TABLE_RAWData.setRowHeight(45);
+		TABLE_RAWData.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+		((JTable) TABLE_RAWData).setFillsViewportHeight(true);
+		TABLE_RAWData.getTableHeader().setBackground(Color.white);
+		TABLE_RAWData.getTableHeader().setForeground(Color.black);
+
+		    JScrollPane TABLE_RAWData_ScrollPane = new JScrollPane(TABLE_RAWData,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+		    TABLE_RAWData_ScrollPane.getVerticalScrollBar().setBackground(Color.white);
+		    TABLE_RAWData_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
+		    TABLE_RAWData_ScrollPane.setBackground(Color.white);
+		    PageX04_RawDATA.add(TABLE_RAWData_ScrollPane);
+       
+       
+       
 	//-------------------------------------------------------------------------------------------------------------------------------
         // Create Charts:
        CreateChart_DashboardOverviewChart_Altitude_Velocity(RM);
@@ -2953,9 +3001,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      	// Create Tabs:
         Page04_subtabPane.addTab("Dashboard" , null, PageX04_Dashboard, null);
         Page04_subtabPane.addTab("Simulation Setup"+"\u2713", null, PageX04_SimSetup, null);
+        Page04_subtabPane.addTab("Raw Data", null, PageX04_RawDATA, null);
         Page04_subtabPane.addTab("Map" , null, PageX04_Map, null);
         Page04_subtabPane.addTab("Polar Map" , null, PageX04_PolarMap, null);
-        Page04_subtabPane.addTab("GroundClearance" , null, PageX04_GroundClearance, null);
+       // Page04_subtabPane.addTab("GroundClearance" , null, PageX04_GroundClearance, null);
         //Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
@@ -3413,6 +3462,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public void UPDATE_Page01(){
 		  try {
 			READ_INPUT();
+			READ_RAWDATA();
 			SET_MAP(indx_target);
 		} catch (IOException | URISyntaxException e2) {
 			// TODO Auto-generated catch block
@@ -3750,6 +3800,31 @@ in3.close();
 br5.close();
 fstream.close();
 } catch (NullPointerException eNPE) { System.out.println(eNPE);} 
+    }
+    
+    public static void READ_RAWDATA() {
+    	// Delete all exisiting rows:
+    	for(int j=MODEL_RAWData.getRowCount()-1;j>=0;j--) {MODEL_RAWData.removeRow(j);}
+    	// Read all data from file: 
+	    FileInputStream fstream = null;
+		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+	              DataInputStream in = new DataInputStream(fstream);
+	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	              String strLine;
+	              try {
+							while ((strLine = br.readLine()) != null )   {
+								Object[] tokens = strLine.split(" ");
+							    MODEL_RAWData.addRow(tokens);
+							  }
+			       fstream.close();
+			       in.close();
+			       br.close();
+
+	              } catch (NullPointerException | IOException eNPE) { 
+	            	  System.out.println("Read raw data, Nullpointerexception");
+					}catch(IllegalArgumentException eIAE) {
+					  System.out.println("Read raw data, illegal argument error");
+					}
     }
     
     public static void READ_INTEG() {
