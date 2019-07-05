@@ -180,7 +180,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
-			public static double[] EulerAngle = {1,2,3};							    // Euler Angle Vector [rad]
+			public static double[] EulerAngle = {0,0,0};							    // Euler Angle Vector [rad]
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -190,7 +190,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			
 			
 			// 6 DOF Attitude variables: 
-			public static double[][] q_vector = {{0},{0},{0},{0}}; 						// Quarternion vector
+			public static double[][] q_vector = {{0},{0},{0},{1}}; 						// Quarternion vector
 			public static double[][] AngularVelocity = {{0},{0},{0}};					// Angular Velcity {P, Q, R}T [rad/s] 
 			
 			
@@ -516,7 +516,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			//             Body fixed frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
 			// Euler Angle Representation: 
-			
+			/*
 			C_NED_B[0][0] =  Math.cos(euler_angle[2])*Math.cos(euler_angle[1]); 
 			C_NED_B[1][0] =  Math.sin(euler_angle[2])*Math.cos(euler_angle[1]);
 			C_NED_B[2][0] = -Math.sin(euler_angle[1]);
@@ -528,10 +528,10 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			C_NED_B[0][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[0])+Math.cos(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0]); 
 			C_NED_B[1][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0])-Math.cos(euler_angle[2])*Math.sin(euler_angle[0]);
 			C_NED_B[2][2] = Math.cos(euler_angle[1])*Math.cos(euler_angle[0]);
-			
+			*/
 			//-----------------------------------------------------------------------
 			// Quaternion Representation: 
-			/*
+			
 			C_NED_B[0][0] =    (q_vector[0][0]*q_vector[0][0] + q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]); 
 			C_NED_B[1][0] =  2*(q_vector[1][0]*q_vector[2][0] + q_vector[0][0]*q_vector[3][0]);
 			C_NED_B[2][0] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]);
@@ -543,7 +543,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			C_NED_B[0][2] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]); 
 			C_NED_B[1][2] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
 			C_NED_B[2][2] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] + q_vector[3][0]*q_vector[3][0]);
-			*/
+			
 			//-------------------------------------------------------------------------------------------
 			//             ECEF frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
@@ -731,11 +731,14 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
 	    if(is_6DOF) {
-	    	// Quaternions:
-	    dxdt[7] = 0.5*(-  x[8]  * AngularVelocity[0][0]  - x[9]  * AngularVelocity[1][0]  - x[10] * AngularVelocity[2][0]);
-	    dxdt[8] = 0.5*(   x[7]  * AngularVelocity[0][0]  - x[10] * AngularVelocity[1][0]  + x[9]  * AngularVelocity[2][0]);
-	    dxdt[9] = 0.5*(   x[10] * AngularVelocity[0][0]  + x[7]  * AngularVelocity[1][0]  - x[8]  * AngularVelocity[2][0]);
-	    dxdt[10]= 0.5*(-  x[9]  * AngularVelocity[0][0]  + x[8]  * AngularVelocity[1][0]  + x[7]  * AngularVelocity[2][0]);
+	    // Quaternions:
+	    	double SUB_A = x[11] - 1/x[13] * (C_NED_B[0][0]*x[4] - C_NED_B[0][1]*x[3] - C_NED_B[0][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[0][0]*Math.cos(x[1]) - C_NED_B[0][2] * Math.sin(x[1]));
+	    	double SUB_B = x[12] - 1/x[13] * (C_NED_B[1][0]*x[4] - C_NED_B[1][1]*x[3] - C_NED_B[1][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[1][0]*Math.cos(x[1]) - C_NED_B[1][2] * Math.sin(x[1]));
+	    	double SUB_C = x[13] - 1/x[13] * (C_NED_B[2][0]*x[4] - C_NED_B[2][1]*x[3] - C_NED_B[2][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[2][0]*Math.cos(x[1]) - C_NED_B[2][2] * Math.sin(x[1]));
+	    dxdt[7] = 0.5 * (-x[8]  * SUB_A  - x[9]  * SUB_B  - x[10]  * SUB_C);
+	    dxdt[8] = 0.5 * ( x[7]  * SUB_A  - x[10] * SUB_B  + x[9]   * SUB_C);
+	    dxdt[9] = 0.5 * ( x[10] * SUB_A  + x[7]  * SUB_B  - x[8]   * SUB_C);
+	    dxdt[10]= 0.5 * (-x[9]  * SUB_A  + x[8]  * SUB_B  + x[7]   * SUB_C);
 	    
 	    	// Angular Velocity: 
 	    dxdt[11] = 0;
