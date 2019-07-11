@@ -180,7 +180,6 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
-			public static double[] EulerAngle = {0,0,0};							    // Euler Angle Vector [rad]
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -192,6 +191,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			// 6 DOF Attitude variables: 
 			public static double[][] q_vector = {{0},{0},{0},{1}}; 						// Quarternion vector
 			public static double[][] AngularVelocity = {{0},{0},{0}};					// Angular Velcity {P, Q, R}T [rad/s] 
+			public static double[][] EulerAngle = {{0},{0},{0}};							    // Euler Angle Vector [rad]
 			
 			
 			//__________________________
@@ -283,6 +283,17 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			result[1] = r_spherical[2]*Math.cos(r_spherical[1])*Math.sin(r_spherical[0]);
 			result[2] = r_spherical[2]*Math.sin(r_spherical[1]);
 			return result;
+		}
+		public static double[][] Quaternions2Euler(double[][] Quaternions){
+			double[][] EulerAngles = {{0},{0},{0}};
+			double a = Quaternions[0][0];
+			double b = Quaternions[1][0];
+			double c = Quaternions[2][0];
+			double d = Quaternions[3][0];
+			EulerAngles[0][0] = Math.atan(2*(c*d+a*b)/(a*a-b*b-c*c+d*d));
+			EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
+			EulerAngles[2][0] = Math.atan( 2*(b*d - a*c)/(a*a + b*b - c*c - d*d));
+			return EulerAngles;
 		}
 	    public static void SequenceWriteOut_addRow() {
 			CTRL_steps.add(SEQUENCE_DATA_main.get(active_sequence).get_sequence_ID()+ " " + 
@@ -497,7 +508,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    	//----------------------------------------------------------------------------------------------
 		}
 
-		public static void INITIALIZE_ROTATIONAL_MATRICES(double[] x, double t, double bank_angle, double[] euler_angle) {
+		public static void INITIALIZE_ROTATIONAL_MATRICES(double[] x, double t, double bank_angle, double[][] euler_angle) {
 			//-------------------------------------------------------------------------------------------
 			//              Aerodynamic frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
@@ -740,6 +751,11 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[9] = 0.5 * ( x[10] * SUB_A  + x[7]  * SUB_B  - x[8]   * SUB_C);
 	    dxdt[10]= 0.5 * (-x[9]  * SUB_A  + x[8]  * SUB_B  + x[7]   * SUB_C);
 	    
+	    q_vector[0][0] = x[7];
+	    q_vector[1][0] = x[8];
+	    q_vector[2][0] = x[9];
+	    q_vector[3][0] = x[10];
+	    EulerAngle = Quaternions2Euler(q_vector);
 	    	// Angular Velocity: 
 	    dxdt[11] = 0;
 	    dxdt[12] = 0;
