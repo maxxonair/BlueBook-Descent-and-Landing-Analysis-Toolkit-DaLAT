@@ -33,7 +33,7 @@ import Controller.LandingCurve;
 
 public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
-		//				Control variables
+		//				                              !!!  Control variables  !!!
 		//----------------------------------------------------------------------------------------------------------------------------
 		public static boolean HoverStop = false; 
 	    public static boolean ctrl_callout = false; 
@@ -192,7 +192,47 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			public static double[][] q_vector = {{0},{0},{0},{1}}; 						// Quarternion vector
 			public static double[][] AngularVelocity = {{0},{0},{0}};					// Angular Velcity {P, Q, R}T [rad/s] 
 			public static double[][] EulerAngle = {{0},{0},{0}};							    // Euler Angle Vector [rad]
+			public static double[][] InertiaTensor = {{1,0,0},{0,1,0},{0,0,1}};         // Inertia Tensor []
+			public static double[][] AngularMomentum = {{1},{0},{0}};					// Angular Momentum [Nm]
 			
+			// Equation Elements for angular velocity equations: 
+			static double det_I = 0;
+			static double EE_I01 = 0;
+			static double EE_I02 = 0;
+			static double EE_I03 = 0;
+			static double EE_I04 = 0;
+			static double EE_I05 = 0;
+			static double EE_I06 = 0;
+			
+			static double EE_P_pp = 0;
+			static double EE_P_pq = 0;
+			static double EE_P_pr = 0;
+			static double EE_P_qq = 0;
+			static double EE_P_qr = 0;
+			static double EE_P_rr = 0;
+			static double EE_P_x  = 0;
+			static double EE_P_y  = 0;
+			static double EE_P_z  = 0;
+			
+			static double EE_Q_pp = 0;
+			static double EE_Q_pq = 0;
+			static double EE_Q_pr = 0;
+			static double EE_Q_qq = 0;
+			static double EE_Q_qr = 0;
+			static double EE_Q_rr = 0;
+			static double EE_Q_x  = 0;
+			static double EE_Q_y  = 0;
+			static double EE_Q_z  = 0;
+			
+			static double EE_R_pp = 0;
+			static double EE_R_pq = 0;
+			static double EE_R_pr = 0;
+			static double EE_R_qq = 0;
+			static double EE_R_qr = 0;
+			static double EE_R_rr = 0;
+			static double EE_R_x  = 0;
+			static double EE_R_y  = 0;
+			static double EE_R_z  = 0;
 			
 			//__________________________
 			
@@ -243,7 +283,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	        }
 	    public int getDimension() {
 	    	if(is_6DOF) {
-	    		return 13; // 6 DOF model 
+	    		return 14; // 6 DOF model 
 	        } else {
 	    		return 7; // 3 DOF model 
 	    	}
@@ -585,6 +625,56 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			C_B_A[2][2] =   Math.cos(AngleOfAttack);
 			
 		}
+		
+		public static void Set_AngularVelocityEquationElements(double[] x) {
+			double Ixx = InertiaTensor[0][0];
+			double Iyy = InertiaTensor[1][1];
+			double Izz = InertiaTensor[2][2];
+			double Ixy = InertiaTensor[0][1];
+			double Ixz = InertiaTensor[0][2];
+			//  double Iyx = InertiaTensor[][];
+			double Iyz = InertiaTensor[2][1];
+			//double Izx = InertiaTensor[][];
+			//double Izy = InertiaTensor[][];
+			 det_I = Ixx*Iyy*Izz - 2*Ixy*Ixz*Iyz - Ixx*Iyz*Iyz - Iyy*Ixz*Ixz - Izz*Iyz*Iyz;
+			 EE_I01 = Iyy*Izz - Iyz*Iyz;
+			 EE_I02 = Ixy*Izz + Iyz*Ixz;
+			 EE_I03 = Ixy*Iyz + Iyy*Ixz;
+			 EE_I04 = Ixx*Izz - Ixz*Ixz;
+			 EE_I05 = Ixx*Iyz + Ixy*Ixz;
+			 EE_I06 = Ixx*Iyy - Ixy*Ixy;
+			
+			 EE_P_pp = -(Ixz*EE_I02 - Ixy*EE_I03)/det_I;
+			 EE_P_pq =  (Ixz*EE_I01 - Iyz*EE_I02 - (Iyy - Ixx)*EE_I03)/det_I;
+			 EE_P_pr = -(Ixy*EE_I01 + (Ixx-Izz)*EE_I02 - Iyz*EE_I03)/det_I;
+			 EE_P_qq =  (Iyz*EE_I01 - Ixy*EE_I03)/det_I;
+			 EE_P_qr = -((Izz-Iyy)*EE_I01 - Ixy*EE_I02 + Ixz*EE_I03)/det_I;
+			 EE_P_rr = -(Iyz*EE_I01 - Ixz*EE_I02)/det_I;
+			 EE_P_x  =   EE_I01/det_I;
+			 EE_P_y  =   EE_I02/det_I;
+			 EE_P_z  =   EE_I03/det_I;
+			
+			 EE_Q_pp = -(Ixz*EE_I02 - Ixy*EE_I05)/det_I;
+			 EE_Q_pq =  (Ixz*EE_I02 - Iyz*EE_I04 - (Iyy - Ixx)*EE_I05)/det_I;
+			 EE_Q_pr = -(Ixy*EE_I02 + (Ixx-Izz)*EE_I04 - Iyz*EE_I05)/det_I;
+			 EE_Q_qq =  (Iyz*EE_I02 - Ixy*EE_I05)/det_I;
+			 EE_Q_qr = -((Izz-Iyy)*EE_I02 - Ixy*EE_I04 + Ixz*EE_I05)/det_I;
+			 EE_Q_rr = -(Iyz*EE_I02 - Ixz*EE_I04)/det_I;
+			 EE_Q_x  = EE_I02/det_I;
+			 EE_Q_y  = EE_I04/det_I;
+			 EE_Q_z  = EE_I05/det_I;
+			
+			 EE_R_pp = -(Ixz*EE_I05 - Ixy*EE_I06)/det_I;
+			 EE_R_pq =  (Ixz*EE_I03 - Iyz*EE_I05 - (Iyy - Ixx)*EE_I06)/det_I;
+			 EE_R_pr = -(Ixy*EE_I03 + (Ixx-Izz)*EE_I05 - Iyz*EE_I06)/det_I;
+			 EE_R_qq =  (Iyz*EE_I03 - Ixy*EE_I06)/det_I;
+			 EE_R_qr = -((Izz-Iyy)*EE_I03 - Ixy*EE_I05 + Ixz*EE_I06)/det_I;
+			 EE_R_rr = -(Iyz*EE_I03 - Ixz*EE_I05)/det_I;
+			 EE_R_x  = EE_I03/det_I;
+			 EE_R_y  = EE_I05/det_I;
+			 EE_R_z  = EE_I06/det_I;
+			
+		}
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	integ_t=t;
     	//-------------------------------------------------------------------------------------------------------------------
@@ -654,7 +744,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									     Translatoric Motion
+    	// 									     Translational Motion
     	//-------------------------------------------------------------------------------------------------------------------
     	// Position vector with respect to spherical velocity vector
     	int optionR = 1; 
@@ -743,6 +833,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
 	    if(is_6DOF) {
 	    // Quaternions:
+	    	//------------------------------------------------------------------
 	    	double SUB_A = x[11] - 1/x[13] * (C_NED_B[0][0]*x[4] - C_NED_B[0][1]*x[3] - C_NED_B[0][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[0][0]*Math.cos(x[1]) - C_NED_B[0][2] * Math.sin(x[1]));
 	    	double SUB_B = x[12] - 1/x[13] * (C_NED_B[1][0]*x[4] - C_NED_B[1][1]*x[3] - C_NED_B[1][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[1][0]*Math.cos(x[1]) - C_NED_B[1][2] * Math.sin(x[1]));
 	    	double SUB_C = x[13] - 1/x[13] * (C_NED_B[2][0]*x[4] - C_NED_B[2][1]*x[3] - C_NED_B[2][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[2][0]*Math.cos(x[1]) - C_NED_B[2][2] * Math.sin(x[1]));
@@ -757,9 +848,15 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    q_vector[3][0] = x[10];
 	    EulerAngle = Quaternions2Euler(q_vector);
 	    	// Angular Velocity: 
-	    dxdt[11] = 0;
-	    dxdt[12] = 0;
-	    dxdt[13] = 0;
+	    //------------------------------------------------------------------
+	    Set_AngularVelocityEquationElements(x);
+	    dxdt[11] = EE_P_pp*x[11]*x[11] + EE_P_pq*x[11]*x[12] + EE_P_pr*x[11]*x[13] + EE_P_qq*x[12]*x[12] + EE_P_qr*x[11]*x[13] + EE_P_rr*x[13]*x[13] + EE_P_x*AngularMomentum[0][0] + EE_P_y*AngularMomentum[1][0] + EE_P_y*AngularMomentum[2][0];
+	    dxdt[12] = EE_Q_pp*x[11]*x[11] + EE_Q_pq*x[11]*x[12] + EE_Q_pr*x[11]*x[13] + EE_Q_qq*x[12]*x[12] + EE_Q_qr*x[11]*x[13] + EE_Q_rr*x[13]*x[13] + EE_Q_x*AngularMomentum[0][0] + EE_Q_y*AngularMomentum[1][0] + EE_Q_y*AngularMomentum[2][0];
+	    dxdt[13] = EE_R_pp*x[11]*x[11] + EE_R_pq*x[11]*x[12] + EE_R_pr*x[11]*x[13] + EE_R_qq*x[12]*x[12] + EE_R_qr*x[11]*x[13] + EE_R_rr*x[13]*x[13] + EE_R_x*AngularMomentum[0][0] + EE_R_y*AngularMomentum[1][0] + EE_R_y*AngularMomentum[2][0];
+	   
+	    AngularVelocity[0][0] = x[11];
+	    AngularVelocity[1][0] = x[12];
+	    AngularVelocity[2][0] = x[13];
 	    }
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Update Event handler
@@ -873,7 +970,7 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //----------------------------------------------------------------------------------------------
   			// 						Result vector setup - DO NOT TOUCH
   			int dimension = 0;
-	    	if(is_6DOF) { dimension =  13; // 6 DOF model 
+	    	if(is_6DOF) { dimension =  14; // 6 DOF model 
 	        } else {dimension =  7; // 3 DOF model 
 	        }
 		        double[] y = new double[dimension]; // Result vector
@@ -1055,7 +1152,16 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  F_Gravity_NED[2][0]+" "+
 	                    		  r_ECEF_cartesian[0]+" "+
 	                    		  r_ECEF_cartesian[1]+" "+
-	                    		  r_ECEF_cartesian[2]+" "
+	                    		  r_ECEF_cartesian[2]+" "+
+	                    		  AngularVelocity[0][0]+" "+
+	                    		  AngularVelocity[1][0]+" "+
+	                    		  AngularVelocity[2][0]+" "+
+	                    		  AngularMomentum[0][0]+" "+
+	                    		  AngularMomentum[1][0]+" "+
+	                    		  AngularMomentum[2][0]+" "+
+	                    		  EulerAngle[0][0]+" "+
+	                    		  EulerAngle[1][0]+" "+
+	                    		  EulerAngle[2][0]+" "
 	                    		  );
 	                }
 	              

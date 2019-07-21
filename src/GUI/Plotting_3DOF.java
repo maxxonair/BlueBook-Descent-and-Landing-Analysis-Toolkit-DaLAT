@@ -308,6 +308,15 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Position x ECEF [m]",
     										  "Position y ECEF [m]",
     										  "Position z ECEF [m]",
+    										  "Angular Velocity x [rad/s]",
+    										  "Angular Velocity y [rad/s]",
+    										  "Angular Velocity z [rad/s]",
+    										  "Angular Momentum x B [Nm]",
+    										  "Angular Momentum y B [Nm]",
+    										  "Angular Momentum z B [Nm]",
+    										  "Euler Angle Phi [deg]",
+    										  "Euler Angle Theta [deg]",
+    										  "Euler Angle Psi [deg]"
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
