@@ -2985,7 +2985,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    TABLE_RAWData.setBackground(Color.white);
 	    TABLE_RAWData.setForeground(Color.black);
 	    TABLE_RAWData.getTableHeader().setReorderingAllowed(false);
-	    TABLE_RAWData.setRowHeight(45);
+	    TABLE_RAWData.setRowHeight(18);
 		TABLE_RAWData.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		((JTable) TABLE_RAWData).setFillsViewportHeight(true);
 		TABLE_RAWData.getTableHeader().setBackground(Color.white);
