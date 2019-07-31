@@ -866,7 +866,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    }
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP, int VelocityCoordinateSystem, int DOF_System){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -885,6 +885,20 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 //   - Read propulsion setting:	Propulsion/Controller INIT
 //   - Initialise ground track computation
 //----------------------------------------------------------------------------------------------	
+	if(VelocityCoordinateSystem==1) {
+		spherical = true;
+		System.out.println("READ: Spherical Velocity Vector Coordinates selected.");
+	} else if (VelocityCoordinateSystem==2) {
+		spherical = false;
+		System.out.println("READ: Cartesian Velocity Vector Coordinates selected.");
+	}
+	if(DOF_System==3) {
+		is_6DOF=false;
+		System.out.println("READ: 3 Degree of Freedom Model selected.");
+	} else if (DOF_System==6) {
+		is_6DOF=true;
+		System.out.println("READ: 6 Degree of Freedom Model selected.");
+	}
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;

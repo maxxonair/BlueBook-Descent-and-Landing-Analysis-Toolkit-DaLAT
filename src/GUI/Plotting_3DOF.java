@@ -128,7 +128,7 @@ public class Plotting_3DOF implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
-	static String PROJECT_TITLE = "  BlueBook DaLAT-3DoF  V0.2 ALPHA";
+	static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.2 ALPHA";
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
@@ -396,6 +396,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static double v_touchdown;
 	public static double Propellant_Mass=0;
 	public static double M0;
+	
+	public static int VelocityCoordinateSystem=0;
+	public static int DOF_System;
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												GUI Elements
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -410,7 +413,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     private static Crosshair xCrosshair_x;
     private static Crosshair yCrosshair_x; 
     public static Crosshair xCrosshair_A3_1,xCrosshair_A3_2,xCrosshair_A3_3,xCrosshair_A3_4,yCrosshair_A3_1,yCrosshair_A3_2,yCrosshair_A3_3,yCrosshair_A3_4;
-   public static Crosshair xCrosshair_DashBoardOverviewChart_Altitude_Velocity, yCrosshair_DashBoardOverviewChart_Altitude_Velocity,xCrosshair_DashBoardOverviewChart_Time_FPA, yCrosshair_DashBoardOverviewChart_Time_FPA;
+    public static Crosshair xCrosshair_DashBoardOverviewChart_Altitude_Velocity, yCrosshair_DashBoardOverviewChart_Altitude_Velocity,xCrosshair_DashBoardOverviewChart_Time_FPA, yCrosshair_DashBoardOverviewChart_Time_FPA;
     public static JPanel PageX04_Dashboard;
     public static JPanel PageX04_Map;
     public static JPanel PageX04_3;
@@ -421,6 +424,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JPanel PageX04_GroundClearance; 
     public static JPanel P1_Plotpanel;
     public static JPanel P1_SidePanel; 
+    public static JPanel PageX04_AttitudeSetup;
     public static JSplitPane SplitPane_Page1_Charts_horizontal; 
     public static JSplitPane SplitPane_Page1_Charts_vertical; 
     public static JFreeChart Chart_MercatorMap;
@@ -456,6 +460,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JLabel LABEL_IntegratorSetting_01, LABEL_IntegratorSetting_02, LABEL_IntegratorSetting_03, LABEL_IntegratorSetting_04, LABEL_IntegratorSetting_05; 
     public static JTextField INPUT_IntegratorSetting_01, INPUT_IntegratorSetting_02, INPUT_IntegratorSetting_03, INPUT_IntegratorSetting_04, INPUT_IntegratorSetting_05;
     public static JRadioButton RB_SurfaceArea, RB_BallisticCoefficient;
+    public static JRadioButton SELECT_VelocitySpherical, SELECT_VelocityCartesian;
+    public static JRadioButton SELECT_3DOF,SELECT_6DOF;
     public static int vel_frame_hist = 1; 
     
     static DefaultTableModel MODEL_RAWData;
@@ -770,6 +776,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         PageX04_RawDATA.setLayout(new BorderLayout());
         PageX04_RawDATA.setBackground(bc_c);
         PageX04_RawDATA.setForeground(l_c);
+        PageX04_AttitudeSetup = new JPanel();
+        PageX04_AttitudeSetup.setLocation(0, 0);
+        PageX04_AttitudeSetup.setPreferredSize(new Dimension(extx_main, exty_main));
+        PageX04_AttitudeSetup.setLayout(new BorderLayout());
+        PageX04_AttitudeSetup.setBackground(bc_c);
+        PageX04_AttitudeSetup.setForeground(l_c);
 
         // Page 4.1
         P1_SidePanel = new JPanel();
@@ -1019,6 +1031,99 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         INDICATOR_INTEGTIME.setBorder(Moon_border);
         INDICATOR_INTEGTIME.setSize(60, 20);
        P1_SidePanel.add(INDICATOR_INTEGTIME);
+       
+       
+       SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
+       SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
+       SELECT_VelocitySpherical.setLocation(215, uy_p41 + 25 * 3 + y_ext_vel );
+       SELECT_VelocitySpherical.setSize(220,20);
+       SELECT_VelocitySpherical.setBackground(Color.white);
+       SELECT_VelocitySpherical.setForeground(Color.black);
+       SELECT_VelocitySpherical.setFont(small_font);
+       SELECT_VelocityCartesian.setLocation(215, uy_p41 + 25 * 4 + y_ext_vel);
+       SELECT_VelocityCartesian.setSize(220,20);
+       SELECT_VelocityCartesian.setBackground(Color.white);
+       SELECT_VelocityCartesian.setFont(small_font);
+      ButtonGroup bg_velocity=new ButtonGroup();    
+      bg_velocity.add(SELECT_VelocitySpherical);
+      bg_velocity.add(SELECT_VelocityCartesian); 
+      P1_SidePanel.add(SELECT_VelocitySpherical);
+      P1_SidePanel.add(SELECT_VelocityCartesian);
+      SELECT_VelocitySpherical.addActionListener(new ActionListener() {
+
+ 		@Override
+ 		public void actionPerformed(ActionEvent arg0) {
+ 			// TODO Auto-generated method stub
+ 			if(SELECT_VelocitySpherical.isSelected()) {
+ 				VelocityCoordinateSystem = 1;
+ 			} else if (SELECT_VelocityCartesian.isSelected()) {
+ 				VelocityCoordinateSystem = 2;
+ 			}
+ 			WRITE_INIT();
+ 		}
+     	 
+      });
+      SELECT_VelocityCartesian.addActionListener(new ActionListener() {
+
+ 		@Override
+ 		public void actionPerformed(ActionEvent arg0) {
+ 			// TODO Auto-generated method stub
+ 			if(SELECT_VelocitySpherical.isSelected()) {
+ 				VelocityCoordinateSystem = 1;
+ 			} else if (SELECT_VelocityCartesian.isSelected()) {
+ 				VelocityCoordinateSystem = 2;
+ 			}
+ 			WRITE_INIT();
+ 		}
+     	 
+      });
+      SELECT_VelocitySpherical.setSelected(true);
+      
+      SELECT_3DOF =new JRadioButton("3DOF Model");    
+      SELECT_6DOF =new JRadioButton("6DOF Model");      
+      SELECT_3DOF.setLocation(215, uy_p41 + 25 * 6 + y_ext_vel );
+      SELECT_3DOF.setSize(220,20);
+      SELECT_3DOF.setBackground(Color.white);
+      SELECT_3DOF.setForeground(Color.black);
+      SELECT_3DOF.setFont(small_font);
+      SELECT_6DOF.setLocation(215, uy_p41 + 25 * 7 + y_ext_vel);
+      SELECT_6DOF.setSize(220,20);
+      SELECT_6DOF.setBackground(Color.white);
+      SELECT_6DOF.setFont(small_font);
+     ButtonGroup bg_dof=new ButtonGroup();    
+     bg_dof.add(SELECT_3DOF);
+     bg_dof.add(SELECT_6DOF); 
+     P1_SidePanel.add(SELECT_3DOF);
+     P1_SidePanel.add(SELECT_6DOF);
+     SELECT_3DOF.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_3DOF.isSelected()) {
+				DOF_System = 3;
+			} else if (SELECT_6DOF.isSelected()) {
+				DOF_System = 6;
+			}
+			WRITE_INIT();
+		}
+    	 
+     });
+     SELECT_6DOF.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_3DOF.isSelected()) {
+				DOF_System = 3;
+			} else if (SELECT_6DOF.isSelected()) {
+				DOF_System = 6;
+			}
+			WRITE_INIT();
+		}
+    	 
+     });
+     SELECT_3DOF.setSelected(true);
        
        JLabel LABEL_TARGET = new JLabel("Target Body:");
        LABEL_TARGET.setLocation(5, uy_p41 + 25 * 9  );
@@ -3009,7 +3114,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      	CreateChart_GroundClearance();
      	// Create Tabs:
         Page04_subtabPane.addTab("Dashboard" , null, PageX04_Dashboard, null);
-        Page04_subtabPane.addTab("Simulation Setup"+"\u2713", null, PageX04_SimSetup, null);
+        Page04_subtabPane.addTab("Basic Setup"+"\u2713", null, PageX04_SimSetup, null);
+        Page04_subtabPane.addTab("Attitude Setup"+"\u2713", null, PageX04_AttitudeSetup, null);
         Page04_subtabPane.addTab("Raw Data", null, PageX04_RawDATA, null);
         Page04_subtabPane.addTab("Map" , null, PageX04_Map, null);
         Page04_subtabPane.addTab("Polar Map" , null, PageX04_PolarMap, null);
@@ -3953,12 +4059,16 @@ fstream.close();
 		            r = Double.parseDouble(INPUT_WRITETIME.getText())  ; // delta-t write out
 		            wr.write(r+System.getProperty( "line.separator" ));	
 		    		} else if (i == 11 ){
-			            r = Double.parseDouble(INPUT_REFELEV.getText())  ; // Reference elevation
-			            wr.write(r+System.getProperty( "line.separator" ));	
-		            } else if (i==12) {
+			        r = Double.parseDouble(INPUT_REFELEV.getText())  ; // Reference elevation
+			        wr.write(r+System.getProperty( "line.separator" ));	
+		        } else if (i == 12) {
 		            	rr =  AscentDescent_SwitchChooser.getSelectedIndex() ;
-		                wr.write(rr+System.getProperty( "line.separator" ));	
-		            }
+		            wr.write(rr+System.getProperty( "line.separator" ));	
+		        } else if (i == 13) {
+	                wr.write(VelocityCoordinateSystem+System.getProperty( "line.separator" ));	
+		        } else if (i == 14) {
+	                wr.write(DOF_System+System.getProperty( "line.separator" ));	
+		        }
 		            }               
             wr.close();
             } catch (IOException eIO) {

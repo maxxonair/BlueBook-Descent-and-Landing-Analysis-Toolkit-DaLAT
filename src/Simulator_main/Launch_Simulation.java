@@ -9,7 +9,9 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import Sequence.SequenceElement;
@@ -217,7 +219,10 @@ public class Launch_Simulation implements ActionListener{
     
 
     public static void main(String[] args) throws IOException {
-    	System.out.println("Simulation started");
+    	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
+    	System.out.println("------------------------------------------");
+    	System.out.println("	Simulation started - "+timeStamp);
+    	System.out.println("------------------------------------------");
     	System.out.println("Start READ :");
     	System.out.println("------------------------------------------");
     	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
@@ -254,8 +259,8 @@ public class Launch_Simulation implements ActionListener{
 	    		System.out.println("EDL 3DOF Module running");
 	    		System.out.println(""+SurfaceArea);
 	    		EDL_3DOF.Launch_Integrator(
-	    												INTEGRATOR, 		     	 // Integrator Index 					 [-]
-														target, 				 	 // Target index 						 [-]
+	    												INTEGRATOR, 		     	 		 // Integrator Index 					 [-]
+														target, 				 	 	 // Target index 						 [-]
 														x_init[0]*deg2rad, 			 // Longitude 							 [rad]
 														x_init[1]*deg2rad, 			 // Latitude 							 [rad]
 														x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
@@ -263,14 +268,16 @@ public class Launch_Simulation implements ActionListener{
 														x_init[4]*deg2rad, 			 // Flight path angle 					 [rad]
 														x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
 														x_init[6], 				 	 // Initial S/C mass 					 [kg]
-														x_init[7], 			   	 	 // Maximum integ. time 				 [s]
+														x_init[7], 			   	 	 // Maximum integ. time 				     [s]
 														x_init[10],				 	 // Write out delta time 				 [s]
 														x_init[11],				 	 // Reference Elevation  				 [m]
-														SEQUENCE_DATA,			 	 // Sequence data set	LIST			 [-]
+														SEQUENCE_DATA,			 	 // Sequence data set	LIST			     [-]
 												  (int) x_init[12],				 	 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
-														STOP_Handler	,		     // Event Handler 	LIST			 	 [-]
-														SurfaceArea
-														);
+														STOP_Handler	,		         // Event Handler 	LIST			 	     [-]
+														SurfaceArea,					 // Projected Surface Area S/C 			 [m2]
+												  (int) x_init[13],					 // Velocity Vector Coordinate system    [-] 1 - Spherical coordinates , 2 - Cartesian Coordinates
+												  (int) x_init[14]					 // Degree of Freedom   					 [-] 3 - 3 DOF , 6 - 6 DOF									
+	    				);
 	    	} else if (descent_ascent_switch ==1) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		//												3 Degree of Freedom Ascent module
