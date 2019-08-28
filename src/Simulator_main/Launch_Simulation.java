@@ -256,7 +256,7 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		//												3 Degree of Freedom EDL module
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		System.out.println("EDL 3DOF Module running");
+	    		System.out.println("Universal Module running");
 	    		System.out.println(""+SurfaceArea);
 	    		EDL_3DOF.Launch_Integrator(
 	    												INTEGRATOR, 		     	 		 // Integrator Index 					 [-]

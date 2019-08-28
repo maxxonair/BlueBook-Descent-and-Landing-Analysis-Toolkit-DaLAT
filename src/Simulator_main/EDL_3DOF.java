@@ -35,14 +35,15 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
 		//				                              !!!  Control variables  !!!
 		//----------------------------------------------------------------------------------------------------------------------------
-		public static boolean HoverStop = false; 
-	    public static boolean ctrl_callout = false; 
-	    public static boolean ISP_Throttle_model= false; 
-	    public static boolean stophandler_ON = true; 
+		public static boolean HoverStop          = false; 
+	    public static boolean ctrl_callout       = false; 
+	    public static boolean ISP_Throttle_model = false; 
+	    public static boolean stophandler_ON     = true; 
 	    
-	    public static 	    boolean spherical=false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
-	    public static 		boolean is_6DOF = false;      // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
-		//............................................                                       .........................................
+	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
+	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
+		public static 		int SixDoF_Option = 2; 
+	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
 		//
@@ -180,6 +181,8 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
+			public static double[][] M_Aero_NED      = {{0},{0},{0}};
+			public static double[][] M_Thrust_NED    = {{0},{0},{-10}};
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -189,11 +192,17 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			
 			
 			// 6 DOF Attitude variables: 
-			public static double[][] q_vector = {{0},{0},{0},{1}}; 						// Quarternion vector
-			public static double[][] AngularVelocity = {{0},{0},{0}};					// Angular Velcity {P, Q, R}T [rad/s] 
-			public static double[][] EulerAngle = {{0},{0},{0}};							    // Euler Angle Vector [rad]
-			public static double[][] InertiaTensor = {{1,0,0},{0,1,0},{0,0,1}};         // Inertia Tensor []
-			public static double[][] AngularMomentum = {{1},{0},{0}};					// Angular Momentum [Nm]
+			public static double[][] q_vector        = {{0},{0},{0},{1}}; 	// Quarternion vector
+			public static double[][] AngularRate     = {{0},
+														{0},
+														{0.5}};							 // Angular Velcity {P, Q, R}T [rad/s] 
+			public static double[][] EulerAngle      = {{0},{0},{0}};				     // Euler Angle Vector [rad]
+			public static double[][] InertiaTensor   = {{8810.8 ,     0      ,   0},
+													    {   0   ,  8157.3    ,   0},
+													    {   0    ,    0      ,4721.8}};  // Inertia Tensor []
+			public static double[][] AngularMomentum = {{0},
+														{0},
+														{0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
 			
 			// Equation Elements for angular velocity equations: 
 			static double det_I = 0;
@@ -332,7 +341,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 			double d = Quaternions[3][0];
 			EulerAngles[0][0] = Math.atan(2*(c*d+a*b)/(a*a-b*b-c*c+d*d));
 			EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
-			EulerAngles[2][0] = Math.atan( 2*(b*d - a*c)/(a*a + b*b - c*c - d*d));
+			EulerAngles[2][0] = Math.atan( 2*(b*c + a*d)/(a*a + b*b - c*c - d*d));
 			return EulerAngles;
 		}
 	    public static void SequenceWriteOut_addRow() {
@@ -832,6 +841,7 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
 	    if(is_6DOF) {
+if(SixDoF_Option==1) {
 	    // Quaternions:
 	    	//------------------------------------------------------------------
 	    	double SUB_A = x[11] - 1/x[13] * (C_NED_B[0][0]*x[4] - C_NED_B[0][1]*x[3] - C_NED_B[0][2]*x[4]*Math.tan(x[1])) - omega * (C_NED_B[0][0]*Math.cos(x[1]) - C_NED_B[0][2] * Math.sin(x[1]));
@@ -841,22 +851,142 @@ public class EDL_3DOF implements FirstOrderDifferentialEquations {
 	    dxdt[8] = 0.5 * ( x[7]  * SUB_A  - x[10] * SUB_B  + x[9]   * SUB_C);
 	    dxdt[9] = 0.5 * ( x[10] * SUB_A  + x[7]  * SUB_B  - x[8]   * SUB_C);
 	    dxdt[10]= 0.5 * (-x[9]  * SUB_A  + x[8]  * SUB_B  + x[7]   * SUB_C);
-	    
+	    /*
 	    q_vector[0][0] = x[7];
 	    q_vector[1][0] = x[8];
 	    q_vector[2][0] = x[9];
 	    q_vector[3][0] = x[10];
 	    EulerAngle = Quaternions2Euler(q_vector);
+	    */
 	    	// Angular Velocity: 
 	    //------------------------------------------------------------------
 	    Set_AngularVelocityEquationElements(x);
+	    AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+	    AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+	    AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
 	    dxdt[11] = EE_P_pp*x[11]*x[11] + EE_P_pq*x[11]*x[12] + EE_P_pr*x[11]*x[13] + EE_P_qq*x[12]*x[12] + EE_P_qr*x[11]*x[13] + EE_P_rr*x[13]*x[13] + EE_P_x*AngularMomentum[0][0] + EE_P_y*AngularMomentum[1][0] + EE_P_y*AngularMomentum[2][0];
 	    dxdt[12] = EE_Q_pp*x[11]*x[11] + EE_Q_pq*x[11]*x[12] + EE_Q_pr*x[11]*x[13] + EE_Q_qq*x[12]*x[12] + EE_Q_qr*x[11]*x[13] + EE_Q_rr*x[13]*x[13] + EE_Q_x*AngularMomentum[0][0] + EE_Q_y*AngularMomentum[1][0] + EE_Q_y*AngularMomentum[2][0];
 	    dxdt[13] = EE_R_pp*x[11]*x[11] + EE_R_pq*x[11]*x[12] + EE_R_pr*x[11]*x[13] + EE_R_qq*x[12]*x[12] + EE_R_qr*x[11]*x[13] + EE_R_rr*x[13]*x[13] + EE_R_x*AngularMomentum[0][0] + EE_R_y*AngularMomentum[1][0] + EE_R_y*AngularMomentum[2][0];
 	   
-	    AngularVelocity[0][0] = x[11];
-	    AngularVelocity[1][0] = x[12];
-	    AngularVelocity[2][0] = x[13];
+	    AngularRate[0][0] = x[11];
+	    AngularRate[1][0] = x[12];
+	    AngularRate[2][0] = x[13];
+} else if (SixDoF_Option == 2) {
+	System.out.println("6DoF running! Option 2");
+	    		// Quaternions:
+	
+	    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
+	    				        {-x[13], 0    , x[11], x[12]},
+	    				        { x[12],-x[11], 0    , x[13]},
+	    				        {-x[11],-x[12],-x[13], 0    }}; 
+	    		
+	    	    q_vector[0][0] = x[7];
+	    	    q_vector[1][0] = x[8];
+	    	    q_vector[2][0] = x[9];
+	    	    q_vector[3][0] = x[10];
+	    	    
+	    	    EulerAngle = Quaternions2Euler(q_vector);
+	    		double[][] q_vector_dot =  Tool.Multiply_Scalar_Matrix(0.5, Tool.Multiply_Matrices(Q, q_vector)); 
+	    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
+	    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
+	    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
+	    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
+
+	    	    q_vector[0][0] = x[7];
+	    	    q_vector[1][0] = x[8];
+	    	    q_vector[2][0] = x[9];
+	    	    q_vector[3][0] = x[10];
+	    	    
+	    	    EulerAngle = Quaternions2Euler(q_vector);
+	    	    //----------------------------------------------------------------------------------------
+	    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+	    	    double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+	    	    double Nb = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
+	    		
+				double Ixx = InertiaTensor[0][0];
+				double Iyy = InertiaTensor[1][1];
+				double Izz = InertiaTensor[2][2];
+				@SuppressWarnings("unused")
+				double Ixy = 0;//InertiaTensor[0][1];
+				double Ixz = 0;//InertiaTensor[0][2];
+				//  double Iyx = InertiaTensor[][];
+				@SuppressWarnings("unused")
+				double Iyz = 0;//InertiaTensor[2][1];
+				
+	    		// Angular Rates
+			// p dot:
+	    		dxdt[11] = (Izz * Lb + Ixz * Nb - (Ixz * (Iyy - Ixx - Izz) * x[11] + (Ixz*Ixz + Izz * (Izz - Iyy)) * x[12]) * x[11]) / (Ixx * Izz - Ixz*Ixz); 
+	    		// q dot:
+	    		dxdt[12] = (Mb - (Ixx - Izz) * x[11] * x[13] - Ixz * (x[11]*x[11] - x[13]*x[13])) / Iyy; 
+	    		// r dot:
+	    		dxdt[13] = (Ixz * Lb + Ixx * Nb + (Ixz * (Iyy - Ixx - Izz) * x[13] + (Ixz*Ixz + Ixx * (Ixx - Iyy)) * x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
+	    
+	    	    AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+	    	    AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+	    	    AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
+} else if (SixDoF_Option == 3) {
+	System.out.println("6DoF running! Option 3");
+	// Quaternions:
+/*
+	double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
+			        {-x[13], 0    , x[11], x[12]},
+			        { x[12],-x[11], 0    , x[13]},
+			        {-x[11],-x[12],-x[13], 0    }}; 
+	
+    q_vector[0][0] = x[7];
+    q_vector[1][0] = x[8];
+    q_vector[2][0] = x[9];
+    q_vector[3][0] = x[10];
+    
+    EulerAngle = Quaternions2Euler(q_vector);
+	double[][] q_vector_dot =  Tool.Multiply_Scalar_Matrix(0.5, Tool.Multiply_Matrices(Q, q_vector)); 
+	dxdt[7] =  q_vector_dot[0][0];  // e1 dot
+	dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
+	dxdt[9] =  q_vector_dot[2][0];  // e3 dot
+	dxdt[10] = q_vector_dot[3][0];  // e4 dot
+*/
+    double P = x[11];
+    double Q = x[12];
+    double R = x[13];
+    
+    dxdt[7] =  -0.5 * (x[8] * P    + x[9] * Q + x[10]* R);
+    dxdt[8] =   0.5 * (x[7] * P    + x[10]* Q + x[9] * R);
+    dxdt[9] =   0.5 * (x[10]* P    + x[7] * Q + x[8] * R);
+    dxdt[10] = -0.5 * (x[9] * P    + x[8] * Q + x[7] * R);
+    
+    q_vector[0][0] = x[7];
+    q_vector[1][0] = x[8];
+    q_vector[2][0] = x[9];
+    q_vector[3][0] = x[10];
+    
+    EulerAngle = Quaternions2Euler(q_vector);
+    //----------------------------------------------------------------------------------------
+    double Lb = 0;//M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+    double Mb = 0;//M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+    double Nb = 0;//M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
+	
+	double Ixx = InertiaTensor[0][0];
+	double Iyy = InertiaTensor[1][1];
+	double Izz = InertiaTensor[2][2];
+	@SuppressWarnings("unused")
+	double Ixy = 0;//InertiaTensor[0][1];
+	double Ixz = 0;//InertiaTensor[0][2];
+	//  double Iyx = InertiaTensor[][];
+	@SuppressWarnings("unused")
+	double Iyz = 0;//InertiaTensor[2][1];
+	
+	// Angular Rates
+// p dot:
+	dxdt[11] = 1/(Ixx + Ixz*Ixz/Izz) * (Lb + Ixz/Izz * Nb - Ixz*(Iyy-Ixx)/Izz*x[11]*x[12] - Ixz*Ixz/Izz*x[12]*x[13]);
+	// q dot:
+	dxdt[12] = 1/Iyy * (Mb - (Ixx-Izz)*x[11]*x[13] - Ixz * (x[11]*x[11] - x[13]*x[13])); 
+	// r dot:
+	dxdt[13] = 1/(Izz - Ixz/Ixx) * (Lb/Ixx + Nb + Ixz/Ixx * x[11]*x[12] - (Izz - Iyy)/Ixx * x[13]*x[12] - ( Iyy - Ixx )*x[11]*x[12] - Ixz*x[12]*x[13]); 
+
+    AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+    AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+    AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;	
+}
 	    }
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Update Event handler
@@ -1020,12 +1150,15 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	  		        y[6] = x6;
 	  		        m0 = x6;
 	  				INITIALIZE_FlightController(y) ;
+	  				// Attitude and Rotational Motion
+	  				y[7]  = q_vector[0][0];
+	  				y[8]  = q_vector[1][0];
+	  				y[9]  = q_vector[2][0];
+	  				y[10] = q_vector[3][0];
+	  				y[11] = AngularRate[0][0];
+	  				y[12] = AngularRate[1][0];
+	  				y[13] = AngularRate[2][0];
 	  				
-	  				y[7]  = 0;
-	  				y[8]  = 0;
-	  				y[9]  = 0;
-	  				y[10] = 0;
-	  				y[11] = 0;	
   				
   			} else { // 3DOF case
 			      //  double[] y = new double[7]; // Result vector
@@ -1167,9 +1300,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  r_ECEF_cartesian[0]+" "+
 	                    		  r_ECEF_cartesian[1]+" "+
 	                    		  r_ECEF_cartesian[2]+" "+
-	                    		  AngularVelocity[0][0]+" "+
-	                    		  AngularVelocity[1][0]+" "+
-	                    		  AngularVelocity[2][0]+" "+
+	                    		  AngularRate[0][0]+" "+
+	                    		  AngularRate[1][0]+" "+
+	                    		  AngularRate[2][0]+" "+
 	                    		  AngularMomentum[0][0]+" "+
 	                    		  AngularMomentum[1][0]+" "+
 	                    		  AngularMomentum[2][0]+" "+

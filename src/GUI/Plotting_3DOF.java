@@ -2552,13 +2552,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    TableColumn SequENDValColumn  		 = TABLE_SEQUENCE.getColumnModel().getColumn(2);
 	    TableColumn SequTypeColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(3);
 	    TableColumn SequenceFCColumn 	  	 = TABLE_SEQUENCE.getColumnModel().getColumn(4);
-	    TableColumn FCvelColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(5);
+	    TableColumn FCvelColumn 	   		     = TABLE_SEQUENCE.getColumnModel().getColumn(5);
 	    TableColumn FCaltColumn	   			 = TABLE_SEQUENCE.getColumnModel().getColumn(6);
 	    TableColumn FCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(7);
 	    
 	    TableColumn TVCFCColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(8);
-	    TableColumn TVCFCxColumn    	 	 = TABLE_SEQUENCE.getColumnModel().getColumn(9);
-	    TableColumn TVCFCyColumn    	 	 = TABLE_SEQUENCE.getColumnModel().getColumn(10);
+	    TableColumn TVCFCxColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(9);
+	    TableColumn TVCFCyColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(10);
 	    TableColumn TVCFCtargetCurveColumn   = TABLE_SEQUENCE.getColumnModel().getColumn(11);
 
 	    
