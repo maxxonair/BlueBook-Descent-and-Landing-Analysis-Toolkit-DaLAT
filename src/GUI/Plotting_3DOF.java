@@ -314,9 +314,9 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Angular Momentum x B [Nm]",
     										  "Angular Momentum y B [Nm]",
     										  "Angular Momentum z B [Nm]",
-    										  "Euler Angle Phi [deg]",
-    										  "Euler Angle Theta [deg]",
-    										  "Euler Angle Psi [deg]"
+    										  "Pitch - Euler Angle Phi [deg]",
+    										  "Yaw - Euler Angle Theta [deg]",
+    										  "Roll - Euler Angle Psi [deg]"
     										  };
     
     public static String[] Thrust_switch = { "Descent Module - 3 DoF",
@@ -3026,6 +3026,96 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    TABLE_ERROR_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
 			    TABLE_ERROR_ScrollPane.setBackground(Color.white);
 			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
+			    
+		//-----------------------------------------------------------------------------------------
+		//                                TAB: Attitude Definition
+		//-----------------------------------------------------------------------------------------			    
+			    
+			    
+				JPanel InertiaxPanel = new JPanel();
+				//InertiaxPanel.setLayout(null);
+				InertiaxPanel.setLocation(0, 0);
+				InertiaxPanel.setBackground(Color.white);
+				InertiaxPanel.setForeground(Color.black);
+				InertiaxPanel.setPreferredSize(new Dimension(400, 600));
+				PageX04_AttitudeSetup.add(InertiaxPanel, BorderLayout.LINE_START);
+			    
+				JPanel InertiaMatrixPanel = new JPanel();
+				InertiaMatrixPanel.setLayout(null);
+				InertiaMatrixPanel.setLocation(10, 40);
+				InertiaMatrixPanel.setBackground(Color.white);
+				InertiaMatrixPanel.setForeground(Color.black);
+				InertiaMatrixPanel.setPreferredSize(new Dimension(400, 400));
+				InertiaxPanel.add(InertiaMatrixPanel);
+				
+				int box_size_x = 60;
+				int box_size_y = 25;
+				int gap_size_x =  4;
+				int gap_size_y =  8;
+				
+		        JTextField INPUT_IXX = new JTextField();
+		        INPUT_IXX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*0);
+		        INPUT_IXX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IXX.setBorder(Moon_border);
+		        INPUT_IXX.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IXX);	 
+ 
+		        JTextField INPUT_IXY = new JTextField();
+		        INPUT_IXY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*0);
+		        INPUT_IXY.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IXY.setBorder(Moon_border);
+		        INPUT_IXY.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IXY);	    
+		        
+		        JTextField INPUT_IXZ = new JTextField();
+		        INPUT_IXZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*0);
+		        INPUT_IXZ.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IXZ.setBorder(Moon_border);
+		        INPUT_IXZ.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IXZ);	 
+		        
+		        JTextField INPUT_IYX = new JTextField();
+		        INPUT_IYX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*1);
+		        INPUT_IYX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IYX.setBorder(Moon_border);
+		        INPUT_IYX.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IYX);	 
+ 
+		        JTextField INPUT_IYY = new JTextField();
+		        INPUT_IYY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*1);
+		        INPUT_IYY.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IYY.setBorder(Moon_border);
+		        INPUT_IYY.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IYY);	    
+		        
+		        JTextField INPUT_IYZ = new JTextField();
+		        INPUT_IYZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*1);
+		        INPUT_IYZ.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IYZ.setBorder(Moon_border);
+		        INPUT_IYZ.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IYZ);	 
+		        
+		        JTextField INPUT_IZX = new JTextField();
+		        INPUT_IZX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*2);
+		        INPUT_IZX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IZX.setBorder(Moon_border);
+		        INPUT_IZX.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IZX);	 
+ 
+		        JTextField INPUT_IZY = new JTextField();
+		        INPUT_IZY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*2);
+		        INPUT_IZY.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IZY.setBorder(Moon_border);
+		        INPUT_IZY.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IZY);	    
+		        
+		        JTextField INPUT_IZZ = new JTextField();
+		        INPUT_IZZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*2);
+		        INPUT_IZZ.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+		        INPUT_IZZ.setBorder(Moon_border);
+		        INPUT_IZZ.setSize(box_size_x, box_size_y);
+		        InertiaMatrixPanel.add(INPUT_IZZ);	
+			    
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------

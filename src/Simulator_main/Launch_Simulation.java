@@ -15,7 +15,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import Sequence.SequenceElement;
-import Simulator_main.EDL_3DOF;
+import Simulator_main.EDL_UniversalModule;
 
 public class Launch_Simulation implements ActionListener{
 	
@@ -246,7 +246,7 @@ public class Launch_Simulation implements ActionListener{
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
 	    	double[] engine_off = READ_ErrorFile();
-	    	double rm = EDL_3DOF.DATA_MAIN[target][0];
+	    	double rm = EDL_UniversalModule.DATA_MAIN[target][0];
 	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//System.out.println(target+" "+ rm);
@@ -258,7 +258,7 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Universal Module running");
 	    		System.out.println(""+SurfaceArea);
-	    		EDL_3DOF.Launch_Integrator(
+	    		EDL_UniversalModule.Launch_Integrator(
 	    												INTEGRATOR, 		     	 		 // Integrator Index 					 [-]
 														target, 				 	 	 // Target index 						 [-]
 														x_init[0]*deg2rad, 			 // Longitude 							 [rad]
@@ -302,33 +302,17 @@ public class Launch_Simulation implements ActionListener{
 						);
 	    	} else if (descent_ascent_switch==2) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		//												6 Degree of Freedom EDL module
+	    		//												Empty Slot
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		System.out.println("Ascent 6DOF Module running");
-	    		Double[][] INERTIA = new Double[3][3];
+	    		System.out.println("Obsolete Module has been deleted. This slot is currently empty.");
+	    		@SuppressWarnings("unused")
+				Double[][] INERTIA = new Double[3][3];
 	    		try {
 	    		INERTIA = READ_Inertia();
 	    		} catch(FileNotFoundException eFNo) {
 	    			System.out.println("ERROR: Inertia input file not found");
 	    		}
-		    	Ascent_6DOF.Launch_Integrator(
-		    		    INTEGRATOR, 			 	 // Integrator Index 					 [-]
-						target, 				 	 // Target index 						 [-]
-						x_init[0]*deg2rad, 			 // Longitude 							 [rad]
-						x_init[1]*deg2rad, 			 // Latitude 							 [rad]
-						x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
-						x_init[3], 				 	 // Velocity u							 [m/s]
-						x_init[4], 			 		 // Velocity v					 		 [m/s]
-						x_init[5], 					 // Velocity w						 	 [m/s]
-						x_init[6], 				 	 // Initial S/C mass 					 [kg]
-						x_init[7], 			   	 	 // Maximum integration time 		     [s]
-						x_init[10],				 	 // Write out delta time 				 [s]
-						x_init[11],				 	 // Reference Elevation  				 [m]
-						SEQUENCE_DATA,			 	 // Sequence data set	LIST		     [-]
-						STOP_Handler	,		 	 // Event Handler 	LIST			     [-]
-						engine_off, 			 	 // Artifical main engine error timing   [s]
-						INERTIA					 	 // SC Moment of Inertia 				 [-] 
-						);
+	    		
 	    	} else {
 	    		System.out.println("Module selection not recognized. ");
 	    	}
