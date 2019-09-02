@@ -163,6 +163,7 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String INTEG_File_02 			= "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp";
 	public static String INTEG_File_03 			= "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp";
 	public static String INTEG_File_04 			= "/INP/INTEG/03_AdamsBashfordIntegrator.inp";
+	public static String INERTIA_File 				= "/INP/INERTIA.inp";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -463,6 +464,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JRadioButton SELECT_VelocitySpherical, SELECT_VelocityCartesian;
     public static JRadioButton SELECT_3DOF,SELECT_6DOF;
     public static int vel_frame_hist = 1; 
+    public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
     
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
@@ -551,6 +553,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	 INTEG_File_02 = dir + INTEG_File_02;
     	 INTEG_File_03 = dir + INTEG_File_03;
     	 INTEG_File_04 = dir + INTEG_File_04; 
+    	 INERTIA_File  = dir + INERTIA_File;
     	// ---------------------------------------------------------------------------------
     //       The following function contains all GUI elements of the main window
     // ---------------------------------------------------------------------------------
@@ -786,7 +789,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         // Page 4.1
         P1_SidePanel = new JPanel();
         P1_SidePanel.setLayout(null);
-        P1_SidePanel.setPreferredSize(new Dimension(405, exty_main));
+        P1_SidePanel.setPreferredSize(new Dimension(385, exty_main));
         P1_SidePanel.setBackground(bc_c);
         P1_SidePanel.setForeground(l_c);
         PageX04_Dashboard.add(P1_SidePanel, BorderLayout.LINE_START);
@@ -1033,97 +1036,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        P1_SidePanel.add(INDICATOR_INTEGTIME);
        
        
-       SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
-       SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
-       SELECT_VelocitySpherical.setLocation(215, uy_p41 + 25 * 3 + y_ext_vel );
-       SELECT_VelocitySpherical.setSize(220,20);
-       SELECT_VelocitySpherical.setBackground(Color.white);
-       SELECT_VelocitySpherical.setForeground(Color.black);
-       SELECT_VelocitySpherical.setFont(small_font);
-       SELECT_VelocityCartesian.setLocation(215, uy_p41 + 25 * 4 + y_ext_vel);
-       SELECT_VelocityCartesian.setSize(220,20);
-       SELECT_VelocityCartesian.setBackground(Color.white);
-       SELECT_VelocityCartesian.setFont(small_font);
-      ButtonGroup bg_velocity=new ButtonGroup();    
-      bg_velocity.add(SELECT_VelocitySpherical);
-      bg_velocity.add(SELECT_VelocityCartesian); 
-      P1_SidePanel.add(SELECT_VelocitySpherical);
-      P1_SidePanel.add(SELECT_VelocityCartesian);
-      SELECT_VelocitySpherical.addActionListener(new ActionListener() {
-
- 		@Override
- 		public void actionPerformed(ActionEvent arg0) {
- 			// TODO Auto-generated method stub
- 			if(SELECT_VelocitySpherical.isSelected()) {
- 				VelocityCoordinateSystem = 1;
- 			} else if (SELECT_VelocityCartesian.isSelected()) {
- 				VelocityCoordinateSystem = 2;
- 			}
- 			WRITE_INIT();
- 		}
-     	 
-      });
-      SELECT_VelocityCartesian.addActionListener(new ActionListener() {
-
- 		@Override
- 		public void actionPerformed(ActionEvent arg0) {
- 			// TODO Auto-generated method stub
- 			if(SELECT_VelocitySpherical.isSelected()) {
- 				VelocityCoordinateSystem = 1;
- 			} else if (SELECT_VelocityCartesian.isSelected()) {
- 				VelocityCoordinateSystem = 2;
- 			}
- 			WRITE_INIT();
- 		}
-     	 
-      });
-      SELECT_VelocitySpherical.setSelected(true);
-      
-      SELECT_3DOF =new JRadioButton("3DOF Model");    
-      SELECT_6DOF =new JRadioButton("6DOF Model");      
-      SELECT_3DOF.setLocation(215, uy_p41 + 25 * 6 + y_ext_vel );
-      SELECT_3DOF.setSize(220,20);
-      SELECT_3DOF.setBackground(Color.white);
-      SELECT_3DOF.setForeground(Color.black);
-      SELECT_3DOF.setFont(small_font);
-      SELECT_6DOF.setLocation(215, uy_p41 + 25 * 7 + y_ext_vel);
-      SELECT_6DOF.setSize(220,20);
-      SELECT_6DOF.setBackground(Color.white);
-      SELECT_6DOF.setFont(small_font);
-     ButtonGroup bg_dof=new ButtonGroup();    
-     bg_dof.add(SELECT_3DOF);
-     bg_dof.add(SELECT_6DOF); 
-     P1_SidePanel.add(SELECT_3DOF);
-     P1_SidePanel.add(SELECT_6DOF);
-     SELECT_3DOF.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			if(SELECT_3DOF.isSelected()) {
-				DOF_System = 3;
-			} else if (SELECT_6DOF.isSelected()) {
-				DOF_System = 6;
-			}
-			WRITE_INIT();
-		}
-    	 
-     });
-     SELECT_6DOF.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			if(SELECT_3DOF.isSelected()) {
-				DOF_System = 3;
-			} else if (SELECT_6DOF.isSelected()) {
-				DOF_System = 6;
-			}
-			WRITE_INIT();
-		}
-    	 
-     });
-     SELECT_3DOF.setSelected(true);
+       
        
        JLabel LABEL_TARGET = new JLabel("Target Body:");
        LABEL_TARGET.setLocation(5, uy_p41 + 25 * 9  );
@@ -1318,7 +1231,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  // 										Page 4.2
 	  //-----------------------------------------------------------------------------------------
       int INPUT_width = 120;
-      int SidePanel_Width = 505; 
+      int SidePanel_Width = 380; 
       JPanel PANEL_LEFT_InputSection = new JPanel();
       PANEL_LEFT_InputSection.setLayout(null);
       PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1350));
@@ -1380,18 +1293,21 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_longitude.setSize(250, 20);
       LABEL_longitude.setBackground(Color.white);
       LABEL_longitude.setForeground(Color.black);
+      LABEL_longitude.setFont(small_font);
       PANEL_InitialState.add(LABEL_longitude);
       JLabel LABEL_latitude = new JLabel("Latitude [deg]");
       LABEL_latitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 3 );
       LABEL_latitude.setSize(250, 20);
       LABEL_latitude.setBackground(Color.white);
       LABEL_latitude.setForeground(Color.black);
+      LABEL_latitude.setFont(small_font);
       PANEL_InitialState.add(LABEL_latitude);
       JLabel LABEL_altitude = new JLabel("Altitude [m]");
       LABEL_altitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 4);
       LABEL_altitude.setSize(250, 20);
       LABEL_altitude.setBackground(Color.white);
       LABEL_altitude.setForeground(Color.black);
+      LABEL_altitude.setFont(small_font);
       PANEL_InitialState.add(LABEL_altitude);
       
       JLabel LABEL_referenceelevation = new JLabel("Ref. Elevation [m]");
@@ -1399,6 +1315,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_referenceelevation.setSize(250, 20);
       LABEL_referenceelevation.setBackground(Color.white);
       LABEL_referenceelevation.setForeground(Color.black);
+      LABEL_referenceelevation.setFont(small_font);
       PANEL_InitialState.add(LABEL_referenceelevation);
       
       JLabel LABEL_velocity = new JLabel("Velocity [m/s]");
@@ -1406,17 +1323,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_velocity.setSize(250, 20);
       LABEL_velocity.setBackground(Color.white);
       LABEL_velocity.setForeground(Color.black);
+      LABEL_velocity.setFont(small_font);;
       PANEL_InitialState.add(LABEL_velocity);
       JLabel LABEL_fpa = new JLabel("Flight Path angle [deg]");
       LABEL_fpa.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 9);
       LABEL_fpa.setSize(250, 20);
       LABEL_fpa.setBackground(Color.white);
       LABEL_fpa.setForeground(Color.black);
+      LABEL_fpa.setFont(small_font);
       PANEL_InitialState.add(LABEL_fpa);
       JLabel LABEL_azimuth = new JLabel("Azimuth [deg]");
       LABEL_azimuth.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 10 );
       LABEL_azimuth.setSize(250, 20);
       LABEL_azimuth.setBackground(Color.white);
+      LABEL_azimuth.setFont(small_font);
       LABEL_azimuth.setForeground(Color.black);
       PANEL_InitialState.add(LABEL_azimuth);
 
@@ -1742,7 +1662,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       //---------------------------------------------------------------------------------------------       
       JPanel IntegratorInputPanel = new JPanel();
       IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 14 );
-      IntegratorInputPanel.setSize(SidePanel_Width, 595);
+      IntegratorInputPanel.setSize(SidePanel_Width, 825);
       IntegratorInputPanel.setBackground(Color.white);
       IntegratorInputPanel.setForeground(Color.white);
       IntegratorInputPanel.setLayout(null);
@@ -1986,9 +1906,121 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       });
       
       IntegratorInputPanel.add(INPUT_IntegratorSetting_05); 
+      
+    //------------------------------------------------------------------------------------------------------------------
+    // Coordinate System and Degree of Freedom Setup 
+      
+      
+      JLabel LABEL_VCoordinateSystem = new JLabel("Select Coordinate System to solve the Velocity Vector");
+      LABEL_VCoordinateSystem.setLocation(5, uy_p41 + 25 * 13   );
+      LABEL_VCoordinateSystem.setSize(350, 20);
+      LABEL_VCoordinateSystem.setBackground(Color.white);
+      LABEL_VCoordinateSystem.setForeground(Color.black);
+      IntegratorInputPanel.add(LABEL_VCoordinateSystem);
+      
+      SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
+      SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
+      SELECT_VelocitySpherical.setLocation(5, uy_p41 + 25 * 14 );
+      SELECT_VelocitySpherical.setSize(220,20);
+      SELECT_VelocitySpherical.setBackground(Color.white);
+      SELECT_VelocitySpherical.setForeground(Color.black);
+      SELECT_VelocitySpherical.setFont(small_font);
+      SELECT_VelocityCartesian.setLocation(5, uy_p41 + 25 * 15);
+      SELECT_VelocityCartesian.setSize(220,20);
+      SELECT_VelocityCartesian.setBackground(Color.white);
+      SELECT_VelocityCartesian.setFont(small_font);
+     ButtonGroup bg_velocity=new ButtonGroup();    
+     bg_velocity.add(SELECT_VelocitySpherical);
+     bg_velocity.add(SELECT_VelocityCartesian); 
+     IntegratorInputPanel.add(SELECT_VelocitySpherical);
+     IntegratorInputPanel.add(SELECT_VelocityCartesian);
+     SELECT_VelocitySpherical.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_VelocitySpherical.isSelected()) {
+				VelocityCoordinateSystem = 1;
+			} else if (SELECT_VelocityCartesian.isSelected()) {
+				VelocityCoordinateSystem = 2;
+			}
+			WRITE_INIT();
+		}
+    	 
+     });
+     SELECT_VelocityCartesian.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_VelocitySpherical.isSelected()) {
+				VelocityCoordinateSystem = 1;
+			} else if (SELECT_VelocityCartesian.isSelected()) {
+				VelocityCoordinateSystem = 2;
+			}
+			WRITE_INIT();
+		}
+    	 
+     });
+     SELECT_VelocitySpherical.setSelected(true);
+     
+     JLabel LABEL_SelectDoF = new JLabel("Select Degrees of Freedom");
+     LABEL_SelectDoF.setLocation(5, uy_p41 + 25 * 16   );
+     LABEL_SelectDoF.setSize(350, 20);
+     LABEL_SelectDoF.setBackground(Color.white);
+     LABEL_SelectDoF.setForeground(Color.black);
+     IntegratorInputPanel.add(LABEL_SelectDoF);
+     
+     SELECT_3DOF =new JRadioButton("3DOF Model");    
+     SELECT_6DOF =new JRadioButton("6DOF Model");      
+     SELECT_3DOF.setLocation(5, uy_p41 + 25 * 17 );
+     SELECT_3DOF.setSize(220,20);
+     SELECT_3DOF.setBackground(Color.white);
+     SELECT_3DOF.setForeground(Color.black);
+     SELECT_3DOF.setFont(small_font);
+     SELECT_6DOF.setLocation(5, uy_p41 + 25 * 18);
+     SELECT_6DOF.setSize(220,20);
+     SELECT_6DOF.setBackground(Color.white);
+     SELECT_6DOF.setFont(small_font);
+    ButtonGroup bg_dof=new ButtonGroup();    
+    bg_dof.add(SELECT_3DOF);
+    bg_dof.add(SELECT_6DOF); 
+    IntegratorInputPanel.add(SELECT_3DOF);
+    IntegratorInputPanel.add(SELECT_6DOF);
+    SELECT_3DOF.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_3DOF.isSelected()) {
+				DOF_System = 3;
+			} else if (SELECT_6DOF.isSelected()) {
+				DOF_System = 6;
+			}
+			WRITE_INIT();
+		}
+   	 
+    });
+    SELECT_6DOF.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_3DOF.isSelected()) {
+				DOF_System = 3;
+			} else if (SELECT_6DOF.isSelected()) {
+				DOF_System = 6;
+			}
+			WRITE_INIT();
+		}
+   	 
+    });
+    SELECT_3DOF.setSelected(true);
+      
 	  //------------------------------------------------------------------------------------------------------------------
+    // Solver Stop conditions
 	    JLabel LABEL_EventHandler = new JLabel("Solver stop conditions:");
-	    LABEL_EventHandler.setLocation(2, uy_p41 + 25 * 13   );
+	    LABEL_EventHandler.setLocation(2, uy_p41 + 25 * 23   );
 	    LABEL_EventHandler.setSize(150, 20);
 	    LABEL_EventHandler.setBackground(Color.white);
 	    LABEL_EventHandler.setForeground(Color.black);
@@ -2064,7 +2096,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    TABLE_EventHandler_ScrollPane.getHorizontalScrollBar().setBackground(Color.white);
 	    TABLE_EventHandler_ScrollPane.setBackground(Color.white);
 	    TABLE_EventHandler_ScrollPane.setSize(tablewidth_EventHandler,tableheight_EventHandler);
-	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 14 );
+	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 24 );
 	    TABLE_EventHandler_ScrollPane.setOpaque(false);
 	    IntegratorInputPanel.add(TABLE_EventHandler_ScrollPane);
 	    
@@ -2074,7 +2106,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
     	
         JButton BUTTON_AddEventHandler = new JButton("Add");
-        BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 13);
+        BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 23);
         BUTTON_AddEventHandler.setSize(65,20);
         BUTTON_AddEventHandler.setEnabled(true);
         BUTTON_AddEventHandler.setForeground(Color.black);
@@ -2089,7 +2121,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         IntegratorInputPanel.add(BUTTON_AddEventHandler);
         
         JButton BUTTON_DeleteEventHandler = new JButton("Delete");
-        BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 13);
+        BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 23);
         BUTTON_DeleteEventHandler.setSize(75,20);
         BUTTON_DeleteEventHandler.setEnabled(true);
         BUTTON_DeleteEventHandler.setForeground(Color.black);
@@ -2104,318 +2136,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         	  } } );
         IntegratorInputPanel.add(BUTTON_DeleteEventHandler);
 
-        //---------------------------------------------------------------------------------------------
-        //                         Spacecraft Definition Block
-        //--------------------------------------------------------------------------------------------- 
-	  
-      JPanel SpaceCraftInputPanel = new JPanel();
-      SpaceCraftInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-      SpaceCraftInputPanel.setSize(SidePanel_Width, 750);
-      SpaceCraftInputPanel.setBackground(Color.white);
-      SpaceCraftInputPanel.setForeground(Color.white);
-      SpaceCraftInputPanel.setLayout(null);
-      PANEL_LEFT_InputSection.add(SpaceCraftInputPanel);
-      
-      JSeparator Separator_Page2_2 = new JSeparator();
-      Separator_Page2_2.setLocation(0, 0 );
-      Separator_Page2_2.setSize(SidePanel_Width, 1);
-      Separator_Page2_2.setBackground(Color.black);
-      Separator_Page2_2.setForeground(Color.black);
-      SpaceCraftInputPanel.add(Separator_Page2_2);
-
-	  // Space intended for advanced integrator settings 
-      JLabel LABEL_SpaceCraftSettings = new JLabel("Spacecraft Settings");
-      LABEL_SpaceCraftSettings.setLocation(0, uy_p41 + 10 * 0  );
-      LABEL_SpaceCraftSettings.setSize(400, 20);
-      LABEL_SpaceCraftSettings.setBackground(Color.white);
-      LABEL_SpaceCraftSettings.setForeground(Color.black);
-      LABEL_SpaceCraftSettings.setFont(HeadlineFont);
-      LABEL_SpaceCraftSettings.setHorizontalAlignment(0);
-      SpaceCraftInputPanel.add(LABEL_SpaceCraftSettings);
-      JLabel LABEL_Minit = new JLabel("Initial mass [kg]");
-      LABEL_Minit.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
-      LABEL_Minit.setSize(250, 20);
-      LABEL_Minit.setBackground(Color.white);
-      LABEL_Minit.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_Minit);
-      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
-      LABEL_ME_ISP.setLocation(INPUT_width+5, uy_p41 + 25 * 3 );
-      LABEL_ME_ISP.setSize(300, 20);
-      LABEL_ME_ISP.setBackground(Color.white);
-      LABEL_ME_ISP.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_ME_ISP);
-      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
-      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 4);
-      LABEL_ME_PropMass.setSize(300, 20);
-      LABEL_ME_PropMass.setBackground(Color.white);
-      LABEL_ME_PropMass.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_ME_PropMass);
-      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
-      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 5 );
-      LABEL_ME_Thrust_max.setSize(300, 20);
-      LABEL_ME_Thrust_max.setBackground(Color.white);
-      LABEL_ME_Thrust_max.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_ME_Thrust_max);
-      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
-      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
-      LABEL_ME_Thrust_min.setSize(300, 20);
-      LABEL_ME_Thrust_min.setBackground(Color.white);
-      LABEL_ME_Thrust_min.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_ME_Thrust_min);
-      
-      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
-      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
-      LABEL_ME_ISP_Model.setSize(300, 20);
-      LABEL_ME_ISP_Model.setBackground(Color.white);
-      LABEL_ME_ISP_Model.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_ME_ISP_Model);
-      
-      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
-      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
-      LABEL_ME_ISP_min.setSize(300, 20);
-      LABEL_ME_ISP_min.setBackground(Color.white);
-      LABEL_ME_ISP_min.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_ME_ISP_min);
-      
-      JLabel LABEL_SurfaceArea = new JLabel("S/C Surface Area [m\u00b2]");
-      LABEL_SurfaceArea.setLocation(INPUT_width+35, uy_p41 + 25 * 10 );
-      LABEL_SurfaceArea.setSize(300, 20);
-      LABEL_SurfaceArea.setBackground(Color.white);
-      LABEL_SurfaceArea.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_SurfaceArea);
-      
-      JLabel LABEL_BallisticCoefficient = new JLabel("Ballistic Coefficient [kg/m\u00b2]");
-      LABEL_BallisticCoefficient.setLocation(INPUT_width+35, uy_p41 + 25 * 11 );
-      LABEL_BallisticCoefficient.setSize(300, 20);
-      LABEL_BallisticCoefficient.setBackground(Color.white);
-      LABEL_BallisticCoefficient.setForeground(Color.black);
-      SpaceCraftInputPanel.add(LABEL_BallisticCoefficient);
-	 
-      
-      INPUT_M0 = new JTextField(10);
-      INPUT_M0.setLocation(2, uy_p41 + 25 * 1 );
-      INPUT_M0.setSize(INPUT_width, 20);
-      INPUT_M0.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_M0.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
-		}
-    	  
-      });
-      SpaceCraftInputPanel.add(INPUT_M0);
-      INPUT_ISP = new JTextField(10);
-      INPUT_ISP.setLocation(2, uy_p41 + 25 * 3 );
-      INPUT_ISP.setSize(INPUT_width, 20);
-      INPUT_ISP.setHorizontalAlignment(JTextField.RIGHT);
-      INPUT_ISP.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
-		}
-    	  
-      });
-      SpaceCraftInputPanel.add(INPUT_ISP);
-     INPUT_PROPMASS = new JTextField(10);
-     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 4);
-     INPUT_PROPMASS.setSize(INPUT_width, 20);
-     INPUT_PROPMASS.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_PROPMASS.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
-		}
-   	  
-     });
-     SpaceCraftInputPanel.add(INPUT_PROPMASS);        
-     INPUT_THRUSTMAX = new JTextField(10);
-     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 5 );
-     INPUT_THRUSTMAX.setSize(INPUT_width, 20);
-     INPUT_THRUSTMAX.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_THRUSTMAX.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
-		}
-   	  
-     });
-     SpaceCraftInputPanel.add(INPUT_THRUSTMAX);
-     INPUT_THRUSTMIN = new JTextField(10);
-     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 6 );;
-     INPUT_THRUSTMIN.setSize(INPUT_width, 20);
-     INPUT_THRUSTMIN.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_THRUSTMIN.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
-		}
-   	  
-     });
-     SpaceCraftInputPanel.add(INPUT_THRUSTMIN);
-     
-     INPUT_ISPMODEL = new JCheckBox();
-     INPUT_ISPMODEL.setLocation(INPUT_width+5-20, uy_p41 + 25 * 7+2);
-     INPUT_ISPMODEL.setSize(15, 15);
-     INPUT_ISPMODEL.setSelected(true);
-     INPUT_ISPMODEL.addItemListener(new ItemListener() {
-       	 public void itemStateChanged(ItemEvent e) {
-       		WRITE_PROP();
-       	 }
-                  });
-     INPUT_ISPMODEL.setHorizontalAlignment(0);
-     SpaceCraftInputPanel.add(INPUT_ISPMODEL);
-     
-     
-     INPUT_ISPMIN = new JTextField(10);
-     INPUT_ISPMIN.setLocation(2, uy_p41 + 25 * 8 );;
-     INPUT_ISPMIN.setSize(INPUT_width, 20);
-     INPUT_ISPMIN.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_ISPMIN.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
-		}
-   	  
-     });
-     SpaceCraftInputPanel.add(INPUT_ISPMIN);
-     
-     INPUT_SURFACEAREA = new JTextField(10);
-     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 10 );;
-     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
-     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_SC();
-			EvaluateSurfaceAreaSetup() ;
-		}
-   	  
-     });
-     SpaceCraftInputPanel.add(INPUT_SURFACEAREA);
-     
-     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
-     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 11 );
-     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
-     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) { }
-
-		@Override
-		public void focusLost(FocusEvent e) {
-			WRITE_SC();
-			EvaluateSurfaceAreaSetup() ;
-		}
-   	  
-     });
-     SpaceCraftInputPanel.add(INPUT_BALLISTICCOEFFICIENT);
-     
-      RB_SurfaceArea =new JRadioButton("");    
-      RB_BallisticCoefficient =new JRadioButton("");    
-     //r1.setBounds(75,50,100,30);    
-      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 10 );
-      RB_SurfaceArea.setSize(20,20);
-      RB_SurfaceArea.setBackground(Color.white);
-     //r2.setBounds(75,100,100,30); 
-      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 11 );
-      RB_BallisticCoefficient.setSize(20,20);
-      RB_BallisticCoefficient.setBackground(Color.white);
-     ButtonGroup bg=new ButtonGroup();    
-     bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
-     SpaceCraftInputPanel.add(RB_SurfaceArea);
-     SpaceCraftInputPanel.add(RB_BallisticCoefficient);
-     RB_SurfaceArea.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			if(RB_SurfaceArea.isSelected()) {
-				double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-				double mass = Double.parseDouble(INPUT_M0.getText());
-	    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
-	    		INPUT_BALLISTICCOEFFICIENT.setText("");
-	    		
-	    		INPUT_SURFACEAREA.setEditable(true);
-	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-	    		
-			} else if (RB_BallisticCoefficient.isSelected()) {
-				double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-				double mass = Double.parseDouble(INPUT_M0.getText());
-	    		INPUT_SURFACEAREA.setText("");
-			INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
-			
-	    		INPUT_SURFACEAREA.setEditable(false);
-	    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
-			}
-			
-		}
-    	 
-     });
-     RB_BallisticCoefficient.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			if(RB_SurfaceArea.isSelected()) {
-				double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-				double mass = Double.parseDouble(INPUT_M0.getText());
-	    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
-	    		INPUT_BALLISTICCOEFFICIENT.setText("");
-	    		
-	    		INPUT_SURFACEAREA.setEditable(true);
-	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-	    		
-			} else if (RB_BallisticCoefficient.isSelected()) {
-				double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-				double mass = Double.parseDouble(INPUT_M0.getText());
-	    		INPUT_SURFACEAREA.setText("");
-			INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
-			
-	    		INPUT_SURFACEAREA.setEditable(false);
-	    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
-	    		
-			}
-		}
-    	 
-     });
-
-     
-	  //-------------------------------------------- 
+ 
 	  //   Right side :
     JPanel P2_ControllerPane = new JPanel();
    // P2_ControllerPane.setLayout(null);
@@ -3028,94 +2749,633 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
 			    
 		//-----------------------------------------------------------------------------------------
-		//                                TAB: Attitude Definition
+	// ---->>>>>                       TAB: Spacecraft Definition
 		//-----------------------------------------------------------------------------------------			    
 			    
-			    
+			    // Main (SUB) tabbed Pane for this page
+		        JTabbedPane TabPane_SCDefinition = (JTabbedPane) new JTabbedPane();
+		        TabPane_SCDefinition.setPreferredSize(new Dimension(extx_main, exty_main));
+		        TabPane_SCDefinition.setBackground(bc_c);
+		        TabPane_SCDefinition.setForeground(l_c);
+		//-------------------------------------------------------------------------------------------	    
+		        // Main panels for each page 
 				JPanel InertiaxPanel = new JPanel();
-				//InertiaxPanel.setLayout(null);
 				InertiaxPanel.setLocation(0, 0);
 				InertiaxPanel.setBackground(Color.white);
 				InertiaxPanel.setForeground(Color.black);
-				InertiaxPanel.setPreferredSize(new Dimension(400, 600));
-				PageX04_AttitudeSetup.add(InertiaxPanel, BorderLayout.LINE_START);
-			    
+				InertiaxPanel.setSize(400, 600);
+				InertiaxPanel.setLayout(null); 
+	    		
+			      JPanel PropulsionInputPanel = new JPanel();
+			      PropulsionInputPanel.setLocation(0, uy_p41 + 26 * 38 );
+			      PropulsionInputPanel.setSize(SidePanel_Width, 750);
+			      PropulsionInputPanel.setBackground(Color.white);
+			      PropulsionInputPanel.setForeground(Color.white);
+			      PropulsionInputPanel.setLayout(null);
+
+			      
+			      JPanel AerodynamicInputPanel = new JPanel();
+			      AerodynamicInputPanel.setLocation(0, uy_p41 + 26 * 38 );
+			      AerodynamicInputPanel.setSize(SidePanel_Width, 750);
+			      AerodynamicInputPanel.setBackground(Color.white);
+			      AerodynamicInputPanel.setForeground(Color.white);
+			      AerodynamicInputPanel.setLayout(null);				
+				
+				TabPane_SCDefinition.addTab("Basic" , null, PropulsionInputPanel, null);
+				TabPane_SCDefinition.addTab("Attitude and Inertia" , null, InertiaxPanel, null);
+				TabPane_SCDefinition.addTab("Aerodynamic" , null, AerodynamicInputPanel, null);
+				PageX04_AttitudeSetup.add(TabPane_SCDefinition);
+		        TabPane_SCDefinition.setSelectedIndex(0);
+				
+	    //-------------------------------------------------------------------------------------------	
+		 // Inertia and Attitude       
+		        
+			      JSeparator Separator_Inertia = new JSeparator();
+			      Separator_Inertia.setLocation(0, 0 );
+			      Separator_Inertia.setSize(SidePanel_Width, 1);
+			      Separator_Inertia.setBackground(Color.black);
+			      Separator_Inertia.setForeground(Color.black);
+			      InertiaxPanel.add(Separator_Inertia);
+
+				  // Space intended for advanced integrator settings 
+			      JLabel LABEL_InertiaTensor = new JLabel("Inertia Tensor [kg m\u00b2 ] ");
+			      LABEL_InertiaTensor.setLocation(0, uy_p41 + 10 * 0  );
+			      LABEL_InertiaTensor.setSize(190, 20);
+			      LABEL_InertiaTensor.setBackground(Color.white);
+			      LABEL_InertiaTensor.setForeground(Color.black);
+			      LABEL_InertiaTensor.setFont(HeadlineFont);
+			      LABEL_InertiaTensor.setHorizontalAlignment(0);
+			      InertiaxPanel.add(LABEL_InertiaTensor);
+		        
+		        
 				JPanel InertiaMatrixPanel = new JPanel();
 				InertiaMatrixPanel.setLayout(null);
 				InertiaMatrixPanel.setLocation(10, 40);
 				InertiaMatrixPanel.setBackground(Color.white);
 				InertiaMatrixPanel.setForeground(Color.black);
-				InertiaMatrixPanel.setPreferredSize(new Dimension(400, 400));
+				InertiaMatrixPanel.setSize(400, 400);
 				InertiaxPanel.add(InertiaMatrixPanel);
 				
 				int box_size_x = 60;
 				int box_size_y = 25;
 				int gap_size_x =  4;
-				int gap_size_y =  8;
+				int gap_size_y =  15;
 				
-		        JTextField INPUT_IXX = new JTextField();
+		         INPUT_IXX = new JTextField();
 		        INPUT_IXX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*0);
 		        INPUT_IXX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IXX.setBorder(Moon_border);
 		        INPUT_IXX.setSize(box_size_x, box_size_y);
+		        INPUT_IXX.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
 		        InertiaMatrixPanel.add(INPUT_IXX);	 
+		        
+			      JLabel LABEL_IXX = new JLabel("Ixx");
+			      LABEL_IXX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*0 - 15);
+			      LABEL_IXX.setSize(box_size_x, 20);
+			      LABEL_IXX.setBackground(Color.white);
+			      LABEL_IXX.setForeground(Color.black);
+			      LABEL_IXX.setFont(small_font);
+			      LABEL_IXX.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IXX);
  
-		        JTextField INPUT_IXY = new JTextField();
+		         INPUT_IXY = new JTextField("0");
 		        INPUT_IXY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*0);
 		        INPUT_IXY.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IXY.setBorder(Moon_border);
 		        INPUT_IXY.setSize(box_size_x, box_size_y);
-		        InertiaMatrixPanel.add(INPUT_IXY);	    
+		        INPUT_IXY.setEditable(false);
+		        INPUT_IXY.setBackground(Color.lightGray);
+		        INPUT_IXY.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
+		        InertiaMatrixPanel.add(INPUT_IXY);	 
 		        
-		        JTextField INPUT_IXZ = new JTextField();
+			      JLabel LABEL_IXY = new JLabel("Ixy");
+			      LABEL_IXY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*0 - 15);
+			      LABEL_IXY.setSize(box_size_x, 20);
+			      LABEL_IXY.setBackground(Color.white);
+			      LABEL_IXY.setForeground(Color.black);
+			      LABEL_IXY.setFont(small_font);
+			      LABEL_IXY.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IXY);
+		        
+		         INPUT_IXZ = new JTextField();
 		        INPUT_IXZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*0);
 		        INPUT_IXZ.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IXZ.setBorder(Moon_border);
 		        INPUT_IXZ.setSize(box_size_x, box_size_y);
-		        InertiaMatrixPanel.add(INPUT_IXZ);	 
+		        INPUT_IXZ.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
+		        InertiaMatrixPanel.add(INPUT_IXZ);	
 		        
-		        JTextField INPUT_IYX = new JTextField();
+			      JLabel LABEL_IXZ = new JLabel("Ixz");
+			      LABEL_IXZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*0 - 15);
+			      LABEL_IXZ.setSize(box_size_x, 20);
+			      LABEL_IXZ.setBackground(Color.white);
+			      LABEL_IXZ.setForeground(Color.black);
+			      LABEL_IXZ.setFont(small_font);
+			      LABEL_IXZ.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IXZ);
+		        
+		         INPUT_IYX = new JTextField("0");
 		        INPUT_IYX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*1);
 		        INPUT_IYX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IYX.setBorder(Moon_border);
 		        INPUT_IYX.setSize(box_size_x, box_size_y);
-		        InertiaMatrixPanel.add(INPUT_IYX);	 
+		        INPUT_IYX.setEditable(false);
+		        INPUT_IYX.setBackground(Color.lightGray);
+		        INPUT_IYX.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
+		        InertiaMatrixPanel.add(INPUT_IYX);	
+		        
+			      JLabel LABEL_IYX = new JLabel("Iyx");
+			      LABEL_IYX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*1 - 15);
+			      LABEL_IYX.setSize(box_size_x, 20);
+			      LABEL_IYX.setBackground(Color.white);
+			      LABEL_IYX.setForeground(Color.black);
+			      LABEL_IYX.setFont(small_font);
+			      LABEL_IYX.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IYX);
  
-		        JTextField INPUT_IYY = new JTextField();
+		         INPUT_IYY = new JTextField();
 		        INPUT_IYY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*1);
 		        INPUT_IYY.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IYY.setBorder(Moon_border);
 		        INPUT_IYY.setSize(box_size_x, box_size_y);
-		        InertiaMatrixPanel.add(INPUT_IYY);	    
+		        INPUT_IYY.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
+		        InertiaMatrixPanel.add(INPUT_IYY);
 		        
-		        JTextField INPUT_IYZ = new JTextField();
+			      JLabel LABEL_IYY = new JLabel("Iyy");
+			      LABEL_IYY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*1 - 15);
+			      LABEL_IYY.setSize(box_size_x, 20);
+			      LABEL_IYY.setBackground(Color.white);
+			      LABEL_IYY.setForeground(Color.black);
+			      LABEL_IYY.setFont(small_font);
+			      LABEL_IYY.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IYY);
+		        
+		         INPUT_IYZ = new JTextField("0");
 		        INPUT_IYZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*1);
 		        INPUT_IYZ.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IYZ.setBorder(Moon_border);
 		        INPUT_IYZ.setSize(box_size_x, box_size_y);
-		        InertiaMatrixPanel.add(INPUT_IYZ);	 
+		        INPUT_IYZ.setEditable(false);
+		        INPUT_IYZ.setBackground(Color.lightGray);
+		        INPUT_IYZ.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
+		        InertiaMatrixPanel.add(INPUT_IYZ);	
 		        
-		        JTextField INPUT_IZX = new JTextField();
+			      JLabel LABEL_IYZ = new JLabel("Iyz");
+			      LABEL_IYZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*1 - 15);
+			      LABEL_IYZ.setSize(box_size_x, 20);
+			      LABEL_IYZ.setBackground(Color.gray);
+			      LABEL_IYZ.setForeground(Color.black);
+			      LABEL_IYZ.setFont(small_font);
+			      LABEL_IYZ.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IYZ);
+		        
+		         INPUT_IZX = new JTextField();
 		        INPUT_IZX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*2);
 		        INPUT_IZX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IZX.setBorder(Moon_border);
 		        INPUT_IZX.setSize(box_size_x, box_size_y);
+		        INPUT_IZX.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
 		        InertiaMatrixPanel.add(INPUT_IZX);	 
+		        
+			      JLabel LABEL_IZX = new JLabel("Izx");
+			      LABEL_IZX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*2 - 15);
+			      LABEL_IZX.setSize(box_size_x, 20);
+			      LABEL_IZX.setBackground(Color.white);
+			      LABEL_IZX.setForeground(Color.black);
+			      LABEL_IZX.setFont(small_font);
+			      LABEL_IZX.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IZX);
  
-		        JTextField INPUT_IZY = new JTextField();
+		         INPUT_IZY = new JTextField("0");
 		        INPUT_IZY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*2);
 		        INPUT_IZY.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IZY.setBorder(Moon_border);
 		        INPUT_IZY.setSize(box_size_x, box_size_y);
-		        InertiaMatrixPanel.add(INPUT_IZY);	    
+		        INPUT_IZY.setEditable(false);
+		        INPUT_IZY.setBackground(Color.lightGray);
+		        INPUT_IZY.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
+		        InertiaMatrixPanel.add(INPUT_IZY);	
 		        
-		        JTextField INPUT_IZZ = new JTextField();
+			      JLabel LABEL_IZY = new JLabel("Izy");
+			      LABEL_IZY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*2 - 15);
+			      LABEL_IZY.setSize(box_size_x, 20);
+			      LABEL_IZY.setBackground(Color.white);
+			      LABEL_IZY.setForeground(Color.black);
+			      LABEL_IZY.setFont(small_font);
+			      LABEL_IZY.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IZY);
+
+		        
+		        INPUT_IZZ = new JTextField();
 		        INPUT_IZZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*2);
 		        INPUT_IZZ.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IZZ.setBorder(Moon_border);
 		        INPUT_IZZ.setSize(box_size_x, box_size_y);
+		        INPUT_IZZ.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WriteINERTIA();
+					}
+			    	  
+			      });
 		        InertiaMatrixPanel.add(INPUT_IZZ);	
+		        
+			      JLabel LABEL_IZZ = new JLabel("Izz");
+			      LABEL_IZZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*2 - 15);
+			      LABEL_IZZ.setSize(box_size_x, 20);
+			      LABEL_IZZ.setBackground(Color.white);
+			      LABEL_IZZ.setForeground(Color.black);
+			      LABEL_IZZ.setFont(small_font);
+			      LABEL_IZZ.setHorizontalAlignment(0);
+			      InertiaMatrixPanel.add(LABEL_IZZ);
 			    
+		        //---------------------------------------------------------------------------------------------
+		        //                         Propulsion Definition Block
+		        //--------------------------------------------------------------------------------------------- 
+			 
+		      
+		      JSeparator Separator_Page2_2 = new JSeparator();
+		      Separator_Page2_2.setLocation(0, 0 );
+		      Separator_Page2_2.setSize(SidePanel_Width, 1);
+		      Separator_Page2_2.setBackground(Color.black);
+		      Separator_Page2_2.setForeground(Color.black);
+		      PropulsionInputPanel.add(Separator_Page2_2);
+
+			  // Space intended for advanced integrator settings 
+		      JLabel LABEL_SpaceCraftSettings = new JLabel("Spacecraft Settings");
+		      LABEL_SpaceCraftSettings.setLocation(0, uy_p41 + 10 * 0  );
+		      LABEL_SpaceCraftSettings.setSize(400, 20);
+		      LABEL_SpaceCraftSettings.setBackground(Color.white);
+		      LABEL_SpaceCraftSettings.setForeground(Color.black);
+		      LABEL_SpaceCraftSettings.setFont(HeadlineFont);
+		      LABEL_SpaceCraftSettings.setHorizontalAlignment(0);
+		      PropulsionInputPanel.add(LABEL_SpaceCraftSettings);
+		      JLabel LABEL_Minit = new JLabel("Initial mass [kg]");
+		      LABEL_Minit.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
+		      LABEL_Minit.setSize(250, 20);
+		      LABEL_Minit.setBackground(Color.white);
+		      LABEL_Minit.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_Minit);
+		      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
+		      LABEL_ME_ISP.setLocation(INPUT_width+5, uy_p41 + 25 * 3 );
+		      LABEL_ME_ISP.setSize(300, 20);
+		      LABEL_ME_ISP.setBackground(Color.white);
+		      LABEL_ME_ISP.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_ME_ISP);
+		      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
+		      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 4);
+		      LABEL_ME_PropMass.setSize(300, 20);
+		      LABEL_ME_PropMass.setBackground(Color.white);
+		      LABEL_ME_PropMass.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_ME_PropMass);
+		      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
+		      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 5 );
+		      LABEL_ME_Thrust_max.setSize(300, 20);
+		      LABEL_ME_Thrust_max.setBackground(Color.white);
+		      LABEL_ME_Thrust_max.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_ME_Thrust_max);
+		      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
+		      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
+		      LABEL_ME_Thrust_min.setSize(300, 20);
+		      LABEL_ME_Thrust_min.setBackground(Color.white);
+		      LABEL_ME_Thrust_min.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_ME_Thrust_min);
+		      
+		      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
+		      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
+		      LABEL_ME_ISP_Model.setSize(300, 20);
+		      LABEL_ME_ISP_Model.setBackground(Color.white);
+		      LABEL_ME_ISP_Model.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_ME_ISP_Model);
+		      
+		      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
+		      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
+		      LABEL_ME_ISP_min.setSize(300, 20);
+		      LABEL_ME_ISP_min.setBackground(Color.white);
+		      LABEL_ME_ISP_min.setForeground(Color.black);
+		      PropulsionInputPanel.add(LABEL_ME_ISP_min);
+		      
+		      JLabel LABEL_SurfaceArea = new JLabel("S/C Surface Area [m\u00b2]");
+		      LABEL_SurfaceArea.setLocation(INPUT_width+35, uy_p41 + 25 * 1 );
+		      LABEL_SurfaceArea.setSize(300, 20);
+		      LABEL_SurfaceArea.setBackground(Color.white);
+		      LABEL_SurfaceArea.setForeground(Color.black);
+		      AerodynamicInputPanel.add(LABEL_SurfaceArea);
+		      
+		      JLabel LABEL_BallisticCoefficient = new JLabel("Ballistic Coefficient [kg/m\u00b2]");
+		      LABEL_BallisticCoefficient.setLocation(INPUT_width+35, uy_p41 + 25 * 2 );
+		      LABEL_BallisticCoefficient.setSize(300, 20);
+		      LABEL_BallisticCoefficient.setBackground(Color.white);
+		      LABEL_BallisticCoefficient.setForeground(Color.black);
+		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
+			 
+		      
+		      INPUT_M0 = new JTextField(10);
+		      INPUT_M0.setLocation(2, uy_p41 + 25 * 1 );
+		      INPUT_M0.setSize(INPUT_width, 20);
+		      INPUT_M0.setHorizontalAlignment(JTextField.RIGHT);
+		      INPUT_M0.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_INIT();
+					WRITE_PROP();
+				}
+		    	  
+		      });
+		      PropulsionInputPanel.add(INPUT_M0);
+		      INPUT_ISP = new JTextField(10);
+		      INPUT_ISP.setLocation(2, uy_p41 + 25 * 3 );
+		      INPUT_ISP.setSize(INPUT_width, 20);
+		      INPUT_ISP.setHorizontalAlignment(JTextField.RIGHT);
+		      INPUT_ISP.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_INIT();
+					WRITE_PROP();
+				}
+		    	  
+		      });
+		      PropulsionInputPanel.add(INPUT_ISP);
+		     INPUT_PROPMASS = new JTextField(10);
+		     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 4);
+		     INPUT_PROPMASS.setSize(INPUT_width, 20);
+		     INPUT_PROPMASS.setHorizontalAlignment(JTextField.RIGHT);
+		     INPUT_PROPMASS.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_INIT();
+					WRITE_PROP();
+				}
+		   	  
+		     });
+		     PropulsionInputPanel.add(INPUT_PROPMASS);        
+		     INPUT_THRUSTMAX = new JTextField(10);
+		     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 5 );
+		     INPUT_THRUSTMAX.setSize(INPUT_width, 20);
+		     INPUT_THRUSTMAX.setHorizontalAlignment(JTextField.RIGHT);
+		     INPUT_THRUSTMAX.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_INIT();
+					WRITE_PROP();
+				}
+		   	  
+		     });
+		     PropulsionInputPanel.add(INPUT_THRUSTMAX);
+		     INPUT_THRUSTMIN = new JTextField(10);
+		     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 6 );;
+		     INPUT_THRUSTMIN.setSize(INPUT_width, 20);
+		     INPUT_THRUSTMIN.setHorizontalAlignment(JTextField.RIGHT);
+		     INPUT_THRUSTMIN.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_INIT();
+					WRITE_PROP();
+				}
+		   	  
+		     });
+		     PropulsionInputPanel.add(INPUT_THRUSTMIN);
+		     
+		     INPUT_ISPMODEL = new JCheckBox();
+		     INPUT_ISPMODEL.setLocation(INPUT_width+5-20, uy_p41 + 25 * 7+2);
+		     INPUT_ISPMODEL.setSize(15, 15);
+		     INPUT_ISPMODEL.setSelected(true);
+		     INPUT_ISPMODEL.addItemListener(new ItemListener() {
+		       	 public void itemStateChanged(ItemEvent e) {
+		       		WRITE_PROP();
+		       	 }
+		                  });
+		     INPUT_ISPMODEL.setHorizontalAlignment(0);
+		     PropulsionInputPanel.add(INPUT_ISPMODEL);
+		     
+		     
+		     INPUT_ISPMIN = new JTextField(10);
+		     INPUT_ISPMIN.setLocation(2, uy_p41 + 25 * 8 );;
+		     INPUT_ISPMIN.setSize(INPUT_width, 20);
+		     INPUT_ISPMIN.setHorizontalAlignment(JTextField.RIGHT);
+		     INPUT_ISPMIN.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_INIT();
+					WRITE_PROP();
+				}
+		   	  
+		     });
+		     PropulsionInputPanel.add(INPUT_ISPMIN);
+		     
+		     INPUT_SURFACEAREA = new JTextField(10);
+		     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 1 );;
+		     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
+		     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
+		     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_SC();
+					EvaluateSurfaceAreaSetup() ;
+				}
+		   	  
+		     });
+		     AerodynamicInputPanel.add(INPUT_SURFACEAREA);
+		     
+		     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
+		     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 2 );
+		     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
+		     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
+		     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) { }
+
+				@Override
+				public void focusLost(FocusEvent e) {
+					WRITE_SC();
+					EvaluateSurfaceAreaSetup() ;
+				}
+		   	  
+		     });
+		     AerodynamicInputPanel.add(INPUT_BALLISTICCOEFFICIENT);
+		     
+		      RB_SurfaceArea =new JRadioButton("");    
+		      RB_BallisticCoefficient =new JRadioButton("");    
+		     //r1.setBounds(75,50,100,30);    
+		      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
+		      RB_SurfaceArea.setSize(22,22);
+		      RB_SurfaceArea.setBackground(Color.white);
+		     //r2.setBounds(75,100,100,30); 
+		      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 2 );
+		      RB_BallisticCoefficient.setSize(22,22);
+		      RB_BallisticCoefficient.setBackground(Color.white);
+		     ButtonGroup bg=new ButtonGroup();    
+		     bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
+		     AerodynamicInputPanel.add(RB_SurfaceArea);
+		     AerodynamicInputPanel.add(RB_BallisticCoefficient);
+		     RB_SurfaceArea.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					if(RB_SurfaceArea.isSelected()) {
+						double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
+						double mass = Double.parseDouble(INPUT_M0.getText());
+			    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
+			    		INPUT_BALLISTICCOEFFICIENT.setText("");
+			    		
+			    		INPUT_SURFACEAREA.setEditable(true);
+			    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+			    		
+					} else if (RB_BallisticCoefficient.isSelected()) {
+						double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
+						double mass = Double.parseDouble(INPUT_M0.getText());
+			    		INPUT_SURFACEAREA.setText("");
+					INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
+					
+			    		INPUT_SURFACEAREA.setEditable(false);
+			    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+					}
+					
+				}
+		    	 
+		     });
+		     RB_BallisticCoefficient.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent arg0) {
+					// TODO Auto-generated method stub
+					if(RB_SurfaceArea.isSelected()) {
+						double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
+						double mass = Double.parseDouble(INPUT_M0.getText());
+			    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
+			    		INPUT_BALLISTICCOEFFICIENT.setText("");
+			    		
+			    		INPUT_SURFACEAREA.setEditable(true);
+			    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+			    		
+					} else if (RB_BallisticCoefficient.isSelected()) {
+						double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
+						double mass = Double.parseDouble(INPUT_M0.getText());
+			    		INPUT_SURFACEAREA.setText("");
+					INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
+					
+			    		INPUT_SURFACEAREA.setEditable(false);
+			    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+			    		
+					}
+				}
+		    	 
+		     });
+
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------
@@ -3204,8 +3464,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      	CreateChart_GroundClearance();
      	// Create Tabs:
         Page04_subtabPane.addTab("Dashboard" , null, PageX04_Dashboard, null);
-        Page04_subtabPane.addTab("Basic Setup"+"\u2713", null, PageX04_SimSetup, null);
-        Page04_subtabPane.addTab("Attitude Setup"+"\u2713", null, PageX04_AttitudeSetup, null);
+        Page04_subtabPane.addTab("Simulation Setup"+"\u2713", null, PageX04_SimSetup, null);
+        Page04_subtabPane.addTab("S/C Setup"+"\u2713", null, PageX04_AttitudeSetup, null);
         Page04_subtabPane.addTab("Raw Data", null, PageX04_RawDATA, null);
         Page04_subtabPane.addTab("Map" , null, PageX04_Map, null);
         Page04_subtabPane.addTab("Polar Map" , null, PageX04_PolarMap, null);
@@ -3228,6 +3488,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
   	      		UpdateFC_LIST();
     		READ_SEQUENCE();
     		READ_ERROR();
+    		READ_INERTIA() ;
     		Update_ErrorIndicator();
     	      Rotating2Inertial();
     	      Update_IntegratorSettings();
@@ -3446,6 +3707,87 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
             }
             wr.close(); 
             Update_ErrorIndicator();
+         } catch (IOException eIO){
+         	System.out.println(eIO);
+         }
+    }
+    
+    public static void WriteINERTIA() {
+        try {
+            File fac = new File(INERTIA_File);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            FileWriter wr = new FileWriter(fac);
+            for (int j=0;j<3;j++) {
+					 if(j==0) {
+						 double Ixx = 0;
+						 double Ixy = 0; 
+						 double Ixz = 0;
+						 if(INPUT_IXX.getText().equals("")) {
+							 Ixx =0;
+						 } else {
+							 Ixx = Double.parseDouble(INPUT_IXX.getText()); 
+						 }
+						 if(INPUT_IXY.getText().equals("")) {
+							 Ixy =0;
+						 } else {
+							 Ixy = Double.parseDouble(INPUT_IXY.getText());
+						 }
+						 if(INPUT_IXZ.getText().equals("")) {
+							 Ixz =0;
+						 } else {
+							 Ixz = Double.parseDouble(INPUT_IXZ.getText());
+						 }
+					     wr.write(Ixx+" "+Ixy+" "+Ixz+System.getProperty( "line.separator" ));
+					 } else if (j==1) {
+						 double Iyx = 0; 
+						 double Iyy = 0; 
+						 double Iyz = 0;
+						 if(INPUT_IYX.getText().equals("")) {
+							 Iyx =0;
+						 } else {
+							 Iyx = Double.parseDouble(INPUT_IYX.getText());
+						 }
+						 if(INPUT_IYY.getText().equals("")) {
+							 Iyy =0;
+						 } else {
+							 Iyy = Double.parseDouble(INPUT_IYY.getText());
+						 }
+						 if(INPUT_IYZ.getText().equals("")) {
+							 Iyz =0;
+						 } else {
+							 Iyz = Double.parseDouble(INPUT_IYZ.getText());
+						 }
+					     wr.write(Iyx+" "+Iyy+" "+Iyz+System.getProperty( "line.separator" )); 
+					 } else if (j==2 ) {
+						 double Izx = 0;
+						 double Izy = 0;
+						 double Izz = 0;
+						 if(INPUT_IZX.getText().equals("")) {
+							 Izx =0;
+						 } else {
+							 Izx = Double.parseDouble(INPUT_IZX.getText());
+						 }
+						 if(INPUT_IZY.getText().equals("")) {
+							 Izy =0;
+						 } else {
+							 Izy = Double.parseDouble(INPUT_IZY.getText()); 
+						 }
+						 if(INPUT_IZZ.getText().equals("")) {
+							 Izz =0;
+						 } else {
+							 Izz = Double.parseDouble(INPUT_IZZ.getText()); 
+						 }
+					     wr.write(Izx+" "+Izy+" "+Izz+System.getProperty( "line.separator" ));
+					 }
+            }
+            wr.close(); 
+
          } catch (IOException eIO){
          	System.out.println(eIO);
          }
@@ -3792,6 +4134,33 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        } catch(NullPointerException eNPE) { System.out.println(eNPE);}
 
    }
+    
+    public void READ_INERTIA() throws NumberFormatException, IOException {
+		BufferedReader br = new BufferedReader(new FileReader(INERTIA_File));
+	       String strLine;
+	       int j=0;
+	       try {
+	       while ((strLine = br.readLine()) != null )   {
+		       	String[] tokens = strLine.split(" ");
+		       	if(j==0) {
+		       		INPUT_IXX.setText(tokens[0]);
+		       		INPUT_IXY.setText(tokens[1]);
+		       		INPUT_IXZ.setText(tokens[2]);
+		       	} else if (j==1) {
+		       		INPUT_IYX.setText(tokens[0]);
+		       		INPUT_IYY.setText(tokens[1]);
+		       		INPUT_IYZ.setText(tokens[2]);
+		       	} else if (j==2) {
+		       		INPUT_IZX.setText(tokens[0]);
+		       		INPUT_IZY.setText(tokens[1]);
+		       		INPUT_IZZ.setText(tokens[2]);
+		       	}
+		       	
+		       	j++;
+	       }
+	       br.close();
+	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+    }
     public void READ_INPUT() throws IOException{
     	double InitialState = 0;
        	FileInputStream fstream = null; 

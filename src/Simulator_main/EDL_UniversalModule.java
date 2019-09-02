@@ -182,7 +182,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
-			public static double[][] M_Thrust_NED    = {{0},{0},{-10}};
+			public static double[][] M_Thrust_NED    = {{1},{1},{-10}};
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -634,56 +634,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			C_B_A[2][2] =   Math.cos(AngleOfAttack);
 			
 		}
-		
-		public static void Set_AngularVelocityEquationElements(double[] x) {
-			double Ixx = InertiaTensor[0][0];
-			double Iyy = InertiaTensor[1][1];
-			double Izz = InertiaTensor[2][2];
-			double Ixy = InertiaTensor[0][1];
-			double Ixz = InertiaTensor[0][2];
-			//  double Iyx = InertiaTensor[][];
-			double Iyz = InertiaTensor[2][1];
-			//double Izx = InertiaTensor[][];
-			//double Izy = InertiaTensor[][];
-			 det_I = Ixx*Iyy*Izz - 2*Ixy*Ixz*Iyz - Ixx*Iyz*Iyz - Iyy*Ixz*Ixz - Izz*Iyz*Iyz;
-			 EE_I01 = Iyy*Izz - Iyz*Iyz;
-			 EE_I02 = Ixy*Izz + Iyz*Ixz;
-			 EE_I03 = Ixy*Iyz + Iyy*Ixz;
-			 EE_I04 = Ixx*Izz - Ixz*Ixz;
-			 EE_I05 = Ixx*Iyz + Ixy*Ixz;
-			 EE_I06 = Ixx*Iyy - Ixy*Ixy;
-			
-			 EE_P_pp = -(Ixz*EE_I02 - Ixy*EE_I03)/det_I;
-			 EE_P_pq =  (Ixz*EE_I01 - Iyz*EE_I02 - (Iyy - Ixx)*EE_I03)/det_I;
-			 EE_P_pr = -(Ixy*EE_I01 + (Ixx-Izz)*EE_I02 - Iyz*EE_I03)/det_I;
-			 EE_P_qq =  (Iyz*EE_I01 - Ixy*EE_I03)/det_I;
-			 EE_P_qr = -((Izz-Iyy)*EE_I01 - Ixy*EE_I02 + Ixz*EE_I03)/det_I;
-			 EE_P_rr = -(Iyz*EE_I01 - Ixz*EE_I02)/det_I;
-			 EE_P_x  =   EE_I01/det_I;
-			 EE_P_y  =   EE_I02/det_I;
-			 EE_P_z  =   EE_I03/det_I;
-			
-			 EE_Q_pp = -(Ixz*EE_I02 - Ixy*EE_I05)/det_I;
-			 EE_Q_pq =  (Ixz*EE_I02 - Iyz*EE_I04 - (Iyy - Ixx)*EE_I05)/det_I;
-			 EE_Q_pr = -(Ixy*EE_I02 + (Ixx-Izz)*EE_I04 - Iyz*EE_I05)/det_I;
-			 EE_Q_qq =  (Iyz*EE_I02 - Ixy*EE_I05)/det_I;
-			 EE_Q_qr = -((Izz-Iyy)*EE_I02 - Ixy*EE_I04 + Ixz*EE_I05)/det_I;
-			 EE_Q_rr = -(Iyz*EE_I02 - Ixz*EE_I04)/det_I;
-			 EE_Q_x  = EE_I02/det_I;
-			 EE_Q_y  = EE_I04/det_I;
-			 EE_Q_z  = EE_I05/det_I;
-			
-			 EE_R_pp = -(Ixz*EE_I05 - Ixy*EE_I06)/det_I;
-			 EE_R_pq =  (Ixz*EE_I03 - Iyz*EE_I05 - (Iyy - Ixx)*EE_I06)/det_I;
-			 EE_R_pr = -(Ixy*EE_I03 + (Ixx-Izz)*EE_I05 - Iyz*EE_I06)/det_I;
-			 EE_R_qq =  (Iyz*EE_I03 - Ixy*EE_I06)/det_I;
-			 EE_R_qr = -((Izz-Iyy)*EE_I03 - Ixy*EE_I05 + Ixz*EE_I06)/det_I;
-			 EE_R_rr = -(Iyz*EE_I03 - Ixz*EE_I05)/det_I;
-			 EE_R_x  = EE_I03/det_I;
-			 EE_R_y  = EE_I05/det_I;
-			 EE_R_z  = EE_I06/det_I;
-			
-		}
+
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	integ_t=t;
     	//-------------------------------------------------------------------------------------------------------------------
@@ -741,7 +692,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
     	double r=rm;  // <-- reference radius for projection. Current projection set for mean radius 
     	double phi=x[0];
     	double theta = x[1];
-        double dphi = Math.abs(phi-phimin);
+    double dphi = Math.abs(phi-phimin);
     	double dtheta = Math.abs(theta-tetamin); 
     	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
     	//System.out.println(ds);
@@ -795,8 +746,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
     	V_NED_ECEF_cartesian = Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
     	
 	    }else {
-	    		// Derived from Titterton, Strapdown Navigation:
-	    								
+	    		// Derived from Titterton, Strapdown Navigation: 								
 	    		// u - North
 	    		dxdt[3] = F_total_NED[0][0]/x[6] + g_NED[0][0] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	     - omega*omega*x[2]/2*Math.sin(2*x[1])       ;
 	    		// v - East
@@ -852,12 +802,10 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 				double Ixx = InertiaTensor[0][0];
 				double Iyy = InertiaTensor[1][1];
 				double Izz = InertiaTensor[2][2];
-				@SuppressWarnings("unused")
-				double Ixy = InertiaTensor[0][1];
+				//double Ixy = InertiaTensor[0][1];
 				double Ixz = InertiaTensor[0][2];
 				//  double Iyx = InertiaTensor[][];
-				@SuppressWarnings("unused")
-				double Iyz = InertiaTensor[2][1];
+				//double Iyz = InertiaTensor[2][1];
 				
 	    		// Angular Rates
 			// p dot:
@@ -897,12 +845,10 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 	double Ixx = InertiaTensor[0][0];
 	double Iyy = InertiaTensor[1][1];
 	double Izz = InertiaTensor[2][2];
-	@SuppressWarnings("unused")
-	double Ixy = InertiaTensor[0][1];
+	//double Ixy = InertiaTensor[0][1];
 	double Ixz = InertiaTensor[0][2];
 	//  double Iyx = InertiaTensor[][];
-	@SuppressWarnings("unused")
-	double Iyz = InertiaTensor[2][1];
+	//double Iyz = InertiaTensor[2][1];
 	
 	// Angular Rates
 // p dot:

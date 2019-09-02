@@ -284,8 +284,8 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Ascent 3DOF Module running");
 		    	Ascent_3DOF.Launch_Integrator(
-		    			INTEGRATOR, 				 // Integrator Index 					 [-]
-						target, 				 	 // Target index 						 [-]
+		    			INTEGRATOR, 				 // Integrator Index 					         [-]
+						target, 				 	 // Target index 						     [-]
 						x_init[0]*deg2rad, 			 // Longitude 						 	 [rad]
 						x_init[1]*deg2rad, 			 // Latitude 					     	 [rad]
 						x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
@@ -293,11 +293,11 @@ public class Launch_Simulation implements ActionListener{
 						x_init[4]*deg2rad, 			 // Flight path angle 					 [rad]
 						x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
 						x_init[6], 				 	 // Initial S/C mass 					 [kg]
-						x_init[7], 			   	 	 // Maximum integ. time 				 [s]
+						x_init[7], 			   	 	 // Maximum integ. time 				     [s]
 						x_init[10],				 	 // Write out delta time 				 [s]
 						x_init[11],				 	 // Reference Elevation  				 [m]
-						SEQUENCE_DATA,			 	 // Sequence data set	LIST		     [-]
-						STOP_Handler	,		 	 // Event Handler 	LIST			     [-]
+						SEQUENCE_DATA,			 	 // Sequence data set	LIST		         [-]
+						STOP_Handler	,		 	 // Event Handler 	LIST			             [-]
 						engine_off
 						);
 	    	} else if (descent_ascent_switch==2) {
