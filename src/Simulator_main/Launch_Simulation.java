@@ -28,6 +28,7 @@ public class Launch_Simulation implements ActionListener{
 	static double deg2rad = PI/180.0; 		//Convert degrees to radians
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
+	public static String INERTIA_File 				= "/INP/INERTIA.inp";
    	//System.out.println(INPUT_FILE);
 	
 	public static void UPDATE_SequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
@@ -216,7 +217,33 @@ public class Launch_Simulation implements ActionListener{
 	  br.close();
 	  return SurfaceArea; 
 }
-    
+    public static double[][] READ_INERTIA() throws NumberFormatException, IOException {
+	double[][] InertiaTensor   = {{   0 ,  0  ,   0},
+			    					  {   0 ,  0  ,   0},
+			    					  {   0 ,  0  ,   0}};  // Inertia Tensor []
+   	 String dir = System.getProperty("user.dir");
+   	 INERTIA_File  = dir + INERTIA_File;
+		BufferedReader br = new BufferedReader(new FileReader(INERTIA_File));
+	       String strLine;
+	       int j=0;
+	       try {
+	       while ((strLine = br.readLine()) != null )   {
+		       	String[] tokens = strLine.split(" ");
+		       		InertiaTensor[j][0] = Double.parseDouble(tokens[0]);     
+		       		InertiaTensor[j][1] = Double.parseDouble(tokens[1]);  
+		       		InertiaTensor[j][2] = Double.parseDouble(tokens[2]);     
+		       	j++;
+	       }
+	       br.close();
+	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+	       for(int i=0;i<3;i++) {
+		    	   for(int k=0;k<3;k++) {
+		    		   // Uncommend to test the reading function:
+		    		   //System.out.println(" "+InertiaTensor[i][k]+" ");;
+		    	   }
+	       }
+	       return InertiaTensor;
+    }    
 
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -250,6 +277,7 @@ public class Launch_Simulation implements ActionListener{
 	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//System.out.println(target+" "+ rm);
+	    	double[][] InertiaTensor = READ_INERTIA() ;
 	    	int descent_ascent_switch = (int) x_init[12]; 
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
 	    	if(descent_ascent_switch==0 ) {
@@ -276,7 +304,8 @@ public class Launch_Simulation implements ActionListener{
 														STOP_Handler	,		         // Event Handler 	LIST			 	     [-]
 														SurfaceArea,					 // Projected Surface Area S/C 			 [m2]
 												  (int) x_init[13],					 // Velocity Vector Coordinate system    [-] 1 - Spherical coordinates , 2 - Cartesian Coordinates
-												  (int) x_init[14]					 // Degree of Freedom   					 [-] 3 - 3 DOF , 6 - 6 DOF									
+												  (int) x_init[14],					 // Degree of Freedom   					 [-] 3 - 3 DOF , 6 - 6 DOF	
+														InertiaTensor				 // Inertia Tensor  3x3 matrix           [kg m2]
 	    				);
 	    	} else if (descent_ascent_switch ==1) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------

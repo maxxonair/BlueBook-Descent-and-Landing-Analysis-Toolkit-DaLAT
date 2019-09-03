@@ -182,7 +182,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
-			public static double[][] M_Thrust_NED    = {{1},{1},{-10}};
+			public static double[][] M_Thrust_NED    = {{1},{10},{-1}};
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -195,11 +195,11 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			public static double[][] q_vector        = {{0},{0},{0},{1}}; 	// Quarternion vector
 			public static double[][] AngularRate     = {{0},
 														{0},
-														{0.5}};							 // Angular Velcity {P, Q, R}T [rad/s] 
+														{0}};							 // Angular Velcity {P, Q, R}T [rad/s] 
 			public static double[][] EulerAngle      = {{0},{0},{0}};				     // Euler Angle Vector [rad]
-			public static double[][] InertiaTensor   = {{8810.8 ,     0      ,   0},
-													    {   0   ,  8157.3    ,   0},
-													    {   0    ,    0      ,4721.8}};  // Inertia Tensor []
+			public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
+													    {   0    ,    0    ,   0},
+													    {   0    ,    0    ,   0}};  // Inertia Tensor []
 			public static double[][] AngularMomentum = {{0},
 														{0},
 														{0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
@@ -339,11 +339,13 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			double b = Quaternions[1][0];
 			double c = Quaternions[2][0];
 			double d = Quaternions[3][0];
-			EulerAngles[0][0] = Math.atan(2*(c*d+a*b)/(a*a-b*b-c*c+d*d));
+			EulerAngles[0][0] = Math.atan2(2*(c*d+a*b),(a*a-b*b-c*c+d*d));
 			EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
-			EulerAngles[2][0] = Math.atan( 2*(b*c + a*d)/(a*a + b*b - c*c - d*d));
+			EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));
+
 			return EulerAngles;
 		}
+
 	    public static void SequenceWriteOut_addRow() {
 			CTRL_steps.add(SEQUENCE_DATA_main.get(active_sequence).get_sequence_ID()+ " " + 
 				   SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()+" "+
@@ -816,7 +818,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 	    		dxdt[13] = (Ixz * Lb + Ixx * Nb + (Ixz * (Iyy - Ixx - Izz) * x[13] + (Ixz*Ixz + Ixx * (Ixx - Iyy)) * x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
 
 } else if (SixDoF_Option == 3) {
-	System.out.println("6DoF running! Option 3");
+	//System.out.println("6DoF running! Option 3");
 	// Quaternions:
 
 	double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
@@ -874,7 +876,7 @@ AngularRate[2][0] = x[13];
 	    }
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP, int VelocityCoordinateSystem, int DOF_System){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP, int VelocityCoordinateSystem, int DOF_System, double[][] InertiaTensorMatrix){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -906,6 +908,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	} else if (DOF_System==6) {
 		is_6DOF=true;
 		System.out.println("READ: 6 Degree of Freedom Model selected.");
+		InertiaTensor = InertiaTensorMatrix;
+		System.out.println("READ: Inertia Tensor set. ");
 	}
 		double[] prop_read;
 	    cntr_h_init=x2-rm;

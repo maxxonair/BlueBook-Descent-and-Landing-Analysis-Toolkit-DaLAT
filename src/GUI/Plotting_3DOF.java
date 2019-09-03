@@ -55,9 +55,13 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Timer;
+import java.util.TimerTask;
+
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.AbstractAction;
@@ -223,10 +227,10 @@ public class Plotting_3DOF implements  ActionListener {
     											   "Parabolic", 
     											   "SquareRoot" ,	
     											   "Linear" 	
-			  };
-    public static String[] TargetCurve_Options_TVC = { "",						// No target curve -> continous burn
-			   "SquareRoot" ,	
-			   "Linear" 	
+			  };	
+    public static String[] TargetCurve_Options_TVC = { 	"",						// No target curve -> continous burn
+    														"SquareRoot" ,	
+    														"Linear" 	
 };
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
@@ -309,9 +313,9 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Position x ECEF [m]",
     										  "Position y ECEF [m]",
     										  "Position z ECEF [m]",
-    										  "Angular Velocity x [rad/s]",
-    										  "Angular Velocity y [rad/s]",
-    										  "Angular Velocity z [rad/s]",
+    										  "Angular Rate x B2NED [deg/s]",
+    										  "Angular Rate y B2NED [deg/s]",
+    										  "Angular Rate z B2NED [deg/s]",
     										  "Angular Momentum x B [Nm]",
     										  "Angular Momentum y B [Nm]",
     										  "Angular Momentum z B [Nm]",
@@ -320,7 +324,7 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Roll - Euler Angle Psi [deg]"
     										  };
     
-    public static String[] Thrust_switch = { "Descent Module - 3 DoF",
+    public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF",
     										 "Ascent Module - 3 DoF",
     										 "Ascent Module - 6 DoF"
     };
@@ -466,6 +470,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static int vel_frame_hist = 1; 
     public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
     
+    
+    public static TimerTask task_Update;
+    
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
     
@@ -554,6 +561,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	 INTEG_File_03 = dir + INTEG_File_03;
     	 INTEG_File_04 = dir + INTEG_File_04; 
     	 INERTIA_File  = dir + INERTIA_File;
+    	 
+     // ---------------------------------------------------------------------------------
+    	 //       Define Task (FileWatcher) Update Result Overview
+    	 // ---------------------------------------------------------------------------------
+    	  task_Update = new FileWatcher( new File(RES_File) ) {
+    		    protected void onChange( File file ) {
+    		      // here we code the action on a change
+    		     // System.out.println( "File "+ file.getName() +" have change !" );
+          		  UPDATE_Page01();
+    		    }
+    		  };
+    	   Timer timer = new Timer();
+    	  // repeat the check every second
+    	   timer.schedule( task_Update , new Date(), 1000 );
     	// ---------------------------------------------------------------------------------
     //       The following function contains all GUI elements of the main window
     // ---------------------------------------------------------------------------------
@@ -1108,7 +1129,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       INDICATOR_RESPROP.setBackground(Color.black);
       INDICATOR_RESPROP.setForeground(Color.black);
       P1_SidePanel.add(INDICATOR_RESPROP);
-
+/*
         JButton ButtonUpdate = new JButton("Update");
         ButtonUpdate.setLocation(250, uy_p41 + 30 * 0);
         ButtonUpdate.setSize(145,25);
@@ -1120,9 +1141,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         		 // READ_RAWDATA() ;
         	}} );
         P1_SidePanel.add(ButtonUpdate);
-        
+        */
         JButton Button_RunSimulation = new JButton("Run Simulation");
-        Button_RunSimulation.setLocation(250, uy_p41 + 30 * 1);
+        Button_RunSimulation.setLocation(250, uy_p41 + 25 * 0);
         Button_RunSimulation.setSize(145,25);
         Button_RunSimulation.setBackground(Color.white);
         Button_RunSimulation.setForeground(Color.black);
@@ -5412,14 +5433,16 @@ public static void EXPORT_Case() {
 						             xx = Double.parseDouble(tokens[x]); } else {
 						            	 String x_axis_label = String.valueOf(axis_chooser.getSelectedItem());
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
-						            	 if(isangle) {xx = Double.parseDouble(tokens[x])*rad2deg;} else {
+						            	 boolean isangle2 = x_axis_label.indexOf("[deg/s]") !=-1? true: false;
+						            	 if(isangle || isangle2) {xx = Double.parseDouble(tokens[x])*rad2deg;} else {
 						            		 		  xx = Double.parseDouble(tokens[x]);} 
 						            	 }
 						            if(y==3) {
 						             yy = Double.parseDouble(tokens[y]);} else {
 						            	 String x_axis_label = String.valueOf(axis_chooser2.getSelectedItem());
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
-						            	 if(isangle) {yy = Double.parseDouble(tokens[y])*rad2deg;} else {
+						            	 boolean isangle2 = x_axis_label.indexOf("[deg/s]") !=-1? true: false;
+						            	 if(isangle || isangle2) {yy = Double.parseDouble(tokens[y])*rad2deg;} else {
 						             yy = Double.parseDouble(tokens[y]);	}
 						             }
 						         	xyseries10.add(xx , yy);
