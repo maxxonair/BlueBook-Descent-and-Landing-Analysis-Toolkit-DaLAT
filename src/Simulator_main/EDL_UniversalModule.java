@@ -22,6 +22,8 @@ import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
 import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
+import org.apache.commons.math3.util.FastMath;
+
 import Model.AtmosphereModel;
 import Model.GravityModel;
 import Model.atm_dataset;
@@ -182,7 +184,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
-			public static double[][] M_Thrust_NED    = {{1},{10},{-1}};
+			public static double[][] M_Thrust_NED    = {{0},{0},{1}};
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -342,8 +344,45 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			EulerAngles[0][0] = Math.atan2(2*(c*d+a*b),(a*a-b*b-c*c+d*d));
 			EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
 			EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));
-
 			return EulerAngles;
+		}
+		
+		public static double[][] Quaternions2Euler2(double[][] Quaternions){
+			
+			double[][] EulerAngles = {{0},{0},{0}};
+			double w = Quaternions[0][0];
+			double x = Quaternions[1][0];
+			double y = Quaternions[2][0];
+			double z = Quaternions[3][0];
+
+	        double sqw = w * w;
+	        double sqx = x * x;
+	        double sqy = y * y;
+	        double sqz = z * z;
+	        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
+	        // is correction factor
+	        double test = x * y + z * w;
+	        if (test > 0.499 * unit) { // singularity at north pole
+	        	EulerAngles[1][0] = 2 * Math.atan2(x, w);
+	        	EulerAngles[0][0] = FastMath.PI/2;
+	        	EulerAngles[2][0] = 0;
+	        } else if (test < -0.499 * unit) { // singularity at south pole
+	        	EulerAngles[1][0] = -2 * FastMath.atan2(x, w);
+	        	EulerAngles[0][0] = -FastMath.PI/2;
+	        	EulerAngles[2][0] = 0;
+	        } else {
+	        	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
+	        	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
+	        	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
+	        }
+			//-------------------------
+			/*
+		    EulerAngles[0][0] = Math.atan2(2*(qw*qx+qy*qz), 1-2*(qx*qx+qy*qy));
+		    EulerAngles[1][0] = Math.asin(qw*qy - qz*qx);
+		    EulerAngles[2][0] = Math.atan2(2*(qw*qz+qx*qy), 1-2*(qy*qy + qz*qz));
+			*/
+		    
+ 			return EulerAngles;
 		}
 
 	    public static void SequenceWriteOut_addRow() {
@@ -831,14 +870,14 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
     q_vector[2][0] = x[9];
     q_vector[3][0] = x[10];
     
-    EulerAngle = Quaternions2Euler(q_vector);
+    EulerAngle = Quaternions2Euler2(q_vector);
 	double[][] q_vector_dot =  Tool.Multiply_Scalar_Matrix(0.5, Tool.Multiply_Matrices(Q, q_vector)); 
 	dxdt[7] =  q_vector_dot[0][0];  // e1 dot
 	dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
 	dxdt[9] =  q_vector_dot[2][0];  // e3 dot
 	dxdt[10] = q_vector_dot[3][0];  // e4 dot
 
-    EulerAngle = Quaternions2Euler(q_vector);
+    EulerAngle = Quaternions2Euler2(q_vector);
     //----------------------------------------------------------------------------------------
     double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
     double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
@@ -867,6 +906,7 @@ AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
 AngularRate[0][0] = x[11];
 AngularRate[1][0] = x[12];
 AngularRate[2][0] = x[13];
+AngleOfAttack = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 	    }
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Update Event handler
@@ -1190,7 +1230,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  AngularMomentum[2][0]+" "+
 	                    		  EulerAngle[0][0]+" "+
 	                    		  EulerAngle[1][0]+" "+
-	                    		  EulerAngle[2][0]+" "
+	                    		  EulerAngle[2][0]+" "+
+	                    		  AngleOfAttack+" "
 	                    		  );
 	                }
 	              

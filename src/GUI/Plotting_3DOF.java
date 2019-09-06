@@ -319,9 +319,10 @@ public class Plotting_3DOF implements  ActionListener {
     										  "Angular Momentum x B [Nm]",
     										  "Angular Momentum y B [Nm]",
     										  "Angular Momentum z B [Nm]",
-    										  "Pitch - Euler Angle Phi [deg]",
-    										  "Yaw - Euler Angle Theta [deg]",
-    										  "Roll - Euler Angle Psi [deg]"
+    										  "X Roll Angle - Euler Phi [deg]",
+    										  "Y Pitch Angle - Euler Theta [deg]",
+    										  "Z Yaw Angle - Euler Psi [deg]",
+    										  "Angle of Attack [deg]"
     										  };
     
     public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF",
