@@ -96,6 +96,7 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
+import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -167,7 +168,8 @@ public class Plotting_3DOF implements  ActionListener {
 	public static String INTEG_File_02 			= "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp";
 	public static String INTEG_File_03 			= "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp";
 	public static String INTEG_File_04 			= "/INP/INTEG/03_AdamsBashfordIntegrator.inp";
-	public static String INERTIA_File 				= "/INP/INERTIA.inp";
+	public static String INERTIA_File 		    = "/INP/INERTIA.inp";
+	public static String InitialAttitude_File   = "/INP/INITIALATTITUDE.inp";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -470,7 +472,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JRadioButton SELECT_3DOF,SELECT_6DOF;
     public static int vel_frame_hist = 1; 
     public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
-    
+    public static JTextField INPUT_Quarternion1, INPUT_Quarternion2, INPUT_Quarternion3, INPUT_Quarternion4, INPUT_Euler1, INPUT_Euler2,INPUT_Euler3;
     
     public static TimerTask task_Update;
     
@@ -562,7 +564,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	 INTEG_File_03 = dir + INTEG_File_03;
     	 INTEG_File_04 = dir + INTEG_File_04; 
     	 INERTIA_File  = dir + INERTIA_File;
-    	 
+    	 InitialAttitude_File = dir + InitialAttitude_File;
      // ---------------------------------------------------------------------------------
     	 //       Define Task (FileWatcher) Update Result Overview
     	 // ---------------------------------------------------------------------------------
@@ -2835,7 +2837,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				InertiaMatrixPanel.setLocation(10, 40);
 				InertiaMatrixPanel.setBackground(Color.white);
 				InertiaMatrixPanel.setForeground(Color.black);
-				InertiaMatrixPanel.setSize(400, 400);
+				InertiaMatrixPanel.setSize(330, 370);
+				InertiaMatrixPanel.setBorder(Moon_border);
 				InertiaxPanel.add(InertiaMatrixPanel);
 				
 				int box_size_x = 60;
@@ -3094,6 +3097,280 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      LABEL_IZZ.setFont(small_font);
 			      LABEL_IZZ.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IZZ);
+			      
+			      //------------------------------------------------------------------------------------
+			      // Initial 
+			      
+			      int box_size_InitialAttitude_x = 130;
+			      int box_size_InitialAttitude_y = 25;
+			      
+					JPanel InitialAttitudePanel = new JPanel();
+					InitialAttitudePanel.setLayout(null);
+					InitialAttitudePanel.setLocation(350, 10);
+					InitialAttitudePanel.setBackground(Color.white);
+					InitialAttitudePanel.setForeground(Color.black);
+					InitialAttitudePanel.setBorder(Moon_border);
+					InitialAttitudePanel.setSize(400, 400);
+					InertiaxPanel.add(InitialAttitudePanel);
+					
+				      JLabel LABEL_Quarternions = new JLabel("Quarternion Representation");
+				      LABEL_Quarternions.setLocation(2, 2);
+				      LABEL_Quarternions.setSize(150, 20);
+				      LABEL_Quarternions.setBackground(Color.white);
+				      LABEL_Quarternions.setForeground(Color.black);
+				      LABEL_Quarternions.setFont(small_font);
+				      LABEL_Quarternions.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Quarternions);
+					
+				      JLabel LABEL_Quarternion1 = new JLabel("Quarternion e1");
+				      LABEL_Quarternion1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0 - 15+45);
+				      LABEL_Quarternion1.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Quarternion1.setBackground(Color.white);
+				      LABEL_Quarternion1.setForeground(Color.black);
+				      LABEL_Quarternion1.setFont(small_font);
+				      LABEL_Quarternion1.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Quarternion1);
+
+			        
+			        INPUT_Quarternion1 = new JTextField();
+			        INPUT_Quarternion1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0+45);
+			        INPUT_Quarternion1.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Quarternion1.setBorder(Moon_border);
+			        INPUT_Quarternion1.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Quarternion1.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+							//------------------------------------------------------------------------------
+							double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
+												 {Double.parseDouble(INPUT_Quarternion2.getText())},
+												 {Double.parseDouble(INPUT_Quarternion3.getText())},
+												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
+							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
+							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
+							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
+							INPUT_Euler3.setText(numberFormat.format(EulerAngles[2][0]*rad2deg));
+							//------------------------------------------------------------------------------
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Quarternion1);	
+			        
+				      JLabel LABEL_Quarternion2 = new JLabel("Quarternion e2");
+				      LABEL_Quarternion2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1 - 15+45);
+				      LABEL_Quarternion2.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Quarternion2.setBackground(Color.white);
+				      LABEL_Quarternion2.setForeground(Color.black);
+				      LABEL_Quarternion2.setFont(small_font);
+				      LABEL_Quarternion2.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Quarternion2);
+
+			        
+			        INPUT_Quarternion2 = new JTextField();
+			        INPUT_Quarternion2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1+45);
+			        INPUT_Quarternion2.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Quarternion2.setBorder(Moon_border);
+			        INPUT_Quarternion2.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Quarternion2.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+							//------------------------------------------------------------------------------
+							double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
+												 {Double.parseDouble(INPUT_Quarternion2.getText())},
+												 {Double.parseDouble(INPUT_Quarternion3.getText())},
+												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
+							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
+							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
+							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
+							INPUT_Euler3.setText(numberFormat.format(EulerAngles[2][0]*rad2deg));
+							//------------------------------------------------------------------------------
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Quarternion2);
+			        
+				      JLabel LABEL_Quarternion3 = new JLabel("Quarternion e3");
+				      LABEL_Quarternion3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2 - 15+45);
+				      LABEL_Quarternion3.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Quarternion3.setBackground(Color.white);
+				      LABEL_Quarternion3.setForeground(Color.black);
+				      LABEL_Quarternion3.setFont(small_font);
+				      LABEL_Quarternion3.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Quarternion3);
+
+			        
+			        INPUT_Quarternion3 = new JTextField();
+			        INPUT_Quarternion3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2+45);
+			        INPUT_Quarternion3.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Quarternion3.setBorder(Moon_border);
+			        INPUT_Quarternion3.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Quarternion3.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+							//------------------------------------------------------------------------------
+							double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
+												 {Double.parseDouble(INPUT_Quarternion2.getText())},
+												 {Double.parseDouble(INPUT_Quarternion3.getText())},
+												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
+							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
+							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
+							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
+							INPUT_Euler3.setText(numberFormat.format(EulerAngles[2][0]*rad2deg));
+							//------------------------------------------------------------------------------
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Quarternion3);
+			        
+				      JLabel LABEL_Quarternion4 = new JLabel("Quarternion e4");
+				      LABEL_Quarternion4.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*3 - 15+45);
+				      LABEL_Quarternion4.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Quarternion4.setBackground(Color.white);
+				      LABEL_Quarternion4.setForeground(Color.black);
+				      LABEL_Quarternion4.setFont(small_font);
+				      LABEL_Quarternion4.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Quarternion4);
+
+			        
+			        INPUT_Quarternion4 = new JTextField();
+			        INPUT_Quarternion4.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*3+45);
+			        INPUT_Quarternion4.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Quarternion4.setBorder(Moon_border);
+			        INPUT_Quarternion4.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Quarternion4.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+							//------------------------------------------------------------------------------
+							double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
+												 {Double.parseDouble(INPUT_Quarternion2.getText())},
+												 {Double.parseDouble(INPUT_Quarternion3.getText())},
+												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
+							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
+							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
+							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
+							INPUT_Euler3.setText(numberFormat.format(EulerAngles[2][0]*rad2deg));
+							//------------------------------------------------------------------------------
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Quarternion4);
+			        
+			        
+				      JLabel LABEL_Euler = new JLabel("Euler Angle Representation");
+				      LABEL_Euler.setLocation(152, 2);
+				      LABEL_Euler.setSize(150, 20);
+				      LABEL_Euler.setBackground(Color.white);
+				      LABEL_Euler.setForeground(Color.black);
+				      LABEL_Euler.setFont(small_font);
+				      LABEL_Euler.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Euler);
+			        
+				      JLabel LABEL_Euler1 = new JLabel("Euler E1");
+				      LABEL_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0 - 15+45);
+				      LABEL_Euler1.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Euler1.setBackground(Color.white);
+				      LABEL_Euler1.setForeground(Color.black);
+				      LABEL_Euler1.setFont(small_font);
+				      LABEL_Euler1.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Euler1);
+
+			        
+			        INPUT_Euler1 = new JTextField();
+			        INPUT_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0+45);
+			        INPUT_Euler1.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Euler1.setBorder(Moon_border);
+			        INPUT_Euler1.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Euler1.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Euler1);
+			        
+				      JLabel LABEL_Euler2 = new JLabel("Euler E2");
+				      LABEL_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1 - 15+45);
+				      LABEL_Euler2.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Euler2.setBackground(Color.white);
+				      LABEL_Euler2.setForeground(Color.black);
+				      LABEL_Euler2.setFont(small_font);
+				      LABEL_Euler2.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Euler2);
+
+			        
+			        INPUT_Euler2 = new JTextField();
+			        INPUT_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1+45);
+			        INPUT_Euler2.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Euler2.setBorder(Moon_border);
+			        INPUT_Euler2.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Euler2.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Euler2);
+			        
+				      JLabel LABEL_Euler3 = new JLabel("Euler E3");
+				      LABEL_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2 - 15+45);
+				      LABEL_Euler3.setSize(box_size_InitialAttitude_x, 20);
+				      LABEL_Euler3.setBackground(Color.white);
+				      LABEL_Euler3.setForeground(Color.black);
+				      LABEL_Euler3.setFont(small_font);
+				      LABEL_Euler3.setHorizontalAlignment(0);
+				      InitialAttitudePanel.add(LABEL_Euler3);
+
+			        
+			        INPUT_Euler3 = new JTextField();
+			        INPUT_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2+45);
+			        INPUT_Euler3.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+			        INPUT_Euler3.setBorder(Moon_border);
+			        INPUT_Euler3.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
+			        INPUT_Euler3.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WriteInitialAttitude();
+						}
+				    	  
+				      });
+			        InitialAttitudePanel.add(INPUT_Euler3);
 			    
 		        //---------------------------------------------------------------------------------------------
 		        //                         Propulsion Definition Block
@@ -3511,6 +3788,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		READ_SEQUENCE();
     		READ_ERROR();
     		READ_INERTIA() ;
+    		READ_InitialAttitude();
     		Update_ErrorIndicator();
     	      Rotating2Inertial();
     	      Update_IntegratorSettings();
@@ -3555,6 +3833,43 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		SequenceFCCombobox.addItem("PID "+(i+1));
     		}
     }
+	public static double[][] Quaternions2Euler2(double[][] Quaternions){
+		
+		double[][] EulerAngles = {{0},{0},{0}};
+		double w = Quaternions[0][0];
+		double x = Quaternions[1][0];
+		double y = Quaternions[2][0];
+		double z = Quaternions[3][0];
+
+        double sqw = w * w;
+        double sqx = x * x;
+        double sqy = y * y;
+        double sqz = z * z;
+        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
+        // is correction factor
+        double test = x * y + z * w;
+        if (test > 0.499 * unit) { // singularity at north pole
+        	EulerAngles[1][0] = 2 * Math.atan2(x, w);
+        	EulerAngles[0][0] = FastMath.PI/2;
+        	EulerAngles[2][0] = 0;
+        } else if (test < -0.499 * unit) { // singularity at south pole
+        	EulerAngles[1][0] = -2 * FastMath.atan2(x, w);
+        	EulerAngles[0][0] = -FastMath.PI/2;
+        	EulerAngles[2][0] = 0;
+        } else {
+        	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
+        	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
+        	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
+        }
+		//-------------------------
+		/*
+	    EulerAngles[0][0] = Math.atan2(2*(qw*qx+qy*qz), 1-2*(qx*qx+qy*qy));
+	    EulerAngles[1][0] = Math.asin(qw*qy - qz*qx);
+	    EulerAngles[2][0] = Math.atan2(2*(qw*qz+qx*qy), 1-2*(qy*qy + qz*qz));
+		*/
+	    
+			return EulerAngles;
+	}
     public static void Inertial2Rotating() {
     	try {
     	double vel_inert = Double.parseDouble(INPUT_VEL_Is.getText());
@@ -3708,242 +4023,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	}
     	Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
     }
-    public static void WriteErrorINP() {
-        try {
-            File fac = new File(ERROR_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            FileWriter wr = new FileWriter(fac);
-            for (int i=0; i<MODEL_ERROR.getRowCount(); i++)
-            {
-            	String error_type 		= (String) MODEL_ERROR.getValueAt(i, 1);
-            	for(int k=0;k<ErrorType.length;k++) { if(error_type.equals(ErrorType[k])){error_type=""+k;} }
-            	String error_trigger 	= (String) MODEL_ERROR.getValueAt(i, 2);
-            	String error_value 		= (String) MODEL_ERROR.getValueAt(i, 3); 
-            	wr.write(error_type+" "+error_trigger+" "+error_value+System.getProperty( "line.separator" ));
-            }
-            wr.close(); 
-            Update_ErrorIndicator();
-         } catch (IOException eIO){
-         	System.out.println(eIO);
-         }
-    }
-    
-    public static void WriteINERTIA() {
-        try {
-            File fac = new File(INERTIA_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            FileWriter wr = new FileWriter(fac);
-            for (int j=0;j<3;j++) {
-					 if(j==0) {
-						 double Ixx = 0;
-						 double Ixy = 0; 
-						 double Ixz = 0;
-						 if(INPUT_IXX.getText().equals("")) {
-							 Ixx =0;
-						 } else {
-							 Ixx = Double.parseDouble(INPUT_IXX.getText()); 
-						 }
-						 if(INPUT_IXY.getText().equals("")) {
-							 Ixy =0;
-						 } else {
-							 Ixy = Double.parseDouble(INPUT_IXY.getText());
-						 }
-						 if(INPUT_IXZ.getText().equals("")) {
-							 Ixz =0;
-						 } else {
-							 Ixz = Double.parseDouble(INPUT_IXZ.getText());
-						 }
-					     wr.write(Ixx+" "+Ixy+" "+Ixz+System.getProperty( "line.separator" ));
-					 } else if (j==1) {
-						 double Iyx = 0; 
-						 double Iyy = 0; 
-						 double Iyz = 0;
-						 if(INPUT_IYX.getText().equals("")) {
-							 Iyx =0;
-						 } else {
-							 Iyx = Double.parseDouble(INPUT_IYX.getText());
-						 }
-						 if(INPUT_IYY.getText().equals("")) {
-							 Iyy =0;
-						 } else {
-							 Iyy = Double.parseDouble(INPUT_IYY.getText());
-						 }
-						 if(INPUT_IYZ.getText().equals("")) {
-							 Iyz =0;
-						 } else {
-							 Iyz = Double.parseDouble(INPUT_IYZ.getText());
-						 }
-					     wr.write(Iyx+" "+Iyy+" "+Iyz+System.getProperty( "line.separator" )); 
-					 } else if (j==2 ) {
-						 double Izx = 0;
-						 double Izy = 0;
-						 double Izz = 0;
-						 if(INPUT_IZX.getText().equals("")) {
-							 Izx =0;
-						 } else {
-							 Izx = Double.parseDouble(INPUT_IZX.getText());
-						 }
-						 if(INPUT_IZY.getText().equals("")) {
-							 Izy =0;
-						 } else {
-							 Izy = Double.parseDouble(INPUT_IZY.getText()); 
-						 }
-						 if(INPUT_IZZ.getText().equals("")) {
-							 Izz =0;
-						 } else {
-							 Izz = Double.parseDouble(INPUT_IZZ.getText()); 
-						 }
-					     wr.write(Izx+" "+Izy+" "+Izz+System.getProperty( "line.separator" ));
-					 }
-            }
-            wr.close(); 
-
-         } catch (IOException eIO){
-         	System.out.println(eIO);
-         }
-    }
-    public static void WriteSequenceINP() {
-            try {
-                File fac = new File(SEQUENCE_File);
-                if (!fac.exists())
-                {
-                    fac.createNewFile();
-                } else {
-                	fac.delete();
-                	fac.createNewFile();
-                }
-                //System.out.println("\n----------------------------------");
-                //System.out.println("The file has been created.");
-                //System.out.println("------------------------------------");
-                FileWriter wr = new FileWriter(fac);
-                for (int i=0; i<MODEL_SEQUENCE.getRowCount(); i++)
-                {
-            			String row ="";
-            			for(int j=0;j<MODEL_SEQUENCE.getColumnCount();j++) {
-            				if(j==0) {
-            					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					row = row + val + " ";
-            				}  else if(j==1) {
-            					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					int val = 0 ; 
-            					for(int k=0;k<SequenceENDType.length;k++) { if(str_val.equals(SequenceENDType[k])){val=k;} }
-            					row = row + val + " ";
-            				} else if(j==2) {
-            					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					row = row + val + " ";
-            				} else if(j==3) {
-            					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					int val = 0 ; 
-            					for(int k=0;k<SequenceType.length;k++) { if(str_val.equals(SequenceType[k])){val=k+1;} }
-            					row = row + val + " ";
-            				} else if(j==4) {
-            					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					int val = 0 ; 
-            					//System.out.println(""+SequenceFC.length);
-            					try {
-            					for(int k=0;k<SequenceFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceFCCombobox.getItemAt(k) )){val=k+1;} }
-            					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
-            					row = row + val + " ";
-            				} else if(j==5) {
-            					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					row = row + val + " ";
-            				} else if(j==6) {
-            					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					row = row + val + " ";
-            				} else if(j==7) {
-            					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					int val = 0 ; 
-            					for(int k=0;k<FCTargetCurve.length;k++) { if(str_val.equals(FCTargetCurve[k])){val=k+1;} }
-            					row = row + val + " ";
-            				} else if(j==8) {
-            					String str_val =  "";
-            					try {
-            					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					} catch (java.lang.NumberFormatException eNFE) {
-            						System.out.println(eNFE);
-            					}
-            					int val = 0 ; 
-            					try {
-            					for(int k=0;k<SequenceTVCFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceTVCFCCombobox.getItemAt(k))){val=k+1;} }
-            					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
-            					row = row + val + " ";
-	        				} else if(j==9) {
-	        					double val = 0 ; 
-	        					try {
-	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j));
-	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
-	        						System.out.println(eNFE);
-	        					}
-	        					row = row + val + " ";
-	        				} else if(j==10) {
-	        					double val = 0 ; 
-	        					try {
-	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j))*deg2rad;
-	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
-	        						System.out.println(eNFE);
-	        					}
-	        					row = row + val + " ";
-	        				} else if(j==11) {
-            					String str_val =  "";
-            					try {
-            					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
-            					} catch (java.lang.NumberFormatException eNFE) {System.out.println(eNFE);}
-            					int val=0;
-            					try {
-	        					for(int k=0;k<TargetCurve_Options_TVC.length;k++) { if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;} }
-	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
-	        					row = row + val + " ";
-	        				} 
-            		   }
-            			wr.write(row+System.getProperty( "line.separator" ));
-                }
-                wr.close(); 
-            } catch (IOException eIO){
-            	System.out.println(eIO);
-            }
-    }
-    
-    public static void WriteControllerINP() {
-        try {
-            File fac = new File(CONTROLLER_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            //System.out.println("\n----------------------------------");
-            //System.out.println("The file has been created.");
-            //System.out.println("------------------------------------");
-            FileWriter wr = new FileWriter(fac);
-            for (int i=0; i<MODEL_CONTROLLER.getRowCount(); i++)
-            {
-        			String row ="";
-        			for(int j=0;j<MODEL_CONTROLLER.getColumnCount();j++) {
-    					String val =  (String) MODEL_CONTROLLER.getValueAt(i, j);
-    					row = row + val + " ";
-        		   }
-        			wr.write(row+System.getProperty( "line.separator" ));
-            }
-            wr.close(); 
-        } catch (IOException eIO){
-        	System.out.println(eIO);
-        }
-}
-
     public static void Update_IntegratorSettings() {
     	if(Integrator_chooser.getSelectedIndex()==0) {
     		// Dormand Prince 853 Integrator 
@@ -4229,7 +4308,7 @@ try {
         	} else if (k==8){
         		int Integ_indx = (int) InitialState;
         		Integrator_chooser.setSelectedIndex(Integ_indx);
-            } else if (k==9){
+        } else if (k==9){
         		int Target_indx = (int) InitialState;
         		indx_target = (int) InitialState; 
         		RM = DATA_MAIN[indx_target][0];
@@ -4251,6 +4330,20 @@ try {
 		    } else if (k==12) {
         		int Integ_indx = (int) InitialState;
         		AscentDescent_SwitchChooser.setSelectedIndex(Integ_indx);
+		    } else if (k==13) {
+		    	int Integ_indx = (int) InitialState;
+		    	if(Integ_indx==0) {
+		    	SELECT_VelocitySpherical.setSelected(true);
+		    	}else {
+		    SELECT_VelocityCartesian.setSelected(true);
+		    	}
+		    } else if (k==14) {
+		    	int Integ_indx = (int) InitialState;
+		    	if(Integ_indx==0) {
+		    		SELECT_3DOF.setSelected(true);
+		    	}else {
+		    		SELECT_6DOF.setSelected(true);
+		    	}
 		    }
         	k++;
         }
@@ -4487,8 +4580,310 @@ fstream.close();
 		}
     	  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  	
     }
+    
+    public static void READ_InitialAttitude() throws IOException {
+		BufferedReader br = new BufferedReader(new FileReader(InitialAttitude_File));
+	       String strLine;
+	       int j=0;
+	       try {
+	       while ((strLine = br.readLine()) != null )   {
+		       	String[] tokens = strLine.split(" ");
+		       	if(j==0) {
+		       		INPUT_Quarternion1.setText(tokens[0]);
+		       	} else if (j==1) {
+		       		INPUT_Quarternion2.setText(tokens[0]);
+		       	} else if (j==2) {
+		       		INPUT_Quarternion3.setText(tokens[0]);
+		       	} else if (j==3) {
+		       		INPUT_Quarternion4.setText(tokens[0]);
+		       	}	       	
+		       	j++;
+	       }
+	       br.close();
+	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+    }
 
-    public static void WRITE_INIT() {
+    public static void WriteErrorINP() {
+	    try {
+	        File fac = new File(ERROR_File);
+	        if (!fac.exists())
+	        {
+	            fac.createNewFile();
+	        } else {
+	        	fac.delete();
+	        	fac.createNewFile();
+	        }
+	        FileWriter wr = new FileWriter(fac);
+	        for (int i=0; i<MODEL_ERROR.getRowCount(); i++)
+	        {
+	        	String error_type 		= (String) MODEL_ERROR.getValueAt(i, 1);
+	        	for(int k=0;k<ErrorType.length;k++) { if(error_type.equals(ErrorType[k])){error_type=""+k;} }
+	        	String error_trigger 	= (String) MODEL_ERROR.getValueAt(i, 2);
+	        	String error_value 		= (String) MODEL_ERROR.getValueAt(i, 3); 
+	        	wr.write(error_type+" "+error_trigger+" "+error_value+System.getProperty( "line.separator" ));
+	        }
+	        wr.close(); 
+	        Update_ErrorIndicator();
+	     } catch (IOException eIO){
+	     	System.out.println(eIO);
+	     }
+	}
+	public static void WriteSequenceINP() {
+	        try {
+	            File fac = new File(SEQUENCE_File);
+	            if (!fac.exists())
+	            {
+	                fac.createNewFile();
+	            } else {
+	            	fac.delete();
+	            	fac.createNewFile();
+	            }
+	            //System.out.println("\n----------------------------------");
+	            //System.out.println("The file has been created.");
+	            //System.out.println("------------------------------------");
+	            FileWriter wr = new FileWriter(fac);
+	            for (int i=0; i<MODEL_SEQUENCE.getRowCount(); i++)
+	            {
+	        			String row ="";
+	        			for(int j=0;j<MODEL_SEQUENCE.getColumnCount();j++) {
+	        				if(j==0) {
+	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					row = row + val + " ";
+	        				}  else if(j==1) {
+	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					int val = 0 ; 
+	        					for(int k=0;k<SequenceENDType.length;k++) { if(str_val.equals(SequenceENDType[k])){val=k;} }
+	        					row = row + val + " ";
+	        				} else if(j==2) {
+	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					row = row + val + " ";
+	        				} else if(j==3) {
+	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					int val = 0 ; 
+	        					for(int k=0;k<SequenceType.length;k++) { if(str_val.equals(SequenceType[k])){val=k+1;} }
+	        					row = row + val + " ";
+	        				} else if(j==4) {
+	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					int val = 0 ; 
+	        					//System.out.println(""+SequenceFC.length);
+	        					try {
+	        					for(int k=0;k<SequenceFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceFCCombobox.getItemAt(k) )){val=k+1;} }
+	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
+	        					row = row + val + " ";
+	        				} else if(j==5) {
+	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					row = row + val + " ";
+	        				} else if(j==6) {
+	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					row = row + val + " ";
+	        				} else if(j==7) {
+	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					int val = 0 ; 
+	        					for(int k=0;k<FCTargetCurve.length;k++) { if(str_val.equals(FCTargetCurve[k])){val=k+1;} }
+	        					row = row + val + " ";
+	        				} else if(j==8) {
+	        					String str_val =  "";
+	        					try {
+	        					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					} catch (java.lang.NumberFormatException eNFE) {
+	        						System.out.println(eNFE);
+	        					}
+	        					int val = 0 ; 
+	        					try {
+	        					for(int k=0;k<SequenceTVCFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceTVCFCCombobox.getItemAt(k))){val=k+1;} }
+	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
+	        					row = row + val + " ";
+	        				} else if(j==9) {
+	        					double val = 0 ; 
+	        					try {
+	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j));
+	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
+	        						System.out.println(eNFE);
+	        					}
+	        					row = row + val + " ";
+	        				} else if(j==10) {
+	        					double val = 0 ; 
+	        					try {
+	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j))*deg2rad;
+	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
+	        						System.out.println(eNFE);
+	        					}
+	        					row = row + val + " ";
+	        				} else if(j==11) {
+	        					String str_val =  "";
+	        					try {
+	        					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
+	        					} catch (java.lang.NumberFormatException eNFE) {System.out.println(eNFE);}
+	        					int val=0;
+	        					try {
+	        					for(int k=0;k<TargetCurve_Options_TVC.length;k++) { if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;} }
+	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
+	        					row = row + val + " ";
+	        				} 
+	        		   }
+	        			wr.write(row+System.getProperty( "line.separator" ));
+	            }
+	            wr.close(); 
+	        } catch (IOException eIO){
+	        	System.out.println(eIO);
+	        }
+	}
+	
+	public static void WriteInitialAttitude() {
+        try {
+            File fac = new File(InitialAttitude_File);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            FileWriter wr = new FileWriter(fac);
+            for (int i=0; i<4; i++)
+            {
+        			double value =0;
+				if(i==0) { 
+					 if(INPUT_Quarternion1.getText().equals("")) {
+						 value =0;
+					 } else {
+						 value = Double.parseDouble(INPUT_Quarternion1.getText()); 
+					 }
+				} else if(i==1) {
+					 if(INPUT_Quarternion2.getText().equals("")) {
+						 value =0;
+					 } else {
+						 value = Double.parseDouble(INPUT_Quarternion2.getText()); 
+					 }
+				}else if(i==2) {
+					 if(INPUT_Quarternion3.getText().equals("")) {
+						 value =0;
+					 } else {
+						 value = Double.parseDouble(INPUT_Quarternion3.getText()); 
+					 }
+				} else if(i==3) {
+					 if(INPUT_Quarternion4.getText().equals("")) {
+						 value =0;
+					 } else {
+						 value = Double.parseDouble(INPUT_Quarternion4.getText()); 
+					 } 
+				}
+        			wr.write(value+System.getProperty( "line.separator" ));
+            }
+            wr.close(); 
+        } catch (IOException eIO){
+        	System.out.println(eIO);
+        }
+	}
+	public static void WriteINERTIA() {
+	    try {
+	        File fac = new File(INERTIA_File);
+	        if (!fac.exists())
+	        {
+	            fac.createNewFile();
+	        } else {
+	        	fac.delete();
+	        	fac.createNewFile();
+	        }
+	        FileWriter wr = new FileWriter(fac);
+	        for (int j=0;j<3;j++) {
+					 if(j==0) {
+						 double Ixx = 0;
+						 double Ixy = 0; 
+						 double Ixz = 0;
+						 if(INPUT_IXX.getText().equals("")) {
+							 Ixx =0;
+						 } else {
+							 Ixx = Double.parseDouble(INPUT_IXX.getText()); 
+						 }
+						 if(INPUT_IXY.getText().equals("")) {
+							 Ixy =0;
+						 } else {
+							 Ixy = Double.parseDouble(INPUT_IXY.getText());
+						 }
+						 if(INPUT_IXZ.getText().equals("")) {
+							 Ixz =0;
+						 } else {
+							 Ixz = Double.parseDouble(INPUT_IXZ.getText());
+						 }
+					     wr.write(Ixx+" "+Ixy+" "+Ixz+System.getProperty( "line.separator" ));
+					 } else if (j==1) {
+						 double Iyx = 0; 
+						 double Iyy = 0; 
+						 double Iyz = 0;
+						 if(INPUT_IYX.getText().equals("")) {
+							 Iyx =0;
+						 } else {
+							 Iyx = Double.parseDouble(INPUT_IYX.getText());
+						 }
+						 if(INPUT_IYY.getText().equals("")) {
+							 Iyy =0;
+						 } else {
+							 Iyy = Double.parseDouble(INPUT_IYY.getText());
+						 }
+						 if(INPUT_IYZ.getText().equals("")) {
+							 Iyz =0;
+						 } else {
+							 Iyz = Double.parseDouble(INPUT_IYZ.getText());
+						 }
+					     wr.write(Iyx+" "+Iyy+" "+Iyz+System.getProperty( "line.separator" )); 
+					 } else if (j==2 ) {
+						 double Izx = 0;
+						 double Izy = 0;
+						 double Izz = 0;
+						 if(INPUT_IZX.getText().equals("")) {
+							 Izx =0;
+						 } else {
+							 Izx = Double.parseDouble(INPUT_IZX.getText());
+						 }
+						 if(INPUT_IZY.getText().equals("")) {
+							 Izy =0;
+						 } else {
+							 Izy = Double.parseDouble(INPUT_IZY.getText()); 
+						 }
+						 if(INPUT_IZZ.getText().equals("")) {
+							 Izz =0;
+						 } else {
+							 Izz = Double.parseDouble(INPUT_IZZ.getText()); 
+						 }
+					     wr.write(Izx+" "+Izy+" "+Izz+System.getProperty( "line.separator" ));
+					 }
+	        }
+	        wr.close(); 
+	
+	     } catch (IOException eIO){
+	     	System.out.println(eIO);
+	     }
+	}
+	public static void WriteControllerINP() {
+	        try {
+	            File fac = new File(CONTROLLER_File);
+	            if (!fac.exists())
+	            {
+	                fac.createNewFile();
+	            } else {
+	            	fac.delete();
+	            	fac.createNewFile();
+	            }
+	            //System.out.println("\n----------------------------------");
+	            //System.out.println("The file has been created.");
+	            //System.out.println("------------------------------------");
+	            FileWriter wr = new FileWriter(fac);
+	            for (int i=0; i<MODEL_CONTROLLER.getRowCount(); i++)
+	            {
+	        			String row ="";
+	        			for(int j=0;j<MODEL_CONTROLLER.getColumnCount();j++) {
+	    					String val =  (String) MODEL_CONTROLLER.getValueAt(i, j);
+	    					row = row + val + " ";
+	        		   }
+	        			wr.write(row+System.getProperty( "line.separator" ));
+	            }
+	            wr.close(); 
+	        } catch (IOException eIO){
+	        	System.out.println(eIO);
+	        }
+	}
+	public static void WRITE_INIT() {
         try {
             File fac = new File(Init_File);
             if (!fac.exists())

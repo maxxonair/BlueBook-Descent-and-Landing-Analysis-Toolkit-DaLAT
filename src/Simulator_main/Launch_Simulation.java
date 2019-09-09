@@ -29,6 +29,7 @@ public class Launch_Simulation implements ActionListener{
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
 	public static String INERTIA_File 				= "/INP/INERTIA.inp";
+	public static String InitialAttitude_File   = "/INP/INITIALATTITUDE.inp";
    	//System.out.println(INPUT_FILE);
 	
 	public static void UPDATE_SequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
@@ -120,25 +121,6 @@ public class Launch_Simulation implements ActionListener{
         br.close();
         } catch(NullPointerException eNPE) { System.out.println(eNPE);}
         return SEQUENCE_DATA;
-    }    
-    public static Double[][] READ_Inertia() throws FileNotFoundException{
-    	Double[][] INERTIA = new Double[3][3];
-   	 String dir = System.getProperty("user.dir");
-	   	 INPUT_FILE = dir+"/INP/SC/Inertia.dat";
-		BufferedReader br = new BufferedReader(new FileReader(INPUT_FILE));
-		String strLine;
-		int j =0;
-		try {
-		while ((strLine = br.readLine()) != null )   {
-			String[] tokens = strLine.split(" ");
-				for(int i=0; i<3;i++) {
-				INERTIA[j][i] = Double.parseDouble(tokens[i]);
-				}
-			j++;
-		}
-		br.close();
-		} catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);}
-    	return INERTIA;
     }    
     public static List<StopCondition> READ_EventHandler(double rm, double refElevation) throws IOException{
          	 List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
@@ -243,7 +225,28 @@ public class Launch_Simulation implements ActionListener{
 		    	   }
 	       }
 	       return InertiaTensor;
-    }    
+    } 
+    
+    public static double[][] READ_INITIALATTITUDE() throws NumberFormatException, IOException {
+	double[][] QVector   = {{   0 },
+			    					  {   0 },
+			    					  {   0 },
+			    					  {   0 }};  // Inertia Tensor []
+   	 String dir = System.getProperty("user.dir");
+   	InitialAttitude_File  = dir + InitialAttitude_File;
+		BufferedReader br = new BufferedReader(new FileReader(INERTIA_File));
+	       String strLine;
+	       int j=0;
+	       try {
+	       while ((strLine = br.readLine()) != null )   {
+		       	String[] tokens = strLine.split(" ");
+		       	QVector[j][0] = Double.parseDouble(tokens[0]);         
+		       	j++;
+	       }
+	       br.close();
+	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+	       return QVector;
+    } 
 
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -278,6 +281,7 @@ public class Launch_Simulation implements ActionListener{
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//System.out.println(target+" "+ rm);
 	    	double[][] InertiaTensor = READ_INERTIA() ;
+	    	double[][] Init_Quarternions = READ_INITIALATTITUDE() ;
 	    	int descent_ascent_switch = (int) x_init[12]; 
 			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
 	    	if(descent_ascent_switch==0 ) {
@@ -305,7 +309,8 @@ public class Launch_Simulation implements ActionListener{
 														SurfaceArea,					 // Projected Surface Area S/C 			 [m2]
 												  (int) x_init[13],					 // Velocity Vector Coordinate system    [-] 1 - Spherical coordinates , 2 - Cartesian Coordinates
 												  (int) x_init[14],					 // Degree of Freedom   					 [-] 3 - 3 DOF , 6 - 6 DOF	
-														InertiaTensor				 // Inertia Tensor  3x3 matrix           [kg m2]
+														InertiaTensor,				 // Inertia Tensor  3x3 matrix           [kg m2]
+														Init_Quarternions			 // Initial Attitude - Quarternions      [-]
 	    				);
 	    	} else if (descent_ascent_switch ==1) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
@@ -335,9 +340,9 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Obsolete Module has been deleted. This slot is currently empty.");
 	    		@SuppressWarnings("unused")
-				Double[][] INERTIA = new Double[3][3];
+				double[][] INERTIA = new double[3][3];
 	    		try {
-	    		INERTIA = READ_Inertia();
+	    		INERTIA = READ_INERTIA();
 	    		} catch(FileNotFoundException eFNo) {
 	    			System.out.println("ERROR: Inertia input file not found");
 	    		}

@@ -44,7 +44,7 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 	    
 	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
 	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
-		public static 		int SixDoF_Option = 3; 
+		public static 		int SixDoF_Option = 1; 
 	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -121,12 +121,12 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 		    public static double T=0;
 		    public static double CdC=0;
 		    public static double ISP = 0 ; 
-		    public static double P = 0 ;      			// static pressure [Pa]
-		    public static double cp = 0;				// 
+		    public static double P = 0 ;      				// static pressure [Pa]
+		    public static double cp = 0;						// 
 		    public static double m0; 
-		    public static int flowzone=0; 				// Flow zone continuum - transitional - free molecular flwo
-		    public static double Cdm = 0; 				// Drag coefficient in contiuum flow; 
-		    public static int TARGET=0;					// Target body index
+		    public static int flowzone=0; 					// Flow zone continuum - transitional - free molecular flwo
+		    public static double Cdm = 0; 					// Drag coefficient in contiuum flow; 
+		    public static int TARGET=0;						// Target body index
 		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
 		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
 		    public static double M0=0; 
@@ -149,8 +149,8 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
 	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
-	        public static double ctrl_alt = 0 ; 		// Active Flight Controller target altitude [m]
-	        public static double v_touchdown=0; 		// Global touchdown velocity constraint [m/s]
+	        public static double ctrl_alt = 0 ; 			// Active Flight Controller target altitude [m]
+	        public static double v_touchdown=0; 			// Global touchdown velocity constraint [m/s]
 	        public static boolean isFirstSequence=true;
 	        public static boolean Sequence_RES_closed=false;
 	        public static double groundtrack = 0; 
@@ -194,7 +194,10 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			
 			
 			// 6 DOF Attitude variables: 
-			public static double[][] q_vector        = {{0},{0},{0},{1}}; 	// Quarternion vector
+			public static double[][] q_vector        = {{0},
+														{0},
+														{0},
+														{0}}; 							// Quarternion vector
 			public static double[][] AngularRate     = {{0},
 														{0},
 														{0}};							 // Angular Velcity {P, Q, R}T [rad/s] 
@@ -675,6 +678,56 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
 			C_B_A[2][2] =   Math.cos(AngleOfAttack);
 			
 		}
+		
+		public static void Set_AngularVelocityEquationElements(double[] x) {
+			double Ixx = InertiaTensor[0][0];
+			double Iyy = InertiaTensor[1][1];
+			double Izz = InertiaTensor[2][2];
+			double Ixy = InertiaTensor[0][1];
+			double Ixz = InertiaTensor[0][2];
+			//  double Iyx = InertiaTensor[][];
+			double Iyz = InertiaTensor[2][1];
+			//double Izx = InertiaTensor[][];
+			//double Izy = InertiaTensor[][];
+			 det_I = Ixx*Iyy*Izz - 2*Ixy*Ixz*Iyz - Ixx*Iyz*Iyz - Iyy*Ixz*Ixz - Izz*Iyz*Iyz;
+			 EE_I01 = Iyy*Izz - Iyz*Iyz;
+			 EE_I02 = Ixy*Izz + Iyz*Ixz;
+			 EE_I03 = Ixy*Iyz + Iyy*Ixz;
+			 EE_I04 = Ixx*Izz - Ixz*Ixz;
+			 EE_I05 = Ixx*Iyz + Ixy*Ixz;
+			 EE_I06 = Ixx*Iyy - Ixy*Ixy;
+			
+			 EE_P_pp = -(Ixz*EE_I02 - Ixy*EE_I03)/det_I;
+			 EE_P_pq =  (Ixz*EE_I01 - Iyz*EE_I02 - (Iyy - Ixx)*EE_I03)/det_I;
+			 EE_P_pr = -(Ixy*EE_I01 + (Ixx-Izz)*EE_I02 - Iyz*EE_I03)/det_I;
+			 EE_P_qq =  (Iyz*EE_I01 - Ixy*EE_I03)/det_I;
+			 EE_P_qr = -((Izz-Iyy)*EE_I01 - Ixy*EE_I02 + Ixz*EE_I03)/det_I;
+			 EE_P_rr = -(Iyz*EE_I01 - Ixz*EE_I02)/det_I;
+			 EE_P_x  =   EE_I01/det_I;
+			 EE_P_y  =   EE_I02/det_I;
+			 EE_P_z  =   EE_I03/det_I;
+			
+			 EE_Q_pp = -(Ixz*EE_I02 - Ixy*EE_I05)/det_I;
+			 EE_Q_pq =  (Ixz*EE_I02 - Iyz*EE_I04 - (Iyy - Ixx)*EE_I05)/det_I;
+			 EE_Q_pr = -(Ixy*EE_I02 + (Ixx-Izz)*EE_I04 - Iyz*EE_I05)/det_I;
+			 EE_Q_qq =  (Iyz*EE_I02 - Ixy*EE_I05)/det_I;
+			 EE_Q_qr = -((Izz-Iyy)*EE_I02 - Ixy*EE_I04 + Ixz*EE_I05)/det_I;
+			 EE_Q_rr = -(Iyz*EE_I02 - Ixz*EE_I04)/det_I;
+			 EE_Q_x  = EE_I02/det_I;
+			 EE_Q_y  = EE_I04/det_I;
+			 EE_Q_z  = EE_I05/det_I;
+			
+			 EE_R_pp = -(Ixz*EE_I05 - Ixy*EE_I06)/det_I;
+			 EE_R_pq =  (Ixz*EE_I03 - Iyz*EE_I05 - (Iyy - Ixx)*EE_I06)/det_I;
+			 EE_R_pr = -(Ixy*EE_I03 + (Ixx-Izz)*EE_I05 - Iyz*EE_I06)/det_I;
+			 EE_R_qq =  (Iyz*EE_I03 - Ixy*EE_I06)/det_I;
+			 EE_R_qr = -((Izz-Iyy)*EE_I03 - Ixy*EE_I05 + Ixz*EE_I06)/det_I;
+			 EE_R_rr = -(Iyz*EE_I03 - Ixz*EE_I05)/det_I;
+			 EE_R_x  = EE_I03/det_I;
+			 EE_R_y  = EE_I05/det_I;
+			 EE_R_z  = EE_I06/det_I;
+			
+		}
 
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	integ_t=t;
@@ -808,7 +861,47 @@ public class EDL_UniversalModule implements FirstOrderDifferentialEquations {
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
 	    if(is_6DOF) {
- if (SixDoF_Option == 2) {
+	    	if (SixDoF_Option ==1) {
+	    		//-------------------------------------------------------------------------------------------------------------------------------------------
+	    		// EoM for Angular Rate model from: 
+	    		// Duke, E.L. Antoniewicz, R.F.  and Krambeer "Derivation and definition of a linear aircraft model", NASA Reference Publication 1207, 1988
+	    		// The following equations for to solve the angular rates are the full set on non-linear Euler equations:
+	    		// The innertial equations are separated and prepared by Set_AngularVelocityEquationElements(StateVector)
+	    		// This function has to be called before each solving step.
+	    		//-------------------------------------------------------------------------------------------------------------------------------------------
+	    		Set_AngularVelocityEquationElements(x);
+	    		//----------------------------------------------------------------------------------------
+	    		// Quaternions:
+
+	    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
+	    				        {-x[13], 0    , x[11], x[12]},
+	    				        { x[12],-x[11], 0    , x[13]},
+	    				        {-x[11],-x[12],-x[13], 0    }}; 
+	    		
+	    	    q_vector[0][0] = x[7];
+	    	    q_vector[1][0] = x[8];
+	    	    q_vector[2][0] = x[9];
+	    	    q_vector[3][0] = x[10];
+	    	    
+	    	    EulerAngle = Quaternions2Euler2(q_vector);
+	    		double[][] q_vector_dot =  Tool.Multiply_Scalar_Matrix(0.5, Tool.Multiply_Matrices(Q, q_vector)); 
+	    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
+	    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
+	    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
+	    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
+
+	    	    EulerAngle = Quaternions2Euler2(q_vector);
+	    	    //----------------------------------------------------------------------------------------
+	    	    System.out.println("model 1 running");
+	    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+	    	    double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+	    	    double Nb = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
+	    	    
+	    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
+	    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
+	    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
+	    	}
+	    else  if (SixDoF_Option == 2) {
 	System.out.println("6DoF running! Option 2");
 	    		// Quaternions:
 	
@@ -916,7 +1009,7 @@ AngleOfAttack = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 	    }
 }
     
-public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP, int VelocityCoordinateSystem, int DOF_System, double[][] InertiaTensorMatrix){
+public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, List<SequenceElement> SEQUENCE_DATA, int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP, int VelocityCoordinateSystem, int DOF_System, double[][] InertiaTensorMatrix, double[][] Init_Quarternions ){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -949,7 +1042,9 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 		is_6DOF=true;
 		System.out.println("READ: 6 Degree of Freedom Model selected.");
 		InertiaTensor = InertiaTensorMatrix;
-		System.out.println("READ: Inertia Tensor set. ");
+		System.out.println("READ: Inertial Tensor set.");
+		q_vector      = Init_Quarternions;
+		System.out.println("READ: Initial Attitude set.");
 	}
 		double[] prop_read;
 	    cntr_h_init=x2-rm;
