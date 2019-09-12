@@ -125,6 +125,8 @@ import Sequence.SequenceElement;
 import Simulator_main.Launch_Simulation;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Tool;
+import VisualEngine.engineLauncher.engineLauncher;
+
 import javax.swing.JFileChooser;
 import Controller.LandingCurve;
 import Controller.PitchCurve;
@@ -572,7 +574,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		    protected void onChange( File file ) {
     		      // here we code the action on a change
     		     // System.out.println( "File "+ file.getName() +" have change !" );
-          		  UPDATE_Page01();
+          		  UPDATE_Page01(true);
     		    }
     		  };
     	   Timer timer = new Timer();
@@ -598,10 +600,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JMenu menu_BlueBook = new JMenu("BlueBook");
         menu_BlueBook.setForeground(l_c);
         menu_BlueBook.setBackground(bc_c);
+        menu_BlueBook.setFont(small_font);
         menu_BlueBook.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_BlueBook);
         JMenuItem menuItem_OpenResultfile = new JMenuItem("Open Resultfile                 "); 
         menuItem_OpenResultfile.setForeground(Color.gray);
+        menuItem_OpenResultfile.setFont(small_font);
         menuItem_OpenResultfile.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_OpenResultfile);
@@ -612,6 +616,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Import = new JMenuItem("                "); 
         menuItem_Import.setForeground(Color.gray);
+        menuItem_Import.setFont(small_font);
         menuItem_Import.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_Import);
@@ -621,6 +626,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         JMenuItem menuItem_Export = new JMenuItem("Results save as                "); 
         menuItem_Export.setForeground(Color.black);
+        menuItem_Export.setFont(small_font);
         menuItem_Export.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_Export);
@@ -643,6 +649,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Exit = new JMenuItem("Exit                  "); 
         menuItem_Exit.setForeground(Color.black);
+        menuItem_Exit.setFont(small_font);
         menuItem_Exit.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_Exit);
@@ -654,10 +661,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JMenu menu_SIM = new JMenu("Simulation");
         menu_SIM.setForeground(l_c);
         menu_SIM.setBackground(bc_c);
+        menu_SIM.setFont(small_font);
         menu_SIM.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_SIM);
         JMenuItem menuItem_SimSettings = new JMenuItem("Settings                 "); 
         menuItem_SimSettings.setForeground(Color.gray);
+        menuItem_SimSettings.setFont(small_font);
         menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_SIM.add(menuItem_SimSettings);
@@ -665,15 +674,27 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                    public void actionPerformed(ActionEvent e) {
                 	
                     } });
+        JMenuItem menuItem_Update = new JMenuItem("Update Data                 "); 
+        menuItem_Update.setForeground(Color.gray);
+        menuItem_Update.setFont(small_font);
+        menuItem_Update.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_SIM.add(menuItem_Update);
+        menuItem_Update.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   UPDATE_Page01(true);
+                    } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PreProcessing = new JMenu("PreProcessing");
         menu_PreProcessing.setForeground(l_c);
         menu_PreProcessing.setBackground(bc_c);
+        menu_PreProcessing.setFont(small_font);
         menu_PreProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PreProcessing);
         
         JMenuItem menuItem_ImportScenario = new JMenuItem("Simulation Setup Open               "); 
         menuItem_ImportScenario.setForeground(Color.black);
+        menuItem_ImportScenario.setFont(small_font);
         menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ImportScenario);
@@ -697,6 +718,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         JMenuItem menuItem_ExportScenario = new JMenuItem("Simulation Setup Save as              "); 
         menuItem_ExportScenario.setForeground(Color.black);
+        menuItem_ExportScenario.setFont(small_font);
         menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ExportScenario);
@@ -719,11 +741,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JMenu menu_PostProcessing = new JMenu("PostProcessing");
         menu_PostProcessing.setForeground(l_c);
         menu_PostProcessing.setBackground(bc_c);
+        menu_PostProcessing.setFont(small_font);
         menu_PostProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PostProcessing);
         
         JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Local Elevation File               "); 
         menuItem_CreateLocalElevation.setForeground(Color.black);
+        menuItem_CreateLocalElevation.setFont(small_font);
         menuItem_CreateLocalElevation.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PostProcessing.add(menuItem_CreateLocalElevation);
@@ -759,8 +783,25 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 							e1.printStackTrace();
 						}
                     } });
-
-
+      //--------------------------------------------------------------------------------------------------------------------------------
+        JMenu menu_VisualEngine = new JMenu("Visual Engine");
+        menu_VisualEngine.setForeground(l_c);
+        menu_VisualEngine.setBackground(bc_c);
+        menu_VisualEngine.setFont(small_font);
+        menu_VisualEngine.setMnemonic(KeyEvent.VK_A);
+        menuBar.add(menu_VisualEngine);
+        
+        JMenuItem menuItem_Open = new JMenuItem("Open VisualEngine                 "); 
+        menuItem_Open.setForeground(Color.gray);
+        menuItem_Open.setFont(small_font);
+        menuItem_Open.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_VisualEngine.add(menuItem_Open);
+        menuItem_Open.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   engineLauncher.launchVisualEngine();
+                    } });
+      //--------------------------------------------------------------------------------------------------------------------------------
         PageX04_Dashboard = new JPanel();
         PageX04_Dashboard.setLocation(0, 0);
         PageX04_Dashboard.setPreferredSize(new Dimension(extx_main, exty_main));
@@ -1132,19 +1173,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       INDICATOR_RESPROP.setBackground(Color.black);
       INDICATOR_RESPROP.setForeground(Color.black);
       P1_SidePanel.add(INDICATOR_RESPROP);
-/*
-        JButton ButtonUpdate = new JButton("Update");
-        ButtonUpdate.setLocation(250, uy_p41 + 30 * 0);
-        ButtonUpdate.setSize(145,25);
-        ButtonUpdate.setBackground(Color.white);
-        ButtonUpdate.setForeground(Color.black);
-        ButtonUpdate.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) {
-        		  UPDATE_Page01();
-        		 // READ_RAWDATA() ;
-        	}} );
-        P1_SidePanel.add(ButtonUpdate);
-        */
+
         JButton Button_RunSimulation = new JButton("Run Simulation");
         Button_RunSimulation.setLocation(250, uy_p41 + 25 * 0);
         Button_RunSimulation.setSize(145,25);
@@ -1164,7 +1193,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					  while ((line = input.readLine()) != null) {
 					    System.out.println(line);
 					  }
-					  UPDATE_Page01();
+					  //UPDATE_Page01();
 				} catch ( IOException e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
@@ -1745,11 +1774,18 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      INPUT_WRITETIME.setLocation(2, uy_p41 + 25 * 3 );
      INPUT_WRITETIME.setSize(60, 20);
      INPUT_WRITETIME.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_WRITETIME.addActionListener(new ActionListener() {
-		  public void actionPerformed( ActionEvent e )
-		  	{ 
-			  WRITE_INIT();
-		}});
+     INPUT_WRITETIME.addFocusListener(new FocusListener() {
+
+ 		@Override
+ 		public void focusGained(FocusEvent arg0) { }
+
+ 		@Override
+ 		public void focusLost(FocusEvent e) {
+ 			// TODO Auto-generated method stub
+ 			WRITE_INIT();
+ 		}
+     	  
+       });
      IntegratorInputPanel.add(INPUT_WRITETIME);
 
     JLabel LABEL_TARGETBODY = new JLabel("Target Body");
@@ -1970,7 +2006,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			}
 			WRITE_INIT();
 		}
-    	 
      });
      SELECT_VelocityCartesian.addActionListener(new ActionListener() {
 
@@ -1986,7 +2021,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		}
     	 
      });
-     SELECT_VelocitySpherical.setSelected(true);
      
      JLabel LABEL_SelectDoF = new JLabel("Select Degrees of Freedom");
      LABEL_SelectDoF.setLocation(5, uy_p41 + 25 * 16   );
@@ -2015,7 +2049,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
 			if(SELECT_3DOF.isSelected()) {
 				DOF_System = 3;
 			} else if (SELECT_6DOF.isSelected()) {
@@ -2029,7 +2062,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 		@Override
 		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
 			if(SELECT_3DOF.isSelected()) {
 				DOF_System = 3;
 			} else if (SELECT_6DOF.isSelected()) {
@@ -2038,9 +2070,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			WRITE_INIT();
 		}
    	 
-    });
-    SELECT_3DOF.setSelected(true);
-      
+    });      
 	  //------------------------------------------------------------------------------------------------------------------
     // Solver Stop conditions
 	    JLabel LABEL_EventHandler = new JLabel("Solver stop conditions:");
@@ -3772,9 +3802,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         //Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
-    		CreateChart_A01();
-    		try {
-				SET_MAP(indx_target);
+    		//CreateChart_A01();
+    		try {     long filesize = 	new File(RES_File).length()/1000000;
+			    	    if(filesize<10) {
+							SET_MAP(indx_target);
+			    	    }
 			} catch (URISyntaxException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -3782,7 +3814,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				System.out.println("ERROR: Loading map failed.");
 			}
         //------------------------------------------------------------------------
-    		UPDATE_Page01();
+        	// Check filesize 
+    	    long filesize = 	new File(RES_File).length()/1000000;
+    	    if(filesize<10) {
+    		UPDATE_Page01(true);
+    	    } else {
+    	    	UPDATE_Page01(false);
+    	    	System.out.println("Full data import supressed. Filesize prohibits fast startup.");
+    	    }
+    	    READ_INPUT();
     		READ_CONTROLLER();
   	      		UpdateFC_LIST();
     		READ_SEQUENCE();
@@ -4107,15 +4147,18 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	}
 		LABEL_IntegratorSetting_05.requestFocusInWindow();
     }
-    public void UPDATE_Page01(){
+    public void UPDATE_Page01(boolean fullImport){
 		  try {
 			READ_INPUT();
+			if(fullImport) {
 			READ_RAWDATA();
 			SET_MAP(indx_target);
+			}
 		} catch (IOException | URISyntaxException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
+		  if(fullImport) {
 	    	CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.removeAllSeries();
 	    	CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.removeAllSeries();
 	    	try {
@@ -4144,6 +4187,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						}
       	    		String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
       	    		System.out.println("Updated "+timeStamp);
+		  }
 	  } 
 
     public static void READ_SEQUENCE() throws IOException{	
@@ -4324,26 +4368,26 @@ try {
                 	INDICATOR_TARGET.setBorder(Venus_border);
                 }
             } else if (k==10){
-            	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
+	            	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
             } else if (k==11){
-            	INPUT_REFELEV.setText(decf.format(InitialState));  // Reference Elevation
+	            	INPUT_REFELEV.setText(decf.format(InitialState));  // Reference Elevation
 		    } else if (k==12) {
-        		int Integ_indx = (int) InitialState;
-        		AscentDescent_SwitchChooser.setSelectedIndex(Integ_indx);
+	        		int Integ_indx = (int) InitialState;
+	        		AscentDescent_SwitchChooser.setSelectedIndex(Integ_indx);
 		    } else if (k==13) {
-		    	int Integ_indx = (int) InitialState;
-		    	if(Integ_indx==0) {
-		    	SELECT_VelocitySpherical.setSelected(true);
-		    	}else {
-		    SELECT_VelocityCartesian.setSelected(true);
-		    	}
+			    	int Integ_indx = (int) InitialState;
+			    	if(Integ_indx==1) {
+			    	SELECT_VelocitySpherical.setSelected(true);
+			    	}else {
+			    SELECT_VelocityCartesian.setSelected(true);
+			    	}
 		    } else if (k==14) {
-		    	int Integ_indx = (int) InitialState;
-		    	if(Integ_indx==0) {
-		    		SELECT_3DOF.setSelected(true);
-		    	}else {
-		    		SELECT_6DOF.setSelected(true);
-		    	}
+			    	int Integ_indx = (int) InitialState;
+			    	if(Integ_indx==3) {
+			    		SELECT_3DOF.setSelected(true);
+			    	}else if(Integ_indx==6){
+			    		SELECT_6DOF.setSelected(true);
+			    	}
 		    }
         	k++;
         }
@@ -4603,7 +4647,32 @@ fstream.close();
 	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
     }
 
-    public static void WriteErrorINP() {
+    public static ArrayList<String> Read_SEQU(){
+	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
+	 try {
+		BufferedReader br = new BufferedReader(new FileReader(SEQU_File));
+	   String strLine;
+	   while ((strLine = br.readLine()) != null )   {
+	   	String[] tokens = strLine.split(" ");
+	   	SEQUENCE_DATA.add(tokens[0]+" "+
+	   				      tokens[1]+" "+
+	   				      tokens[2]+" "+
+	   				      tokens[3]+" "+
+	   				      tokens[4]+" "+
+	   				      tokens[5]+" "+
+	   				      tokens[6]+" "+
+	   				      tokens[7]+" "+
+	   				      tokens[8]+" "+
+	   				      tokens[9]+" "+
+	   				      tokens[10]+" "+
+	   				      tokens[11]+" "
+	   	);
+	   }
+	   br.close();
+	   } catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);System.out.println("ERROR: Read SEQU.res failed. ");}
+	   return SEQUENCE_DATA;
+	}
+	public static void WriteErrorINP() {
 	    try {
 	        File fac = new File(ERROR_File);
 	        if (!fac.exists())
@@ -5182,32 +5251,7 @@ fstream.close();
 	    	}
     	}
     
-    public static ArrayList<String> Read_SEQU(){
-   	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
-     try {
-		BufferedReader br = new BufferedReader(new FileReader(SEQU_File));
-       String strLine;
-       while ((strLine = br.readLine()) != null )   {
-       	String[] tokens = strLine.split(" ");
-       	SEQUENCE_DATA.add(tokens[0]+" "+
-       				      tokens[1]+" "+
-       				      tokens[2]+" "+
-       				      tokens[3]+" "+
-       				      tokens[4]+" "+
-       				      tokens[5]+" "+
-       				      tokens[6]+" "+
-       				      tokens[7]+" "+
-       				      tokens[8]+" "+
-       				      tokens[9]+" "+
-       				      tokens[10]+" "+
-       				      tokens[11]+" "
-       	);
-       }
-       br.close();
-       } catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);System.out.println("ERROR: Read SEQU.res failed. ");}
-       return SEQUENCE_DATA;
-    }
-	public static double[][] FIND_ctrl_init_cond() throws IOException{
+    public static double[][] FIND_ctrl_init_cond() throws IOException{
 	   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
 	   	    SEQUENCE_DATA = Launch_Simulation.READ_SEQUENCE();
 	   	    double[][] INIT_CONDITIONS = new double[4][SEQUENCE_DATA.size()];

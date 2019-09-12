@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -15,21 +14,21 @@ import java.util.Calendar;
 import java.util.List;
 
 import Sequence.SequenceElement;
-import Simulator_main.EDL_UniversalModule;
+import Simulator_main.Simulation;
 
 public class Launch_Simulation implements ActionListener{
 	
    	static double[] x_init =new double[20];	
-   	public static String INPUT_FILE;
     public static double PI    = 3.14159265359;                 // PI                                       [-]
     public static double kB    = 1.380650424e-23;               // Boltzmann constant                         [SI]    
-    public static double G     = 1.48808E-34;
+    public static double G     = 1.48808E-34; 
     public static int TARGET; 
 	static double deg2rad = PI/180.0; 		//Convert degrees to radians
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
 	public static String INERTIA_File 				= "/INP/INERTIA.inp";
-	public static String InitialAttitude_File   = "/INP/INITIALATTITUDE.inp";
+	public static String InitialAttitude_File       = "/INP/INITIALATTITUDE.inp";
+	public static String INPUT_FILE                 = "/INP/init.inp";
    	//System.out.println(INPUT_FILE);
 	
 	public static void UPDATE_SequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
@@ -275,8 +274,8 @@ public class Launch_Simulation implements ActionListener{
 		double SurfaceArea = READ_SCFile(x_init[6]) ;
 	    	int INTEGRATOR=(int) x_init[8];
 	    	int target=(int) x_init[9];
-	    	double[] engine_off = READ_ErrorFile();
-	    	double rm = EDL_UniversalModule.DATA_MAIN[target][0];
+	    	double[] error_file = READ_ErrorFile();
+	    	double rm = Simulation.DATA_MAIN[target][0];
 	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//System.out.println(target+" "+ rm);
@@ -288,9 +287,9 @@ public class Launch_Simulation implements ActionListener{
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		//												3 Degree of Freedom EDL module
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		System.out.println("Universal Module running");
-	    		System.out.println(""+SurfaceArea);
-	    		EDL_UniversalModule.Launch_Integrator(
+	    		System.out.println("Simulator set and running");
+	    		//System.out.println(""+SurfaceArea);
+	    		Simulation.Launch_Integrator(
 	    												INTEGRATOR, 		     	 		 // Integrator Index 					 [-]
 														target, 				 	 	 // Target index 						 [-]
 														x_init[0]*deg2rad, 			 // Longitude 							 [rad]
@@ -304,6 +303,7 @@ public class Launch_Simulation implements ActionListener{
 														x_init[10],				 	 // Write out delta time 				 [s]
 														x_init[11],				 	 // Reference Elevation  				 [m]
 														SEQUENCE_DATA,			 	 // Sequence data set	LIST			     [-]
+														error_file,					 // Error file to model partial system failres [-] 
 												  (int) x_init[12],				 	 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
 														STOP_Handler	,		         // Event Handler 	LIST			 	     [-]
 														SurfaceArea,					 // Projected Surface Area S/C 			 [m2]
@@ -314,45 +314,14 @@ public class Launch_Simulation implements ActionListener{
 	    				);
 	    	} else if (descent_ascent_switch ==1) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		//												3 Degree of Freedom Ascent module
+	    		//												Empty Slot
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		System.out.println("Ascent 3DOF Module running");
-		    	Ascent_3DOF.Launch_Integrator(
-		    			INTEGRATOR, 				 // Integrator Index 					         [-]
-						target, 				 	 // Target index 						     [-]
-						x_init[0]*deg2rad, 			 // Longitude 						 	 [rad]
-						x_init[1]*deg2rad, 			 // Latitude 					     	 [rad]
-						x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
-						x_init[3], 				 	 // Velocity 							 [m/s]
-						x_init[4]*deg2rad, 			 // Flight path angle 					 [rad]
-						x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
-						x_init[6], 				 	 // Initial S/C mass 					 [kg]
-						x_init[7], 			   	 	 // Maximum integ. time 				     [s]
-						x_init[10],				 	 // Write out delta time 				 [s]
-						x_init[11],				 	 // Reference Elevation  				 [m]
-						SEQUENCE_DATA,			 	 // Sequence data set	LIST		         [-]
-						STOP_Handler	,		 	 // Event Handler 	LIST			             [-]
-						engine_off
-						);
+
 	    	} else if (descent_ascent_switch==2) {
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		//												Empty Slot
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		System.out.println("Obsolete Module has been deleted. This slot is currently empty.");
-	    		@SuppressWarnings("unused")
-				double[][] INERTIA = new double[3][3];
-	    		try {
-	    		INERTIA = READ_INERTIA();
-	    		} catch(FileNotFoundException eFNo) {
-	    			System.out.println("ERROR: Inertia input file not found");
-	    		}
-	    		
-	    	} else {
-	    		System.out.println("Module selection not recognized. ");
-	    	}
-		}else {
-			System.out.println("Reading Input file failed -> Forced Integrator Stop.");
-		}
+	    	}}
     }
 
 	@Override
