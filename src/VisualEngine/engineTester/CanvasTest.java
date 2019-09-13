@@ -21,7 +21,7 @@ import VisualEngine.models.RawModel;
 import VisualEngine.models.TexturedModel;
 import VisualEngine.renderEngine.Loader;
 import VisualEngine.renderEngine.OBJLoader;
-import VisualEngine.renderEngine.Renderer;
+import VisualEngine.renderEngine.EntityRenderer;
 import VisualEngine.shaders.StaticShader;
 import VisualEngine.textures.ModelTexture;
 
@@ -38,7 +38,7 @@ public class CanvasTest extends JFrame {
 	
 	static private Loader loader;
 	static private StaticShader shader ;
-	static private Renderer renderer;
+	static private EntityRenderer renderer;
 	static private RawModel model ;	
 	static private TexturedModel staticModel ;	
 	static private Entity entity ;	
@@ -85,7 +85,7 @@ public class CanvasTest extends JFrame {
 
 		 loader = new Loader();
 		 shader = new StaticShader();
-		 renderer = new Renderer(shader);			
+		 renderer = new EntityRenderer(shader);			
 		 model = OBJLoader.loadObjModel("lem", loader);		
 		 staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("gray")));		
 		 entity = new Entity(staticModel, new Vector3f(0,0,-25),0,0,0,1);		

@@ -5,7 +5,11 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 	
-	private Vector3f position = new Vector3f(0,0,0);
+	private float defaultX =100;
+	private float defaultY =20;
+	private float defaultZ =240;
+	
+	private Vector3f position = new Vector3f(defaultX,defaultY,defaultZ);
 	private float pitch;
 	private float yaw;
 	private float roll;
@@ -30,9 +34,12 @@ public class Camera {
 		
 		// Position reset
 		if(Keyboard.isKeyDown(Keyboard.KEY_P)){
-			position.x = 0;
-			position.y = 0;
-			position.z = 0;
+			position.x = defaultX;
+			position.y = defaultY;
+			position.z = defaultZ;
+			roll=0;
+			pitch=0;
+			yaw=130;
 		}
 		
 	}

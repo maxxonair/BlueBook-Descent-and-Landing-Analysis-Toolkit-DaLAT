@@ -3,6 +3,7 @@ package VisualEngine.entities;
 import VisualEngine.models.TexturedModel;
 
 import org.lwjgl.input.Keyboard;
+import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Entity {
@@ -54,6 +55,34 @@ public class Entity {
 		if(Keyboard.isKeyDown(Keyboard.KEY_Z)){
 			this.rotZ -= sensitivity;
 		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_P)){
+			this.position.x=0;
+			this.position.y=0;
+			this.position.z=-50;
+			this.rotX=0;
+			this.rotY=0;
+			this.rotZ=0;
+		}
+		float mouseSensitivity = 0.1f;
+		float mouseWheelSensitivity =0.001f;
+		if(Mouse.isButtonDown(0)){
+			int value = Mouse.getDX();
+			this.position.x+=value*mouseSensitivity;
+		}
+		if(Mouse.isButtonDown(0)){
+			int value = Mouse.getDY();
+			this.position.y+=value*mouseSensitivity;
+		}
+		if(Mouse.isButtonDown(1)){
+			int value = Mouse.getDX();
+			this.rotY+=value*mouseSensitivity;
+		}
+		if(Mouse.isButtonDown(1)){
+			int value = Mouse.getDY();
+			this.rotX-=value*mouseSensitivity;
+		}
+		int value = Mouse.getDWheel();
+		this.position.z+=value*mouseWheelSensitivity;
 	}
 
 	public TexturedModel getModel() {

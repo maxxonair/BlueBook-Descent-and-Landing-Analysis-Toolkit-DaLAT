@@ -5,6 +5,9 @@
 		<attributes>
 			<attribute name="module" value="true"/>
 		</attributes>
+		<accessrules>
+			<accessrule kind="accessible" pattern="com/apple/eawt/Application"/>
+		</accessrules>
 	</classpathentry>
 	<classpathentry kind="lib" path="commons-math3-3.6.1-javadoc.jar"/>
 	<classpathentry kind="lib" path="commons-math3-3.6.1-sources.jar"/>
