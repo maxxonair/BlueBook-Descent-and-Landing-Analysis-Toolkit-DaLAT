@@ -12,6 +12,8 @@ public class Entity {
 	private Vector3f position;
 	private float rotX, rotY, rotZ;
 	private float scale;
+	private float mouseSensitivity = 0.1f;
+	private float mouseWheelSensitivity =0.001f;
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
@@ -63,11 +65,10 @@ public class Entity {
 			this.rotY=0;
 			this.rotZ=0;
 		}
-		float mouseSensitivity = 0.1f;
-		float mouseWheelSensitivity =0.001f;
+if(!Keyboard.isKeyDown(Keyboard.KEY_B) && !Keyboard.isKeyDown(Keyboard.KEY_N)) {   // Keys B and N are reserved for camera movement (B - translation , N - rotation)
 		if(Mouse.isButtonDown(0)){
 			int value = Mouse.getDX();
-			this.position.x+=value*mouseSensitivity;
+			this.position.x-=value*mouseSensitivity;
 		}
 		if(Mouse.isButtonDown(0)){
 			int value = Mouse.getDY();
@@ -83,6 +84,7 @@ public class Entity {
 		}
 		int value = Mouse.getDWheel();
 		this.position.z+=value*mouseWheelSensitivity;
+}
 	}
 
 	public TexturedModel getModel() {
@@ -131,6 +133,22 @@ public class Entity {
 
 	public void setScale(float scale) {
 		this.scale = scale;
+	}
+
+	public float getMouseSensitivity() {
+		return mouseSensitivity;
+	}
+
+	public void setMouseSensitivity(float mouseSensitivity) {
+		this.mouseSensitivity = mouseSensitivity;
+	}
+
+	public float getMouseWheelSensitivity() {
+		return mouseWheelSensitivity;
+	}
+
+	public void setMouseWheelSensitivity(float mouseWheelSensitivity) {
+		this.mouseWheelSensitivity = mouseWheelSensitivity;
 	}
 
 }

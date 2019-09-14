@@ -25,9 +25,10 @@ public class MasterRenderer {
     private static final float NEAR_PLANE = 0.1f;
     private static final float FAR_PLANE = 1000;
     
-	private static float env_brightness_red = 1;
-	private static float env_brightness_green = 1;
-	private static float env_brightness_blue = 1;
+	private static float env_brightness_red = 0;
+	private static float env_brightness_green = 0;
+	private static float env_brightness_blue = 0;
+	
      
     private Matrix4f projectionMatrix;
      
@@ -52,11 +53,13 @@ public class MasterRenderer {
     public void render(Light sun,Camera camera){
         prepare();
         shader.start();
+        shader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
         shader.loadLight(sun);
         shader.loadViewMatrix(camera);
         renderer.render(entities);
         shader.stop();
         terrainShader.start();
+        terrainShader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
         terrainShader.loadLight(sun);
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);

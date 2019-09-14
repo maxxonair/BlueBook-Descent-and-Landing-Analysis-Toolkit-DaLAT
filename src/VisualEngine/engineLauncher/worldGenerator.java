@@ -18,6 +18,8 @@ import VisualEngine.renderEngine.OBJLoader;
 import VisualEngine.shaders.StaticShader;
 import VisualEngine.terrains.Terrain;
 import VisualEngine.textures.ModelTexture;
+import VisualEngine.textures.TerrainTexture;
+import VisualEngine.textures.TerrainTexturePack;
 
 public class worldGenerator {
 	
@@ -36,20 +38,31 @@ public class worldGenerator {
 	    loader = new Loader();
 		StaticShader shader = new StaticShader();
 		MasterRenderer renderer = new MasterRenderer();
+		//----------------------------------------------------------------
+		// Terrain Texture area
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));
 		
-		Terrain terrain = new Terrain(0,0, loader, new ModelTexture(loader.loadTexture("grass")));
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
+		TerrainTexture gTexture = new TerrainTexture(loader.loadTerrainTexture("mud"));
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
 		
-		RawModel model = OBJLoader.loadObjModel("gemini", loader);	
+		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
+		
+		//----------------------------------------------------------------
+		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap);
+		
+		RawModel model = OBJLoader.loadObjModel("lem", loader);	
 		rawmodels.add(model);
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("gray")));	
+		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("gray")));	
 		texturedmodels.add(staticModel);	
 		ModelTexture texture = staticModel.getTexture();
 		texture.setShineDamper(shine_value);
 		texture.setReflectivity(reflectivity_value);
-		Entity entity = new Entity(staticModel, new Vector3f(100,5,180),0,1,0,1);	
+		Entity entity = new Entity(staticModel, new Vector3f(350,5,80),0,1,0,1);	
 		entities.add(entity);
 		
-		Light light = new Light(new Vector3f(10,10, -20), new Vector3f(1,1,1));		
+		Light light = new Light(new Vector3f(400,50, -20), new Vector3f(1,1,1));		
 		Camera camera = new Camera();
 		
 		while(!Display.isCloseRequested()){
@@ -80,7 +93,7 @@ public class worldGenerator {
 			Loader loader = new Loader();
 			 RawModel model = OBJLoader.loadObjModel("gemini", loader);	
 			 rawmodels.add(model);
-			 TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadTexture("gray")));	
+			 TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("gray")));	
 			 texturedmodels.add(staticModel);
 			 entity = new Entity(staticModel, new Vector3f(0,0,-50),0,0,0,1);
 			 entities.add(entity);
