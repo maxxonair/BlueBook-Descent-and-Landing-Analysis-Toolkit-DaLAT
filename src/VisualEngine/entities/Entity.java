@@ -14,6 +14,9 @@ public class Entity {
 	private float scale;
 	private float mouseSensitivity = 0.1f;
 	private float mouseWheelSensitivity =0.001f;
+	private float initX;
+	private float initY;
+	private float initZ;
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
@@ -23,6 +26,9 @@ public class Entity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
+		this.initX=position.x;
+		this.initY=position.y;
+		this.initZ=position.z;
 	}
 
 	public void increasePosition(float dx, float dy, float dz) {
@@ -58,9 +64,9 @@ public class Entity {
 			this.rotZ -= sensitivity;
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_P)){
-			this.position.x=0;
-			this.position.y=0;
-			this.position.z=-50;
+			this.position.x=initX;
+			this.position.y=initY;
+			this.position.z=initZ;
 			this.rotX=0;
 			this.rotY=0;
 			this.rotZ=0;

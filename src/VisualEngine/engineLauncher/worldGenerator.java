@@ -39,7 +39,8 @@ public class worldGenerator {
 		StaticShader shader = new StaticShader();
 		MasterRenderer renderer = new MasterRenderer();
 		//----------------------------------------------------------------
-		// Terrain Texture area
+		// 					Terrain Setting
+		//----------------------------------------------------------------
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));
 		
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
@@ -47,11 +48,12 @@ public class worldGenerator {
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
 		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap"));
-		
-		//----------------------------------------------------------------
+		TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap2"));
+
 		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap);
-		
+		//----------------------------------------------------------------
+		// 					Light Setting
+		//----------------------------------------------------------------
 		RawModel model = OBJLoader.loadObjModel("lem", loader);	
 		rawmodels.add(model);
 		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("gray")));	
@@ -59,12 +61,17 @@ public class worldGenerator {
 		ModelTexture texture = staticModel.getTexture();
 		texture.setShineDamper(shine_value);
 		texture.setReflectivity(reflectivity_value);
-		Entity entity = new Entity(staticModel, new Vector3f(350,5,80),0,1,0,1);	
+		Entity entity = new Entity(staticModel, new Vector3f(400,5,435),0,1,0,1);	
 		entities.add(entity);
-		
-		Light light = new Light(new Vector3f(400,50, -20), new Vector3f(1,1,1));		
-		Camera camera = new Camera();
-		
+		//----------------------------------------------------------------
+		// 					Light Setting
+		//----------------------------------------------------------------
+		Light light = new Light(new Vector3f(400,100, 400), new Vector3f(1,1,1));		
+		//----------------------------------------------------------------
+		//					Camera Settings
+		//----------------------------------------------------------------
+		Camera camera = new Camera(new Vector3f(400,15,400),180,15,0);
+		//----------------------------------------------------------------
 		while(!Display.isCloseRequested()){
 			//entity.increaseRotation(0, 0.05f, 0);
 			entity.move();

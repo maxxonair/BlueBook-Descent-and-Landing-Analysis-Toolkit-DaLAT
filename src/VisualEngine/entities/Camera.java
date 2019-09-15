@@ -6,19 +6,29 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class Camera {
 	
-	private float defaultX =350;
-	private float defaultY =20;
-	private float defaultZ =10;
+	private float defaultX ;
+	private float defaultY ;
+	private float defaultZ ;
 	
 	private Vector3f position = new Vector3f(defaultX,defaultY,defaultZ);
-	private float pitch=0;
-	private float yaw=180;
-	private float roll=0;
+	private float pitch;
+	private float yaw;
+	private float roll;
 	
 	private float mouseSensitivity = 0.1f;
 	private float mouseWheelSensitivity =0.001f;
 	
-	public Camera(){}
+	public Camera(Vector3f position, float yaw, float pitch, float roll){
+		this.position.x=position.x;
+		this.position.y=position.y;
+		this.position.z=position.z;
+		this.defaultX=position.x;
+		this.defaultY=position.y;
+		this.defaultZ=position.z;
+		this.yaw=yaw;
+		this.pitch=pitch;
+		this.roll=roll;
+	}
 	
 	
 	public void move(){
@@ -95,6 +105,26 @@ public class Camera {
 
 	public void setMouseWheelSensitivity(float mouseWheelSensitivity) {
 		this.mouseWheelSensitivity = mouseWheelSensitivity;
+	}
+
+
+	public void setPosition(Vector3f position) {
+		this.position = position;
+	}
+
+
+	public void setPitch(float pitch) {
+		this.pitch = pitch;
+	}
+
+
+	public void setYaw(float yaw) {
+		this.yaw = yaw;
+	}
+
+
+	public void setRoll(float roll) {
+		this.roll = roll;
 	}
 	
 	
