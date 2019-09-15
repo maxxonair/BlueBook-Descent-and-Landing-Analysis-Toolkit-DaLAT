@@ -64,8 +64,7 @@ public class Camera {
 		if(Keyboard.isKeyDown(Keyboard.KEY_N)) {
 			yaw+=Mouse.getDX()*mouseSensitivity;
 			pitch+=Mouse.getDY()*mouseSensitivity;
-			System.out.println(""+yaw);
-			
+			//System.out.println(""+yaw);			
 		}
 		
 	}
