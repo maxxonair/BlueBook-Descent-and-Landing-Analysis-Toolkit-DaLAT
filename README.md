@@ -1,4 +1,4 @@
-# BlueBook-DaLAT-3DoF
+# BlueBook Descent and Landing Analysis Toolkit
 
 BlueBook Descent and Landing Analysis Tool 
 29/08/2019
