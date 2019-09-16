@@ -2911,11 +2911,17 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      AerodynamicInputPanel.setForeground(Color.white);
 			      AerodynamicInputPanel.setLayout(null);				
 				
-				TabPane_SCDefinition.addTab("Basic" , null, PropulsionInputPanel, null);
-				TabPane_SCDefinition.addTab("Attitude and Inertia" , null, InertiaxPanel, null);
-				TabPane_SCDefinition.addTab("Aerodynamic" , null, AerodynamicInputPanel, null);
+			      
+			     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
+			     	ImageIcon icon_inertia = new ImageIcon("images/inertia.png","");
+			     	ImageIcon icon_aerodynamic = new ImageIcon("images/aerodynamic.png","");
+			      
+				TabPane_SCDefinition.addTab("Basic" , icon_setup2, PropulsionInputPanel, null);
+				TabPane_SCDefinition.addTab("Attitude and Inertia" , icon_inertia, InertiaxPanel, null);
+				TabPane_SCDefinition.addTab("Aerodynamic" , icon_aerodynamic, AerodynamicInputPanel, null);
 				PageX04_AttitudeSetup.add(TabPane_SCDefinition);
 		        TabPane_SCDefinition.setSelectedIndex(0);
+		        TabPane_SCDefinition.setFont(small_font);
 				
 	    //-------------------------------------------------------------------------------------------	
 		 // Inertia and Attitude       
