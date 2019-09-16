@@ -22,9 +22,9 @@ import VisualEngine.terrains.Terrain;
  
 public class MasterRenderer {
      
-    private static final float FOV = 70;
-    private static final float NEAR_PLANE = 0.1f;
-    private static final float FAR_PLANE = 1000;
+    private static  float FOV = 70;
+    private static  float NEAR_PLANE = 0.1f;
+    private static  float FAR_PLANE = 1000;
     
 	private static float env_brightness_red = 0;
 	private static float env_brightness_green = 0;
@@ -42,13 +42,16 @@ public class MasterRenderer {
      
     private Map<TexturedModel,List<Entity>> entities = new HashMap<TexturedModel,List<Entity>>();
     private List<Terrain> terrains = new ArrayList<Terrain>();
+    
+    private SkyboxRenderer skyboxRenderer; 
      
-    public MasterRenderer(){
+    public MasterRenderer(Loader loader){
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glCullFace(GL11.GL_BACK);
         createProjectionMatrix();
         renderer = new EntityRenderer(shader,projectionMatrix);
         terrainRenderer = new TerrainRenderer(terrainShader,projectionMatrix);
+        skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
     }
      
     public void render(Light sun,Camera camera){
@@ -65,6 +68,7 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
+        skyboxRenderer.render(camera);
         terrains.clear();
         entities.clear();
     }
@@ -83,6 +87,7 @@ public class MasterRenderer {
         terrainShader.loadViewMatrix3P(camera);
         terrainRenderer.render(terrains);
         terrainShader.stop();
+        skyboxRenderer.render(camera);
         terrains.clear();
         entities.clear();
     }
@@ -188,6 +193,18 @@ public class MasterRenderer {
 
 	public static void setEnv_brightness_blue(float env_brightness_blue) {
 		MasterRenderer.env_brightness_blue = env_brightness_blue;
+	}
+
+	public static void setFOV(float fOV) {
+		FOV = fOV;
+	}
+
+	public static void setNEAR_PLANE(float nEAR_PLANE) {
+		NEAR_PLANE = nEAR_PLANE;
+	}
+
+	public static void setFAR_PLANE(float fAR_PLANE) {
+		FAR_PLANE = fAR_PLANE;
 	}
  
 }

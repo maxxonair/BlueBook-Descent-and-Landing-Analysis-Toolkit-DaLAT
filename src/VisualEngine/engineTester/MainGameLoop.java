@@ -1,5 +1,6 @@
 package VisualEngine.engineTester;
 
+
 import VisualEngine.engineLauncher.worldGenerator;
 
 public class MainGameLoop {
@@ -9,5 +10,4 @@ public class MainGameLoop {
 		worldGenerator.launchVisualEngine();
 
 	}
-
 }

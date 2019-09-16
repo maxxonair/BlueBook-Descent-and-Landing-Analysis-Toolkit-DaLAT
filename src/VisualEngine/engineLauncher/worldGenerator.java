@@ -15,10 +15,11 @@ import VisualEngine.gui.GuiRenderer;
 import VisualEngine.gui.GuiTexture;
 import VisualEngine.models.RawModel;
 import VisualEngine.models.TexturedModel;
+import VisualEngine.objConverter.ModelData;
+import VisualEngine.objConverter.OBJFileLoader;
 import VisualEngine.renderEngine.DisplayManager;
 import VisualEngine.renderEngine.Loader;
 import VisualEngine.renderEngine.MasterRenderer;
-import VisualEngine.renderEngine.OBJLoader;
 import VisualEngine.shaders.StaticShader;
 import VisualEngine.terrains.Terrain;
 import VisualEngine.textures.ModelTexture;
@@ -34,14 +35,14 @@ public class worldGenerator {
 	static Loader loader = new Loader();
 	static int movableEntity =0;
 	
-	static float shine_value =10;
-	static float reflectivity_value =1;
+	static float shine_value = 1;
+	static float reflectivity_value =0;
 	
 	public static void launchVisualEngine() {
 		DisplayManager.createDisplay();
 	    loader = new Loader();
 		StaticShader shader = new StaticShader();
-		MasterRenderer renderer = new MasterRenderer();
+		MasterRenderer renderer = new MasterRenderer(loader);
 		//----------------------------------------------------------------
 		// 					Terrain Setting
 		//----------------------------------------------------------------
@@ -49,18 +50,18 @@ public class worldGenerator {
 		
 		TerrainTexture rTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTerrainTexture("mud"));
-		TerrainTexture bTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
-		
+		TerrainTexture bTexture = new TerrainTexture(loader.loadTerrainTexture("path"));		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
 
-		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightMap");
+		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightmap");
 		
 		//renderer.adjustTerrainVisibility(0.07f, 1.5f);
 		//----------------------------------------------------------------
-		// 					Light Setting
+		// 					Spacecraft Setting
 		//----------------------------------------------------------------
-		RawModel model = OBJLoader.loadObjModel("lem", loader);	
+		ModelData data = OBJFileLoader.loadOBJ("lem");
+		RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());	
 		rawmodels.add(model);
 		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("gray")));	
 		texturedmodels.add(staticModel);	
@@ -70,6 +71,8 @@ public class worldGenerator {
 		Vector3f startPostion = new Vector3f(400,5,400);
 		Spacecraft spacecraft = new Spacecraft(staticModel, startPostion,0,0,0,1);	
 		entities.add(spacecraft);
+		//------------
+		
 		//----------------------------------------------------------------
 		// 					Light Setting
 		//----------------------------------------------------------------
@@ -91,15 +94,12 @@ public class worldGenerator {
 		GuiRenderer guirenderer = new GuiRenderer(loader);
 		//----------------------------------------------------------------
 		while(!Display.isCloseRequested()){
-			//entity.increaseRotation(0, 0.05f, 0);
-			//entity.move();
 			spacecraft.move(terrain);
 			if(entities.size()>movableEntity) {
 			//entities.get(0).move();
 			}
 			camera.move();
 			renderer.adjustBrightness();
-
 			renderer.processTerrain(terrain);
 			/*
 			for(int i=0;i<entities.size();i++){
@@ -118,14 +118,7 @@ public class worldGenerator {
 	}
 	
 	public static void addEntity(String fileName, String textureFile) {
-		Entity entity = null;
-			Loader loader = new Loader();
-			 RawModel model = OBJLoader.loadObjModel("gemini", loader);	
-			 rawmodels.add(model);
-			 TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("gray")));	
-			 texturedmodels.add(staticModel);
-			 entity = new Entity(staticModel, new Vector3f(0,0,-50),0,0,0,1);
-			 entities.add(entity);
+
 	}
 	
 	public static void setmovableEntity(int value) {

@@ -42,5 +42,6 @@
 	<classpathentry kind="lib" path="lib/commons-math3-3.6.1-tests.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.6.1-tools.jar"/>
 	<classpathentry kind="lib" path="lib/commons-math3-3.6.1.jar"/>
+	<classpathentry kind="lib" path="lib/jars/PNGDecoder.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
