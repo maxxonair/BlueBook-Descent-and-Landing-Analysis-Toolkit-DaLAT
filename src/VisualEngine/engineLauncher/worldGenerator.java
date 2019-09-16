@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.lwjgl.opengl.Display;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-import VisualEngine.entities.Camera;
 import VisualEngine.entities.Entity;
 import VisualEngine.entities.Light;
+import VisualEngine.entities.Spacecraft;
+import VisualEngine.entities.ThirdPersonCamera;
+import VisualEngine.gui.GuiRenderer;
+import VisualEngine.gui.GuiTexture;
 import VisualEngine.models.RawModel;
 import VisualEngine.models.TexturedModel;
 import VisualEngine.renderEngine.DisplayManager;
@@ -48,9 +52,11 @@ public class worldGenerator {
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTerrainTexture("path"));
 		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
-		TerrainTexture blendMap = new TerrainTexture(loader.loadTerrainTexture("blendMap2"));
+		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
 
-		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap);
+		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightMap");
+		
+		//renderer.adjustTerrainVisibility(0.07f, 1.5f);
 		//----------------------------------------------------------------
 		// 					Light Setting
 		//----------------------------------------------------------------
@@ -61,35 +67,51 @@ public class worldGenerator {
 		ModelTexture texture = staticModel.getTexture();
 		texture.setShineDamper(shine_value);
 		texture.setReflectivity(reflectivity_value);
-		Entity entity = new Entity(staticModel, new Vector3f(400,5,435),0,1,0,1);	
-		entities.add(entity);
+		Vector3f startPostion = new Vector3f(400,5,400);
+		Spacecraft spacecraft = new Spacecraft(staticModel, startPostion,0,0,0,1);	
+		entities.add(spacecraft);
 		//----------------------------------------------------------------
 		// 					Light Setting
 		//----------------------------------------------------------------
-		Light light = new Light(new Vector3f(400,100, 400), new Vector3f(1,1,1));		
+		Vector3f lightPostion = new Vector3f(400,80,200);
+		Light light = new Light(lightPostion, new Vector3f(1,1,1));		
 		//----------------------------------------------------------------
 		//					Camera Settings
 		//----------------------------------------------------------------
-		Camera camera = new Camera(new Vector3f(400,15,400),180,15,0);
+		//Camera camera = new Camera(new Vector3f(400,15,400),180,15,0);
+		ThirdPersonCamera camera = new ThirdPersonCamera(spacecraft);
+		//----------------------------------------------------------------
+		//					GUI Settings
+		//----------------------------------------------------------------
+		List<GuiTexture> guis = new ArrayList<GuiTexture>();
+		GuiTexture gui = new GuiTexture(loader.loadTerrainTexture("nasa"), 
+				new Vector2f(0.8f, 0.7f), new Vector2f(0.3f, 0.2f));
+		guis.add(gui);
+		
+		GuiRenderer guirenderer = new GuiRenderer(loader);
 		//----------------------------------------------------------------
 		while(!Display.isCloseRequested()){
 			//entity.increaseRotation(0, 0.05f, 0);
-			entity.move();
+			//entity.move();
+			spacecraft.move(terrain);
 			if(entities.size()>movableEntity) {
 			//entities.get(0).move();
 			}
 			camera.move();
-			renderer.adjust_brightness();
+			renderer.adjustBrightness();
 
 			renderer.processTerrain(terrain);
+			/*
 			for(int i=0;i<entities.size();i++){
 				renderer.processEntity(entities.get(i));
-			}
-			renderer.render(light, camera);
+			}*/
+			renderer.processEntity(spacecraft);
+			renderer.render3P(light, camera);
+			guirenderer.render(guis);
 			shader.stop();
 			DisplayManager.updateDisplay();
 		}
-
+		guirenderer.cleanUp();
 		shader.cleanUp();
 		loader.cleanUp();
 		DisplayManager.closeDisplay();

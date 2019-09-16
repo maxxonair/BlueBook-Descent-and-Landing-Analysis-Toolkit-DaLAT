@@ -5,6 +5,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import VisualEngine.entities.Camera;
 import VisualEngine.entities.Light;
+import VisualEngine.entities.ThirdPersonCamera;
 import VisualEngine.toolbox.Maths;
 
  
@@ -27,7 +28,8 @@ public class TerrainShader extends ShaderProgram{
     private int location_bTexture;
     private int location_blendMap;
 	private int location_skyColour;
-    
+    private int location_density;
+    private int location_gradient;
  
     public TerrainShader() {
         super(VERTEX_FILE, FRAGMENT_FILE);
@@ -55,6 +57,8 @@ public class TerrainShader extends ShaderProgram{
         location_bTexture = super.getUniformLocation("bTexture");
         location_blendMap = super.getUniformLocation("blendMap");  
         location_skyColour = super.getUniformLocation("skyColour");
+        location_density = super.getUniformLocation("density");
+        location_gradient = super.getUniformLocation("gradient");
     }
     
 	public void loadSkyColour(float r, float g, float b) {
@@ -87,10 +91,19 @@ public class TerrainShader extends ShaderProgram{
         Matrix4f viewMatrix = Maths.createViewMatrix(camera);
         super.loadMatrix(location_viewMatrix, viewMatrix);
     }
+    
+    public void loadViewMatrix3P(ThirdPersonCamera camera){
+        Matrix4f viewMatrix = Maths.createViewMatrix3P(camera);
+        super.loadMatrix(location_viewMatrix, viewMatrix);
+    }
      
     public void loadProjectionMatrix(Matrix4f projection){
         super.loadMatrix(location_projectionMatrix, projection);
     }
      
+    public void loadVisibility(float density, float gradient) {
+    	super.loadFloat(location_density, density);
+    	super.loadFloat(location_gradient, gradient);
+    }
  
 }

@@ -32,6 +32,13 @@ public class Loader {
 		return new RawModel(vaoID,indices.length);
 	}
 	
+	 public RawModel loadToVAO(float[] positions) {
+		 int vaoID = createVAO();
+		storeDataInAttributeList(0,2,positions);
+		unbindVAO();
+		return new RawModel(vaoID, positions.length);
+	 }
+	
 	public int loadObjectTexture(String fileName) {
 		Texture texture = null;
 		try {
@@ -51,6 +58,20 @@ public class Loader {
 		try {
 			texture = TextureLoader.getTexture("PNG",
 					new FileInputStream("VisualEngine/textures/" + fileName + ".png"));
+		} catch (Exception e) {
+			e.printStackTrace();
+			System.err.println("Tried to load texture " + fileName + ".png , didn't work");
+			System.exit(-1);
+		}
+		textures.add(texture.getTextureID());
+		return texture.getTextureID();
+	}
+	
+	public int loadBlendMap(String fileName) {
+		Texture texture = null;
+		try {
+			texture = TextureLoader.getTexture("PNG",
+					new FileInputStream("VisualEngine/blendMap/" + fileName + ".png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Tried to load texture " + fileName + ".png , didn't work");

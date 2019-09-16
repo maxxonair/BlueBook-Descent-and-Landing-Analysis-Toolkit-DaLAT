@@ -47,6 +47,7 @@ public class TerrainRenderer {
         GL20.glEnableVertexAttribArray(2);
         bindTextures(terrain);
         shader.loadShineVariables(1, 0);
+        shader.loadVisibility(0.003f, 1.0f);
     }
     
     private void bindTextures(Terrain terrain ) {

@@ -17,7 +17,8 @@ public class Camera {
 	
 	private float mouseSensitivity = 0.1f;
 	private float mouseWheelSensitivity =0.001f;
-	
+
+
 	public Camera(Vector3f position, float yaw, float pitch, float roll){
 		this.position.x=position.x;
 		this.position.y=position.y;

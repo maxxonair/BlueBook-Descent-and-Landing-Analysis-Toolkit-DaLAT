@@ -7,6 +7,7 @@ import VisualEngine.toolbox.Maths;
 
 import VisualEngine.entities.Camera;
 import VisualEngine.entities.Light;
+import VisualEngine.entities.ThirdPersonCamera;
 
 public class StaticShader extends ShaderProgram{
 	
@@ -60,6 +61,11 @@ public class StaticShader extends ShaderProgram{
 	
 	public void loadViewMatrix(Camera camera){
 		Matrix4f viewMatrix = Maths.createViewMatrix(camera);
+		super.loadMatrix(location_viewMatrix, viewMatrix);
+	}
+	
+	public void loadViewMatrix3P(ThirdPersonCamera camera){
+		Matrix4f viewMatrix = Maths.createViewMatrix3P(camera);
 		super.loadMatrix(location_viewMatrix, viewMatrix);
 	}
 	

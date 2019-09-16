@@ -44,6 +44,7 @@ public class Entity {
 	}
 	
 	public void move() {
+		/*
 		float sensitivity = 0.8f;
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)){
 			this.rotX += sensitivity;
@@ -63,6 +64,7 @@ public class Entity {
 		if(Keyboard.isKeyDown(Keyboard.KEY_Z)){
 			this.rotZ -= sensitivity;
 		}
+		*/
 		if(Keyboard.isKeyDown(Keyboard.KEY_P)){
 			this.position.x=initX;
 			this.position.y=initY;

@@ -13,6 +13,7 @@ import org.lwjgl.util.vector.Matrix4f;
 import VisualEngine.entities.Camera;
 import VisualEngine.entities.Entity;
 import VisualEngine.entities.Light;
+import VisualEngine.entities.ThirdPersonCamera;
 import VisualEngine.models.TexturedModel;
 import VisualEngine.shaders.StaticShader;
 import VisualEngine.shaders.TerrainShader;
@@ -67,6 +68,24 @@ public class MasterRenderer {
         terrains.clear();
         entities.clear();
     }
+    
+    public void render3P(Light sun,ThirdPersonCamera camera){
+        prepare();
+        shader.start();
+        shader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
+        shader.loadLight(sun);
+        shader.loadViewMatrix3P(camera);
+        renderer.render(entities);
+        shader.stop();
+        terrainShader.start();
+        terrainShader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
+        terrainShader.loadLight(sun);
+        terrainShader.loadViewMatrix3P(camera);
+        terrainRenderer.render(terrains);
+        terrainShader.stop();
+        terrains.clear();
+        entities.clear();
+    }
      
     public void processTerrain(Terrain terrain){
         terrains.add(terrain);
@@ -110,7 +129,7 @@ public class MasterRenderer {
         projectionMatrix.m33 = 0;
     }
     //-------------------------------------------------------------------------------------
-	public void adjust_brightness() {
+	public void adjustBrightness() {
 		float sensitivity =0.01f;
 		if(Keyboard.isKeyDown(Keyboard.KEY_U)){
 			env_brightness_red+= sensitivity;
@@ -132,6 +151,9 @@ public class MasterRenderer {
 				env_brightness_blue=0;
 			}
 		}
+	}
+	public void adjustTerrainVisibility(float density, float gradient) {
+		terrainShader.loadVisibility(density, gradient);
 	}
 	public static float getFov() {
 		return FOV;
