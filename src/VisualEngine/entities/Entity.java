@@ -10,13 +10,17 @@ public class Entity {
 
 	private TexturedModel model;
 	private Vector3f position;
-	private float rotX, rotY, rotZ;
+	protected float rotX;
+	private float rotY;
+	private float rotZ;
 	private float scale;
 	private float mouseSensitivity = 0.1f;
 	private float mouseWheelSensitivity =0.001f;
 	private float initX;
 	private float initY;
 	private float initZ;
+	
+	private int textureIndex = 0;
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
@@ -44,27 +48,7 @@ public class Entity {
 	}
 	
 	public void move() {
-		/*
-		float sensitivity = 0.8f;
-		if(Keyboard.isKeyDown(Keyboard.KEY_W)){
-			this.rotX += sensitivity;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_S)){
-			this.rotX -= sensitivity;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_A)){
-			this.rotY += sensitivity;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_D)){
-			this.rotY -= sensitivity;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_Q)){
-			this.rotZ += sensitivity;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_Z)){
-			this.rotZ -= sensitivity;
-		}
-		*/
+
 		if(Keyboard.isKeyDown(Keyboard.KEY_P)){
 			this.position.x=initX;
 			this.position.y=initY;
@@ -158,5 +142,14 @@ if(!Keyboard.isKeyDown(Keyboard.KEY_B) && !Keyboard.isKeyDown(Keyboard.KEY_N)) {
 	public void setMouseWheelSensitivity(float mouseWheelSensitivity) {
 		this.mouseWheelSensitivity = mouseWheelSensitivity;
 	}
+    public float getTextureXOffset(){
+        int column = textureIndex%model.getTexture().getNumberOfRows();
+        return (float)column/(float)model.getTexture().getNumberOfRows();
+    }
+     
+    public float getTextureYOffset(){
+        int row = textureIndex/model.getTexture().getNumberOfRows();
+        return (float)row/(float)model.getTexture().getNumberOfRows();
+    }
 
 }

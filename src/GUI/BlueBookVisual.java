@@ -127,6 +127,8 @@ import Sequence.SequenceElement;
 import Simulator_main.Launch_Simulation;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Tool;
+import VisualEngine.animation.AnimationSet;
+import VisualEngine.engineLauncher.worldAnimation;
 import VisualEngine.engineLauncher.worldGenerator;
 
 import javax.swing.JFileChooser;
@@ -807,6 +809,24 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 	   Thread thread = new Thread(new Runnable() {
                 		    public void run() {
                 		    	 worldGenerator.launchVisualEngine();
+                		    }
+                		});
+                		thread.start();
+                    } });
+        
+        JMenuItem menuItem_Animation = new JMenuItem("Create Animation from Results         "); 
+        menuItem_Animation.setForeground(Color.black);
+        menuItem_Animation.setFont(small_font);
+        menuItem_Animation.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_VisualEngine.add(menuItem_Animation);
+        menuItem_Animation.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	  
+                	   Thread thread = new Thread(new Runnable() {
+                		    public void run() {
+                		    	List<AnimationSet> animationSets = READ_AnimationData();
+                		    	worldAnimation.launchVisualEngine(animationSets);
                 		    }
                 		});
                 		thread.start();
@@ -4737,6 +4757,74 @@ fstream.close();
 	       br.close();
 	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
     }
+    
+    public static List<AnimationSet>  READ_AnimationData() {
+     int indx_time=0;
+     int indx_vel =6;
+    	 int indx_fpa =7;
+    	 int indx_azi =8;
+    	 float init_alt=0;
+   	 List<AnimationSet> animationSets= new ArrayList<AnimationSet>();
+	 FileInputStream fstream = null;
+    DataInputStream in = new DataInputStream(fstream);
+    BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    String strLine;
+   	// Scan for specifin information 
+	     fstream = null;
+		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+	               in = new DataInputStream(fstream);
+	               br = new BufferedReader(new InputStreamReader(in));
+	              try {
+	              int indx=0;
+							while ((strLine = br.readLine()) != null )   {
+								Object[] tokens = strLine.split(" ");
+
+							    if(indx==0){init_alt=Float.parseFloat((String) tokens[4]);}
+							    indx++;
+							    }
+			       fstream.close();
+			       in.close();
+			       br.close();
+
+	              } catch (NullPointerException | IOException eNPE) { 
+	            	  System.out.println("Read raw data, Nullpointerexception");
+					}catch(IllegalArgumentException eIAE) {
+					  System.out.println("Read raw data, illegal argument error");
+					}
+	//----------------------------------------------------------------------------------------------
+	             // System.out.println(init_x+" | "+init_y+" | "+init_z+" | "); 
+	      	    fstream = null;
+	    		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+	               in = new DataInputStream(fstream);
+	               br = new BufferedReader(new InputStreamReader(in));
+	               strLine=null;
+	    	              try {
+	    							while ((strLine = br.readLine()) != null )   {
+	    								Object[] tokens = strLine.split(" ");
+	    							    AnimationSet animationSet = new AnimationSet();
+	    							    animationSet.setTime(Float.parseFloat((String) tokens[indx_time]));
+	    							    float velocity = Float.parseFloat((String) tokens[indx_vel]);
+	    							    float fpa = Float.parseFloat((String) tokens[indx_fpa]);
+	    							    float azi = Float.parseFloat((String) tokens[indx_azi]);
+	    							    float v_v = (float) (velocity * Math.sin(fpa));
+	    							    float v_h = (float) (velocity * Math.cos(fpa));
+	    							    //System.out.println(v_v+" | "+init_alt);
+	    							    animationSet.setV_h(v_h);
+	    							    animationSet.setV_v(v_v);
+	    							    animationSet.setAzimuth(azi);
+	    							    animationSet.setAlt_init(init_alt);
+	    							    animationSets.add(animationSet);	    							  }
+	    			       fstream.close();
+	    			       in.close();
+	    			       br.close();
+
+	    	              } catch (NullPointerException | IOException eNPE) { 
+	    	            	  System.out.println("Read raw data, Nullpointerexception");
+	    					}catch(IllegalArgumentException eIAE) {
+	    					  System.out.println("Read raw data, illegal argument error");
+	    					}
+						return animationSets;
+   }
 
     public static ArrayList<String> Read_SEQU(){
 	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();

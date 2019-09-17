@@ -1279,8 +1279,8 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  (m_propellant_init-(M0-y[6]))/m_propellant_init*100+" "+ 
 	                    		  (Thrust)+" "+
 	                    		  (Thrust/y[6])+" "+
-	                    		  (y[3]*Math.cos(y[4]))+" "+
-	                    		  (y[3]*Math.sin(y[4]))+" "+
+	                    		  (V_NED_ECEF_spherical[0]*Math.cos(V_NED_ECEF_spherical[1]))+" "+
+	                    		  (V_NED_ECEF_spherical[0]*Math.sin(V_NED_ECEF_spherical[1]))+" "+
 	                    		  (acc_deltav)+" "+
 	                    		  active_sequence+" "+
 	                    		  (groundtrack/1000)+" "+

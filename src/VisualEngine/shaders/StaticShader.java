@@ -1,6 +1,7 @@
 package VisualEngine.shaders;
 
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import VisualEngine.toolbox.Maths;
@@ -10,6 +11,9 @@ import VisualEngine.entities.Light;
 import VisualEngine.entities.ThirdPersonCamera;
 
 public class StaticShader extends ShaderProgram{
+	
+    @SuppressWarnings("unused")
+	private static final int MAX_LIGHTS = 4;
 	
 	private static final String VERTEX_FILE   = "src/VisualEngine/shaders/vertexShader.txt";
 	private static final String FRAGMENT_FILE = "src/VisualEngine/shaders/fragmentShader.txt";
@@ -22,6 +26,9 @@ public class StaticShader extends ShaderProgram{
 	private int location_shineDamper;
 	private int location_reflectivity;
 	private int location_skyColour;
+	private int location_numberOfRows;
+    private int location_useFakeLighting;
+    private int location_offset;
 
 	public StaticShader() {
 		super(VERTEX_FILE, FRAGMENT_FILE);
@@ -43,7 +50,10 @@ public class StaticShader extends ShaderProgram{
 		location_lightColour =super.getUniformLocation("lightColour");
 		location_shineDamper =super.getUniformLocation("shineDamper");
 		location_reflectivity =super.getUniformLocation("reflectivity");
+	    location_useFakeLighting = super.getUniformLocation("useFakeLighting");
 		location_skyColour = super.getUniformLocation("skyColour");
+		location_numberOfRows = super.getUniformLocation("numberOfRows");
+		location_offset = super.getUniformLocation("offset");
 	}
 	
 	public void loadSkyColour(float r, float g, float b) {
@@ -73,9 +83,19 @@ public class StaticShader extends ShaderProgram{
 		super.loadMatrix(location_projectionMatrix, projection);
 	}
 	
+    public void loadOffset(float x, float y){
+        super.load2DVector(location_offset, new Vector2f(x,y));
+    }
+	
 	public void loadLight(Light light) {
 		super.loadVector(location_lightPosition, light.getPosition());
 		super.loadVector(location_lightColour, light.getColour());
 	}
+    public void loadNumberOfRows(int numberOfRows){
+        super.loadFloat(location_numberOfRows, numberOfRows);
+    }
+    public void loadFakeLightingVariable(boolean useFake){
+        super.loadBoolean(location_useFakeLighting, useFake);
+    }
 
 }
