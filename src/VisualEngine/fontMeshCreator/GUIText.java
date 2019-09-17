@@ -70,11 +70,14 @@ public class GUIText {
 	public void remove() {
 		TextMaster.removeText(this);
 	}
-
-	public void setTextString(String textString) {
-		TextMaster.removeText(this);
-		this.textString = textString;
+	public void loadText() {
 		TextMaster.loadText(this);
+	}
+
+	public void updateTextString(String textString) {
+		remove();
+		this.textString = textString;
+		loadText();
 	}
 
 	public void setFontSize(float fontSize) {

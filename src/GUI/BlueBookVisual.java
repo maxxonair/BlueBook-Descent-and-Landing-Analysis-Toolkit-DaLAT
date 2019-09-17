@@ -4765,7 +4765,7 @@ fstream.close();
     	 int indx_azi =8;
     	 float init_alt=0;
    	 List<AnimationSet> animationSets= new ArrayList<AnimationSet>();
-	 FileInputStream fstream = null;
+	FileInputStream fstream = null;
     DataInputStream in = new DataInputStream(fstream);
     BufferedReader br = new BufferedReader(new InputStreamReader(in));
     String strLine;

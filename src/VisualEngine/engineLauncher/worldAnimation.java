@@ -48,6 +48,7 @@ public class worldAnimation {
 		DisplayManager.createDisplay();
 	    loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer(loader);
+        //-----------------------------------------------------------------
         TextMaster.init(loader);
         String fontType = "arial";
         FontType font = new FontType(loader.loadFontTexture(fontType), new File("VisualEngine/fonts/"+fontType+".fnt"));
@@ -56,11 +57,11 @@ public class worldAnimation {
         GUIText speed_h = new GUIText("", 1f, font, new Vector2f(0f, 0.03f), 1f, false);
         speed_h.setColour(0.5f, 0.5f, 0.5f);
         GUIText speed_v = new GUIText("", 1f, font, new Vector2f(0f, 0.06f), 1f, false);
-        speed_v.setColour(0.5f, 0.5f, 0.5f);
+        speed_v.setColour(0.8f, 0.5f, 0.5f);
         GUIText pos_x = new GUIText("", 1f, font, new Vector2f(0f, 0.12f), 1f, false);
         pos_x.setColour(0.5f, 0.5f, 0.5f);
         GUIText pos_y = new GUIText("", 1f, font, new Vector2f(0f, 0.15f), 1f, false);
-        pos_y.setColour(0.5f, 0.5f, 0.5f);
+        pos_y.setColour(0.5f, 0.8f, 0.5f);
         GUIText pos_z = new GUIText("", 1f, font, new Vector2f(0f, 0.18f), 1f, false);
         pos_z.setColour(0.5f, 0.5f, 0.5f);
         GUIText inf_time = new GUIText("", 1f, font, new Vector2f(0f, 0.21f), 1f, false);
@@ -127,7 +128,7 @@ public class worldAnimation {
 		    if(j<animationSets.size()) {
 			if(animationTime > animationSets.get(j).getTime() ) {j++;}}
 			for(Spacecraft sc:spaceElements) {
-				//sc.move(terrain);
+				sc.move(terrain);
 					if(animationSets != null && j<(animationSets.size()-1)) {
 						AnimationSet animationSet = animationSets.get(j);
 						sc.animate(terrain, animationSet);
@@ -137,13 +138,13 @@ public class worldAnimation {
 			renderer.render3P(light, camera);
 			guirenderer.render(guis);
 			
-			speed_h.setTextString("Vel H: "+df2.format(spacecraft.getCurrentHorizontalSpeed()));
-			speed_v.setTextString("Vel V: "+df2.format(spacecraft.getCurrentVerticalSpeed()));
-			speed_t.setTextString("Vel T: "+df2.format(spacecraft.getCurrentSpeed()));
-			pos_x.setTextString("Pos X: "+df2.format(spacecraft.getPosition().x));
-			pos_y.setTextString("Pos Y: "+df2.format(spacecraft.getPosition().y));
-			pos_z.setTextString("Pos Z: "+df2.format(spacecraft.getPosition().z));
-			inf_time.setTextString("Time : "+df2.format(animationTime));
+			speed_h.updateTextString("Vel H: "+df2.format(spacecraft.getCurrentHorizontalSpeed()));
+			speed_v.updateTextString("Vel V: "+df2.format(spacecraft.getCurrentVerticalSpeed()));
+			speed_t.updateTextString("Vel T: "+df2.format(spacecraft.getCurrentSpeed()));
+			pos_x.updateTextString("Pos X: "+df2.format(spacecraft.getPosition().x));
+			pos_y.updateTextString("Pos Y: "+df2.format(spacecraft.getPosition().y));
+			pos_z.updateTextString("Pos Z: "+df2.format(spacecraft.getPosition().z));
+			inf_time.updateTextString("Time : "+df2.format(animationTime));
 			//System.out.println(animationTime+" | " + j);
 			TextMaster.render();
 			DisplayManager.updateDisplay();
@@ -155,6 +156,7 @@ public class worldAnimation {
 		pos_y.cleanUp();
 		pos_z.cleanUp();
 		inf_time.cleanUp();
+		TextMaster.cleanUp();
 		
 		guirenderer.cleanUp();
 		renderer.cleanUp();

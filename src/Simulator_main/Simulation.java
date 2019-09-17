@@ -44,7 +44,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    
 	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
 	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
-		public static 		int SixDoF_Option = 1;  
+		public static 		int SixDoF_Option = 2;  
 	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -184,7 +184,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
-			public static double[][] M_Thrust_NED    = {{0},{0},{1}};
+			public static double[][] M_Thrust_NED    = {{0},{0},{5}};
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -767,7 +767,11 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
     	//-------------------------------------------------------------------------------------------------------------------
-    	INITIALIZE_ROTATIONAL_MATRICES(x, t, BankAngle, EulerAngle); 
+	    q_vector[0][0] = x[7];
+	    q_vector[1][0] = x[8];
+	    q_vector[2][0] = x[9];
+	    q_vector[3][0] = x[10];
+	   	INITIALIZE_ROTATIONAL_MATRICES(x, t, BankAngle, EulerAngle); 
     	F_Aero_NED   	= Tool.Multiply_Matrices(C_NED_A, F_Aero_A) ;    	
     	F_Thrust_NED 	= Tool.Multiply_Matrices(C_NED_B, F_Thrust_B) ;
     	F_total_NED   	= Tool.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
@@ -872,27 +876,65 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    		Set_AngularVelocityEquationElements(x);
 	    		//----------------------------------------------------------------------------------------
 	    		// Quaternions:
-
-	    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
-	    				        {-x[13], 0    , x[11], x[12]},
-	    				        { x[12],-x[11], 0    , x[13]},
-	    				        {-x[11],-x[12],-x[13], 0    }}; 
-	    		
-	    	    q_vector[0][0] = x[7];
-	    	    q_vector[1][0] = x[8];
-	    	    q_vector[2][0] = x[9];
-	    	    q_vector[3][0] = x[10];
-	    	    
-	    	    EulerAngle = Quaternions2Euler2(q_vector);
-	    		double[][] q_vector_dot =  Tool.Multiply_Scalar_Matrix(0.5, Tool.Multiply_Matrices(Q, q_vector)); 
-	    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
-	    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
-	    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
-	    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
-
-	    	    EulerAngle = Quaternions2Euler2(q_vector);
+	    		boolean q_simple=true;
+	    		if(q_simple) {
+		    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
+		    				        {-x[13], 0    , x[11], x[12]},
+		    				        { x[12],-x[11], 0    , x[13]},
+		    				        {-x[11],-x[12],-x[13], 0    }}; 
+		    		
+		    	    q_vector[0][0] = x[7];
+		    	    q_vector[1][0] = x[8];
+		    	    q_vector[2][0] = x[9];
+		    	    q_vector[3][0] = x[10];
+		    	    
+		    	    EulerAngle = Quaternions2Euler2(q_vector);
+		    		double[][] q_vector_dot =  Tool.Multiply_Scalar_Matrix(0.5, Tool.Multiply_Matrices(Q, q_vector)); 
+		    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
+		    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
+		    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
+		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
+	
+		    	    EulerAngle = Quaternions2Euler2(q_vector);
+	    		} else {
+		    		double[][] EE = {{  -x[8] , -x[9]  , -x[10] }, 
+		    				         {   x[7] , -x[10] ,  x[9]  },
+					             {   x[10],  x[7]  , -x[8]  },
+					             {  -x[9] ,  x[8]  ,  x[7]  }};
+		    		
+		    		double[][] PQR = {{x[11]},
+		    						  {x[12]},
+		    						  {x[13]}};
+		    		
+		    		double[][] VEL_R = {{ V_NED_ECEF_cartesian[1] },
+		    							{-V_NED_ECEF_cartesian[0]},
+		    							{-V_NED_ECEF_cartesian[1]*Math.tan(r_ECEF_spherical[1])}};
+		    		
+		    		double[][] OMEGA_R = {{omega*Math.cos(r_ECEF_spherical[1])},
+		    							  {0},
+		    							  {-omega*Math.sin(r_ECEF_spherical[1])}};
+		    		
+		    		double[][] Element_10 = Tool.Multiply_Scalar_Matrix(0.5, EE);
+		    		double[][] Element_21 = Tool.Multiply_Scalar_Matrix(1/r_ECEF_spherical[2], Tool.Multiply_Matrices(C_NED_B, VEL_R));
+		    		double[][] Element_22 = Tool.Multiply_Matrices(C_NED_B, OMEGA_R);
+		    		double[][] Element_20 = Tool.Substract_Matrices(Tool.Substract_Matrices(PQR, Element_21), Element_22);
+		    			    		
+		    		double[][] q_vector_dot = Tool.Multiply_Matrices(Element_10, Element_20);
+		    		
+		    	    q_vector[0][0] = x[7];
+		    	    q_vector[1][0] = x[8];
+		    	    q_vector[2][0] = x[9];
+		    	    q_vector[3][0] = x[10];
+		    	    
+		    		EulerAngle = Quaternions2Euler2(q_vector);
+		    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
+		    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
+		    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
+		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
+		    		EulerAngle = Quaternions2Euler2(q_vector);
+	    		}
 	    	    //----------------------------------------------------------------------------------------
-	    	   // System.out.println("model 1 running");
+	    	    // System.out.println("model 1 running");
 	    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
 	    	    double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
 	    	    double Nb = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
@@ -902,7 +944,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
 	    	}
 	    else  if (SixDoF_Option == 2) {
-	System.out.println("6DoF running! Option 2");
+	//System.out.println("6DoF running! Option 2");
 	    		// Quaternions:
 	
 	    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
@@ -940,7 +982,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 				double Ixz = InertiaTensor[0][2];
 				//  double Iyx = InertiaTensor[][];
 				//double Iyz = InertiaTensor[2][1];
-				
+				System.out.println(Ixx+" | "+x[7]);
 	    		// Angular Rates
 			// p dot:
 	    		dxdt[11] = (Izz * Lb + Ixz * Nb - (Ixz * (Iyy - Ixx - Izz) * x[11] + (Ixz*Ixz + Izz * (Izz - Iyy)) 
@@ -1301,10 +1343,10 @@ public static void Launch_Integrator( int INTEGRATOR, int target, double x0, dou
 	                    		  V_NED_ECEF_cartesian[0]+ " " + 
 	                    		  V_NED_ECEF_cartesian[1] + " " + 
 	                    		  V_NED_ECEF_cartesian[2] + " " + 
-	                    		  q_vector[0][0]+" "+
-	                    		  q_vector[1][0]+" "+
-	                    		  q_vector[2][0]+" "+
-	                    		  q_vector[3][0]+" "+
+	                    		  y[7]+" "+
+	                    		  y[8]+" "+
+	                    		  y[9]+" "+
+	                    		  y[10]+" "+
 	                    		  ISP+" "+
 	                    		  F_total_NED[0][0]+" "+
 	                    		  F_total_NED[1][0]+" "+
