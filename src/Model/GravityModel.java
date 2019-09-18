@@ -18,15 +18,15 @@ public class GravityModel  {
     static double       J3    = 0;                        // Second ...
     static double       J4    = 0;                        // Third ...
     
-	public static void SET_Constants(int TARGET){
-	    J2   = DATA_GRAVITY[TARGET][0];    	// Average collision diameter (CO2)         [m]
-	    J3   = DATA_GRAVITY[TARGET][1];    	// Standard gravitational constant (Mars)   [m3/s2]
-	    J4   = DATA_GRAVITY[TARGET][2];    	// Planets average radius                   [m]
+	public static void SET_Constants(double tARGET){
+	    J2   = DATA_GRAVITY[(int) tARGET][0];    	// Average collision diameter (CO2)         [m]
+	    J3   = DATA_GRAVITY[(int) tARGET][1];    	// Standard gravitational constant (Mars)   [m3/s2]
+	    J4   = DATA_GRAVITY[(int) tARGET][2];    	// Planets average radius                   [m]
 }
     
-    public static double get_gr(double r, double lat, double rm, double mu, int TARGET)                          // Gravity acceleration in radial direction [m/s�]
+    public static double get_gr(double r, double lat, double rm, double mu, double tARGET)                          // Gravity acceleration in radial direction [m/s�]
     {
-    	SET_Constants(TARGET);
+    	SET_Constants(tARGET);
     	
     double phi = PI/2-lat;             // Phi                                      [rad]
     double gr;                    // Gravitational acceleration in radial -> _r and north-south -> _n direction
@@ -34,9 +34,9 @@ public class GravityModel  {
     //System.out.println(J2 + "|" + J3 + "|" + J4 + "|" + mu + "|" + rm+ "|" + gr);
     return gr;
     }
-    public static double get_gn(double r, double lat, double rm,double mu, int TARGET)        // Gravity in north-south direction [m/s�]
+    public static double get_gn(double r, double lat, double rm,double mu, double tARGET)        // Gravity in north-south direction [m/s�]
     {
-    	SET_Constants(TARGET);
+    	SET_Constants(tARGET);
     double phi = PI/2-lat;             // Phi                                      [rad]
     double gn;                    // Gravitational acceleration in radial -> _r and north-south -> _n direction
     gn = -3 * mu * sin(phi) * cos(phi) * (rm/r) * (rm/r) * (J2 + 0.5 * J3 * ( 5*cos(phi) *cos(phi) -1) * (rm/r)/cos(phi) + (5/6) * J4 * ( 7 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) ) /(r * r);
@@ -65,15 +65,15 @@ public class GravityModel  {
     	
     	return g; 
     }
-    public static double[][] get_g_ECEF(double r ,double[] r_cartesian , double rm, double mu, int TARGET) {
+    public static double[][] get_g_ECEF(double r ,double[] r_ECEF_cartesian , double rm, double mu, double tARGET) {
     	double[][] GRAVITY_VECTOR = new double[3][1]; 
-    	SET_Constants(TARGET);
+    	SET_Constants(tARGET);
     	//double longitude = r_spherical[0];
     	//double latitude  = r_spherical[1];
 
-    	double x = r_cartesian[0];
-    	double y = r_cartesian[1];
-    	double z = r_cartesian[2];
+    	double x = r_ECEF_cartesian[0];
+    	double y = r_ECEF_cartesian[1];
+    	double z = r_ECEF_cartesian[2];
     	
     	// double phi = PI/2-latitude; 
     	// double g_r = mu * ( 1 - 1.5 * J2 * ( 3 * cos(phi) * cos(phi) - 1) * (rm/r) * (rm/r) - 2 * J3 * cos(phi) * (5 * cos(phi) * cos(phi) - 3) * (rm/r) * (rm/r) * (rm/r) - (5/8) * J4 * (35 * cos(phi) * cos(phi) * cos(phi) * cos(phi) - 30 * cos(phi) * cos(phi) + 3) * (rm/r) * (rm/r) * (rm/r) * (rm/r) )/(r * r);

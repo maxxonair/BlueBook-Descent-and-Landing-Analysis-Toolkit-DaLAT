@@ -17,8 +17,8 @@ import VisualEngine.toolbox.Maths;
 
 public class Terrain {
 	 
-    private static float SIZE = 800;
-    private static float MAX_HEIGHT = 40;
+    private float SIZE = 0;
+    private float MAX_HEIGHT = 40;
     private static final float MAX_PIXEL_COLOUR = 256 * 256 * 256;
  
     private float x;
@@ -30,11 +30,13 @@ public class Terrain {
     private float[][] heights;
  
     public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack,
-            TerrainTexture blendMap, String heightMap) {
-        this.texturePack = texturePack;
+            TerrainTexture blendMap, String heightMap, float Size, float MaxHeight) {
+        this.SIZE =Size;
+        this.MAX_HEIGHT=MaxHeight;
+    		this.texturePack = texturePack;
         this.blendMap = blendMap;
-        this.x = gridX * SIZE;
-        this.z = gridZ * SIZE;
+        this.x = gridX * Size;
+        this.z = gridZ * Size;
         this.model = generateTerrain(loader, heightMap);
     }
  
@@ -58,22 +60,6 @@ public class Terrain {
         return blendMap;
     }
      
-    public static float getSIZE() {
-		return SIZE;
-	}
-
-	public static void setSIZE(float sIZE) {
-		SIZE = sIZE;
-	}
-
-	public static float getMAX_HEIGHT() {
-		return MAX_HEIGHT;
-	}
-
-	public static void setMAX_HEIGHT(float mAX_HEIGHT) {
-		MAX_HEIGHT = mAX_HEIGHT;
-	}
-
 	public float getHeightOfTerrain(float worldX, float worldZ) {
         float terrainX = worldX - this.x;
         float terrainZ = worldZ - this.z;

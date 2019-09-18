@@ -11,8 +11,8 @@ public class Entity {
 	private TexturedModel model;
 	private Vector3f position;
 	protected float rotX;
-	private float rotY;
-	private float rotZ;
+	protected float rotY;
+	protected float rotZ;
 	private float scale;
 	private float mouseSensitivity = 0.1f;
 	private float mouseWheelSensitivity =0.001f;

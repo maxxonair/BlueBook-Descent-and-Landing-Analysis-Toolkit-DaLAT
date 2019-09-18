@@ -124,12 +124,12 @@ public class worldGenerator {
 			renderer.render3P(light, camera);
 			guirenderer.render(guis);
 			
-			speed_h.setTextString("Vel H: "+df2.format(spacecraft.getCurrentHorizontalSpeed()));
-			speed_v.setTextString("Vel V: "+df2.format(spacecraft.getCurrentVerticalSpeed()));
-			speed_t.setTextString("Vel T: "+df2.format(spacecraft.getCurrentSpeed()));
-			pos_x.setTextString("Pos X: "+df2.format(spacecraft.getPosition().x));
-			pos_y.setTextString("Pos Y: "+df2.format(spacecraft.getPosition().y));
-			pos_z.setTextString("Pos Z: "+df2.format(spacecraft.getPosition().z));
+			speed_h.updateTextString("Vel H: "+df2.format(spacecraft.getCurrentHorizontalSpeed()));
+			speed_v.updateTextString("Vel V: "+df2.format(spacecraft.getCurrentVerticalSpeed()));
+			speed_t.updateTextString("Vel T: "+df2.format(spacecraft.getCurrentSpeed()));
+			pos_x.updateTextString("Pos X: "+df2.format(spacecraft.getPosition().x));
+			pos_y.updateTextString("Pos Y: "+df2.format(spacecraft.getPosition().y));
+			pos_z.updateTextString("Pos Z: "+df2.format(spacecraft.getPosition().z));
 			
 			TextMaster.render();
 			DisplayManager.updateDisplay();

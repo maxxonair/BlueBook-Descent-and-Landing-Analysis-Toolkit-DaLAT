@@ -14,6 +14,63 @@ public class AnimationSet {
 	private float azimuth;
 	
 	private float alt_init;
+	
+	private float rotX;
+	private float rotY;
+	private float rotZ;
+	
+	private float AngularRateX;
+	private float AngularRateY;
+	private float AngularRateZ;
+	
+
+	public float getAngularRateX() {
+		return AngularRateX;
+	}
+
+	public void setAngularRateX(float angularRateX) {
+		AngularRateX = angularRateX;
+	}
+
+	public float getAngularRateY() {
+		return AngularRateY;
+	}
+
+	public void setAngularRateY(float angularRateY) {
+		AngularRateY = angularRateY;
+	}
+
+	public float getAngularRateZ() {
+		return AngularRateZ;
+	}
+
+	public void setAngularRateZ(float angularRateZ) {
+		AngularRateZ = angularRateZ;
+	}
+
+	public float getRotX() {
+		return rotX;
+	}
+
+	public void setRotX(float rotX) {
+		this.rotX = rotX;
+	}
+
+	public float getRotY() {
+		return rotY;
+	}
+
+	public void setRotY(float rotY) {
+		this.rotY = rotY;
+	}
+
+	public float getRotZ() {
+		return rotZ;
+	}
+
+	public void setRotZ(float rotZ) {
+		this.rotZ = rotZ;
+	}
 
 	public float getAlt_init() {
 		return alt_init;

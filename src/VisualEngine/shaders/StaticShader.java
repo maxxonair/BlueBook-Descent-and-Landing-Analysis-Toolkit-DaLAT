@@ -13,7 +13,7 @@ import VisualEngine.entities.ThirdPersonCamera;
 public class StaticShader extends ShaderProgram{
 	
     @SuppressWarnings("unused")
-	private static final int MAX_LIGHTS = 4;
+	private static final int MAX_LIGHTS = 1;
 	
 	private static final String VERTEX_FILE   = "src/VisualEngine/shaders/vertexShader.txt";
 	private static final String FRAGMENT_FILE = "src/VisualEngine/shaders/fragmentShader.txt";

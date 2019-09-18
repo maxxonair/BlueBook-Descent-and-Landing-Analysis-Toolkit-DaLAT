@@ -27,6 +27,8 @@ public class Loader {
 	private List<Integer> vaos = new ArrayList<Integer>();
 	private List<Integer> vbos = new ArrayList<Integer>();
 	private List<Integer> textures = new ArrayList<Integer>();
+	private List<Integer> fontVaos = new ArrayList<Integer>();
+	private List<Integer> fontVbos = new ArrayList<Integer>();
 	
 	public RawModel loadToVAO(float[] positions,float[] textureCoords, float[] normals, int[] indices){
 		int vaoID = createVAO();
@@ -40,9 +42,10 @@ public class Loader {
 	
 	public int loadToVAO(float[] positions,float[] textureCoords){
 		int vaoID = createVAO();
-		storeDataInAttributeList(0,2,positions);
-		storeDataInAttributeList(1,2,textureCoords);
+		storeFontDataInAttributeList(0,2,positions);
+		storeFontDataInAttributeList(1,2,textureCoords);
 		unbindVAO();
+		fontVaos.add(vaoID);
 		return vaoID;
 	}
 	
@@ -161,6 +164,12 @@ public class Loader {
 		}
 	}
 	
+	public void cleanUpFont() {
+		for(int fontVbo:fontVbos) {
+			GL15.glDeleteBuffers(fontVbo);
+		}
+	}
+	
 	private int createVAO(){
 		int vaoID = GL30.glGenVertexArrays();
 		vaos.add(vaoID);
@@ -171,6 +180,16 @@ public class Loader {
 	private void storeDataInAttributeList(int attributeNumber, int coordinateSize,float[] data){
 		int vboID = GL15.glGenBuffers();
 		vbos.add(vboID);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
+		FloatBuffer buffer = storeDataInFloatBuffer(data);
+		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
+		GL20.glVertexAttribPointer(attributeNumber,coordinateSize,GL11.GL_FLOAT,false,0,0);
+		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, 0);
+	}
+	
+	private void storeFontDataInAttributeList(int attributeNumber, int coordinateSize,float[] data){
+		int vboID = GL15.glGenBuffers();
+		fontVbos.add(vboID);
 		GL15.glBindBuffer(GL15.GL_ARRAY_BUFFER, vboID);
 		FloatBuffer buffer = storeDataInFloatBuffer(data);
 		GL15.glBufferData(GL15.GL_ARRAY_BUFFER, buffer, GL15.GL_STATIC_DRAW);
@@ -204,6 +223,4 @@ public class Loader {
 		return buffer;
 	}
 	
-	
-
 }

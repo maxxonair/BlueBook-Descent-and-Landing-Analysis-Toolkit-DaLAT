@@ -11,11 +11,11 @@ import java.util.List;
 
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.engineLauncher.worldAnimation;
-import VisualEngine.engineLauncher.worldGenerator;
+//import VisualEngine.engineLauncher.worldGenerator;
 
 public class MainGameLoop {
 	
-	public static String RES_File    			= "/animationTestFile.txt"  ; 
+	public static String RES_File    			= "/animationTestFile2.txt"  ; 
 	
 	public static int indx_time=0;
 	public static int indx_x=78;
@@ -87,11 +87,15 @@ public class MainGameLoop {
 	    							    float azi = Float.parseFloat((String) tokens[indx_azi]);
 	    							    float v_v = (float) (velocity * Math.sin(fpa));
 	    							    float v_h = (float) (velocity * Math.cos(fpa));
+	    							    float rotY = Float.parseFloat((String) tokens[89]);
+	    							    
 	    							    //System.out.println(v_v+" | "+init_alt);
 	    							    animationSet.setV_h(v_h);
 	    							    animationSet.setV_v(v_v);
 	    							    animationSet.setAzimuth(azi);
 	    							    animationSet.setAlt_init(init_alt);
+	    							    animationSet.setRotY(rotY);
+	    							    animationSet.setAngularRateY(Float.parseFloat((String) tokens[83]));
 	    							    animationSets.add(animationSet);	    							  }
 	    			       fstream.close();
 	    			       in.close();

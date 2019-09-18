@@ -13,7 +13,7 @@ import VisualEngine.shaders.SkyboxShader;
 
 public class SkyboxRenderer {
 	
-	private static final float SIZE = 800f;
+	private static final float SIZE = 1500f;
 	
 	private static final float[] VERTICES = {        
 	    -SIZE,  SIZE, -SIZE,

@@ -14,8 +14,8 @@ import org.lwjgl.opengl.PixelFormat;
 
 public class DisplayManager {
 	
-	private static final int WIDTH = 1000;
-	private static final int HEIGHT = 700;
+	private static final int WIDTH = 1300;
+	private static final int HEIGHT = 750;
 	private static final int FPS_CAP = 120;
 	
 	private static long lastFrameTime; 
@@ -29,7 +29,7 @@ public class DisplayManager {
 		
 		try {
 			 Display.setDisplayMode(new DisplayMode(WIDTH,HEIGHT));
-			Display.create(new PixelFormat(), attribs);
+			 Display.create(new PixelFormat(), attribs);
 			 Display.setTitle("3D Visual Environment Mark1");
 			// Display.setFullscreen(true); // Be careful, no escape ... 
 			 Display.setResizable(true);

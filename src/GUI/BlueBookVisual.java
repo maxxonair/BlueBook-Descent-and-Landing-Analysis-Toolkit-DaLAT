@@ -126,7 +126,7 @@ import Model.atm_dataset;
 import Sequence.SequenceElement;
 import Simulator_main.Launch_Simulation;
 import Toolbox.TextAreaOutputStream;
-import Toolbox.Tool;
+import Toolbox.Mathbox;
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.engineLauncher.worldAnimation;
 import VisualEngine.engineLauncher.worldGenerator;
@@ -6958,7 +6958,7 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 				data_y[i] = Page03_storage.get(i).get_altitude();  // time 
 				data_x[i] = Page03_storage.get(i).get_density();   // velocity
 			}
-		time = Tool.LinearInterpolate( data_x , data_y , velocity);
+		time = Mathbox.LinearInterpolate( data_x , data_y , velocity);
 //System.out.println(velocity + " | " + time);
 		return time;
 	}

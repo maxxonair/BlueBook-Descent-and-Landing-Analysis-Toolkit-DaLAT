@@ -45,6 +45,7 @@ public class TextMaster {
             //texts.remove(texts.get(text.getFont()));
             texts.remove(text.getFont());
         }
+        loader.cleanUpFont();
     }
      
     public static void cleanUp(){

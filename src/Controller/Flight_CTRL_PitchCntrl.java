@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import Toolbox.Tool;
+import Toolbox.Mathbox;
 
 public class Flight_CTRL_PitchCntrl{
         public static double PI = 3.141592653589793238462643383279502884197169399375;
@@ -247,8 +247,8 @@ public class Flight_CTRL_PitchCntrl{
 		//-------------------------------------------------------------------------------------------------
 		double fpa_ideal_rad = 0 ;
 		double t_split = ctr_end_x; 
-		double y2 = Tool.LinearInterpolate( data_x , data_y2 , alt_is_m);
-		double y1 = Tool.LinearInterpolate( data_x , data_y1 , alt_is_m);
+		double y2 = Mathbox.LinearInterpolate( data_x , data_y2 , alt_is_m);
+		double y1 = Mathbox.LinearInterpolate( data_x , data_y1 , alt_is_m);
 		//System.out.println(""+global_time+" | "+ (y1-y2)*rad2deg);
 		if(engine_lost&& t_engine_lost<t_split) {  fpa_ideal_rad = y2;}
 		else 			{  fpa_ideal_rad = y1;}

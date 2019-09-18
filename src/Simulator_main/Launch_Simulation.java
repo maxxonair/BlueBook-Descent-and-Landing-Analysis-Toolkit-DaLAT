@@ -228,12 +228,12 @@ public class Launch_Simulation implements ActionListener{
     
     public static double[][] READ_INITIALATTITUDE() throws NumberFormatException, IOException {
 	double[][] QVector   = {{   0 },
-			    					  {   0 },
-			    					  {   0 },
-			    					  {   0 }};  // Inertia Tensor []
+			    			    {   0 },
+			    			    {   0 },
+			    				{   0 }};  // Inertia Tensor []
    	 String dir = System.getProperty("user.dir");
    	InitialAttitude_File  = dir + InitialAttitude_File;
-		BufferedReader br = new BufferedReader(new FileReader(INERTIA_File));
+		BufferedReader br = new BufferedReader(new FileReader(InitialAttitude_File));
 	       String strLine;
 	       int j=0;
 	       try {
@@ -244,6 +244,9 @@ public class Launch_Simulation implements ActionListener{
 	       }
 	       br.close();
 	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+	       for(int i=0;i<QVector.length;i++) {
+	    	   //System.out.println(QVector[i][0]);
+	       }
 	       return QVector;
     } 
 
