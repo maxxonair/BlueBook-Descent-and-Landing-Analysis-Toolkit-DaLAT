@@ -5,168 +5,122 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.lwjgl.input.Keyboard;
+import VisualEngine.models.TexturedModel;
+
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.util.vector.Matrix4f;
 
+import VisualEngine.shaders.StaticShader;
+import VisualEngine.shaders.TerrainShader;
+import VisualEngine.terrains.Terrain;
 import VisualEngine.entities.Camera;
 import VisualEngine.entities.Entity;
 import VisualEngine.entities.Light;
 import VisualEngine.entities.ThirdPersonCamera;
-import VisualEngine.models.TexturedModel;
-import VisualEngine.shaders.StaticShader;
-import VisualEngine.shaders.TerrainShader;
-import VisualEngine.terrains.Terrain;
- 
- 
+
 public class MasterRenderer {
-     
-    private static  float FOV = 70;
-    private static  float NEAR_PLANE = 0.1f;
-    private static  float FAR_PLANE = 1000;
-    
-	private static float env_brightness_red = 0;
-	private static float env_brightness_green = 0;
-	private static float env_brightness_blue = 0;
 	
-     
-    private Matrix4f projectionMatrix;
-     
-    private StaticShader shader = new StaticShader();
-    private EntityRenderer renderer;
-     
-    private TerrainRenderer terrainRenderer;
-    private TerrainShader terrainShader = new TerrainShader();
-     
-     
-    private Map<TexturedModel,List<Entity>> entities = new HashMap<TexturedModel,List<Entity>>();
-    private List<Terrain> terrains = new ArrayList<Terrain>();
-    
-    private SkyboxRenderer skyboxRenderer; 
-     
-    public MasterRenderer(Loader loader){
-     	enableCulling();
-        createProjectionMatrix();
-        renderer = new EntityRenderer(shader,projectionMatrix);
-        terrainRenderer = new TerrainRenderer(terrainShader,projectionMatrix);
-        skyboxRenderer = new SkyboxRenderer(loader, projectionMatrix);
-    }
-     
-    public void render(Light sun,Camera camera){
-        prepare();
-        shader.start();
-        shader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
-        shader.loadLight(sun);
-        shader.loadViewMatrix(camera);
-        renderer.render(entities);
-        shader.stop();
-        terrainShader.start();
-        terrainShader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
-        terrainShader.loadLight(sun);
-        terrainShader.loadViewMatrix(camera);
-        terrainRenderer.render(terrains);
-        terrainShader.stop();
-        skyboxRenderer.render(camera);
-        terrains.clear();
-        entities.clear();
-    }
-    
-    public void render3P(Light sun,ThirdPersonCamera camera){
-        prepare();
-        shader.start();
-        shader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
-        shader.loadLight(sun);
-        shader.loadViewMatrix3P(camera);
-        renderer.render(entities);
-        shader.stop();
-        terrainShader.start();
-        terrainShader.loadSkyColour(env_brightness_red, env_brightness_green, env_brightness_blue);
-        terrainShader.loadLight(sun);
-        terrainShader.loadViewMatrix3P(camera);
-        terrainRenderer.render(terrains);
-        terrainShader.stop();
-        skyboxRenderer.render(camera);
-        terrains.clear();
-        entities.clear();
-    }
-     
-    public void processTerrain(Terrain terrain){
-        terrains.add(terrain);
-    }
-     
-    public void processEntity(Entity entity){
-        TexturedModel entityModel = entity.getModel();
-        List<Entity> batch = entities.get(entityModel);
-        if(batch!=null){
-            batch.add(entity);
-        }else{
-            List<Entity> newBatch = new ArrayList<Entity>();
-            newBatch.add(entity);
-            entities.put(entityModel, newBatch);        
-        }
-    }
-     
-    public void cleanUp(){
-        shader.cleanUp();
-        terrainShader.cleanUp();
-    }
-     
-    public void prepare() {
-        GL11.glEnable(GL11.GL_DEPTH_TEST);
-        GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
-        GL11.glClearColor(env_brightness_red, env_brightness_green, env_brightness_blue, 1);
-    }
-     
-    private void createProjectionMatrix() {
-        float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
-        float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
-        float x_scale = y_scale / aspectRatio;
-        float frustum_length = FAR_PLANE - NEAR_PLANE;
- 
-        projectionMatrix = new Matrix4f();
-        projectionMatrix.m00 = x_scale;
-        projectionMatrix.m11 = y_scale;
-        projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
-        projectionMatrix.m23 = -1;
-        projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
-        projectionMatrix.m33 = 0;
-    }
-    public static void enableCulling() {
-        GL11.glEnable(GL11.GL_CULL_FACE);
-        GL11.glCullFace(GL11.GL_BACK);
-    }
- 
-    public static void disableCulling() {
-        GL11.glDisable(GL11.GL_CULL_FACE);
-    }
-    //-------------------------------------------------------------------------------------
-	public void adjustBrightness() {
-		float sensitivity =0.01f;
-		if(Keyboard.isKeyDown(Keyboard.KEY_U)){
-			env_brightness_red+= sensitivity;
-			env_brightness_green+= sensitivity;
-			env_brightness_blue+= sensitivity;
-			if(env_brightness_red>1){
-				env_brightness_red=1;
-				env_brightness_green=1;
-				env_brightness_blue=1;
-			}
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_J)){
-			env_brightness_red-= sensitivity;
-			env_brightness_green-= sensitivity;
-			env_brightness_blue-= sensitivity;
-			if(env_brightness_red<0){
-				env_brightness_red=0;
-				env_brightness_green=0;
-				env_brightness_blue=0;
-			}
+	private static float FOV = 70;
+	private static float NEAR_PLANE = 0.1f;
+	private static float FAR_PLANE = 1000;
+	
+	private Matrix4f projectionMatrix;
+	
+	private StaticShader shader = new StaticShader();
+	private EntityRenderer renderer;
+	
+	private TerrainRenderer terrainRenderer;
+	private TerrainShader terrainShader = new TerrainShader();
+	
+	private static float envR = 0;
+	private static float envG = 0;
+	private static float envB = 0; 
+	
+	
+	private Map<TexturedModel,List<Entity>> entities = new HashMap<TexturedModel,List<Entity>>();
+	private List<Terrain> terrains = new ArrayList<Terrain>();
+	
+	public MasterRenderer(Loader loader){
+		createProjectionMatrix();
+		renderer = new EntityRenderer(shader,projectionMatrix);
+		terrainRenderer = new TerrainRenderer(terrainShader,projectionMatrix);
+	}
+	
+	public void render(Light sun,Camera camera){
+		prepare();
+		shader.start();
+		shader.loadLight(sun);
+		shader.loadViewMatrix(camera);
+		renderer.render(entities);
+		shader.stop();
+		terrainShader.start();
+		terrainShader.loadLight(sun);
+		terrainShader.loadViewMatrix(camera);
+		terrainRenderer.render(terrains);
+		terrainShader.stop();
+		terrains.clear();
+		entities.clear();
+	}
+	
+	public void render(Light sun,ThirdPersonCamera camera){
+		prepare();
+		shader.start();
+		shader.loadLight(sun);
+		shader.loadViewMatrix(camera);
+		renderer.render(entities);
+		shader.stop();
+		terrainShader.start();
+		terrainShader.loadLight(sun);
+		terrainShader.loadViewMatrix(camera);
+		terrainRenderer.render(terrains);
+		terrainShader.stop();
+		terrains.clear();
+		entities.clear();
+	}
+	
+	public void processTerrain(Terrain terrain){
+		terrains.add(terrain);
+	}
+	
+	public void processEntity(Entity entity){
+		TexturedModel entityModel = entity.getModel();
+		List<Entity> batch = entities.get(entityModel);
+		if(batch!=null){
+			batch.add(entity);
+		}else{
+			List<Entity> newBatch = new ArrayList<Entity>();
+			newBatch.add(entity);
+			entities.put(entityModel, newBatch);		
 		}
 	}
-	public void adjustTerrainVisibility(float density, float gradient) {
-		terrainShader.loadVisibility(density, gradient);
+	
+	public void cleanUp(){
+		shader.cleanUp();
+		terrainShader.cleanUp();
 	}
+	
+	public void prepare() {
+		GL11.glEnable(GL11.GL_DEPTH_TEST);
+		GL11.glClear(GL11.GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClearColor(envR, envG, envB, 1);
+	}
+	
+	private void createProjectionMatrix() {
+		float aspectRatio = (float) Display.getWidth() / (float) Display.getHeight();
+		float y_scale = (float) ((1f / Math.tan(Math.toRadians(FOV / 2f))) * aspectRatio);
+		float x_scale = y_scale / aspectRatio;
+		float frustum_length = FAR_PLANE - NEAR_PLANE;
+
+		projectionMatrix = new Matrix4f();
+		projectionMatrix.m00 = x_scale;
+		projectionMatrix.m11 = y_scale;
+		projectionMatrix.m22 = -((FAR_PLANE + NEAR_PLANE) / frustum_length);
+		projectionMatrix.m23 = -1;
+		projectionMatrix.m32 = -((2 * NEAR_PLANE * FAR_PLANE) / frustum_length);
+		projectionMatrix.m33 = 0;
+	}
+
 	public static float getFov() {
 		return FOV;
 	}
@@ -177,29 +131,6 @@ public class MasterRenderer {
 
 	public static float getFarPlane() {
 		return FAR_PLANE;
-	}
-	public static float getEnv_brightness_red() {
-		return env_brightness_red;
-	}
-	
-	public static float getEnv_brightness_green() {
-		return env_brightness_green;
-	}
-	
-	public static float getEnv_brightness_blue() {
-		return env_brightness_blue;
-	}
-
-	public static void setEnv_brightness_red(float env_brightness_red) {
-		MasterRenderer.env_brightness_red = env_brightness_red;
-	}
-
-	public static void setEnv_brightness_green(float env_brightness_green) {
-		MasterRenderer.env_brightness_green = env_brightness_green;
-	}
-
-	public static void setEnv_brightness_blue(float env_brightness_blue) {
-		MasterRenderer.env_brightness_blue = env_brightness_blue;
 	}
 
 	public static void setFOV(float fOV) {
@@ -213,5 +144,24 @@ public class MasterRenderer {
 	public static void setFAR_PLANE(float fAR_PLANE) {
 		FAR_PLANE = fAR_PLANE;
 	}
- 
+	
+	public static void setEnvColor(float R, float G, float B) {
+		envR = R;
+		envG = G;
+		envB = B;
+	}
+
+	public static float getEnvR() {
+		return envR;
+	}
+
+	public static float getEnvG() {
+		return envG;
+	}
+
+	public static float getEnvB() {
+		return envB;
+	}
+	
+	
 }

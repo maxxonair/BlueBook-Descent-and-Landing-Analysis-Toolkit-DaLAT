@@ -74,9 +74,7 @@ public class worldGenerator {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
 
-		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightmap");
-		Terrain.setSIZE(800f);
-		Terrain.setMAX_HEIGHT(40f);
+		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightmap",800f,40f);
 		//----------------------------------------------------------------
 		// 					Spacecraft Setting
 		//----------------------------------------------------------------
@@ -115,13 +113,13 @@ public class worldGenerator {
 	//-------------------------------------------------------------------------------------------------------------
 		while(!Display.isCloseRequested()){
 			camera.move();	// Do not touch!!!
-			renderer.adjustBrightness();
+			//renderer.adjustBrightness();
 			renderer.processTerrain(terrain);
 			for(Spacecraft sc:spaceElements) {
 				sc.move(terrain);
 				renderer.processEntity(sc);
 			}
-			renderer.render3P(light, camera);
+			//renderer.render3P(light, camera);
 			guirenderer.render(guis);
 			
 			speed_h.updateTextString("Vel H: "+df2.format(spacecraft.getCurrentHorizontalSpeed()));

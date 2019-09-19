@@ -32,7 +32,8 @@ import VisualEngine.textures.TerrainTexturePack;
 
 public class worldAnimation {
 	
-	static final boolean is_OverlayDisplay=true;
+	static final boolean isOverlayDisplay=true;
+	static final boolean isAnimate=false;
 	
     static List<RawModel> rawmodels = new ArrayList<RawModel>();
     static List<TexturedModel> texturedmodels = new ArrayList<TexturedModel>();
@@ -41,8 +42,8 @@ public class worldAnimation {
 	static Loader loader = new Loader();
 	static int movableEntity =0;
 	
-	static float shine_value = 2.1f;
-	static float reflectivity_value =0.1f;
+	static float shine_value = 1;
+	static float reflectivity_value =0;
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
@@ -50,6 +51,7 @@ public class worldAnimation {
 		DisplayManager.createDisplay();
 	    loader = new Loader();
 		MasterRenderer renderer = new MasterRenderer(loader);
+		MasterRenderer.setEnvColor(0, 0, 0);
         //-----------------------------------------------------------------
         TextMaster.init(loader);
         String fontType = "arial";
@@ -75,13 +77,13 @@ public class worldAnimation {
 		//----------------------------------------------------------------
 		// 					Terrain Setting
 		//----------------------------------------------------------------
-		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));		
-		TerrainTexture rTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));
+		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("grass"));		
+		TerrainTexture rTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));  
 		TerrainTexture gTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));
 		TerrainTexture bTexture = new TerrainTexture(loader.loadTerrainTexture("moonSurface3"));		
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
-		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightmap", 1400f, 30f);
+		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightmap2", 1400f, 30f);
 		//----------------------------------------------------------------
 		// 					Spacecraft Setting
 		//----------------------------------------------------------------
@@ -97,9 +99,9 @@ public class worldAnimation {
 		Spacecraft spacecraft = new Spacecraft(staticModel, startPostion,0,45,0,1);	
 		spaceElements.add(spacecraft);
 		//----------------------------------------------------------------
-		// 					Light Setting
+		// 					  Light Setting
 		//----------------------------------------------------------------
-		Vector3f lightPostion = new Vector3f(400,300,0);
+		Vector3f lightPostion = new Vector3f(0,200,0);
 		Light light = new Light(lightPostion, new Vector3f(1,1,1));		
 		//----------------------------------------------------------------
 		//					Camera Settings
@@ -107,7 +109,7 @@ public class worldAnimation {
 		//Camera camera = new Camera(new Vector3f(400,15,400),180,15,0);
 		ThirdPersonCamera camera = new ThirdPersonCamera(spacecraft);
 		//----------------------------------------------------------------
-		//					GUI Settings
+		//					Logo Settings
 		//----------------------------------------------------------------
 		List<GuiTexture> guis = new ArrayList<GuiTexture>();
 		GuiTexture gui = new GuiTexture(loader.loadTerrainTexture("space"), 
@@ -123,23 +125,24 @@ public class worldAnimation {
 		while(!Display.isCloseRequested()){
 			camera.move();	// Do not touch!!!
 			
-			renderer.adjustBrightness();
+			//renderer.adjustBrightness();
 			renderer.processTerrain(terrain);
 		    animationTime += DisplayManager.getFrameTimeSeconds();
 		    //System.out.println(animationSets.get(j).getTime());
 		    if(j<animationSets.size()) {
 			if(animationTime > animationSets.get(j).getTime() ) {j++;}}
-			for(Spacecraft sc:spaceElements) {
-					if(animationSets != null && j<(animationSets.size()-1)) {
+		    if(isAnimate) {
+					if(animationSets != null && j<(animationSets.size()-1) && isAnimate) {
 						AnimationSet animationSet = animationSets.get(j);
-						//sc.animate(terrain, animationSet);
+						spacecraft.animate(terrain, animationSet);
 					}
-					sc.fly(terrain);
-				renderer.processEntity(sc);
+			} else {
+					spacecraft.fly(terrain);
 			}
-			renderer.render3P(light, camera);
+			renderer.processEntity(spacecraft);
+			renderer.render(light, camera);
 			guirenderer.render(guis);
-			if(is_OverlayDisplay) {
+			if(isOverlayDisplay) {
 			speed_h.updateTextString("Vel H: "+df2.format(spacecraft.getCurrentHorizontalSpeed()));
 			speed_v.updateTextString("Vel V: "+df2.format(spacecraft.getCurrentVerticalSpeed()));
 			if(spacecraft.getCurrentVerticalSpeed()<-10) {
@@ -160,11 +163,11 @@ public class worldAnimation {
 			if(animationSets != null && j<(animationSets.size()-1)) {
 			rot_Y.updateTextString("Roll :"+df2.format(spacecraft.getRotZ()));
 			}
-			PropMass.updateTextString("Propellant: "+df2.format(spacecraft.getSCPropMass()));
+			PropMass.updateTextString("Propellant: "+df2.format(Spacecraft.getSCPropMass()));
 			//System.out.println(animationTime+" | " + j);
 			TextMaster.render();
 			}
-			DisplayManager.updateDisplay();
+			DisplayManager.updateDisplay(); 
 		}
 		speed_h.cleanUp();
 		speed_v.cleanUp();

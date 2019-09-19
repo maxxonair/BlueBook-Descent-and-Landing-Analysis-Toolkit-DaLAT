@@ -34,8 +34,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    public static boolean stophandler_ON     = true; 
 	    
 	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
-	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
-		public static 		int SixDoF_Option = 2;  
+	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
 	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -163,7 +162,8 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
-			public static double[][] M_Thrust_NED    = {{0},{0},{5}};
+			public static double[][] M_Thrust_NED    = {{0},{0},{0}};
+			public static double[][] M_Thrust_B      = {{0},{0},{0}};
 			
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
@@ -520,16 +520,18 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
 	   	
 	   	if(IsThrust) {
-	   		Thrust = Thrust_max;
+	   		Thrust = 0;//Thrust_max;
 	   		System.out.println("THRUST");
-	   		F_Aero_A[0][0] -= Thrust;
+	   		//F_Aero_A[0][0] -= Thrust;
 	   	} else {
 	   		Thrust=0;
 	   	}
 	   	
-	   	F_Thrust_B[0][0] =  Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
-	   	F_Thrust_B[1][0] =  Thrust * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
-	   	F_Thrust_B[2][0] =  Thrust * Math.sin(TVC_alpha);   
+	   	F_Thrust_B[0][0] =  -Thrust;//Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
+	   	F_Thrust_B[1][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
+	   	F_Thrust_B[2][0] =  0;//Thrust * Math.sin(TVC_alpha);   
+	   	
+	   //	M_Thrust_NED = Mathbox.Multiply_Matrices(C_NED_B, M_Thrust_B);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
     	//-------------------------------------------------------------------------------------------------------------------
@@ -628,7 +630,6 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
 	    if(is_6DOF) {
-	    	if (SixDoF_Option ==1) {
 	    		//-------------------------------------------------------------------------------------------------------------------------------------------
 	    		// EoM for Angular Rate model from: 
 	    		// Duke, E.L. Antoniewicz, R.F.  and Krambeer "Derivation and definition of a linear aircraft model", NASA Reference Publication 1207, 1988
@@ -639,8 +640,6 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    		Set_AngularVelocityEquationElements(x);
 	    		//----------------------------------------------------------------------------------------
 	    		// Quaternions:
-	    		boolean q_simple=true;
-	    		if(q_simple) {
 		    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
 		    				        {-x[13], 0    , x[11], x[12]},
 		    				        { x[12],-x[11], 0    , x[13]},
@@ -659,43 +658,6 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
 	
 		    	    EulerAngle = Quaternions2Euler2(q_vector);
-	    		} else {
-		    		double[][] EE = {{  -x[8] , -x[9]  , -x[10] }, 
-		    				         {   x[7] , -x[10] ,  x[9]  },
-					             {   x[10],  x[7]  , -x[8]  },
-					             {  -x[9] ,  x[8]  ,  x[7]  }};
-		    		
-		    		double[][] PQR = {{x[11]},
-		    						  {x[12]},
-		    						  {x[13]}};
-		    		
-		    		double[][] VEL_R = {{ V_NED_ECEF_cartesian[1] },
-		    							{-V_NED_ECEF_cartesian[0]},
-		    							{-V_NED_ECEF_cartesian[1]*Math.tan(r_ECEF_spherical[1])}};
-		    		
-		    		double[][] OMEGA_R = {{omega*Math.cos(r_ECEF_spherical[1])},
-		    							  {0},
-		    							  {-omega*Math.sin(r_ECEF_spherical[1])}};
-		    		
-		    		double[][] Element_10 = Mathbox.Multiply_Scalar_Matrix(0.5, EE);
-		    		double[][] Element_21 = Mathbox.Multiply_Scalar_Matrix(1/r_ECEF_spherical[2], Mathbox.Multiply_Matrices(C_NED_B, VEL_R));
-		    		double[][] Element_22 = Mathbox.Multiply_Matrices(C_NED_B, OMEGA_R);
-		    		double[][] Element_20 = Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), Element_22);
-		    			    		
-		    		double[][] q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
-		    		
-		    	    q_vector[0][0] = x[7];
-		    	    q_vector[1][0] = x[8];
-		    	    q_vector[2][0] = x[9];
-		    	    q_vector[3][0] = x[10];
-		    	    
-		    		EulerAngle = Quaternions2Euler2(q_vector);
-		    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
-		    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
-		    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
-		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
-		    		EulerAngle = Quaternions2Euler2(q_vector);
-	    		}
 	    	    //----------------------------------------------------------------------------------------
 	    	    // System.out.println("model 1 running");
 	    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
@@ -705,21 +667,21 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
 	    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
 	    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
-	    	}
+	    	    
 AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
 AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
 AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;	
 AngularRate[0][0] = x[11];
 AngularRate[1][0] = x[12];
 AngularRate[2][0] = x[13];
-AngleOfAttack = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
+//AngleOfAttack = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 	    }
 }
     
 public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, 
 		double x3, double x4, double x5, double x6, double t, double dt_write, 
 		double reference_elevation, double SurfaceArea_INP, double[][] InertiaTensorMatrix, 
-		double[][] Init_Quarternions , double thrust, boolean isThrust, double PropMass){
+		double[][] Init_Quarternions , double[][] InitPQR, double thrust, boolean isThrust, double PropMass, double[][] ThrustMomentum){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -737,10 +699,14 @@ public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, d
 //   - Initialise ground track computation
 //----------------------------------------------------------------------------------------------	
 	
+	//INITIALISE rot matrices
+	M_Thrust_B = ThrustMomentum;
 	
+	q_vector    = Init_Quarternions;
+	AngularRate = InitPQR;
 	
-	spherical=true;
-	is_6DOF=false;
+	spherical=false;
+	is_6DOF=true;
 	
 	IsThrust = isThrust;
 	
@@ -801,7 +767,7 @@ Gravity.setTARGET(target);
 	  		// Position 
 	  		        y[0] = x0;
 	  		        y[1] = x1;
-	  		        y[2] = x2;
+	  		        y[2] = x2+rm;
 	  		        
 	  		// Velocity
 			  		        if(spherical) {
@@ -885,6 +851,13 @@ Gravity.setTARGET(target);
 	                	realTimeResultSet.setFpa((float) V_NED_ECEF_spherical[1]);
 	                	realTimeResultSet.setVelocity((float) V_NED_ECEF_spherical[0]);
 	                	realTimeResultSet.setSCMass((float) y[6]);
+	                	realTimeResultSet.setAngulRateX((float) AngularRate[0][0]);
+	                	realTimeResultSet.setAngulRateY((float) AngularRate[1][0]);
+	                	realTimeResultSet.setAngulRateZ((float) AngularRate[2][0]);
+	                	realTimeResultSet.setEulerX((float) EulerAngle[0][0]);
+	                	realTimeResultSet.setEulerY((float) EulerAngle[1][0]);
+	                	realTimeResultSet.setEulerZ((float) EulerAngle[2][0]);
+	                	realTimeResultSet.setQuarternions(q_vector);
 	                }
 	            }
 	            

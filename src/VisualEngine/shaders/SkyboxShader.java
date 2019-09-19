@@ -29,8 +29,8 @@ public class SkyboxShader extends ShaderProgram{
 		matrix.m32  = 0;
 		super.loadMatrix(location_viewMatrix, matrix);
 	}
-	public void loadViewMatrix3P(ThirdPersonCamera camera){
-		Matrix4f matrix = Maths.createViewMatrix3P(camera);
+	public void loadViewMatrix(ThirdPersonCamera camera){
+		Matrix4f matrix = Maths.createViewMatrix(camera);
 		super.loadMatrix(location_viewMatrix, matrix);
 	}
 	

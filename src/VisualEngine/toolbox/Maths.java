@@ -41,7 +41,7 @@ public class Maths {
 		return viewMatrix;
 	}
 	
-	public static Matrix4f createViewMatrix3P(ThirdPersonCamera camera) {
+	public static Matrix4f createViewMatrix(ThirdPersonCamera camera) {
 		Matrix4f viewMatrix = new Matrix4f();
 		viewMatrix.setIdentity();
 		Matrix4f.rotate((float) Math.toRadians(camera.getPitch()), new Vector3f(1, 0, 0), viewMatrix,

@@ -82,7 +82,7 @@ public class SkyboxRenderer {
 	
 	public void render(ThirdPersonCamera camera) {
 		shader.start();
-		shader.loadViewMatrix3P(camera);
+		shader.loadViewMatrix(camera);
 		GL30.glBindVertexArray(cube.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);

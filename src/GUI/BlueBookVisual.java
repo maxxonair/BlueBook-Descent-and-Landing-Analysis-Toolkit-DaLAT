@@ -125,6 +125,9 @@ import javax.swing.*;
 import Model.atm_dataset;
 import Sequence.SequenceElement;
 import Simulator_main.Launch_Simulation;
+import GUI.PostProcessing.CreateCustomChart;
+import GUI.RealTimeSimulation.*;
+import GUI.Settings.Settings;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Mathbox;
 import VisualEngine.animation.AnimationSet;
@@ -146,7 +149,7 @@ public class BlueBookVisual implements  ActionListener {
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
     
-    public static String CASE_FileEnding= ".case";
+    public static String CASE_FileEnding   = ".case";
     public static String RESULT_FileEnding = ".res";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Relative File Paths
@@ -618,17 +621,29 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuItem_OpenResultfile.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
                 	   
+                  		
                     } });
         menu_BlueBook.addSeparator();
-        JMenuItem menuItem_Import = new JMenuItem("                "); 
-        menuItem_Import.setForeground(Color.gray);
+        JMenuItem menuItem_Import = new JMenuItem("Settings                "); 
+        menuItem_Import.setForeground(Color.black);
         menuItem_Import.setFont(small_font);
         menuItem_Import.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_BlueBook.add(menuItem_Import);
         menuItem_Import.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	   
+                	   Thread thread = new Thread(new Runnable() {
+                 		    public void run() {
+                 		    		// Create new window here 
+                 		    try {
+                 		    			Settings.main();
+  							} catch (IOException e) {
+  								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
+  								e.printStackTrace();
+  							};
+                 		    }
+                 		});
+                 		thread.start();
                     } });
         JMenuItem menuItem_Export = new JMenuItem("Results save as                "); 
         menuItem_Export.setForeground(Color.black);
@@ -751,7 +766,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_PostProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PostProcessing);
         
-        JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Local Elevation File               "); 
+        JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Custom Data Plot               "); 
         menuItem_CreateLocalElevation.setForeground(Color.black);
         menuItem_CreateLocalElevation.setFont(small_font);
         menuItem_CreateLocalElevation.setAccelerator(KeyStroke.getKeyStroke(
@@ -760,34 +775,19 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuItem_CreateLocalElevation.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
                 	   
-	                   frame_CreateLocalElevationFile = new JFrame(PROJECT_TITLE);
-		               	
-	                   //Create and set up the content pane.
-	                   BlueBookVisual demo = new BlueBookVisual();
-	                   try {
-	                	   frame_CreateLocalElevationFile.setContentPane(demo.WINDOW_CreateLocalElevationFile());
-	                	  // frame_SEMR_NewEntry.pack();
-	                   } catch (IOException e1) {
-						// TODO Auto-generated catch block
-	                	   e1.printStackTrace();
-	                   } catch (SQLException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-	                  // frame2.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-	                   frame_CreateLocalElevationFile.setSize(330, 90);
-	                   frame_CreateLocalElevationFile.setVisible(true);
-	                   frame_CreateLocalElevationFile.setResizable(false);
-	                   frame_CreateLocalElevationFile.setLocationRelativeTo(null);
-	                   try {
-	                       BufferedImage myImage = ImageIO.read(new File(ICON_File));
-	                       frame_CreateLocalElevationFile.setIconImage(myImage);  
-	                       }catch(IIOException eIIO) {
-	                      	 System.out.println(eIIO);
-	                       } catch (IOException e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+                	   Thread thread = new Thread(new Runnable() {
+               		    public void run() {
+               		    		// Create new window here 
+               		    try {
+               		    			CreateCustomChart.main();
+							} catch (IOException e) {
+								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
+								e.printStackTrace();
+							};
+               		    }
+               		});
+               		thread.start();
+               		
                     } });
       //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_VisualEngine = new JMenu("Visual Engine");
@@ -827,6 +827,29 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 		    public void run() {
                 		    	List<AnimationSet> animationSets = READ_AnimationData();
                 		    	worldAnimation.launchVisualEngine(animationSets);
+                		    }
+                		});
+                		thread.start();
+                    } });
+        
+        JMenuItem menuItem_RealTime = new JMenuItem("Create Real Time Simulation         "); 
+        menuItem_RealTime.setForeground(Color.black);
+        menuItem_RealTime.setFont(small_font);
+        menuItem_RealTime.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_VisualEngine.add(menuItem_RealTime);
+        menuItem_RealTime.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	  
+                	   Thread thread = new Thread(new Runnable() {
+                		    public void run() {
+                		    		// Create new window here 
+                		    try {
+								RealTimeVisual.main();
+							} catch (IOException e) {
+								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
+								e.printStackTrace();
+							};
                 		    }
                 		});
                 		thread.start();
@@ -7001,7 +7024,15 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
         });
     }
 
+		public static String getPROJECT_TITLE() {
+		return PROJECT_TITLE;
+	}
 		public static int RETURN_TARGET(){
 			return TARGET; 
 		}
+		public static String getICON_File() {
+			return ICON_File;
+		}
+		
+		
 }

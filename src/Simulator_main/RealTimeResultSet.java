@@ -9,7 +9,76 @@ public class RealTimeResultSet {
 	
 	private float SCMass =0;
 	
+	private float eulerX=0;
+	private float eulerY=0;
+	private float eulerZ=0;
 	
+	private float AngulRateX=0;
+	private float AngulRateY=0;
+	private float AngulRateZ=0;
+	
+	private double[][] quarternions = {	{0},
+										{0},
+										{0},
+										{0}}; 
+	
+	
+	public double[][] getQuarternions() {
+		return quarternions;
+	}
+
+	public void setQuarternions(double[][] quarternions) {
+		this.quarternions = quarternions;
+	}
+
+	public float getEulerX() {
+		return eulerX;
+	}
+
+	public void setEulerX(float eulerX) {
+		this.eulerX = eulerX;
+	}
+
+	public float getEulerY() {
+		return eulerY;
+	}
+
+	public void setEulerY(float eulerY) {
+		this.eulerY = eulerY;
+	}
+
+	public float getEulerZ() {
+		return eulerZ;
+	}
+
+	public void setEulerZ(float eulerZ) {
+		this.eulerZ = eulerZ;
+	}
+
+	public float getAngulRateX() {
+		return AngulRateX;
+	}
+
+	public void setAngulRateX(float angulRateX) {
+		AngulRateX = angulRateX;
+	}
+
+	public float getAngulRateY() {
+		return AngulRateY;
+	}
+
+	public void setAngulRateY(float angulRateY) {
+		AngulRateY = angulRateY;
+	}
+
+	public float getAngulRateZ() {
+		return AngulRateZ;
+	}
+
+	public void setAngulRateZ(float angulRateZ) {
+		AngulRateZ = angulRateZ;
+	}
+
 	public float getSCMass() {
 		return SCMass;
 	}

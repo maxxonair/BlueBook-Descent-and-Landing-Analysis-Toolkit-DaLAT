@@ -22,8 +22,8 @@ public class TerrainRenderer {
     private TerrainShader shader;
  
     public TerrainRenderer(TerrainShader shader, Matrix4f projectionMatrix) {
-    	GL11.glEnable(GL11.GL_CULL_FACE);
-    	GL11.glCullFace(GL11.GL_BACK);
+   // 	GL11.glEnable(GL11.GL_CULL_FACE);
+    //	GL11.glCullFace(GL11.GL_BACK);
         this.shader = shader;
         shader.start();
         shader.loadProjectionMatrix(projectionMatrix);

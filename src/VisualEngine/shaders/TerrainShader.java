@@ -92,8 +92,8 @@ public class TerrainShader extends ShaderProgram{
         super.loadMatrix(location_viewMatrix, viewMatrix);
     }
     
-    public void loadViewMatrix3P(ThirdPersonCamera camera){
-        Matrix4f viewMatrix = Maths.createViewMatrix3P(camera);
+    public void loadViewMatrix(ThirdPersonCamera camera){
+        Matrix4f viewMatrix = Maths.createViewMatrix(camera);
         super.loadMatrix(location_viewMatrix, viewMatrix);
     }
      

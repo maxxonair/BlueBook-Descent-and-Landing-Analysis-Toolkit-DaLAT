@@ -9,7 +9,7 @@ public class ThirdPersonCamera {
 	private float defaultY =0;
 	private float defaultZ =0;
 	*/
-	private float distanceFromSpacecraft = 50;
+	private float distanceFromSpacecraft = 20;
 	private float angleAroundSpacecraft = 0 ;
 	
 	private Vector3f position = new Vector3f(0,0,0);

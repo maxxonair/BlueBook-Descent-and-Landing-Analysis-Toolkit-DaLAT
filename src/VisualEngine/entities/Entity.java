@@ -2,8 +2,6 @@ package VisualEngine.entities;
 
 import VisualEngine.models.TexturedModel;
 
-import org.lwjgl.input.Keyboard;
-import org.lwjgl.input.Mouse;
 import org.lwjgl.util.vector.Vector3f;
 
 public class Entity {
@@ -16,11 +14,7 @@ public class Entity {
 	private float scale;
 	private float mouseSensitivity = 0.1f;
 	private float mouseWheelSensitivity =0.001f;
-	private float initX;
-	private float initY;
-	private float initZ;
-	
-	private int textureIndex = 0;
+
 
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
@@ -30,9 +24,6 @@ public class Entity {
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
-		this.initX=position.x;
-		this.initY=position.y;
-		this.initZ=position.z;
 	}
 
 	public void increasePosition(float dx, float dy, float dz) {
@@ -47,37 +38,7 @@ public class Entity {
 		this.rotZ += dz;
 	}
 	
-	public void move() {
 
-		if(Keyboard.isKeyDown(Keyboard.KEY_P)){
-			this.position.x=initX;
-			this.position.y=initY;
-			this.position.z=initZ;
-			this.rotX=0;
-			this.rotY=0;
-			this.rotZ=0;
-		}
-if(!Keyboard.isKeyDown(Keyboard.KEY_B) && !Keyboard.isKeyDown(Keyboard.KEY_N)) {   // Keys B and N are reserved for camera movement (B - translation , N - rotation)
-		if(Mouse.isButtonDown(0)){
-			int value = Mouse.getDX();
-			this.position.x-=value*mouseSensitivity;
-		}
-		if(Mouse.isButtonDown(0)){
-			int value = Mouse.getDY();
-			this.position.y+=value*mouseSensitivity;
-		}
-		if(Mouse.isButtonDown(1)){
-			int value = Mouse.getDX();
-			this.rotY+=value*mouseSensitivity;
-		}
-		if(Mouse.isButtonDown(1)){
-			int value = Mouse.getDY();
-			this.rotX-=value*mouseSensitivity;
-		}
-		int value = Mouse.getDWheel();
-		this.position.z+=value*mouseWheelSensitivity;
-}
-	}
 
 	public TexturedModel getModel() {
 		return model;
@@ -142,14 +103,6 @@ if(!Keyboard.isKeyDown(Keyboard.KEY_B) && !Keyboard.isKeyDown(Keyboard.KEY_N)) {
 	public void setMouseWheelSensitivity(float mouseWheelSensitivity) {
 		this.mouseWheelSensitivity = mouseWheelSensitivity;
 	}
-    public float getTextureXOffset(){
-        int column = textureIndex%model.getTexture().getNumberOfRows();
-        return (float)column/(float)model.getTexture().getNumberOfRows();
-    }
-     
-    public float getTextureYOffset(){
-        int row = textureIndex/model.getTexture().getNumberOfRows();
-        return (float)row/(float)model.getTexture().getNumberOfRows();
-    }
+
 
 }
