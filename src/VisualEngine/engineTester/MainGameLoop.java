@@ -36,8 +36,7 @@ public class MainGameLoop {
 	public static void main(String[] args) {
 		// worldGenerator.launchVisualEngine();
 		List<AnimationSet> animationSets = READ_AnimationData();
-		worldAnimation.launchVisualEngine(animationSets);
-		
+		worldAnimation.launchVisualEngine(animationSets);		
 	}
 	
     public static List<AnimationSet>  READ_AnimationData() {
@@ -71,7 +70,6 @@ public class MainGameLoop {
 					  System.out.println("Read raw data, illegal argument error");
 					}
 	//----------------------------------------------------------------------------------------------
-	             // System.out.println(init_x+" | "+init_y+" | "+init_z+" | "); 
 	      	    fstream = null;
 	    		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	               in = new DataInputStream(fstream);

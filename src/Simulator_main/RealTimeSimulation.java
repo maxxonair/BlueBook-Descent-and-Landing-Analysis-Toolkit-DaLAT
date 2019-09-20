@@ -520,18 +520,19 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
 	   	
 	   	if(IsThrust) {
-	   		Thrust = 0;//Thrust_max;
+	   		Thrust = Thrust_max;
 	   		System.out.println("THRUST");
 	   		//F_Aero_A[0][0] -= Thrust;
 	   	} else {
 	   		Thrust=0;
 	   	}
 	   	
-	   	F_Thrust_B[0][0] =  -Thrust;//Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
+	   	F_Thrust_B[0][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
 	   	F_Thrust_B[1][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
-	   	F_Thrust_B[2][0] =  0;//Thrust * Math.sin(TVC_alpha);   
+	   	F_Thrust_B[2][0] =  -Thrust;//Thrust * Math.sin(TVC_alpha);   
 	   	
-	   //	M_Thrust_NED = Mathbox.Multiply_Matrices(C_NED_B, M_Thrust_B);
+	    	M_Thrust_NED = Mathbox.Multiply_Matrices(C_NED_B, M_Thrust_B);
+	   	//M_Thrust_NED = M_Thrust_B;
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
     	//-------------------------------------------------------------------------------------------------------------------
@@ -552,11 +553,11 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
     	// 										  Ground track 
     	//-------------------------------------------------------------------------------------------------------------------
     	double r=rm;  // <-- reference radius for projection. Current projection set for mean radius 
-    	double phi=x[0];
-    	double theta = x[1];
-    double dphi = Math.abs(phi-phimin);
+    	double phi    = x[0];
+    	double theta  = x[1];
+    double dphi   = Math.abs(phi-phimin);
     	double dtheta = Math.abs(theta-tetamin); 
-    	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
+    	double ds     = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
     	//System.out.println(ds);
     	groundtrack = groundtrack + ds;
     	phimin=phi;
@@ -658,16 +659,29 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
 	
 		    	    EulerAngle = Quaternions2Euler2(q_vector);
-	    	    //----------------------------------------------------------------------------------------
-	    	    // System.out.println("model 1 running");
-	    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
-	    	    double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
-	    	    double Nb = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
-	    	    
-	    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
-	    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
-	    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
-	    	    
+		    	    //----------------------------------------------------------------------------------------
+		    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+		    	    double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+		    	    double Nb = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
+		    		
+					double Ixx = InertiaTensor[0][0];
+					double Iyy = InertiaTensor[1][1];
+					double Izz = InertiaTensor[2][2];
+					//double Ixy = InertiaTensor[0][1];
+					double Ixz = InertiaTensor[0][2];
+					//  double Iyx = InertiaTensor[][];
+					//double Iyz = InertiaTensor[2][1];
+					//System.out.println(Ixx+" | "+x[7]);
+		    		// Angular Rates
+				// p dot:
+		    		dxdt[11] = (Izz * Lb + Ixz * Nb - (Ixz * (Iyy - Ixx - Izz) * x[11] + (Ixz*Ixz + Izz * (Izz - Iyy)) 
+		    					* x[12]) * x[11]) / (Ixx * Izz - Ixz*Ixz); 
+		    		// q dot:
+		    		dxdt[12] = (Mb - (Ixx - Izz) * x[11] * x[13] - Ixz * (x[11]*x[11] - x[13]*x[13])) / Iyy; 
+		    		// r dot:
+		    		dxdt[13] = (Ixz * Lb + Ixx * Nb + (Ixz * (Iyy - Ixx - Izz) * x[13] + (Ixz*Ixz + Ixx * (Ixx - Iyy)) 
+		    					* x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
+		    		//----------------------------------------------------------------------------------------
 AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
 AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
 AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;	
@@ -704,6 +718,7 @@ public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, d
 	
 	q_vector    = Init_Quarternions;
 	AngularRate = InitPQR;
+	InertiaTensor = InertiaTensorMatrix;
 	
 	spherical=false;
 	is_6DOF=true;
@@ -723,8 +738,7 @@ Gravity.setTARGET(target);
 	    	 m_propellant_init = PropMass;
 	    	 Thrust_max 	       = thrust;
 	    	 Thrust_min        =  5000;
-
-	    	 SurfaceArea 			  = SurfaceArea_INP;
+	    	 SurfaceArea  = SurfaceArea_INP;
 	    	 M0 			  = x6  ; 
 	    	 mminus	  	  = M0  ;
 	    	 vminus		  = x3  ;
@@ -791,13 +805,13 @@ Gravity.setTARGET(target);
 	  		        y[6] = x6;
 	  		        m0 = x6;
 	  				// Attitude and Rotational Motion
-	  				y[7]  = q_vector[0][0];
-	  				y[8]  = q_vector[1][0];
-	  				y[9]  = q_vector[2][0];
-	  				y[10] = q_vector[3][0];
-	  				y[11] = AngularRate[0][0];
-	  				y[12] = AngularRate[1][0];
-	  				y[13] = AngularRate[2][0];
+	  				y[7]  = Init_Quarternions[0][0];
+	  				y[8]  = Init_Quarternions[1][0];
+	  				y[9]  = Init_Quarternions[2][0];
+	  				y[10] = Init_Quarternions[3][0];
+	  				y[11] = InitPQR[0][0];
+	  				y[12] = InitPQR[1][0];
+	  				y[13] = InitPQR[2][0];
 	  				
   				
   			} else { // 3DOF case

@@ -7,7 +7,7 @@ import org.lwjgl.util.vector.Vector3f;
 public class Entity {
 
 	private TexturedModel model;
-	private Vector3f position;
+	private static Vector3f position;
 	protected float rotX;
 	protected float rotY;
 	protected float rotZ;
@@ -48,7 +48,7 @@ public class Entity {
 		this.model = model;
 	}
 
-	public Vector3f getPosition() {
+	public static Vector3f getPosition() {
 		return position;
 	}
 
