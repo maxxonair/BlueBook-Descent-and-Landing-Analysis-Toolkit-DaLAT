@@ -19,7 +19,7 @@ public class Entity {
 	public Entity(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ,
 			float scale) {
 		this.model = model;
-		this.position = position;
+		Entity.position = position;
 		this.rotX = rotX;
 		this.rotY = rotY;
 		this.rotZ = rotZ;
@@ -27,9 +27,9 @@ public class Entity {
 	}
 
 	public void increasePosition(float dx, float dy, float dz) {
-		this.position.x += dx;
-		this.position.y += dy;
-		this.position.z += dz;
+		Entity.position.x += dx;
+		Entity.position.y += dy;
+		Entity.position.z += dz;
 	}
 
 	public void increaseRotation(float dx, float dy, float dz) {
@@ -52,8 +52,8 @@ public class Entity {
 		return position;
 	}
 
-	public void setPosition(Vector3f position) {
-		this.position = position;
+	public static void setPosition(Vector3f position) {
+		Entity.position = position;
 	}
 
 	public float getRotX() {

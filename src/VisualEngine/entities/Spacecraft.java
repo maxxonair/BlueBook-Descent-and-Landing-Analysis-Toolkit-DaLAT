@@ -3,6 +3,7 @@ package VisualEngine.entities;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
+import FlightElement.SpaceShip;
 import Simulator_main.RealTimeResultSet;
 import Simulator_main.RealTimeSimulation;
 import VisualEngine.animation.AnimationSet;
@@ -12,7 +13,6 @@ import VisualEngine.terrains.Terrain;
 
 public class Spacecraft extends Entity {
 	
-	private static final float TESTGRAVITY = -2;
 	//private static final float TESTROCKET  =  40;
 	
 	private static float CG_Y = 0.9f;
@@ -23,21 +23,18 @@ public class Spacecraft extends Entity {
 	private  static  float currentVerticalSpeed   =   0;
 	private  static  float currentHorizontalSpeed =  60;
 	private  static  float currentSpeed           = (float) Math.sqrt(currentVerticalSpeed*currentVerticalSpeed + currentHorizontalSpeed*currentHorizontalSpeed);
-	private  static  float currentTurnSpeed       =  0;
-	
-    private static boolean isThrust = false; 
-    private static final float SCMass_init = 15000; 
-    private static final float SCPropMass_init = 4000;
-    private static float SCMass = SCMass_init;
-    private static float SCPropMass = SCPropMass_init;
-    private static float SCMainThrust =30000;
     
     private static double[][] Thrust_Momentum = {{0},
 												 {0},
-												 {1}};
-	private static float AngulRateX=0;
-	private static float AngulRateY=0;
-	private static float AngulRateZ=0;
+												 {0}};
+    
+    private static double[][] MRCS = {{0},
+			 						  {0},
+			 						  {0}};
+	
+	private static double[][] PQR = {{0},
+			 						 {0},
+			 						 {0}}; 
 	
 	private static double[][] quarternions = {	{1},
 												{0},
@@ -46,43 +43,24 @@ public class Spacecraft extends Entity {
 	
 	private static float animationScale =100;
 	
-    static double[][] InertiaTensorMatrix   =         {{   8000    ,    0       ,   0},
-												{      0    ,    8000    ,   0},
-												{      0    ,    0       ,   8000}};
 	
-	//private float mouseSensitivity = 0.1f;
-	//private float mouseWheelSensitivity =0.001f;
-	private static boolean endTheShow = false;
-	private static boolean nextTestFrame = false;
+    private static SpaceShip spaceShip;
+    
+    private static boolean isThrust = true; 
+    private static float SCMass;
+    private static float SCPropMass ;
+    private static float SCMainThrust;
 
-	public Spacecraft(TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
+	public Spacecraft(SpaceShip spaceShip, TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
-		// TODO Auto-generated constructor stub
-		//this.setRotZ(90);
-		//this.setRotY(90);
+			Spacecraft.spaceShip = spaceShip;
+			
+			Spacecraft.SCMass = (float) spaceShip.getMass();
+			Spacecraft.SCPropMass = (float) spaceShip.getPropulsion().getPrimaryPropellant();
+			Spacecraft.SCMainThrust = (float) spaceShip.getPropulsion().getPrimaryThrustMax();
+			Spacecraft.MRCS = spaceShip.getPropulsion().getSecondaryMomentum();
 	}
 	
-	public void move(Terrain terrain) {
-		checkInputs();
-		super.increaseRotation(0, currentTurnSpeed*DisplayManager.getFrameTimeSeconds(), 0);
-		float distance = currentHorizontalSpeed * DisplayManager.getFrameTimeSeconds();
-		float dx = (float) (distance * Math.sin(Math.toRadians(super.getRotY())));
-		float dz = (float) (distance * Math.cos(Math.toRadians(super.getRotY())));
-		super.increasePosition(dx, 0, dz);
-		currentVerticalSpeed += TESTGRAVITY * DisplayManager.getFrameTimeSeconds();
-		super.increasePosition(0, currentVerticalSpeed * DisplayManager.getFrameTimeSeconds() , 0);
-		
-		//---------------------------------------------------------------------------------------
-		//			Terrain collision detection
-		//---------------------------------------------------------------------------------------
-		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z)+CG_Y;
-		//System.out.println(terrainHeight);
-		if(super.getPosition().y<(terrainHeight+CG_Y)) {
-			 currentVerticalSpeed=0;
-			 super.getPosition().y=terrainHeight+CG_Y;
-		}
-		currentSpeed = (float) Math.sqrt(currentHorizontalSpeed*currentHorizontalSpeed+currentVerticalSpeed*currentVerticalSpeed);
-	}
 	
 	public void animate(Terrain terrain, AnimationSet animationSet) {
 		//super.increaseRotation(0, currentTurnSpeed*DisplayManager.getFrameTimeSeconds(), 0);
@@ -120,16 +98,12 @@ public class Spacecraft extends Entity {
 		float dx = (float) (distance * Math.sin(Spacecraft.getAzimuth()));
 		float dz = (float) (distance * Math.cos(Spacecraft.getAzimuth()));
 		super.increasePosition(dx, currentVerticalSpeed * DisplayManager.getFrameTimeSeconds() , dz);
-		Spacecraft.setSCMass(realTimeResultSet.getSCMass());
 		//---------------------------------------------------------------------------------------
 		//			 		Rotation 
 		//---------------------------------------------------------------------------------------
-		Spacecraft.AngulRateX = (float) Math.toDegrees(realTimeResultSet.getAngulRateX());
-		Spacecraft.AngulRateY = (float) Math.toDegrees(realTimeResultSet.getAngulRateZ());
-		Spacecraft.AngulRateZ = (float) Math.toDegrees(realTimeResultSet.getAngulRateY());
-		super.increaseRotation(Spacecraft.AngulRateX*DisplayManager.getFrameTimeSeconds(), 
-							   Spacecraft.AngulRateY*DisplayManager.getFrameTimeSeconds(), 
-							   Spacecraft.AngulRateZ*DisplayManager.getFrameTimeSeconds());
+		super.increaseRotation((float) Math.toDegrees(Spacecraft.getPQR()[0][0])*DisplayManager.getFrameTimeSeconds(), 
+							   (float) Math.toDegrees(Spacecraft.getPQR()[2][0])*DisplayManager.getFrameTimeSeconds(), 
+							   (float) Math.toDegrees(Spacecraft.getPQR()[1][0])*DisplayManager.getFrameTimeSeconds());
 		//---------------------------------------------------------------------------------------
 		//			Terrain collision detection
 		//---------------------------------------------------------------------------------------
@@ -140,7 +114,7 @@ public class Spacecraft extends Entity {
 			 super.getPosition().y=terrainHeight+CG_Y;
 		}
 		Spacecraft.currentSpeed = realTimeResultSet.getVelocity();
-		Spacecraft.setAzimuth(realTimeResultSet.getAzi());
+		//Spacecraft.setAzimuth(realTimeResultSet.getAzi());
 	
 	}
 	
@@ -162,38 +136,45 @@ public class Spacecraft extends Entity {
 	}
 
 	public static void checkInputs() {
-
+		//----------------------------------------------------
+		//				Primary - Thrust
+		//----------------------------------------------------
 		if(Keyboard.isKeyDown(Keyboard.KEY_SPACE)) {
 			Spacecraft.isThrust=true;
 		} else {
 			Spacecraft.isThrust=false;
 		}
 		
-		double rcs_z=0.01;
+		//----------------------------------------------------
+		//				RCS - Rotation
+		//----------------------------------------------------
 	    double[][] ThrustMomentum = {{0},
 				  					 {0},
 				  					 {0}};
 		if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-		     ThrustMomentum[2][0] = rcs_z;
-			//System.out.println("rcs+");
+		     ThrustMomentum[2][0] = MRCS[2][0];
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_Z)) {
-			ThrustMomentum[2][0] = -rcs_z;
-			//System.out.println("rcs-");
+		if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
+			ThrustMomentum[2][0] = -MRCS[2][0];
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
+		     ThrustMomentum[0][0] = MRCS[0][0];
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
+			ThrustMomentum[0][0] = -MRCS[0][0];
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+		     ThrustMomentum[1][0] = MRCS[1][0];
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			ThrustMomentum[1][0] = -MRCS[1][0];
 		}
 		Spacecraft.setThrust_Momentum(ThrustMomentum);
 		//---------------------------------------------
 		// 			Environment Inputs
 		//---------------------------------------------
-		if (Keyboard.isKeyDown(Keyboard.KEY_N)) {
-			endTheShow=true;
-		} else {
-			endTheShow=false;
-		}
-		if (Keyboard.isKeyDown(Keyboard.KEY_B)) {
-			nextTestFrame=true;
-		} else {
-			nextTestFrame=false;
+		if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
+			Spacecraft.setPosition(new Vector3f(0,100,0));
 		}
 	}
 
@@ -227,11 +208,6 @@ public class Spacecraft extends Entity {
 		SCPropMass = sCPropMass;
 	}
 
-	public static float getScpropmassInit() {
-		return SCPropMass_init;
-	}
-
-
 	public static RealTimeResultSet getRealTimeResultSet(float timestep) {
 		RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 		
@@ -254,55 +230,24 @@ public class Spacecraft extends Entity {
 		} else {
 			//System.out.println("Timestep: "+timestep);
 		}
-		double t =timestep;
-		double dt_write = timestep;
-		double reference_elevation=0;
-		double SurfaceArea_INP=10;
-	    
-	    double[][] PQR = {{0},{0},{0}};
-	    PQR[0][0] = Spacecraft.getAngulRateX();
-	    PQR[1][0] = Spacecraft.getAngulRateY();
-	    PQR[2][0] = Spacecraft.getAngulRateZ();
-	    double thrust = 30000;
 	    double rm = RealTimeSimulation.getRm();
 	    double ref = RealTimeSimulation.getRef_ELEVATION();
 //Spacecraft.getPosition().y
 		realTimeResultSet = RealTimeSimulation.Launch_Integrator(INTEGRATOR, target, 0, 0, Spacecraft.getPosition().y+rm+ref, vel, fpa, 
-				azi, Spacecraft.getSCMass(), t, dt_write, reference_elevation, SurfaceArea_INP, Spacecraft.getInertiaTensorMatrix(), Spacecraft.getQuarternions(), 
-				PQR, thrust, isThrust, Spacecraft.getScpropmassInit(), Spacecraft.getThrust_Momentum());
-		Spacecraft.setSCPropMass(Spacecraft.getScpropmassInit()-(Spacecraft.SCMass_init-realTimeResultSet.getSCMass()));
-		Spacecraft.setAngulRateX(realTimeResultSet.getAngulRateX());
-		Spacecraft.setAngulRateY(realTimeResultSet.getAngulRateY());
-		Spacecraft.setAngulRateZ(realTimeResultSet.getAngulRateZ());
+				azi, Spacecraft.getSCMass(), timestep, timestep, 0, Spacecraft.getQuarternions(), Spacecraft.getPQR(), 
+			    isThrust, Thrust_Momentum, spaceShip);
+		Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
+		double[][] intPQR = {{ realTimeResultSet.getPQR()[0][0]},
+				 		    {  realTimeResultSet.getPQR()[1][0]},
+				 		    {  realTimeResultSet.getPQR()[2][0]}}; 
+		Spacecraft.setPQR(intPQR);
 		Spacecraft.setQuarternions(realTimeResultSet.getQuarternions());
-		//System.out.println(realTimeResultSet.getAngulRateY());
+		Spacecraft.setSCMass(realTimeResultSet.getSCMass());
+		System.out.println(realTimeResultSet.getSCMass());
 		return realTimeResultSet;
 
 	}
 
-	public static float getAngulRateX() {
-		return AngulRateX;
-	}
-
-	public static void setAngulRateX(float angulRateX) {
-		AngulRateX = angulRateX;
-	}
-
-	public static float getAngulRateY() {
-		return AngulRateY;
-	}
-
-	public static void setAngulRateY(float angulRateY) {
-		AngulRateY = angulRateY;
-	}
-
-	public static float getAngulRateZ() {
-		return AngulRateZ;
-	}
-
-	public static void setAngulRateZ(float angulRateZ) {
-		AngulRateZ = angulRateZ;
-	}
 
 	public static double[][] getQuarternions() {
 		return quarternions;
@@ -320,24 +265,18 @@ public class Spacecraft extends Entity {
 		Thrust_Momentum = thrust_Momentum;
 	}
 
-	public static double[][] getInertiaTensorMatrix() {
-		return InertiaTensorMatrix;
-	}
-
-	public void setInertiaTensorMatrix(double[][] inertiaTensorMatrix) {
-		InertiaTensorMatrix = inertiaTensorMatrix;
-	}
 
 	public static boolean getisThrust() {
 		return isThrust;
 	}
 
-	public static boolean isEndTheShow() {
-		return endTheShow;
+
+	public static double[][] getPQR() {
+		return PQR;
 	}
 
-	public static boolean isNextTestFrame() {
-		return nextTestFrame;
+	public static void setPQR(double[][] pQR) {
+		PQR = pQR;
 	}
 
 

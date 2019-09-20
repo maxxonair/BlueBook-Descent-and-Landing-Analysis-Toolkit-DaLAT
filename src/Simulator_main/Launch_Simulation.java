@@ -13,8 +13,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import FlightElement.SpaceShip;
 import Sequence.SequenceElement;
 import Simulator_main.Simulation;
+import Toolbox.Mathbox;
 
 public class Launch_Simulation implements ActionListener{
 	
@@ -29,7 +31,13 @@ public class Launch_Simulation implements ActionListener{
 	public static String INERTIA_File 				= "/INP/INERTIA.inp";
 	public static String InitialAttitude_File       = "/INP/INITIALATTITUDE.inp";
 	public static String INPUT_FILE                 = "/INP/init.inp";
+	public static String PropulsionInputFile        = "/INP/PROP/prop.inp"  ;  		// Input: target and environment
    	//System.out.println(INPUT_FILE);
+   	public static String[] IntegratorInputPath = {"/INP/INTEG/00_DormandPrince853Integrator.inp",
+			  "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
+			  "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
+			  "/INP/INTEG/03_AdamsBashfordIntegrator.inp"
+};
 	
 	public static void UPDATE_SequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
 		   if (SEQUENCE_DATA.size()==0){
@@ -257,6 +265,8 @@ public class Launch_Simulation implements ActionListener{
     	System.out.println("------------------------------------------");
     	System.out.println("Start READ :");
     	System.out.println("------------------------------------------");
+      	 String dir = System.getProperty("user.dir");
+         PropulsionInputFile = dir + PropulsionInputFile;
     	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
     	SEQUENCE_DATA = READ_SEQUENCE();
     	//-----------------------------------------
@@ -274,57 +284,61 @@ public class Launch_Simulation implements ActionListener{
     	//-----------------------------------------
 	boolean inp_read_success = READ_INPUT();
 		if(inp_read_success) { 
-		double SurfaceArea = READ_SCFile(x_init[6]) ;
-	    	int INTEGRATOR=(int) x_init[8];
-	    	int target=(int) x_init[9];
 	    	double[] error_file = READ_ErrorFile();
-	    	double rm = Simulation.DATA_MAIN[target][0];
+	    	double rm = Simulation.DATA_MAIN[(int) x_init[9]][0];
 	    	List<StopCondition> STOP_Handler = READ_EventHandler( rm, x_init[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
-	    	//System.out.println(target+" "+ rm);
-	    	double[][] InertiaTensor = READ_INERTIA() ;
-	    	double[][] Init_Quarternions = READ_INITIALATTITUDE() ;
-	    	int descent_ascent_switch = (int) x_init[12]; 
-			//System.out.println("Start init: \n"+INTEGRATOR+"\n"+target+"\n"+(x_init[0]*deg)+"\n"+(x_init[1]*deg)+"\n"+(x_init[2]+rm)+"\n"+x_init[3]+"\n"+(x_init[4]*deg)+"\n"+(x_init[5]*deg)+"\n"+(x_init[6])+"\n"+x_init[7]+"\n End init \n");
-	    	if(descent_ascent_switch==0 ) {
+	    	//--------------------------------------------------------------------------------------
+	    	System.out.println("READ: Create SpaceShip");
+	    	double[] propRead;
+	    	propRead = Mathbox.READ_PROPULSION_INPUT(PropulsionInputFile);
+	    	SpaceShip spaceShip = new SpaceShip();
+	    	spaceShip.setInertiaTensorMatrix(READ_INERTIA());
+	    	spaceShip.setMass(x_init[6]);
+	    	spaceShip.setInitialQuarterions(READ_INITIALATTITUDE());
+	    	spaceShip.getAeroElements().setSurfaceArea(READ_SCFile(x_init[6]));
+	    	spaceShip.getPropulsion().setPrimaryISPMax(propRead[0]);
+	    	spaceShip.getPropulsion().setPrimaryPropellant(propRead[1]);
+	    	spaceShip.getPropulsion().setPrimaryThrustMax(propRead[2]);
+	    	spaceShip.getPropulsion().setPrimaryThrustMin(propRead[3]);
+	    	if((int) propRead[4]==1) {
+	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
+	    		spaceShip.getPropulsion().setPrimaryISPMin(propRead[5]);
+	    	} else {
+	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(false);
+	    	}
+	    	//--------------------------------------------------------------------------------------
+	    	System.out.println("READ: Create IntegratorData");
+			String IntegInput = dir + IntegratorInputPath[(int) x_init[8]];
+			double[] IntegINP = Mathbox.READ_INTEGRATOR_INPUT(IntegInput);
+	    	IntegratorData integratorData = new IntegratorData();
+	    		integratorData.setIntegInput(IntegINP);				// ! Must be called before .setIntegratorType !
+	    		integratorData.setIntegratorType((int) x_init[8]);
+	    		integratorData.setTargetBody((int) x_init[9]);
+	    		integratorData.setInitLongitude(x_init[0]*deg2rad);
+	    		integratorData.setInitLatitude(x_init[1]*deg2rad);
+	    		integratorData.setInitRadius(x_init[2]+x_init[11]+rm);
+	    		integratorData.setInitVelocity(x_init[3]);
+	    		integratorData.setInitFpa(x_init[4]*deg2rad);
+	    		integratorData.setInitAzimuth(x_init[5]*deg2rad);
+	    		integratorData.setIntegStopHandler(STOP_Handler);
+	    		integratorData.setIntegTimeStep(x_init[10]);
+	    		integratorData.setMaxIntegTime(x_init[7]);
+	    		integratorData.setRefElevation(x_init[11]);
+	    		integratorData.setVelocityVectorCoordSystem((int) x_init[13]);
+	    		integratorData.setDegreeOfFreedom((int) x_init[14]);
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		//												3 Degree of Freedom EDL module
+	    		//												6 Degree of Freedom Universial module
 	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Simulator set and running");
 	    		//System.out.println(""+SurfaceArea);
-	    		Simulation.Launch_Integrator(
-	    												INTEGRATOR, 		     	 		 // Integrator Index 					 [-]
-														target, 				 	 	 // Target index 						 [-]
-														x_init[0]*deg2rad, 			 // Longitude 							 [rad]
-														x_init[1]*deg2rad, 			 // Latitude 							 [rad]
-														x_init[2]+x_init[11]+rm, 	 // Radius 								 [m]
-														x_init[3], 				 	 // Velocity 							 [m/s]
-														x_init[4]*deg2rad, 			 // Flight path angle 					 [rad]
-														x_init[5]*deg2rad, 			 // Local Azimuth 						 [rad]
-														x_init[6], 				 	 // Initial S/C mass 					 [kg]
-														x_init[7], 			   	 	 // Maximum integ. time 				     [s]
-														x_init[10],				 	 // Write out delta time 				 [s]
-														x_init[11],				 	 // Reference Elevation  				 [m]
+	    		Simulation.launchIntegrator(
+	    												    integratorData,
 														SEQUENCE_DATA,			 	 // Sequence data set	LIST			     [-]
 														error_file,					 // Error file to model partial system failres [-] 
-												  (int) x_init[12],				 	 // Descent/Ascent Thrust vector switch  [-]   1 accelerate (ascent) , 0 decelerate (descent)
-														STOP_Handler	,		         // Event Handler 	LIST			 	     [-]
-														SurfaceArea,					 // Projected Surface Area S/C 			 [m2]
-												  (int) x_init[13],					 // Velocity Vector Coordinate system    [-] 1 - Spherical coordinates , 2 - Cartesian Coordinates
-												  (int) x_init[14],					 // Degree of Freedom   					 [-] 3 - 3 DOF , 6 - 6 DOF	
-														InertiaTensor,				 // Inertia Tensor  3x3 matrix           [kg m2]
-														Init_Quarternions			 // Initial Attitude - Quarternions      [-]
+														spaceShip				     // SpaceShip data file                  [-]
 	    				);
-	    	} else if (descent_ascent_switch ==1) {
-	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		//												Empty Slot
-	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-
-	    	} else if (descent_ascent_switch==2) {
-	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    		//												Empty Slot
-	    		//---------------------------------------------------------------------------------------------------------------------------------------------------------------------
-	    	}}
+}
     }
 
 	@Override

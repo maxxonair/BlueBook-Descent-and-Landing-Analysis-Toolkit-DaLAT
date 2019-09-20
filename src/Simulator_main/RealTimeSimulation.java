@@ -23,6 +23,7 @@ import Model.Gravity;
 import Model.atm_dataset;
 import Toolbox.Mathbox;
 import Controller.LandingCurve;
+import FlightElement.SpaceShip;
 
 public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
@@ -531,8 +532,8 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	   	F_Thrust_B[1][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
 	   	F_Thrust_B[2][0] =  -Thrust;//Thrust * Math.sin(TVC_alpha);   
 	   	
-	    	M_Thrust_NED = Mathbox.Multiply_Matrices(C_NED_B, M_Thrust_B);
-	   	//M_Thrust_NED = M_Thrust_B;
+	   // 	M_Thrust_NED = Mathbox.Multiply_Matrices(C_NED_B, M_Thrust_B);
+	   	M_Thrust_NED = M_Thrust_B;
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
     	//-------------------------------------------------------------------------------------------------------------------
@@ -627,6 +628,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    // System mass [kg]
 	   //System.out.println(Thrust);
 	    dxdt[6] = - Thrust/(ISP*g0) ;   
+	    System.out.println(Thrust+" | "+ISP);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
@@ -693,9 +695,8 @@ AngularRate[2][0] = x[13];
 }
     
 public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, 
-		double x3, double x4, double x5, double x6, double t, double dt_write, 
-		double reference_elevation, double SurfaceArea_INP, double[][] InertiaTensorMatrix, 
-		double[][] Init_Quarternions , double[][] InitPQR, double thrust, boolean isThrust, double PropMass, double[][] ThrustMomentum){
+		double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, 
+		double[][] Init_Quarternions , double[][] InitPQR, boolean isThrust, double[][] MRCS, SpaceShip spaceShip){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -707,18 +708,13 @@ public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, d
 		}
 //----------------------------------------------------------------------------------------------
 //	
-//	Initialise Simulation: 
-//	
-//   - Read propulsion setting:	Propulsion/Controller INIT
-//   - Initialise ground track computation
 //----------------------------------------------------------------------------------------------	
 	
-	//INITIALISE rot matrices
-	M_Thrust_B = ThrustMomentum;
+	M_Thrust_B = MRCS;
 	
 	q_vector    = Init_Quarternions;
 	AngularRate = InitPQR;
-	InertiaTensor = InertiaTensorMatrix;
+	InertiaTensor = spaceShip.getInertiaTensorMatrix();
 	
 	spherical=false;
 	is_6DOF=true;
@@ -734,11 +730,11 @@ Gravity.setTARGET(target);
 //----------------------------------------------------------------------------------------------
 	    cntr_h_init=x2-rm;
 	    cntr_v_init=x3;
-	    	 ISP          	   = 330;
-	    	 m_propellant_init = PropMass;
-	    	 Thrust_max 	       = thrust;
-	    	 Thrust_min        =  5000;
-	    	 SurfaceArea  = SurfaceArea_INP;
+	    	 ISP          	   = spaceShip.getPropulsion().getPrimaryISPMax();
+	    	 m_propellant_init = spaceShip.getPropulsion().getPrimaryPropellant();
+	    	 Thrust_max 	       = spaceShip.getPropulsion().getPrimaryThrustMax();
+	    	 Thrust_min        = spaceShip.getPropulsion().getPrimaryThrustMin();
+	    	 SurfaceArea  	   = spaceShip.getAeroElements().getSurfaceArea();
 	    	 M0 			  = x6  ; 
 	    	 mminus	  	  = M0  ;
 	    	 vminus		  = x3  ;
@@ -865,9 +861,7 @@ Gravity.setTARGET(target);
 	                	realTimeResultSet.setFpa((float) V_NED_ECEF_spherical[1]);
 	                	realTimeResultSet.setVelocity((float) V_NED_ECEF_spherical[0]);
 	                	realTimeResultSet.setSCMass((float) y[6]);
-	                	realTimeResultSet.setAngulRateX((float) AngularRate[0][0]);
-	                	realTimeResultSet.setAngulRateY((float) AngularRate[1][0]);
-	                	realTimeResultSet.setAngulRateZ((float) AngularRate[2][0]);
+	                	realTimeResultSet.setPQR(AngularRate);
 	                	realTimeResultSet.setEulerX((float) EulerAngle[0][0]);
 	                	realTimeResultSet.setEulerY((float) EulerAngle[1][0]);
 	                	realTimeResultSet.setEulerZ((float) EulerAngle[2][0]);

@@ -13,15 +13,14 @@ public class RealTimeResultSet {
 	private float eulerY=0;
 	private float eulerZ=0;
 	
-	private float AngulRateX=0;
-	private float AngulRateY=0;
-	private float AngulRateZ=0;
-	
 	private double[][] quarternions = {	{0},
 										{0},
 										{0},
 										{0}}; 
 	
+	private double[][] PQR = {{0},
+			 						 {0},
+			 						 {0}};
 	
 	public double[][] getQuarternions() {
 		return quarternions;
@@ -53,30 +52,6 @@ public class RealTimeResultSet {
 
 	public void setEulerZ(float eulerZ) {
 		this.eulerZ = eulerZ;
-	}
-
-	public float getAngulRateX() {
-		return AngulRateX;
-	}
-
-	public void setAngulRateX(float angulRateX) {
-		AngulRateX = angulRateX;
-	}
-
-	public float getAngulRateY() {
-		return AngulRateY;
-	}
-
-	public void setAngulRateY(float angulRateY) {
-		AngulRateY = angulRateY;
-	}
-
-	public float getAngulRateZ() {
-		return AngulRateZ;
-	}
-
-	public void setAngulRateZ(float angulRateZ) {
-		AngulRateZ = angulRateZ;
 	}
 
 	public float getSCMass() {
@@ -121,6 +96,14 @@ public class RealTimeResultSet {
 
 	public void setAzi(float azi) {
 		this.azi = azi;
+	}
+
+	public  double[][] getPQR() {
+		return PQR;
+	}
+
+	public  void setPQR(double[][] pQR) {
+		PQR = pQR;
 	}
 
 }

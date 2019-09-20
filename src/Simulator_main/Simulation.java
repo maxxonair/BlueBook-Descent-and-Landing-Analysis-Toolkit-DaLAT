@@ -16,10 +16,6 @@ import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.events.EventHandler;
-import org.apache.commons.math3.ode.nonstiff.AdamsBashforthIntegrator;
-import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
-import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
-import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 import org.apache.commons.math3.util.FastMath;
@@ -32,6 +28,7 @@ import Toolbox.Mathbox;
 import Controller.Flight_CTRL_ThrustMagnitude;
 import Controller.Flight_CTRL_PitchCntrl;
 import Controller.LandingCurve;
+import FlightElement.SpaceShip;
 
 public class Simulation implements FirstOrderDifferentialEquations {
 		//----------------------------------------------------------------------------------------------------------------------------
@@ -62,17 +59,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	static double deg2rad = PI/180.0; 		//Convert degrees to radians
 	    	static double rad2deg = 180/PI; 		//Convert radians to degrees
 		//............................................                                       .........................................
-		//
-	    //	                                                         File Paths
-		//
-		//----------------------------------------------------------------------------------------------------------------------------
-	   	public static String[] IntegratorInputPath = {"/INP/INTEG/00_DormandPrince853Integrator.inp",
-					  								  "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
-					  								  "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
-					  								  "/INP/INTEG/03_AdamsBashfordIntegrator.inp"
-	   					};
-	    public static String PropulsionInputFile    = "/INP/PROP/prop.inp"  ;  		// Input: target and environment
-	    
 		//............................................                                       .........................................
 		//
 	    //	                                             Simulator public variables
@@ -1009,19 +995,15 @@ public class Simulation implements FirstOrderDifferentialEquations {
     
 */    
 //********************************************************************************************************************************** 
-    public static void Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, 
-		double x3, double x4, double x5, double x6, double t, double dt_write, 
-		double reference_elevation, List<SequenceElement> SEQUENCE_DATA, double[] error_file ,
-		int ThrustSwitch,List<StopCondition> Event_Handler, double SurfaceArea_INP, 
-		int VelocityCoordinateSystem, int DOF_System, double[][] InertiaTensorMatrix, 
-		double[][] Init_Quarternions ){
+    public static void launchIntegrator( IntegratorData integratorData,
+    										 List<SequenceElement> SEQUENCE_DATA, 
+    										 double[] error_file ,
+    										 SpaceShip spaceShip ){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
-   	 String dir = System.getProperty("user.dir");
-     PropulsionInputFile = dir + PropulsionInputFile;
 	try {
-			SET_Constants(target);
+			SET_Constants(integratorData.getTargetBody());
 		} catch (IOException e2) {
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
@@ -1033,62 +1015,57 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //   - Read propulsion setting:	Propulsion/Controller INIT
 //   - Initialise ground track computation
 //----------------------------------------------------------------------------------------------	
-	if(VelocityCoordinateSystem==1) {
+	if(integratorData.getVelocityVectorCoordSystem()==1) {
 		spherical = true;
 		System.out.println("READ: Spherical Velocity Vector Coordinates selected.");
-	} else if (VelocityCoordinateSystem==2) {
+	} else if (integratorData.getVelocityVectorCoordSystem()==2) {
 		spherical = false;
 		System.out.println("READ: Cartesian Velocity Vector Coordinates selected.");
 	}
-	if(DOF_System==3) {
+	if(integratorData.getDegreeOfFreedom()==3) {
 		is_6DOF=false;
 		System.out.println("READ: 3 Degree of Freedom Model selected.");
-	} else if (DOF_System==6) {
+	} else if (integratorData.getDegreeOfFreedom()==6) {
 		is_6DOF=true;
 		System.out.println("READ: 6 Degree of Freedom Model selected.");
-		InertiaTensor = InertiaTensorMatrix;
+		InertiaTensor = spaceShip.getInertiaTensorMatrix();
 		System.out.println("READ: Inertial Tensor set.");
-		q_vector      = Init_Quarternions;
+		q_vector      = spaceShip.getInitialQuarterions();
 		System.out.println("READ: Initial Attitude set.");
 	}
-		double[] prop_read;
-	    cntr_h_init=x2-rm;
-	    cntr_v_init=x3;
-		try {
-		 prop_read = Mathbox.READ_PROPULSION_INPUT(PropulsionInputFile);
-	    	 ISP          	  = prop_read[0];
-	    	 m_propellant_init= prop_read[1];
-	    	 Thrust_max 	  = prop_read[2];
-	    	 Thrust_min		  = prop_read[3];
-	    	 if((int) prop_read[4]==1) {
-	    		 ISP_max = ISP;
-	    		 ISP_min = prop_read[5];
+
+	    cntr_h_init=integratorData.getInitRadius()-rm;
+	    cntr_v_init=integratorData.getInitVelocity();
+
+	    	 ISP          	   = spaceShip.getPropulsion().getPrimaryISPMax();
+	    	 m_propellant_init = spaceShip.getPropulsion().getPrimaryPropellant();
+	    	 Thrust_max 	       = spaceShip.getPropulsion().getPrimaryThrustMax();
+	    	 Thrust_min		   = spaceShip.getPropulsion().getPrimaryThrustMin();
+	    	 if(spaceShip.getPropulsion().isPrimaryThrottleModel()) {
+	    		 ISP_max = spaceShip.getPropulsion().getPrimaryISPMax();
+	    		 ISP_min = spaceShip.getPropulsion().getPrimaryISPMin();
 	    		 ISP_Throttle_model=true; 
 	    	 }
-	    	 SurfaceArea 			  = SurfaceArea_INP;
-	    	 M0 			  = x6  ; 
+	    	 SurfaceArea  = spaceShip.getAeroElements().getSurfaceArea();
+	    	 M0 			  = spaceShip.getMass()  ; 
 	    	 mminus	  	  = M0  ;
-	    	 vminus		  = x3  ;
+	    	 vminus		  = integratorData.getInitVelocity()  ;
 	    	 v_touchdown	  = 0   ;
 	    	 PROPread		  = true; 
-		} catch (IOException e) {
-			System.out.println(e);
-			System.out.println("Error: Propulsion setting read failed. ISP set to zero. Propellant mass set to zero. Thrust set to zero. ");
-			PROPread =false;
-		}
-    	 phimin=x0;
-    	 tetamin=x1;
+
+    	 phimin=integratorData.getInitLongitude();
+    	 tetamin=integratorData.getInitLatitude();
     	 groundtrack=0;
-    	 ref_ELEVATION =  reference_elevation;
+    	 ref_ELEVATION =  integratorData.getRefElevation();
  		if(stophandler_ON) {
-    	 STOP_Handler = Event_Handler; 
+    	 STOP_Handler = integratorData.getIntegStopHandler(); 
  		}
 //----------------------------------------------------------------------------------------------
 //					Gravity Setup	
 //----------------------------------------------------------------------------------------------
  		Gravity.setMu(mu);
  		Gravity.setRm(rm);
- 		Gravity.setTARGET(target);
+ 		Gravity.setTARGET(integratorData.getTargetBody());
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
@@ -1098,40 +1075,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
-		FirstOrderIntegrator dp853;
-		String IntegInput ="";
-			//String dir = System.getProperty("user.dir");
-			IntegInput = dir + IntegratorInputPath[INTEGRATOR];
-		try {
-			double[] IntegINP = Mathbox.READ_INTEGRATOR_INPUT(IntegInput);
-		if (INTEGRATOR == 1) {
-	         dp853 = new ClassicalRungeKuttaIntegrator(IntegINP[0]);
-		} else if (INTEGRATOR == 0) {
-	         dp853 = new DormandPrince853Integrator(IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3]);
-		} else if (INTEGRATOR ==2){
-			dp853 = new GraggBulirschStoerIntegrator(IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3]);
-		} else if (INTEGRATOR == 3){
-			dp853 = new AdamsBashforthIntegrator((int) IntegINP[0], IntegINP[1], IntegINP[2], IntegINP[3], IntegINP[4]);
-		} else {
-			// Default Value
-			System.out.println("Integrator index out of range");
-			System.out.println("Fallback to standard setting: DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10)");
-			 dp853 = new DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10);
-		}
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
-			System.out.println(e2);
-			System.out.println("Integrator settings read failed");
-			System.out.println("Fallback to standard setting: DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10)");
-			dp853 = new DormandPrince853Integrator(1.0e-8, 1.0, 1.0e-10, 1.0e-10);
-		}
+		FirstOrderIntegrator IntegratorModule = integratorData.getIntegrator();
 //----------------------------------------------------------------------------------------------
 	        FirstOrderDifferentialEquations ode = new Simulation();
 	        //------------------------------
 	        ATM_DATA.removeAll(ATM_DATA);
 	        try {
-				ATM_DATA = AtmosphereModel.INITIALIZE_ATM_DATA(target);
+				ATM_DATA = AtmosphereModel.INITIALIZE_ATM_DATA(integratorData.getTargetBody());
 			} catch (URISyntaxException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
@@ -1143,30 +1093,30 @@ public class Simulation implements FirstOrderDifferentialEquations {
   			// 						Result vector setup - DO NOT TOUCH
   			int dimension = 0;
 	    	if(is_6DOF) { dimension =  14; // 6 DOF model 
-	        } else {dimension =  7; // 3 DOF model 
+	        } else {  dimension =  7; // 3 DOF model 
 	        }
 		        double[] y = new double[dimension]; // Result vector
   			if(is_6DOF) {
 	  		       // double[] y = new double[13]; // Result vector
-	  	        	V_NED_ECEF_spherical[0]=x3;
-	  	        	V_NED_ECEF_spherical[1]=x4;
-	  	        	V_NED_ECEF_spherical[2]=x5;
+	  	        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+	  	        	V_NED_ECEF_spherical[1]= integratorData.getInitFpa();
+	  	        	V_NED_ECEF_spherical[2]= integratorData.getInitAzimuth();
 	  		// Position 
-	  		        y[0] = x0;
-	  		        y[1] = x1;
-	  		        y[2] = x2;
+	  		        y[0] = integratorData.getInitLongitude();
+	  		        y[1] = integratorData.getInitLatitude();
+	  		        y[2] = integratorData.getInitRadius();
 	  		        
 	  		// Velocity
 			  		        if(spherical) {
 			  		        	
-			  		        y[3] = x3;
-			  		        y[4] = x4;
-			  		        y[5] = x5;
+			  		        y[3] = integratorData.getInitVelocity();
+			  		        y[4] = integratorData.getInitFpa();
+			  		        y[5] = integratorData.getInitAzimuth();
 			  		        
 			  		        } else {
-			  		        	V_NED_ECEF_spherical[0]=x3;
-			  		        	V_NED_ECEF_spherical[1]=x4;
-			  		        	V_NED_ECEF_spherical[2]=x5;
+			  		        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+			  		        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+			  		        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
 			  		        	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
 			  			        y[3] = V_NED_ECEF_cartesian[0];
 			  			        y[4] = V_NED_ECEF_cartesian[1];
@@ -1175,8 +1125,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			  			        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
 			  		        }
 	  		// S/C Mass        
-	  		        y[6] = x6;
-	  		        m0 = x6;
+	  		        y[6] = spaceShip.getMass();
+	  		        m0 = spaceShip.getMass();
 	  				INITIALIZE_FlightController(y) ;
 	  				// Attitude and Rotational Motion
 	  				y[7]  = q_vector[0][0];
@@ -1190,25 +1140,25 @@ public class Simulation implements FirstOrderDifferentialEquations {
   				
   			} else { // 3DOF case
 			      //  double[] y = new double[7]; // Result vector
-		        	V_NED_ECEF_spherical[0]=x3;
-		        	V_NED_ECEF_spherical[1]=x4;
-		        	V_NED_ECEF_spherical[2]=x5;
+		        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+		        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+		        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
 			// Position 
-			        y[0] = x0;
-			        y[1] = x1;
-			        y[2] = x2;
+			        y[0] = integratorData.getInitLongitude();
+			        y[1] = integratorData.getInitLatitude();
+			        y[2] = integratorData.getInitRadius();
 			        
 			// Velocity
 			        if(spherical) {
 			        	
-			        y[3] = x3;
-			        y[4] = x4;
-			        y[5] = x5;
+			        y[3] = integratorData.getInitVelocity();
+			        y[4] = integratorData.getInitFpa();
+			        y[5] = integratorData.getInitAzimuth();
 			        
 			        } else {
-			        	V_NED_ECEF_spherical[0]=x3;
-			        	V_NED_ECEF_spherical[1]=x4;
-			        	V_NED_ECEF_spherical[2]=x5;
+			        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+			        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+			        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
 			        	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
 				        y[3] = V_NED_ECEF_cartesian[0];
 				        y[4] = V_NED_ECEF_cartesian[1];
@@ -1217,8 +1167,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 				        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
 			        }
 			// S/C Mass        
-			        y[6] = x6;
-			        m0 = x6;
+			        y[6] = spaceShip.getMass();
+			        m0 = spaceShip.getMass();
 					INITIALIZE_FlightController(y) ;
   			}
 //----------------------------------------------------------------------------------------------
@@ -1246,7 +1196,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                }
 	                CTRL_Time=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
 	                if( t > twrite ) {
-	                	twrite = twrite + dt_write; 
+	                	twrite = twrite + integratorData.getIntegTimeStep(); 
 	                    steps.add(t + " " + 
 	                    		  y[0] + " " + 
 	                    		  y[1] + " " + 
@@ -1419,20 +1369,21 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        if(stophandler_ON) {
 	        for(int i=0;i<STOP_Handler.size();i++) {
 	        	EventHandler interimEvent = STOP_Handler.get(i).get_StopHandler();
-	        	dp853.addEventHandler(interimEvent,0.1,1.0e-2,100);
+	        	IntegratorModule.addEventHandler(interimEvent,0.1,1.0e-2,100);
 	        	System.out.println("Handler: "+STOP_Handler.get(i).get_val_condition());
 	        }
 	        }
-	        dp853.addEventHandler(AltitudeHandler,1,1.0e-4,50);
-	        dp853.addEventHandler(VelocityHandler,1,1.0e-3,30);
+	        IntegratorModule.addEventHandler(AltitudeHandler,1,1.0e-4,50);
+	        IntegratorModule.addEventHandler(VelocityHandler,1,1.0e-3,30);
 	        System.out.println(""+STOP_Handler.size()+" Event Handler added.");
-	        dp853.addStepHandler(WriteOut);
+	        IntegratorModule.addStepHandler(WriteOut);
 	        System.out.println("Integrator start");
 	        System.out.println("------------------------------------------");
 	        long startTime   = System.nanoTime();
 	        boolean integ_error=false; 
 	        try {
-	        dp853.integrate(ode, 0.0, y, t, y);
+	        	double t= integratorData.getMaxIntegTime();
+	        	IntegratorModule.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        	System.out.println("ERROR: Integrator failed:");
 	        	System.out.println(eNBE);
@@ -1450,5 +1401,5 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
 				}
 	       
-		}
+    }
 }

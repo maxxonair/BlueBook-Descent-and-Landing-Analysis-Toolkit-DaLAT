@@ -9,7 +9,7 @@ import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
-
+import FlightElement.SpaceShip;
 import VisualEngine.entities.Light;
 import VisualEngine.entities.Spacecraft;
 import VisualEngine.entities.ThirdPersonCamera;
@@ -87,7 +87,8 @@ public class worldGenerator {
 		texture.setShineDamper(shine_value);
 		texture.setReflectivity(reflectivity_value);
 		Vector3f startPostion = new Vector3f(400,5,400);
-		Spacecraft spacecraft = new Spacecraft(staticModel, startPostion,0,0,0,1);	
+		SpaceShip spaceShip = null;
+		Spacecraft spacecraft = new Spacecraft(spaceShip, staticModel, startPostion,0,0,0,1);	
 		spaceElements.add(spacecraft);
 		//----------------------------------------------------------------
 		// 					Light Setting
@@ -116,7 +117,7 @@ public class worldGenerator {
 			//renderer.adjustBrightness();
 			renderer.processTerrain(terrain);
 			for(Spacecraft sc:spaceElements) {
-				sc.move(terrain);
+				//sc.move(terrain);
 				renderer.processEntity(sc);
 			}
 			//renderer.render3P(light, camera);
