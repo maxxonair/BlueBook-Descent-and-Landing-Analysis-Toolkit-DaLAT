@@ -20,6 +20,7 @@ import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 import org.apache.commons.math3.util.FastMath;
 
+import Model.Atmosphere;
 import Model.AtmosphereModel;
 import Model.Gravity;
 import Model.atm_dataset;
@@ -79,39 +80,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	 	//----------------------------------------------------------------
 			public static double[][] g = {{0},{0},{0}};		
 			public static double[][] g_NED = {{0},{0},{0}};  // Gravity vector in NED frame 				[m/s�]
-			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
 			public static double rm    = 0;    	    // Planets average radius                   [m]
 			public static double omega = 0 ;        // Planets rotational rate                  [rad/sec]
 			public static double g0 = 9.81;         // For normalized ISP 			
 			//public static double gn = 0;
 			//public static double gr = 0;
-			public static double DragForce = 0;
-			public static double SideForce = 0;
-			public static double LiftForce = 0;
-		    public static double Cd=0;
-		    public static double C_SF=0;
-		    public static double Cl=0;
-		    public static double qinf=0;
-		    public static double SurfaceArea =0;
-		    public static double BankAngle =0;
-		    public static double AngleOfAttack=0;
-		    public static double AngleOfSideslip=0; 
-		    public static double CdPar=0;
 		    public static double Thrust=0;
-		    public static double Spar=0;
-		    public static double rho =0;
-		    public static double gamma =0;
-		    public static double R=0;
-		    public static double Ma=0;
-		    public static double T=0;
-		    public static double CdC=0;
-		    public static double ISP = 0 ; 
-		    public static double P = 0 ;      				// static pressure [Pa]
-		    public static double cp = 0;						// 
-		    public static double m0; 
-		    public static int flowzone=0; 					// Flow zone continuum - transitional - free molecular flwo
-		    public static double Cdm = 0; 					// Drag coefficient in contiuum flow; 
 		    public static int TARGET=0;						// Target body index
 		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
 		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
@@ -144,10 +119,11 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static double tetamin=0;
 	      	public static double fpa_dot =0;
 	      	public static double integ_t =0;
-	      	
+	      	public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 	        public static double Xfo = 0 ;
 	        public static double Yfo = 0 ; 
 	        public static double Zfo = 0 ; 
+	        public static double ISP_is=0;
 	        
 	        static double azimuth_inertFrame = 0 ;
 	        static double fpa_inertFrame     = 0 ;
@@ -262,26 +238,29 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static double TTM_max = 5.0;
 	        public static boolean engine_loss_indicator=false;
 	        
+	        public static SpaceShip spaceShip = new SpaceShip();
+	        public static Atmosphere atmosphere = new Atmosphere();
+	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
-	    public double ThrottleMODEL_get_ISP(double ISP_min, double ISP_max, double Throttle_CMD) {
-	        	// input check
+	    public double ThrottleMODEL_get_ISP(SpaceShip spaceShip, double Throttle_CMD) {
+	        	double IspOut=0;
 	        	if(Throttle_CMD>1 || Throttle_CMD<0) {
 	        		System.out.println("ERROR: ISP model - throttle command out of range" );
-	        		ISP =  ISP_max;
+	        		IspOut =  spaceShip.getPropulsion().getPrimaryISPMax();
 	        	} else if (ISP_min>ISP_max) {
 	        		System.out.println("ERROR: ISP model - minimum ISP is larger than maximum ISP" );
-	        		ISP=ISP_max;
+	        		IspOut=spaceShip.getPropulsion().getPrimaryISPMax();
 	        	} else if (ISP_min<0 || ISP_max<0) {
 	        		System.out.println("ERROR: ISP model - ISP below 0");
-	        		ISP=0; 
+	        		IspOut=0; 
 	        	} else {
-	        		double m = (ISP_max - ISP_min)/(1 - cmd_min);
-	        		double n = ISP_max - m ; 
-	        		ISP = m * Throttle_CMD + n; 
+	        		double m = (spaceShip.getPropulsion().getPrimaryISPMax() - spaceShip.getPropulsion().getPrimaryISPMin())/(1 - cmd_min);
+	        		double n = spaceShip.getPropulsion().getPrimaryISPMax() - m ; 
+	        		IspOut = m * Throttle_CMD + n; 
 	        	}
-	        	return ISP; 
+	        	return IspOut; 
 	        }
 	    public int getDimension() {
 	    	if(is_6DOF) {
@@ -507,39 +486,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	} else { System.out.println("ERROR: Sequence type out of range");}
 		}
 		
-		
-		public static void ATMOSPHERE_MANAGER(double[] x) {
-			double altitude = x[2] - rm ; 
-	    	if (altitude>200000 || TARGET == 1){ // In space conditions: 
-	    		// Set atmosphere properties to zero: 
-		    		rho   = 0; 																// Density 							[kg/m3]
-		    		qinf  = 0;																// Dynamic pressure 					[Pa]
-		    		T     = 0 ; 																// Temperature 						[K]
-		    		gamma = 0 ; 																// Heat capacity ratio 				[-]
-		    		R	  = 0; 																// Gas constant 						[J/kgK]
-		    		Ma 	  = 0; 																// Mach number 						[-]
-		      	//----------------------------------------------------------------------------------------------
-	    	} else { // In atmosphere conditions (if any)
-		    	 rho    = AtmosphereModel.atm_read(1, altitude) ;       					// density                         [kg/m3]
-		    	 qinf   = 0.5 * rho * ( V_NED_ECEF_spherical[0] * V_NED_ECEF_spherical[0]) ;               	// Dynamic pressure                [Pa]
-		    	 T      = AtmosphereModel.atm_read(2, altitude) ;                   		// Temperature                     [K]
-		    	 gamma  = AtmosphereModel.atm_read(4, altitude) ;              	        	// Heat capacity ratio			   [-]
-		    	 R      = AtmosphereModel.atm_read(3, altitude ) ;                        						// Gas Constant                    [J/kgK]
-		    	 P      = rho * R * T;																			// Ambient pressure 			   [Pa]
-		    	 Ma     = V_NED_ECEF_spherical[0] / Math.sqrt( T * gamma * R);                  		 			// Mach number                     [-]
-	    	     //CdPar  = load_Cdpar( x[3], qinf, Ma, x[2] - rm);   		             						// Parachute Drag coefficient      [-]
-	    	     CdC    = AtmosphereModel.get_CdC(altitude,0);                       							// Continuum flow drag coefficient [-]
-		    	 Cd 		= AtmosphereModel.load_Drag(V_NED_ECEF_spherical[0], altitude, P, T, CdC, Lt, R);    	// Lift coefficient                [-]
-		    	 flowzone = AtmosphereModel.calc_flowzone(V_NED_ECEF_spherical[0], altitude, P, T, Lt);        	// Continous/Transition/Free molecular flow [-]
-	    	}
-	     	//-----------------------------------------------------------------------------------------------
-	    	 DragForce  			=   qinf * SurfaceArea * Cd     		       ;								// Aerodynamic drag Force 		   [N]
-	    	 LiftForce 		    	=   qinf * SurfaceArea * Cl * cos( BankAngle ) ;                        // Aerodynamic lift Force 		   [N]
-	    	 SideForce 		    	=   qinf * SurfaceArea * Cl * sin( BankAngle ) ;                        // Aerodynamic side Force 		   [N]
-	    	//----------------------------------------------------------------------------------------------
-		}
 
-		public static void INITIALIZE_ROTATIONAL_MATRICES(double[] x, double t, double bank_angle, double[][] euler_angle) {
+		public static void INITIALIZE_ROTATIONAL_MATRICES(double[] x, double t, Atmosphere atmosphere, double[][] euler_angle) {
 			//-------------------------------------------------------------------------------------------
 			//              Aerodynamic frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
@@ -547,13 +495,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			C_NED_A[1][0] =  Math.sin(V_NED_ECEF_spherical[2])*Math.cos(V_NED_ECEF_spherical[1]);
 			C_NED_A[2][0] = -Math.sin(V_NED_ECEF_spherical[1]);
 			
-			C_NED_A[0][1] = -Math.sin(V_NED_ECEF_spherical[1])*Math.cos(bank_angle) - Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(bank_angle);
-			C_NED_A[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(bank_angle) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(bank_angle);
-			C_NED_A[2][1] = -Math.cos(V_NED_ECEF_spherical[1])*Math.sin(bank_angle);
+			C_NED_A[0][1] = -Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle()) - Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
+			C_NED_A[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(atmosphere.getBankAngle()) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
+			C_NED_A[2][1] = -Math.cos(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
 			
-			C_NED_A[0][2] = -Math.sin(V_NED_ECEF_spherical[2])*Math.sin(bank_angle) + Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(bank_angle);
-			C_NED_A[1][2] =  Math.cos(V_NED_ECEF_spherical[2])*Math.sin(bank_angle) + Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(bank_angle);
-			C_NED_A[2][2] =  Math.cos(V_NED_ECEF_spherical[1])*Math.cos(bank_angle);
+			C_NED_A[0][2] = -Math.sin(V_NED_ECEF_spherical[2])*Math.sin(atmosphere.getBankAngle()) + Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
+			C_NED_A[1][2] =  Math.cos(V_NED_ECEF_spherical[2])*Math.sin(atmosphere.getBankAngle()) + Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
+			C_NED_A[2][2] =  Math.cos(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
 			//-------------------------------------------------------------------------------------------
 			//             Body fixed frame to North-East-Down
 			//-------------------------------------------------------------------------------------------
@@ -619,17 +567,17 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			//-------------------------------------------------------------------------------------------
 			//             Bodyfixed frame to Aerodynamic frame
 			//-------------------------------------------------------------------------------------------
-			C_B_A[0][0] =  Math.cos(AngleOfAttack)*Math.cos(AngleOfSideslip);
-			C_B_A[1][0] =  Math.sin(AngleOfSideslip);
-			C_B_A[2][0] =  Math.sin(AngleOfAttack)*Math.cos(AngleOfSideslip);
+			C_B_A[0][0] =  Math.cos(atmosphere.getAngleOfAttack())*Math.cos(atmosphere.getAngleOfSideslip());
+			C_B_A[1][0] =  Math.sin(atmosphere.getAngleOfSideslip());
+			C_B_A[2][0] =  Math.sin(atmosphere.getAngleOfAttack())*Math.cos(atmosphere.getAngleOfSideslip());
 			
-			C_B_A[0][1] =  -Math.cos(AngleOfAttack)*Math.sin(AngleOfSideslip);
-			C_B_A[1][1] =   Math.cos(AngleOfSideslip);
-			C_B_A[2][1] =  -Math.sin(AngleOfAttack)*Math.sin(AngleOfSideslip);
+			C_B_A[0][1] =  -Math.cos(atmosphere.getAngleOfAttack())*Math.sin(atmosphere.getAngleOfSideslip());
+			C_B_A[1][1] =   Math.cos(atmosphere.getAngleOfSideslip());
+			C_B_A[2][1] =  -Math.sin(atmosphere.getAngleOfAttack())*Math.sin(atmosphere.getAngleOfSideslip());
 			
-			C_B_A[0][2] =  -Math.sin(AngleOfAttack);
+			C_B_A[0][2] =  -Math.sin(atmosphere.getAngleOfAttack());
 			C_B_A[1][2] =  0;
-			C_B_A[2][2] =   Math.cos(AngleOfAttack);
+			C_B_A[2][2] =   Math.cos(atmosphere.getAngleOfAttack());
 			
 		}
 		
@@ -704,13 +652,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
-    	ATMOSPHERE_MANAGER(x);
+    	AtmosphereModel.ATMOSPHERE_MANAGER(x, rm, TARGET, Lt, atmosphere, spaceShip, V_NED_ECEF_spherical);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-	   	F_Aero_A[0][0] = -  DragForce  ;
-	   	F_Aero_A[1][0] =    SideForce  ;
-	   	F_Aero_A[2][0] = -  LiftForce  ;
+	   	F_Aero_A[0][0] = -  atmosphere.getDragForce()  ;
+	   	F_Aero_A[1][0] =    atmosphere.getSideForce()  ;
+	   	F_Aero_A[2][0] = -  atmosphere.getLiftForce()  ;
 	   	//System.out.println(F_Aero_A[0][0] + " | "+F_Aero_A[1][0] + " | "+F_Aero_A[2][0] + " | ");
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Thrust Forces | Body fixed Frame |
@@ -721,18 +669,18 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
     	//-------------------------------------------------------------------------------------------------------------------
-	   	INITIALIZE_ROTATIONAL_MATRICES(x, t, BankAngle, EulerAngle); 
+	   	INITIALIZE_ROTATIONAL_MATRICES(x, t, atmosphere, EulerAngle); 
     	F_Aero_NED   	= Mathbox.Multiply_Matrices(C_NED_A, F_Aero_A) ;    	
     	F_Thrust_NED 	= Mathbox.Multiply_Matrices(C_NED2B, F_Thrust_B) ;
     	F_total_NED   	= Mathbox.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    				ISP model for engine throttling
     	//-------------------------------------------------------------------------------------------------------------------
-    	if(ISP_Throttle_model) {ThrottleMODEL_get_ISP( ISP_min,  ISP_max,  Throttle_CMD);}
+    	if(ISP_Throttle_model) {ISP_is = ThrottleMODEL_get_ISP(spaceShip, Throttle_CMD);}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
-    	acc_deltav = acc_deltav + ISP*g0*Math.log(mminus/x[6]);
+    	acc_deltav = acc_deltav + ISP_is*g0*Math.log(mminus/x[6]);
     	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										  Ground track 
@@ -810,7 +758,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	
 	    }	    
 	    // System mass [kg]
-	    dxdt[6] = - Thrust/(ISP*g0) ;   
+	    dxdt[6] = - Thrust/(ISP_is*g0) ;   
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
@@ -994,7 +942,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	AngularRate[0][0] = x[11];
 	AngularRate[1][0] = x[12];
 	AngularRate[2][0] = x[13];
-	AngleOfAttack = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
+	//atmosphere.getAngleOfAttack() = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 	}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Update Event handler
@@ -1013,7 +961,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     public static void launchIntegrator( IntegratorData integratorData,
     										 List<SequenceElement> SEQUENCE_DATA, 
     										 double[] error_file ,
-    										 SpaceShip spaceShip ){
+    										 SpaceShip spaceElement ){
 //----------------------------------------------------------------------------------------------
 // 						Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -1029,6 +977,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //	
 //   - Read propulsion setting:	Propulsion/Controller INIT
 //   - Initialise ground track computation
+
+	spaceShip = spaceElement;
 //----------------------------------------------------------------------------------------------	
 	if(integratorData.getVelocityVectorCoordSystem()==1) {
 		spherical = true;
@@ -1052,16 +1002,15 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    cntr_h_init=integratorData.getInitRadius()-rm;
 	    cntr_v_init=integratorData.getInitVelocity();
 
-	    	 ISP          	   = spaceShip.getPropulsion().getPrimaryISPMax();
 	    	 m_propellant_init = spaceShip.getPropulsion().getPrimaryPropellant();
 	    	 Thrust_max 	       = spaceShip.getPropulsion().getPrimaryThrustMax();
 	    	 Thrust_min		   = spaceShip.getPropulsion().getPrimaryThrustMin();
+	    	 ISP_is			   = spaceShip.getPropulsion().getPrimaryISPMax();
 	    	 if(spaceShip.getPropulsion().isPrimaryThrottleModel()) {
 	    		 ISP_max = spaceShip.getPropulsion().getPrimaryISPMax();
 	    		 ISP_min = spaceShip.getPropulsion().getPrimaryISPMin();
 	    		 ISP_Throttle_model=true; 
 	    	 }
-	    	 SurfaceArea  = spaceShip.getAeroElements().getSurfaceArea();
 	    	 M0 			  = spaceShip.getMass()  ; 
 	    	 mminus	  	  = M0  ;
 	    	 vminus		  = integratorData.getInitVelocity()  ;
@@ -1141,7 +1090,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			  		        }
 	  		// S/C Mass        
 	  		        y[6] = spaceShip.getMass();
-	  		        m0 = spaceShip.getMass();
 	  				INITIALIZE_FlightController(y) ;
 	  				// Attitude and Rotational Motion
 	  				y[7]  = q_vector[0][0];
@@ -1183,7 +1131,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			        }
 			// S/C Mass        
 			        y[6] = spaceShip.getMass();
-			        m0 = spaceShip.getMass();
 					INITIALIZE_FlightController(y) ;
   			}
 //----------------------------------------------------------------------------------------------
@@ -1221,25 +1168,25 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  V_NED_ECEF_spherical[0]+ " " + 
 	                    		  V_NED_ECEF_spherical[1] + " " + 
 	                    		  V_NED_ECEF_spherical[2] + " " + 
-	                    		  rho + " " + 
-	                    		  DragForce + " " +
-	                    		  LiftForce + " " +
-	                    		  SideForce + " " +
+	                    		  atmosphere.getDensity() + " " + 
+	                    		  atmosphere.getDragForce() + " " +
+	                    		  atmosphere.getLiftForce() + " " +
+	                    		  atmosphere.getSideForce() + " " +
 	                    		  Gravity.getGravity2D(y)[0] + " " +
 	                    		  Gravity.getGravity2D(y)[1] + " " +
 	                    		  g_total + " " +
-	                    		  T+ " " +
-	                    		  Ma+ " " +
-	                    		  cp+ " " +
-	                    		  R+ " " +
-	                    		  P+ " " +
-	                    		  Cd+ " " +
-	                    		  Cl+ " " +
-	                    		  BankAngle+ " " +
-	                    		  flowzone+ " " +
-	                    		  qinf+ " " +
-	                    		  CdC+ " " +
-	                    		  Cdm+ " " +
+	                    		  atmosphere.getStaticTemperature()+ " " +
+	                    		  atmosphere.getMach()+ " " +
+	                    		  atmosphere.getPressureCoefficient()+ " " +
+	                    		  atmosphere.getGasConstant()+ " " +
+	                    		  atmosphere.getStaticPressure()+ " " +
+	                    		  atmosphere.getDragCoefficient()+ " " +
+	                    		  atmosphere.getLiftCoefficient()+ " " +
+	                    		  atmosphere.getBankAngle()+ " " +
+	                    		  atmosphere.getFlowzone()+ " " +
+	                    		  atmosphere.getDynamicPressure()+ " " +
+	                    		  atmosphere.getDragCoefficientContinuumFlow()+ " " +
+	                    		  atmosphere.getCdC()+ " " +
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
 	                    		  E_total+ " " + 
@@ -1273,7 +1220,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  q_vector[1][0]+" "+
 	                    		  q_vector[2][0]+" "+
 	                    		  q_vector[3][0]+" "+
-	                    		  ISP+" "+
+	                    		  ISP_is+" "+
 	                    		  F_total_NED[0][0]+" "+
 	                    		  F_total_NED[1][0]+" "+
 	                    		  F_total_NED[2][0]+" "+
@@ -1302,7 +1249,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  EulerAngle[0][0]+" "+
 	                    		  EulerAngle[1][0]+" "+
 	                    		  EulerAngle[2][0]+" "+
-	                    		  AngleOfAttack+" "
+	                    		  atmosphere.getAngleOfAttack()+" "
 	                    		  );
 	                }
 	              
