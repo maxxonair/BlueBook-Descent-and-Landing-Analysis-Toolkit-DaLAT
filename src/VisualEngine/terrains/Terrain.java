@@ -18,25 +18,29 @@ import VisualEngine.toolbox.Maths;
 public class Terrain {
 	 
     private float SIZE = 0;
-    private float MAX_HEIGHT = 40;
+    private float MAX_HEIGHT = 0;
     private static final float MAX_PIXEL_COLOUR = 256 * 256 * 256;
  
     private float x;
     private float z;
+    private float posX;
+    private float posZ;
     private RawModel model;
     private TerrainTexturePack texturePack;
     private TerrainTexture blendMap;
      
     private float[][] heights;
  
-    public Terrain(int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack,
+    public Terrain(float posX, float posZ, int gridX, int gridZ, Loader loader, TerrainTexturePack texturePack,
             TerrainTexture blendMap, String heightMap, float Size, float MaxHeight) {
         this.SIZE =Size;
         this.MAX_HEIGHT=MaxHeight;
     		this.texturePack = texturePack;
         this.blendMap = blendMap;
-        this.x = gridX * Size;
-        this.z = gridZ * Size;
+        this.posX=posX;
+        this.posZ=posZ;
+        this.x = gridX * Size + posX;
+        this.z = gridZ * Size + posZ;
         this.model = generateTerrain(loader, heightMap);
     }
  
@@ -159,6 +163,22 @@ public class Terrain {
         height *= MAX_HEIGHT;
         return height;
     }
+
+	public float getPosX() {
+		return posX;
+	}
+
+	public void setPosX(float posX) {
+		this.posX = posX;
+	}
+
+	public float getPosZ() {
+		return posZ;
+	}
+
+	public void setPosZ(float posZ) {
+		this.posZ = posZ;
+	}
  
      
 }

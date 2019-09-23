@@ -124,12 +124,12 @@ import javax.swing.*;
 
 import Model.atm_dataset;
 import Sequence.SequenceElement;
-import Simulator_main.Launch_Simulation;
 import GUI.PostProcessing.CreateCustomChart;
 import GUI.RealTimeSimulation.*;
 import GUI.Settings.Settings;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Mathbox;
+import Toolbox.ReadInput;
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.engineLauncher.worldAnimation;
 import VisualEngine.engineLauncher.worldGenerator;
@@ -5455,7 +5455,7 @@ fstream.close();
     
     public static double[][] FIND_ctrl_init_cond() throws IOException{
 	   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
-	   	    SEQUENCE_DATA = Launch_Simulation.READ_SEQUENCE();
+	   	    SEQUENCE_DATA = ReadInput.readSequence();
 	   	    double[][] INIT_CONDITIONS = new double[4][SEQUENCE_DATA.size()];
 	   	    for (int i=0;i<SEQUENCE_DATA.size();i++) {
 	   	    	

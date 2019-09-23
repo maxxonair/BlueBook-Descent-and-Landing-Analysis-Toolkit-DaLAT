@@ -16,7 +16,7 @@ public class Spacecraft extends Entity {
 	//private static final float TESTROCKET  =  40;
 	
 	private static float CG_Y = 0.9f;
-	private static float azimuth=(float) Math.toRadians(45);
+	private static float azimuth=(float) Math.toRadians(0);
 	
 
 	@SuppressWarnings("unused")
@@ -111,6 +111,7 @@ public class Spacecraft extends Entity {
 		//System.out.println(terrainHeight);
 		if(super.getPosition().y<(terrainHeight+CG_Y)) {
 			Spacecraft.currentVerticalSpeed=0;
+			Spacecraft.currentHorizontalSpeed=0;
 			 super.getPosition().y=terrainHeight+CG_Y;
 		}
 		Spacecraft.currentSpeed = realTimeResultSet.getVelocity();
@@ -174,7 +175,7 @@ public class Spacecraft extends Entity {
 		// 			Environment Inputs
 		//---------------------------------------------
 		if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
-			Spacecraft.setPosition(new Vector3f(0,100,0));
+			Spacecraft.setPosition(new Vector3f(500,200,0));
 		}
 	}
 

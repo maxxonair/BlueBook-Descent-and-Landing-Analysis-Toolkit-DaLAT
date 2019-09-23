@@ -74,7 +74,7 @@ public class worldGenerator {
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, rTexture, gTexture, bTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
 
-		Terrain terrain = new Terrain(0,0, loader, texturePack, blendMap, "heightmap",800f,40f);
+		Terrain terrain = new Terrain(0,0,0,0, loader, texturePack, blendMap, "heightmap",800f,40f);
 		//----------------------------------------------------------------
 		// 					Spacecraft Setting
 		//----------------------------------------------------------------

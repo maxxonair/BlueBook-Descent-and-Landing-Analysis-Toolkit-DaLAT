@@ -164,10 +164,10 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[][] F_Aero_A    = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
 			public static double[][] F_Aero_NED  = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
 			public static double[][] F_Thrust_B  = {{0},{0},{0}};						// Thrust Force in body fixed system     [N]
-			public static double[][] F_Thrust_NED= {{0},{0},{0}};						// Thrust Force in NED frame    		 [N]
-			public static double[][] F_Gravity_G = {{0},{0},{0}};						// Gravity Force in ECEF coordinates     [N]
+			public static double[][] F_Thrust_NED  = {{0},{0},{0}};						// Thrust Force in NED frame    		 [N]
+			public static double[][] F_Gravity_G   = {{0},{0},{0}};						// Gravity Force in ECEF coordinates     [N]
 			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
-			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
+			public static double[][] F_total_NED   = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
 			public static double[][] M_Thrust_NED    = {{0},{0},{0}};
@@ -175,6 +175,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
 			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
 			public static double[][] C_NED2B 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix body fixed to NED system
+			public static double[][] C_B2NED 	= {{0,0,0},{0,0,0},{0,0,0}};
 			public static double[][] C_NED_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to NED system
 			public static double[][] C_B_A 		= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Bodyfixed to Aerodynamic
 			public static double[][] C_GC2NED   = {{1,0,0},{0,1,0},{0,0,1}};
@@ -187,7 +188,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 														{0}}; 							// Quarternion vector
 			public static double[][] AngularRate     = {{0},
 														{0},
-														{1}};							 // Angular Velcity {P, Q, R}T [rad/s] 
+														{0}};							 // Angular Velcity {P, Q, R}T [rad/s] 
 			public static double[][] EulerAngle      = {{0},{0},{0}};				     // Euler Angle Vector [rad]
 			public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0},
@@ -570,6 +571,20 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			C_NED2B[1][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0])-Math.cos(euler_angle[2])*Math.sin(euler_angle[0]);
 			C_NED2B[2][2] = Math.cos(euler_angle[1])*Math.cos(euler_angle[0]);
 			*/
+			
+			C_B2NED[0][0] =  0; 
+			C_B2NED[1][0] =  0;
+			C_B2NED[2][0] =  0;
+			
+			C_B2NED[0][1] =  0; 
+			C_B2NED[1][1] =  0;
+			C_B2NED[2][1] =  0;
+			
+			C_B2NED[0][2] =  0; 
+			C_B2NED[1][2] =  0;
+			C_B2NED[2][2] =  0;
+			
+	
 			//-----------------------------------------------------------------------
 			// Quaternion Representation: 
 			

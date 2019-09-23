@@ -8,8 +8,8 @@ import VisualEngine.toolbox.Maths;
 
 public class SkyboxShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/VisualEngine/skybox/skyboxVertexShader.txt";
-	private static final String FRAGMENT_FILE = "src/VisualEngine/skybox/skyboxFragmentShader.txt";
+	private static final String VERTEX_FILE = "/VisualEngine/skybox/skyboxVertexShader.txt";
+	private static final String FRAGMENT_FILE = "/VisualEngine/skybox/skyboxFragmentShader.txt";
 	
 	private int location_projectionMatrix;
 	private int location_viewMatrix;

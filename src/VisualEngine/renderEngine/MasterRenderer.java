@@ -23,7 +23,7 @@ public class MasterRenderer {
 	
 	private static float FOV = 70;
 	private static float NEAR_PLANE = 0.1f;
-	private static float FAR_PLANE = 1000;
+	private static float FAR_PLANE = 2000;
 	
 	private Matrix4f projectionMatrix;
 	
