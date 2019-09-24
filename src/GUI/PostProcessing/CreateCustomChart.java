@@ -11,7 +11,9 @@ import java.io.IOException;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
@@ -35,6 +37,15 @@ public class CreateCustomChart {
 	    	MainGUI = new JPanel();
 	    	MainGUI.setBackground(bc_c);
 	    	MainGUI.setLayout(new BorderLayout());
+	    	
+	        String path = "images/workInProgress.png";
+	        File file = new File(path);
+	        BufferedImage image2 = ImageIO.read(file);
+	        JLabel label = new JLabel(new ImageIcon(image2));
+	        label.setSize(200,200);
+	        label.setLocation(20, 20);
+	        MainGUI.add(label);
+	    	
 			return MainGUI;
 	
 	

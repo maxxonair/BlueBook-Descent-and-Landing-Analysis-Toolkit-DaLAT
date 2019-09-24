@@ -46,12 +46,17 @@ public class worldAnimation {
 	static float shine_value = 1;
 	static float reflectivity_value =0;
 	
-    static double[][] InertiaTensorMatrix   =         {{   8000    ,    0       ,   0},
-													   {      0    ,    8000    ,   0},
-													   {      0    ,    0       ,   8000}};
-    private static double[][] MRCS = {{500},
-			 						  {500},
-			 						  {500}};
+    static double[][] InertiaTensorMatrix   =         {{   27364    ,    0       ,   0},
+													   {      0    ,    27314    ,   0},
+													   {      0    ,    0       ,   26114}};
+    private static double[][] MRCS = {{1900},
+			 						  {1900},
+			 						  {1900}};
+    
+	private static double[][] quarternions = {	{-0.2164396},
+			{0},
+			{0},
+			{0.976296}}; 
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
@@ -68,7 +73,7 @@ public class worldAnimation {
         List<GUIText> guiTextsLeft = new ArrayList<GUIText>();
         List<GUIText> guiTextsRight = new ArrayList<GUIText>();
         float yGap = 0.03f;
-        int numberGuiTexts=15;
+        int numberGuiTexts=17;
         for(int i=0;i<numberGuiTexts;i++) {
             GUIText guiText = new GUIText("", 1f, font, new Vector2f(0f, 0f+i*yGap), 1f, false);
             guiText.setColour(0.5f, 0.5f, 0.5f);
@@ -85,8 +90,9 @@ public class worldAnimation {
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("greySand"));			
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, backgroundTexture, backgroundTexture, backgroundTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
-		Terrain terrain11 = new Terrain(0,0,0,0, loader, texturePack, blendMap, "moon/tile11", 2365f, 40f);
-		Terrain terrain12 = new Terrain(0,2365f,0,0, loader, texturePack, blendMap, "moon/tile11", 1000f, 30f);
+		float tileSize = 2365f; 
+		Terrain terrain11 = new Terrain(0,0,0,0, loader, texturePack, blendMap, "moon/tile11", tileSize, 40f);
+		Terrain terrain12 = new Terrain(0,tileSize,0,0, loader, texturePack, blendMap, "moon/tile11", tileSize, 40f);
 		//----------------------------------------------------------------
 		// 					Spacecraft Setting
 		//----------------------------------------------------------------
@@ -102,17 +108,20 @@ public class worldAnimation {
 		if(isAnimate) {
 		 startPostion = new Vector3f(0,animationSets.get(0).getAlt_init(),0);
 		} else {
-		 startPostion = new Vector3f(600,150,0);
+		 startPostion = new Vector3f(1000,200,0);
 		}
 		SpaceShip spaceShip = new SpaceShip();
-		spaceShip.setMass(15000);
-		spaceShip.getPropulsion().setPrimaryPropellant(300);
+		spaceShip.setMass(10000);
+		spaceShip.getPropulsion().setPrimaryPropellant(390);
 		spaceShip.setInertiaTensorMatrix(InertiaTensorMatrix);
-		spaceShip.getPropulsion().setPrimaryISPMax(330);
+		spaceShip.getPropulsion().setPrimaryISPMax(311);
 		spaceShip.getPropulsion().setSecondaryMomentum(MRCS);
-		spaceShip.getPropulsion().setPrimaryThrustMax(30000);
+		spaceShip.getPropulsion().setPrimaryThrustMax(45000);
+		spaceShip.setInitialQuarterions(quarternions);
 		Spacecraft spacecraft = new Spacecraft(spaceShip,staticModel, startPostion,0,0,0,1);	
+		spacecraft.setQuarternions(quarternions);
 		spaceElements.add(spacecraft);
+		//spacecraft.setRotX(-25);
 		//----------------------------------------------------------------
 		// 					  Light Setting
 		//----------------------------------------------------------------
@@ -136,41 +145,45 @@ public class worldAnimation {
 	//-------------------------------------------------------------------------------------------------------------
 		float animationTime =0;
 		int j=0;
+		System.out.println(Spacecraft.getQuarternions()[0][0]);
+     //-----------------------------------------------------------
 		while(!Display.isCloseRequested()){
-			renderer.processTerrain(terrain11);
-			renderer.processTerrain(terrain12);
-		    animationTime += DisplayManager.getFrameTimeSeconds();
-		    //System.out.println(animationSets.get(j).getTime());
-		    if(j<animationSets.size()) {
-			if(animationTime > animationSets.get(j).getTime() ) {j++;}}
-		    if(isAnimate) {
-					if(animationSets != null && j<(animationSets.size()-1) && isAnimate) {
-						AnimationSet animationSet = animationSets.get(j);
-						spacecraft.animate(terrain11, animationSet);
+			        //---------------------------------------------------
+					renderer.processTerrain(terrain11);
+					renderer.processTerrain(terrain12);
+				    animationTime += DisplayManager.getFrameTimeSeconds();
+				    //System.out.println(animationSets.get(j).getTime());
+				    if(j<animationSets.size()) {
+					if(animationTime > animationSets.get(j).getTime() ) {j++;}}
+				    if(isAnimate) {
+							if(animationSets != null && j<(animationSets.size()-1) && isAnimate) {
+								AnimationSet animationSet = animationSets.get(j);
+								spacecraft.animate(terrain11, animationSet);
+							}
+					} else {
+						if(spacecraft.getPosition().x<tileSize) {
+							spacecraft.fly(terrain11);
+						} else {
+							spacecraft.fly(terrain12);
+						}
 					}
-			} else {
-				if(spacecraft.getPosition().x<1000f) {
-					spacecraft.fly(terrain11);
-				} else {
-					//spacecraft.fly(terrain12);
-				}
-			}
-			camera.move();	// Do not touch!!!
-			renderer.processEntity(spacecraft);
-			renderer.render(light, camera);
-			guirenderer.render(Logos);
-			//----------------------------------------------------------------------------------------------
-			// 			Overlay Display
-			//----------------------------------------------------------------------------------------------
-			if(isOverlayDisplay) {
-				updateOverlayDisplayTextLeft(guiTextsLeft, spacecraft, animationTime);
-			if(!isAnimate) {
-				updateOverlayDisplayTextRight(guiTextsRight, spacecraft);
-			}
-			TextMaster.render();
-			//----------------------------------------------------------------------------------------------
-			}
-			DisplayManager.updateDisplay(); 
+					camera.move();	// Do not touch!!!
+					renderer.processEntity(spacecraft);
+					renderer.render(light, camera);
+					guirenderer.render(Logos);
+					//----------------------------------------------------------------------------------------------
+					// 			Overlay Display
+					//----------------------------------------------------------------------------------------------
+					if(isOverlayDisplay) {
+						updateOverlayDisplayTextLeft(guiTextsLeft, spacecraft, animationTime);
+					if(!isAnimate) {
+						updateOverlayDisplayTextRight(guiTextsRight, spacecraft);
+					}
+					TextMaster.render();
+					//----------------------------------------------------------------------------------------------
+					}
+					DisplayManager.updateDisplay(); 
+	        
 		}
 		//---------------------------------------------------------------------------------------------------
 		//				Clean up 
@@ -221,13 +234,13 @@ public class worldAnimation {
 		guiTextsRight.get(7).updateTextString("Yaw [deg]:"+df2.format(spacecraft.getRotY()));	
 		
 		double rotTreshold = 3;
-		guiTextsRight.get(9).updateTextString("Roll Rate [deg/s]:" +df2.format(Math.toDegrees(spacecraft.getPQR()[0][0])));
+		guiTextsRight.get(9).updateTextString("Pitch Rate [deg/s]:" +df2.format(Math.toDegrees(spacecraft.getPQR()[0][0])));
 		if(Math.abs(Math.toDegrees(spacecraft.getPQR()[0][0]))>rotTreshold) {
 			guiTextsRight.get(9).setColour(0.8f, 0.5f, 0.5f);
 		} else {
 			guiTextsRight.get(9).setColour(0.5f, 0.5f, 0.5f);
 		}
-		guiTextsRight.get(10).updateTextString("Pitch Rate [deg/s]:"+df2.format(Math.toDegrees(spacecraft.getPQR()[1][0])));
+		guiTextsRight.get(10).updateTextString("Roll Rate [deg/s]:"+df2.format(Math.toDegrees(spacecraft.getPQR()[1][0])));
 		if(Math.abs(Math.toDegrees(spacecraft.getPQR()[1][0]))>rotTreshold) {
 			guiTextsRight.get(10).setColour(0.8f, 0.5f, 0.5f);
 		} else {
@@ -239,6 +252,10 @@ public class worldAnimation {
 		} else {
 			guiTextsRight.get(11).setColour(0.5f, 0.5f, 0.5f);
 		}
+		
+		guiTextsRight.get(13).updateTextString("Thrust X [N]:"  +df2.format(spacecraft.getThrust_NED()[0][0]));	
+		guiTextsRight.get(14).updateTextString("Thrust Y [N]:"  +df2.format(spacecraft.getThrust_NED()[2][0]));	
+		guiTextsRight.get(15).updateTextString("Thrust Z [N]:"  +df2.format(spacecraft.getThrust_NED()[1][0]));	
 	}
 	
 	@SuppressWarnings("static-access")
@@ -263,9 +280,9 @@ public class worldAnimation {
 		guiTextsLeft.get(8).setColour(0.5f, 0.5f, 0.8f);
 		guiTextsLeft.get(10).updateTextString("Propellant [kg]: "+df2.format(spacecraft.getSCPropMass()));
 		if(spacecraft.getisThrust()) {
-			guiTextsLeft.get(14).setColour(1.0f, 0.647f, 0.5f);
+			guiTextsLeft.get(10).setColour(1.0f, 0.647f, 0.5f);
 		} else {
-			guiTextsLeft.get(14).setColour(0.5f, 0.5f, 0.5f);
+			guiTextsLeft.get(10).setColour(0.5f, 0.5f, 0.5f);
 		}
 	}
 }

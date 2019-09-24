@@ -8,7 +8,7 @@ public class Entity {
 
 	private TexturedModel model;
 	private static Vector3f position;
-	protected float rotX;
+	protected static float rotX;
 	protected float rotY;
 	protected float rotZ;
 	private float scale;
@@ -20,7 +20,7 @@ public class Entity {
 			float scale) {
 		this.model = model;
 		Entity.position = position;
-		this.rotX = rotX;
+		Entity.rotX = rotX;
 		this.rotY = rotY;
 		this.rotZ = rotZ;
 		this.scale = scale;
@@ -33,7 +33,7 @@ public class Entity {
 	}
 
 	public void increaseRotation(float dx, float dy, float dz) {
-		this.rotX += dx;
+		Entity.rotX += dx;
 		this.rotY += dy;
 		this.rotZ += dz;
 	}
@@ -60,8 +60,8 @@ public class Entity {
 		return rotX;
 	}
 
-	public void setRotX(float rotX) {
-		this.rotX = rotX;
+	public static void setRotX(float rotX) {
+		Entity.rotX = rotX;
 	}
 
 	public float getRotY() {

@@ -11,10 +11,7 @@ import Toolbox.ReadInput;
 
 public class Launch_Simulation {
 	
-    public static double PI    = 3.14159265359;                 // PI                                       [-]
-    public static double kB    = 1.380650424e-23;               // Boltzmann constant                         [SI]    
-    public static double G     = 1.48808E-34; 
-    public static int TARGET; 
+    public static double PI    = 3.14159265359;                 // PI                                       [-] 
 	static double deg2rad = PI/180.0; 		//Convert degrees to radians
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
@@ -87,7 +84,6 @@ public class Launch_Simulation {
 	    		//												6 Degree of Freedom - Universal module
 	    		//-----------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Simulator set and running");
-	    		//System.out.println(""+SurfaceArea);
 	    		Simulation.launchIntegrator(
 	    												    integratorData,
 	    												    ReadInput.readSequence(),	   // Sequence data set	LIST			     [-]

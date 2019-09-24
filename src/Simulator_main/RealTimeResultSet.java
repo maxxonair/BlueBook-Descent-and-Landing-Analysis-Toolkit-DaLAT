@@ -22,6 +22,20 @@ public class RealTimeResultSet {
 			 						 {0},
 			 						 {0}};
 	
+	private double[][] Thrust_NED = {{0},
+			 						 {0},
+			 						 {0}};
+	
+	
+	
+	public double[][] getThrust_NED() {
+		return Thrust_NED;
+	}
+
+	public void setThrust_NED(double[][] thrust_NED) {
+		Thrust_NED = thrust_NED;
+	}
+
 	public double[][] getQuarternions() {
 		return quarternions;
 	}

@@ -20,7 +20,7 @@ public class Spacecraft extends Entity {
 	
 
 	@SuppressWarnings("unused")
-	private  static  float currentVerticalSpeed   =   0;
+	private  static  float currentVerticalSpeed   =   -5;
 	private  static  float currentHorizontalSpeed =  60;
 	private  static  float currentSpeed           = (float) Math.sqrt(currentVerticalSpeed*currentVerticalSpeed + currentHorizontalSpeed*currentHorizontalSpeed);
     
@@ -36,12 +36,16 @@ public class Spacecraft extends Entity {
 			 						 {0},
 			 						 {0}}; 
 	
-	private static double[][] quarternions = {	{1},
+	private static double[][] quarternions = {	{0},
 												{0},
 												{0},
 												{0}}; 
 	
 	private static float animationScale =100;
+	
+	private static double[][] Thrust_NED = {{0},
+			     							{0},
+			     							{0}};
 	
 	
     private static SpaceShip spaceShip;
@@ -54,7 +58,7 @@ public class Spacecraft extends Entity {
 	public Spacecraft(SpaceShip spaceShip, TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
 			Spacecraft.spaceShip = spaceShip;
-			
+			Spacecraft.quarternions = spaceShip.getInitialQuarterions();
 			Spacecraft.SCMass = (float) spaceShip.getMass();
 			Spacecraft.SCPropMass = (float) spaceShip.getPropulsion().getPrimaryPropellant();
 			Spacecraft.SCMainThrust = (float) spaceShip.getPropulsion().getPrimaryThrustMax();
@@ -88,6 +92,16 @@ public class Spacecraft extends Entity {
 	
 	public void fly(Terrain terrain) {
 		checkInputs();
+		//---------------------------------------------------------------------------------------
+		//			Terrain collision detection
+		//---------------------------------------------------------------------------------------
+		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z)+CG_Y;
+		//System.out.println(terrainHeight);
+		if(super.getPosition().y<=(terrainHeight+CG_Y)) {
+			//Spacecraft.currentVerticalSpeed=0;
+			Spacecraft.currentHorizontalSpeed=0;
+			 super.getPosition().y=terrainHeight+CG_Y;
+		} else {
 		RealTimeResultSet realTimeResultSet = getRealTimeResultSet(DisplayManager.getFrameTimeSeconds());
 		//---------------------------------------------------------------------------------------
 		//					Translation
@@ -101,22 +115,13 @@ public class Spacecraft extends Entity {
 		//---------------------------------------------------------------------------------------
 		//			 		Rotation 
 		//---------------------------------------------------------------------------------------
-		super.increaseRotation((float) Math.toDegrees(Spacecraft.getPQR()[0][0])*DisplayManager.getFrameTimeSeconds(), 
-							   (float) Math.toDegrees(Spacecraft.getPQR()[2][0])*DisplayManager.getFrameTimeSeconds(), 
-							   (float) Math.toDegrees(Spacecraft.getPQR()[1][0])*DisplayManager.getFrameTimeSeconds());
-		//---------------------------------------------------------------------------------------
-		//			Terrain collision detection
-		//---------------------------------------------------------------------------------------
-		float terrainHeight = terrain.getHeightOfTerrain(super.getPosition().x, super.getPosition().z)+CG_Y;
-		//System.out.println(terrainHeight);
-		if(super.getPosition().y<(terrainHeight+CG_Y)) {
-			Spacecraft.currentVerticalSpeed=0;
-			Spacecraft.currentHorizontalSpeed=0;
-			 super.getPosition().y=terrainHeight+CG_Y;
-		}
+		super.increaseRotation((float) Math.toDegrees(-Spacecraft.getPQR()[1][0])*DisplayManager.getFrameTimeSeconds(), 
+							   (float) Math.toDegrees(Spacecraft.getPQR()[0][0])*DisplayManager.getFrameTimeSeconds(), 
+							   (float) Math.toDegrees(Spacecraft.getPQR()[2][0])*DisplayManager.getFrameTimeSeconds() );
+
 		Spacecraft.currentSpeed = realTimeResultSet.getVelocity();
 		//Spacecraft.setAzimuth(realTimeResultSet.getAzi());
-	
+		}
 	}
 	
 	
@@ -153,29 +158,33 @@ public class Spacecraft extends Entity {
 				  					 {0},
 				  					 {0}};
 		if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-		     ThrustMomentum[2][0] = MRCS[2][0];
+		     ThrustMomentum[0][0] = -MRCS[0][0];
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
-			ThrustMomentum[2][0] = -MRCS[2][0];
+			ThrustMomentum[0][0] =  MRCS[0][0];
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-		     ThrustMomentum[0][0] = MRCS[0][0];
+		     ThrustMomentum[1][0] = -MRCS[1][0];
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			ThrustMomentum[0][0] = -MRCS[0][0];
+			ThrustMomentum[1][0] = MRCS[1][0];
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
-		     ThrustMomentum[1][0] = MRCS[1][0];
+		     ThrustMomentum[2][0] = -MRCS[2][0];
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
-			ThrustMomentum[1][0] = -MRCS[1][0];
+			ThrustMomentum[2][0] = MRCS[2][0];
 		}
 		Spacecraft.setThrust_Momentum(ThrustMomentum);
 		//---------------------------------------------
 		// 			Environment Inputs
 		//---------------------------------------------
-		if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
-			Spacecraft.setPosition(new Vector3f(500,200,0));
+		if(Keyboard.isKeyDown(Keyboard.KEY_O)) {
+			Spacecraft.setPosition(new Vector3f(1000,200,0));
+			//Spacecraft.setRotX(-25);
+			currentVerticalSpeed=-5;
+			currentHorizontalSpeed=60;
+			Spacecraft.setQuarternions(spaceShip.getInitialQuarterions());
 		}
 	}
 
@@ -234,17 +243,17 @@ public class Spacecraft extends Entity {
 	    double rm = RealTimeSimulation.getRm();
 	    double ref = RealTimeSimulation.getRef_ELEVATION();
 //Spacecraft.getPosition().y
+	  
 		realTimeResultSet = RealTimeSimulation.Launch_Integrator(INTEGRATOR, target, 0, 0, Spacecraft.getPosition().y+rm+ref, vel, fpa, 
 				azi, Spacecraft.getSCMass(), timestep, timestep, 0, Spacecraft.getQuarternions(), Spacecraft.getPQR(), 
 			    isThrust, Thrust_Momentum, spaceShip);
 		Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
-		double[][] intPQR = {{ realTimeResultSet.getPQR()[0][0]},
-				 		    {  realTimeResultSet.getPQR()[1][0]},
-				 		    {  realTimeResultSet.getPQR()[2][0]}}; 
-		Spacecraft.setPQR(intPQR);
+		Spacecraft.setPQR(realTimeResultSet.getPQR());
 		Spacecraft.setQuarternions(realTimeResultSet.getQuarternions());
 		Spacecraft.setSCMass(realTimeResultSet.getSCMass());
-		System.out.println(realTimeResultSet.getSCMass());
+		Spacecraft.setAzimuth((float) realTimeResultSet.getAzi());
+		Spacecraft.setThrust_NED(realTimeResultSet.getThrust_NED());
+		//System.out.println(realTimeResultSet.getSCMass());
 		return realTimeResultSet;
 
 	}
@@ -278,6 +287,16 @@ public class Spacecraft extends Entity {
 
 	public static void setPQR(double[][] pQR) {
 		PQR = pQR;
+	}
+
+
+	public double[][] getThrust_NED() {
+		return Thrust_NED;
+	}
+
+
+	public static void setThrust_NED(double[][] thrust_NED) {
+		Thrust_NED = thrust_NED;
 	}
 
 

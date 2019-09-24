@@ -685,21 +685,38 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_SIM.setFont(small_font);
         menu_SIM.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_SIM);
-        JMenuItem menuItem_SimSettings = new JMenuItem("Settings                 "); 
-        menuItem_SimSettings.setForeground(Color.gray);
+        JMenuItem menuItem_SimSettings = new JMenuItem("Run Simulation                 "); 
+        menuItem_SimSettings.setForeground(Color.black);
         menuItem_SimSettings.setFont(small_font);
         menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+                KeyEvent.VK_R, ActionEvent.ALT_MASK));
         menu_SIM.add(menuItem_SimSettings);
         menuItem_SimSettings.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	
+             		  System.out.println("Action: RUN SIMULATION");
+      				try {
+      					String line;
+      					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
+      					InputStream in = proc.getInputStream();
+      					InputStream err = proc.getErrorStream();
+      					System.out.println(in);
+      					System.out.println(err);
+      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+      					  while ((line = input.readLine()) != null) {
+      					    System.out.println(line);
+      					  }
+      					  //UPDATE_Page01();
+      				} catch ( IOException e1) {
+      					// TODO Auto-generated catch block
+      					e1.printStackTrace();
+      					System.out.println("Error:  " + e1);
+      				} 
                     } });
         JMenuItem menuItem_Update = new JMenuItem("Update Data                 "); 
-        menuItem_Update.setForeground(Color.gray);
+        menuItem_Update.setForeground(Color.black);
         menuItem_Update.setFont(small_font);
         menuItem_Update.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+                KeyEvent.VK_U, ActionEvent.ALT_MASK));
         menu_SIM.add(menuItem_Update);
         menuItem_Update.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {

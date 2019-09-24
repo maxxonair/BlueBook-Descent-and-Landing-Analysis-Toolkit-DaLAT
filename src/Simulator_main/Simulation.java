@@ -12,6 +12,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
@@ -136,6 +137,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[] r_ECEF_cartesian = {0,0,0};				// position coordinates with respect to ECEF in cartesian coordinates [m/s]
 			public static double[] r_ECEF_spherical = {0,0,0};				// position coordinates with respect to ECEF in spherical coordinates [m/s]
 			
+			static CoordinateTransformation coordinateTransformation;
 			
 			public static double[][] F_Aero_A    = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
 			public static double[][] F_Aero_NED  = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
@@ -148,14 +150,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[][] M_Aero_NED      = {{0},{0},{0}};
 			public static double[][] M_Thrust_NED    = {{0},{0},{0}};
 			
-			public static double[][] C_ECI_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to ECI system
-			public static double[][] C_NED_A 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Aerodynamic to NED system
-			public static double[][] C_NED2B 	= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix body fixed to NED system
-			public static double[][] C_B2NED 	= {{0,0,0},{0,0,0},{0,0,0}};
-			public static double[][] C_NED_ECEF = {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix ECEF to NED system
-			public static double[][] C_B_A 		= {{0,0,0},{0,0,0},{0,0,0}}; 			// Rotational matrix Bodyfixed to Aerodynamic
-			public static double[][] C_GC2NED   = {{1,0,0},{0,1,0},{0,0,1}};
-			public static double[][] C_GC2B 		= {{0,0,0},{0,0,0},{0,0,0}};
+			public static double[][] M_Aero_A      = {{0},{0},{0}};
+			public static double[][] M_Aero_B      = {{0},{0},{0}};
+			public static double[][] M_Thrust_B    = {{0},{0},{0}};
 			
 			// 6 DOF Attitude variables: 
 			public static double[][] q_vector        = {{0},
@@ -169,9 +166,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0}};  // Inertia Tensor []
-			public static double[][] AngularMomentum = {{0},
-														{0},
-														{0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
+			public static double[][] AngularMomentum_B = {{0},
+														  {0},
+														  {0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
 			
 			// Equation Elements for angular velocity equations: 
 			static double det_I = 0;
@@ -487,99 +484,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		}
 		
 
-		public static void INITIALIZE_ROTATIONAL_MATRICES(double[] x, double t, Atmosphere atmosphere, double[][] euler_angle) {
-			//-------------------------------------------------------------------------------------------
-			//              Aerodynamic frame to North-East-Down
-			//-------------------------------------------------------------------------------------------
-			C_NED_A[0][0] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(V_NED_ECEF_spherical[1]);
-			C_NED_A[1][0] =  Math.sin(V_NED_ECEF_spherical[2])*Math.cos(V_NED_ECEF_spherical[1]);
-			C_NED_A[2][0] = -Math.sin(V_NED_ECEF_spherical[1]);
-			
-			C_NED_A[0][1] = -Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle()) - Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
-			C_NED_A[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(atmosphere.getBankAngle()) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
-			C_NED_A[2][1] = -Math.cos(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
-			
-			C_NED_A[0][2] = -Math.sin(V_NED_ECEF_spherical[2])*Math.sin(atmosphere.getBankAngle()) + Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
-			C_NED_A[1][2] =  Math.cos(V_NED_ECEF_spherical[2])*Math.sin(atmosphere.getBankAngle()) + Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
-			C_NED_A[2][2] =  Math.cos(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
-			//-------------------------------------------------------------------------------------------
-			//             Body fixed frame to North-East-Down
-			//-------------------------------------------------------------------------------------------
-			// Euler Angle Representation: 
-			/*
-			C_NED2B[0][0] =  Math.cos(euler_angle[2])*Math.cos(euler_angle[1]); 
-			C_NED2B[1][0] =  Math.sin(euler_angle[2])*Math.cos(euler_angle[1]);
-			C_NED2B[2][0] = -Math.sin(euler_angle[1]);
-			
-			C_NED2B[0][1] = Math.cos(euler_angle[2])*Math.sin(euler_angle[1])*Math.sin(euler_angle[0])-Math.sin(euler_angle[2])*Math.cos(euler_angle[0]); 
-			C_NED2B[1][1] = Math.cos(euler_angle[2])*Math.cos(euler_angle[0])+Math.sin(euler_angle[2])*Math.sin(euler_angle[1])*Math.sin(euler_angle[0]);
-			C_NED2B[2][1] = Math.cos(euler_angle[1])*Math.sin(euler_angle[0]);
-			
-			C_NED2B[0][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[0])+Math.cos(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0]); 
-			C_NED2B[1][2] = Math.sin(euler_angle[2])*Math.sin(euler_angle[1])*Math.cos(euler_angle[0])-Math.cos(euler_angle[2])*Math.sin(euler_angle[0]);
-			C_NED2B[2][2] = Math.cos(euler_angle[1])*Math.cos(euler_angle[0]);
-			*/
-			
-			C_B2NED[0][0] =  0; 
-			C_B2NED[1][0] =  0;
-			C_B2NED[2][0] =  0;
-			
-			C_B2NED[0][1] =  0; 
-			C_B2NED[1][1] =  0;
-			C_B2NED[2][1] =  0;
-			
-			C_B2NED[0][2] =  0; 
-			C_B2NED[1][2] =  0;
-			C_B2NED[2][2] =  0;
-			
-	
-			//-----------------------------------------------------------------------
-			// Quaternion Representation: 
-			
-			C_NED2B[0][0] =    (q_vector[0][0]*q_vector[0][0] + q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]); 
-			C_NED2B[1][0] =  2*(q_vector[1][0]*q_vector[2][0] - q_vector[0][0]*q_vector[3][0]);
-			C_NED2B[2][0] =  2*(q_vector[1][0]*q_vector[3][0] + q_vector[0][0]*q_vector[2][0]);
-			
-			C_NED2B[0][1] =  2*(q_vector[1][0]*q_vector[2][0] + q_vector[0][0]*q_vector[3][0]); 
-			C_NED2B[1][1] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] + q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]);
-			C_NED2B[2][1] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
-			
-			C_NED2B[0][2] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]); 
-			C_NED2B[1][2] =  2*(q_vector[0][0]*q_vector[1][0] + q_vector[2][0]*q_vector[3][0]);
-			C_NED2B[2][2] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] + q_vector[3][0]*q_vector[3][0]);
-			
-			
-			C_GC2B = Mathbox.Multiply_Matrices(C_GC2NED, C_NED2B);
-			//-------------------------------------------------------------------------------------------
-			//             ECEF frame to North-East-Down
-			//-------------------------------------------------------------------------------------------
-			C_NED_ECEF[0][0] = -Math.cos(r_ECEF_spherical[0])*Math.sin(r_ECEF_spherical[1]);
-			C_NED_ECEF[1][0] = -Math.sin(r_ECEF_spherical[0]);
-			C_NED_ECEF[2][0] = -Math.cos(r_ECEF_spherical[0])*Math.cos(r_ECEF_spherical[1]);
-			
-			C_NED_ECEF[0][1] = -Math.sin(r_ECEF_spherical[0])*Math.sin(r_ECEF_spherical[1]);
-			C_NED_ECEF[1][1] =  Math.cos(r_ECEF_spherical[0]);
-			C_NED_ECEF[2][1] = -Math.sin(r_ECEF_spherical[0])*Math.cos(r_ECEF_spherical[1]);
-			
-			C_NED_ECEF[0][2] =  Math.cos(r_ECEF_spherical[1]);
-			C_NED_ECEF[1][2] =  0;
-			C_NED_ECEF[2][2] = -Math.sin(r_ECEF_spherical[1]);
-			//-------------------------------------------------------------------------------------------
-			//             Bodyfixed frame to Aerodynamic frame
-			//-------------------------------------------------------------------------------------------
-			C_B_A[0][0] =  Math.cos(atmosphere.getAngleOfAttack())*Math.cos(atmosphere.getAngleOfSideslip());
-			C_B_A[1][0] =  Math.sin(atmosphere.getAngleOfSideslip());
-			C_B_A[2][0] =  Math.sin(atmosphere.getAngleOfAttack())*Math.cos(atmosphere.getAngleOfSideslip());
-			
-			C_B_A[0][1] =  -Math.cos(atmosphere.getAngleOfAttack())*Math.sin(atmosphere.getAngleOfSideslip());
-			C_B_A[1][1] =   Math.cos(atmosphere.getAngleOfSideslip());
-			C_B_A[2][1] =  -Math.sin(atmosphere.getAngleOfAttack())*Math.sin(atmosphere.getAngleOfSideslip());
-			
-			C_B_A[0][2] =  -Math.sin(atmosphere.getAngleOfAttack());
-			C_B_A[1][2] =  0;
-			C_B_A[2][2] =   Math.cos(atmosphere.getAngleOfAttack());
-			
-		}
 		
 		public static void Set_AngularVelocityEquationElements(double[] x) {
 			double Ixx = InertiaTensor[0][0];
@@ -633,18 +537,23 @@ public class Simulation implements FirstOrderDifferentialEquations {
 
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	integ_t=t;
+	coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphere, EulerAngle, q_vector, 
+	   			r_ECEF_spherical, V_NED_ECEF_spherical);
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------   
     		if(spherical) {}// 2D model for shperical velcotity vector computation
     		else {
     			g = Gravity.getGravity3D(x, r_ECEF_cartesian); 
-        		g_NED   =  Mathbox.Multiply_Matrices(C_NED_ECEF, g);	 
+        		g_NED   =  Mathbox.Multiply_Matrices(coordinateTransformation.getC_ECEF2NED(), g);	 
         		// Gravitational Force (wrt NED System)
 	    	    	F_Gravity_NED[0][0] = x[6]*g_NED[0][0];
 	    	    	F_Gravity_NED[1][0] = x[6]*g_NED[1][0];
 	    	    	F_Gravity_NED[2][0] = x[6]*g_NED[2][0];
     		}
+    		//Random rand = new Random();
+    		M_Thrust_B[2][0] = 1;
+
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -668,10 +577,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	   	F_Thrust_B[2][0] =  Thrust * Math.sin(TVC_alpha);   
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
-    	//-------------------------------------------------------------------------------------------------------------------
-	   	INITIALIZE_ROTATIONAL_MATRICES(x, t, atmosphere, EulerAngle); 
-    	F_Aero_NED   	= Mathbox.Multiply_Matrices(C_NED_A, F_Aero_A) ;    	
-    	F_Thrust_NED 	= Mathbox.Multiply_Matrices(C_NED2B, F_Thrust_B) ;
+    	//------------------------------------------------------------------------------------------------------------------- 
+    	F_Aero_NED   	= Mathbox.Multiply_Matrices(coordinateTransformation.getC_A2NED(), F_Aero_A) ;    	
+    	F_Thrust_NED 	= Mathbox.Multiply_Matrices(coordinateTransformation.getC_B2NED(), F_Thrust_B) ;
     	F_total_NED   	= Mathbox.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    				ISP model for engine throttling
@@ -813,8 +721,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		    							  {-omega*Math.sin(r_ECEF_spherical[1])}};
 		    		
 		    		double[][] Element_10 = Mathbox.Multiply_Scalar_Matrix(0.5, EE);
-		    		double[][] Element_21 = Mathbox.Multiply_Scalar_Matrix(1/r_ECEF_spherical[2], Mathbox.Multiply_Matrices(C_GC2B, VEL_R));
-		    		double[][] Element_22 = Mathbox.Multiply_Matrices(C_GC2B, OMEGA_R);
+		    		double[][] Element_21 = Mathbox.Multiply_Scalar_Matrix(1/r_ECEF_spherical[2], 
+		    				Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), VEL_R));
+		    		double[][] Element_22 = Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), OMEGA_R);
 		    		double[][] Element_20 = Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), Element_22);
 		    			    		
 		    		double[][] q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
@@ -833,13 +742,14 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    		}
 	    	    //----------------------------------------------------------------------------------------
 	    	    // System.out.println("model 1 running");
-	    	    double Lb = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
-	    	    double Mb = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
-	    	    double Nb = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;
+	    	    double Lb = M_Aero_B[0][0] + M_Thrust_B[0][0] ;
+	    	    double Mb = M_Aero_B[1][0] + M_Thrust_B[1][0] ;
+	    	    double Nb = M_Aero_B[2][0] + M_Thrust_B[2][0] ;
 	    	    
 	    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
 	    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
 	    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
+	    	
 	    	}
 	    else  if (SixDoF_Option == 2) {
 	//System.out.println("6DoF running! Option 2");
@@ -936,9 +846,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			( Iyy - Ixx )*x[11]*x[12] - Ixz*x[12]*x[13]); 
 
 	}
-	AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
-	AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
-	AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;	
+	AngularMomentum_B[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
+	AngularMomentum_B[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
+	AngularMomentum_B[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;	
 	AngularRate[0][0] = x[11];
 	AngularRate[1][0] = x[12];
 	AngularRate[2][0] = x[13];
@@ -979,6 +889,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //   - Initialise ground track computation
 
 	spaceShip = spaceElement;
+	coordinateTransformation =  new CoordinateTransformation();
 //----------------------------------------------------------------------------------------------	
 	if(integratorData.getVelocityVectorCoordSystem()==1) {
 		spherical = true;
@@ -1204,9 +1115,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  CTRL_Time+" "+
 	                    		  (PI-y[4]-Thrust_Deviation)+" "+
 	                    		  Thrust_Deviation+" "+
-	                    		  C_NED2B[0][0]+" "+
-	                    		  C_NED2B[1][0]+" "+
-	                    		  C_NED2B[2][0]+" "+
+	                    		  coordinateTransformation.getC_B2NED()[0][0]+" "+
+	                    		  coordinateTransformation.getC_B2NED()[1][0]+" "+
+	                    		  coordinateTransformation.getC_B2NED()[2][0]+" "+
 	                    		  vel_inertFrame+" "+
 	                    		  fpa_inertFrame+" "+
 	                    		  azimuth_inertFrame+" "+
@@ -1243,9 +1154,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  AngularRate[0][0]+" "+
 	                    		  AngularRate[1][0]+" "+
 	                    		  AngularRate[2][0]+" "+
-	                    		  AngularMomentum[0][0]+" "+
-	                    		  AngularMomentum[1][0]+" "+
-	                    		  AngularMomentum[2][0]+" "+
+	                    		  AngularMomentum_B[0][0]+" "+
+	                    		  AngularMomentum_B[1][0]+" "+
+	                    		  AngularMomentum_B[2][0]+" "+
 	                    		  EulerAngle[0][0]+" "+
 	                    		  EulerAngle[1][0]+" "+
 	                    		  EulerAngle[2][0]+" "+
