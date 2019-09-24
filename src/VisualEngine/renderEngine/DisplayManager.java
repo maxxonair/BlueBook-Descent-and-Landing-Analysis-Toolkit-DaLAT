@@ -1,6 +1,8 @@
 package VisualEngine.renderEngine;
 
 import java.awt.Canvas;
+import java.awt.Image;
+import java.awt.Toolkit;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.Sys;
@@ -12,6 +14,8 @@ import org.lwjgl.opengl.DisplayMode;
 //import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.opengl.PixelFormat;
 
+import com.apple.eawt.Application;
+
 public class DisplayManager {
 	
 	private static final int WIDTH = 1300;
@@ -21,8 +25,13 @@ public class DisplayManager {
 	private static long lastFrameTime; 
 	private static float deltaTime;
 	
+    public static String ICON_File   	 		= "/images/moon.png";
 	
-	public static void createDisplay(){		
+	
+	public static void createDisplay(){	
+		
+   	 String dir = System.getProperty("user.dir");
+   	 ICON_File = dir + ICON_File; 
 		ContextAttribs attribs = new ContextAttribs(3,2)
 		.withForwardCompatible(true)
 		.withProfileCore(true);
@@ -34,6 +43,13 @@ public class DisplayManager {
 			// Display.setFullscreen(true); // Be careful, no escape ... 
 			 Display.setResizable(true);
 			 Display.setLocation(0, 0);
+	         try {
+	             Application application = Application.getApplication();
+	             Image image = Toolkit.getDefaultToolkit().getImage(ICON_File);
+	             application.setDockIconImage(image);
+	             } catch(Exception e) {
+	            	 System.err.println("Taskbar icon could not be created");
+	             }
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}

@@ -9,11 +9,11 @@ public class ThirdPersonCamera {
 	private float defaultY =0;
 	private float defaultZ =0;
 	*/
-	private float distanceFromSpacecraft = 20;
+	private float distanceFromSpacecraft = 18;
 	private float angleAroundSpacecraft = 0 ;
 	
 	private Vector3f position = new Vector3f(0,0,0);
-	private float pitch=20;
+	private float pitch=30;
 	private float yaw=0;
 	private float roll=0;
 	
@@ -49,9 +49,9 @@ public class ThirdPersonCamera {
 		float theta = spacecraft.getRotY() + angleAroundSpacecraft;
 		float offsetX = (float) (horizontalDistance * Math.sin(Math.toRadians(theta)));
 		float offsetZ  = (float) (horizontalDistance * Math.cos (Math.toRadians(theta)));
-		position.x = spacecraft.getPosition().x - offsetX;
-		position.y = spacecraft.getPosition().y + verticalDistance;
-		position.z = spacecraft.getPosition().z - offsetZ;
+		position.x = Entity.getPosition().x - offsetX;
+		position.y = Entity.getPosition().y + verticalDistance;
+		position.z = Entity.getPosition().z - offsetZ;
 	}
 	
 	private void calculateZoom() {

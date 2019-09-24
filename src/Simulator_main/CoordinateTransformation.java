@@ -1,6 +1,7 @@
 package Simulator_main;
 
 import Model.Atmosphere;
+import Toolbox.Mathbox;
 
 public class CoordinateTransformation {
 
@@ -84,8 +85,27 @@ public class CoordinateTransformation {
 		C_B2NED[0][2] =  2*(q_vector[1][0]*q_vector[3][0] + q_vector[0][0]*q_vector[2][0]); 
 		C_B2NED[1][2] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
 		C_B2NED[2][2] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] + q_vector[3][0]*q_vector[3][0]);
+		
 		//-------------------------------------------------------------------------------------------
-		//             ECEF frame to North-East-Down
+		//             Geo-Centric frame to North-East-Down
+		//-------------------------------------------------------------------------------------------
+		
+		C_GC2NED[0][0]=1;
+		C_GC2NED[1][0]=0;
+		C_GC2NED[2][0]=0;
+		
+		C_GC2NED[0][1]=0;
+		C_GC2NED[1][1]=1;
+		C_GC2NED[2][1]=0;
+		
+		C_GC2NED[0][2]=0;
+		C_GC2NED[1][2]=0;
+		C_GC2NED[2][2]=1;
+		
+		C_GC2B = Mathbox.Multiply_Matrices(C_NED2B, C_GC2NED);
+		
+		//-------------------------------------------------------------------------------------------
+		//             Earth Centered Earth Fixed frame to North-East-Down
 		//-------------------------------------------------------------------------------------------
 		C_ECEF2NED[0][0] = -Math.cos(r_ECEF_spherical[0])*Math.sin(r_ECEF_spherical[1]);
 		C_ECEF2NED[1][0] = -Math.sin(r_ECEF_spherical[0]);

@@ -125,7 +125,6 @@ import javax.swing.*;
 import Model.atm_dataset;
 import Sequence.SequenceElement;
 import GUI.PostProcessing.CreateCustomChart;
-import GUI.RealTimeSimulation.*;
 import GUI.Settings.Settings;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Mathbox;
@@ -165,7 +164,7 @@ public class BlueBookVisual implements  ActionListener {
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String SC_file 				= "/INP/SC/sc.inp";
-    public static String ICON_File   	 		= "/images/BB_icon.png";
+    public static String ICON_File   	 		= "/images/BB_icon2.png";
     public static String ERROR_File 				= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
     public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
@@ -849,7 +848,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 		thread.start();
                     } });
         
-        JMenuItem menuItem_RealTime = new JMenuItem("Create Real Time Simulation         "); 
+        JMenuItem menuItem_RealTime = new JMenuItem("Open Real Time Simulation Demo     "); 
         menuItem_RealTime.setForeground(Color.black);
         menuItem_RealTime.setFont(small_font);
         menuItem_RealTime.setAccelerator(KeyStroke.getKeyStroke(
@@ -861,12 +860,23 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 	   Thread thread = new Thread(new Runnable() {
                 		    public void run() {
                 		    		// Create new window here 
-                		    try {
-								RealTimeVisual.main();
-							} catch (IOException e) {
-								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
-								e.printStackTrace();
-							};
+                  				try {
+                  					String line;
+                  					Process proc = Runtime.getRuntime().exec("java -jar FlyMeToTheMoon.jar");
+                  					InputStream in = proc.getInputStream();
+                  					InputStream err = proc.getErrorStream();
+                  					System.out.println(in);
+                  					System.out.println(err);
+                  					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+                  					  while ((line = input.readLine()) != null) {
+                  					    System.out.println(line);
+                  					  }
+                  					  //UPDATE_Page01();
+                  				} catch ( IOException e1) {
+                  					// TODO Auto-generated catch block
+                  					e1.printStackTrace();
+                  					System.out.println("Error:  " + e1);
+                  				} 
                 		    }
                 		});
                 		thread.start();

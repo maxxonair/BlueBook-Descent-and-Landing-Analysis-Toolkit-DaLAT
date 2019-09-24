@@ -79,7 +79,8 @@ public class Launch_Simulation {
 	    		integratorData.setMaxIntegTime(inputOut[7]);
 	    		integratorData.setRefElevation(inputOut[11]);
 	    		integratorData.setVelocityVectorCoordSystem((int) inputOut[13]);
-	    		integratorData.setDegreeOfFreedom((int) inputOut[14]);
+	    		//integratorData.setDegreeOfFreedom((int) inputOut[14]);
+	    		integratorData.setDegreeOfFreedom(6);
 	    		//-----------------------------------------------------------------------------------------------------------------------------
 	    		//												6 Degree of Freedom - Universal module
 	    		//-----------------------------------------------------------------------------------------------------------------------------

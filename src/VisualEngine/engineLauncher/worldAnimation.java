@@ -76,12 +76,12 @@ public class worldAnimation {
         int numberGuiTexts=17;
         for(int i=0;i<numberGuiTexts;i++) {
             GUIText guiText = new GUIText("", 1f, font, new Vector2f(0f, 0f+i*yGap), 1f, false);
-            guiText.setColour(0.5f, 0.5f, 0.5f);
+            guiText.setColour(0.9f, 0.9f, 0.9f);
             guiTextsLeft.add(guiText);
         }
         for(int i=0;i<numberGuiTexts;i++) {
-            GUIText guiText = new GUIText("", 1f, font, new Vector2f(0.82f, 0.1f+i*yGap), 1f, false);
-            guiText.setColour(0.5f, 0.5f, 0.5f);
+            GUIText guiText = new GUIText("", 1f, font, new Vector2f(0.85f, 0.1f+i*yGap-0.24f), 1f, false);
+            guiText.setColour(0.9f, 0.9f, 0.9f);
             guiTextsRight.add(guiText);
         }
 		//----------------------------------------------------------------
@@ -90,16 +90,17 @@ public class worldAnimation {
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("greySand"));			
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, backgroundTexture, backgroundTexture, backgroundTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
-		float tileSize = 2365f; 
-		Terrain terrain11 = new Terrain(0,0,0,0, loader, texturePack, blendMap, "moon/tile11", tileSize, 40f);
-		Terrain terrain12 = new Terrain(0,tileSize,0,0, loader, texturePack, blendMap, "moon/tile11", tileSize, 40f);
+		float tileSize = 2765f; 
+		float terrainHeight = 50f;
+		Terrain terrain11 = new Terrain(0,0,0,0, loader, texturePack, blendMap, "moon/tile11", tileSize, terrainHeight);
+		Terrain terrain12 = new Terrain(0,tileSize,0,0, loader, texturePack, blendMap, "moon/tile12", tileSize, terrainHeight);
 		//----------------------------------------------------------------
 		// 					Spacecraft Setting
 		//----------------------------------------------------------------
 		ModelData data = OBJFileLoader.loadOBJ("lem2");
 		RawModel model = loader.loadToVAO(data.getVertices(), data.getTextureCoords(), data.getNormals(), data.getIndices());	
 		rawmodels.add(model);
-		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("gray")));	
+		TexturedModel staticModel = new TexturedModel(model,new ModelTexture(loader.loadObjectTexture("orange")));	
 		texturedmodels.add(staticModel);	
 		ModelTexture texture = staticModel.getTexture();
 		texture.setShineDamper(shine_value);
@@ -108,11 +109,11 @@ public class worldAnimation {
 		if(isAnimate) {
 		 startPostion = new Vector3f(0,animationSets.get(0).getAlt_init(),0);
 		} else {
-		 startPostion = new Vector3f(1000,200,0);
+		 startPostion = new Vector3f(tileSize/2,200,0);
 		}
 		SpaceShip spaceShip = new SpaceShip();
 		spaceShip.setMass(10000);
-		spaceShip.getPropulsion().setPrimaryPropellant(390);
+		spaceShip.getPropulsion().setPrimaryPropellant(340);
 		spaceShip.setInertiaTensorMatrix(InertiaTensorMatrix);
 		spaceShip.getPropulsion().setPrimaryISPMax(311);
 		spaceShip.getPropulsion().setSecondaryMomentum(MRCS);
@@ -125,7 +126,7 @@ public class worldAnimation {
 		//----------------------------------------------------------------
 		// 					  Light Setting
 		//----------------------------------------------------------------
-		Vector3f lightPostion = new Vector3f(600,350,0);
+		Vector3f lightPostion = new Vector3f(tileSize/2,650,-400);
 		Light light = new Light(lightPostion, new Vector3f(1,1,1));		
 		//----------------------------------------------------------------
 		//					Camera Settings
@@ -136,9 +137,15 @@ public class worldAnimation {
 		//					Logo Settings
 		//----------------------------------------------------------------
 		List<GuiTexture> Logos = new ArrayList<GuiTexture>();
-		GuiTexture logo = new GuiTexture(loader.loadTerrainTexture("space"), 
-				new Vector2f(0.8f, 0.7f), new Vector2f(0.2f, 0.3f));
+		GuiTexture logo = new GuiTexture(loader.loadTerrainTexture("spaceLogo2"), 
+				new Vector2f(0.86f, -0.86f), new Vector2f(0.16f, 0.45f));
 		Logos.add(logo);
+		GuiTexture BackgroundFading = new GuiTexture(loader.loadTerrainTexture("FadeBackground"), 
+				new Vector2f(0.82f, 0.8f), new Vector2f(0.5f, 0.5f));
+		Logos.add(BackgroundFading);
+		GuiTexture BackgroundFadingLeft = new GuiTexture(loader.loadTerrainTexture("FadeBackgroundLeft"), 
+				new Vector2f(-0.86f, 0.8f), new Vector2f(0.9f, 0.9f));
+		//Logos.add(BackgroundFadingLeft);
 		GuiRenderer guirenderer = new GuiRenderer(loader);
 	//-------------------------------------------------------------------------------------------------------------
 	//						Visual Engine Loop
@@ -230,32 +237,35 @@ public class worldAnimation {
 	@SuppressWarnings("static-access")
 	public static void updateOverlayDisplayTextRight(List<GUIText> guiTextsRight, Spacecraft spacecraft) {
 		guiTextsRight.get(5).updateTextString("Roll [deg]:"+df2.format(spacecraft.getRotX()));
+		guiTextsRight.get(5).setColour(0.9f, 0.9f, 0.9f);
+		guiTextsRight.get(6).setColour(0.9f, 0.9f, 0.9f);
+		guiTextsRight.get(7).setColour(0.9f, 0.9f, 0.9f);
 		guiTextsRight.get(6).updateTextString("Pitch [deg]:"+df2.format(spacecraft.getRotZ()));
 		guiTextsRight.get(7).updateTextString("Yaw [deg]:"+df2.format(spacecraft.getRotY()));	
 		
 		double rotTreshold = 3;
-		guiTextsRight.get(9).updateTextString("Pitch Rate [deg/s]:" +df2.format(Math.toDegrees(spacecraft.getPQR()[0][0])));
+		guiTextsRight.get(9).updateTextString("Pitch Rate [deg/s]:" +df2.format(Math.toDegrees(-spacecraft.getPQR()[0][0])));
 		if(Math.abs(Math.toDegrees(spacecraft.getPQR()[0][0]))>rotTreshold) {
 			guiTextsRight.get(9).setColour(0.8f, 0.5f, 0.5f);
 		} else {
-			guiTextsRight.get(9).setColour(0.5f, 0.5f, 0.5f);
+			guiTextsRight.get(9).setColour(0.2f, 0.2f, 1f);
 		}
-		guiTextsRight.get(10).updateTextString("Roll Rate [deg/s]:"+df2.format(Math.toDegrees(spacecraft.getPQR()[1][0])));
+		guiTextsRight.get(10).updateTextString("Roll Rate [deg/s]:"+df2.format(Math.toDegrees(-spacecraft.getPQR()[1][0])));
 		if(Math.abs(Math.toDegrees(spacecraft.getPQR()[1][0]))>rotTreshold) {
 			guiTextsRight.get(10).setColour(0.8f, 0.5f, 0.5f);
 		} else {
-			guiTextsRight.get(10).setColour(0.5f, 0.5f, 0.5f);
+			guiTextsRight.get(10).setColour(0.2f, 0.2f, 1f);
 		}
-		guiTextsRight.get(11).updateTextString("Yaw Rate [deg/s]:"  +df2.format(Math.toDegrees(spacecraft.getPQR()[2][0])));	
+		guiTextsRight.get(11).updateTextString("Yaw Rate [deg/s]:"  +df2.format(Math.toDegrees(-spacecraft.getPQR()[2][0])));	
 		if(Math.abs(Math.toDegrees(spacecraft.getPQR()[2][0]))>rotTreshold) {
 			guiTextsRight.get(11).setColour(0.8f, 0.5f, 0.5f);
 		} else {
-			guiTextsRight.get(11).setColour(0.5f, 0.5f, 0.5f);
+			guiTextsRight.get(11).setColour(0.2f, 0.2f, 1f);
 		}
 		
-		guiTextsRight.get(13).updateTextString("Thrust X [N]:"  +df2.format(spacecraft.getThrust_NED()[0][0]));	
-		guiTextsRight.get(14).updateTextString("Thrust Y [N]:"  +df2.format(spacecraft.getThrust_NED()[2][0]));	
-		guiTextsRight.get(15).updateTextString("Thrust Z [N]:"  +df2.format(spacecraft.getThrust_NED()[1][0]));	
+		//guiTextsRight.get(13).updateTextString("Thrust X [N]:"  +df2.format(spacecraft.getThrust_NED()[0][0]));	
+		//guiTextsRight.get(14).updateTextString("Thrust Y [N]:"  +df2.format(spacecraft.getThrust_NED()[2][0]));	
+		//guiTextsRight.get(15).updateTextString("Thrust Z [N]:"  +df2.format(spacecraft.getThrust_NED()[1][0]));	
 	}
 	
 	@SuppressWarnings("static-access")
@@ -265,7 +275,7 @@ public class worldAnimation {
 		if(spacecraft.getCurrentVerticalSpeed()<-10) {
 			guiTextsLeft.get(1).setColour(0.8f, 0.5f, 0.5f);
 		} else {
-			guiTextsLeft.get(1).setColour(0.5f, 0.8f, 0.5f);
+			guiTextsLeft.get(1).setColour(0.9f, 0.9f, 0.9f);
 		}
 		guiTextsLeft.get(2).updateTextString("Vel T [m/s]: "+df2.format(spacecraft.getCurrentSpeed()));
 		guiTextsLeft.get(4).updateTextString("Pos X [m]: "+df2.format(spacecraft.getPosition().x));
@@ -273,7 +283,7 @@ public class worldAnimation {
 		if(spacecraft.getPosition().y<30) {
 			guiTextsLeft.get(5).setColour(0.8f, 0.5f, 0.5f);
 		} else {
-			guiTextsLeft.get(5).setColour(0.5f, 0.8f, 0.5f);
+			guiTextsLeft.get(5).setColour(0.9f, 0.9f, 0.9f);
 		}
 		guiTextsLeft.get(6).updateTextString("Pos Z [m]: "+df2.format(spacecraft.getPosition().z));
 		guiTextsLeft.get(8).updateTextString("Time [s]: "+df2.format(animationTime));
@@ -282,7 +292,7 @@ public class worldAnimation {
 		if(spacecraft.getisThrust()) {
 			guiTextsLeft.get(10).setColour(1.0f, 0.647f, 0.5f);
 		} else {
-			guiTextsLeft.get(10).setColour(0.5f, 0.5f, 0.5f);
+			guiTextsLeft.get(10).setColour(0.9f, 0.9f, 0.9f);
 		}
 	}
 }

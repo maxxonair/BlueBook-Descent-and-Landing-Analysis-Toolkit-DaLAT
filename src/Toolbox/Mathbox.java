@@ -1,6 +1,7 @@
 
 package Toolbox;
 
+import org.apache.commons.math3.util.FastMath;
 
 public class Mathbox{
 	public static double LinearInterpolate( double atm_x[] , double atm_y[] , double xx)
@@ -181,4 +182,56 @@ public class Mathbox{
 		result[2] = r_spherical[2]*Math.sin(r_spherical[1]);
 		return result;
 	}
+	
+	public static double[][] Quaternions2Euler(double[][] Quaternions){
+		double[][] EulerAngles = {{0},{0},{0}};
+		double a = Quaternions[0][0];
+		double b = Quaternions[1][0];
+		double c = Quaternions[2][0];
+		double d = Quaternions[3][0];
+		EulerAngles[0][0] = Math.atan2(2*(c*d+a*b),(a*a-b*b-c*c+d*d));
+		EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
+		EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));
+		return EulerAngles;
+	}
+	
+	public static double[][] Quaternions2Euler2(double[][] Quaternions){
+		
+		double[][] EulerAngles = {{0},{0},{0}};
+		double w = Quaternions[0][0];
+		double x = Quaternions[1][0];
+		double y = Quaternions[2][0];
+		double z = Quaternions[3][0];
+
+        double sqw = w * w;
+        double sqx = x * x;
+        double sqy = y * y;
+        double sqz = z * z;
+        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
+        // is correction factor
+        double test = x * y + z * w;
+        if (test > 0.499 * unit) { // singularity at north pole
+        	EulerAngles[1][0] = 2 * Math.atan2(x, w);
+        	EulerAngles[0][0] = FastMath.PI/2;
+        	EulerAngles[2][0] = 0;
+        } else if (test < -0.499 * unit) { // singularity at south pole
+        	EulerAngles[1][0] = -2 * FastMath.atan2(x, w);
+        	EulerAngles[0][0] = -FastMath.PI/2;
+        	EulerAngles[2][0] = 0;
+        } else {
+        	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
+        	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
+        	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
+        }
+		//-------------------------
+		/*
+	    EulerAngles[0][0] = Math.atan2(2*(qw*qx+qy*qz), 1-2*(qx*qx+qy*qy));
+	    EulerAngles[1][0] = Math.asin(qw*qy - qz*qx);
+	    EulerAngles[2][0] = Math.atan2(2*(qw*qz+qx*qy), 1-2*(qy*qy + qz*qz));
+		*/
+	    
+			return EulerAngles;
+	}
+	
+
 }

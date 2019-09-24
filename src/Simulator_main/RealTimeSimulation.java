@@ -16,7 +16,6 @@ import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
-import org.apache.commons.math3.util.FastMath;
 
 import Model.Atmosphere;
 import Model.AtmosphereModel;
@@ -255,55 +254,6 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 			return rm;
 		}
 
-		public static double[][] Quaternions2Euler(double[][] Quaternions){
-			double[][] EulerAngles = {{0},{0},{0}};
-			double a = Quaternions[0][0];
-			double b = Quaternions[1][0];
-			double c = Quaternions[2][0];
-			double d = Quaternions[3][0];
-			EulerAngles[0][0] = Math.atan2(2*(c*d+a*b),(a*a-b*b-c*c+d*d));
-			EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
-			EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));
-			return EulerAngles;
-		}
-		
-		public static double[][] Quaternions2Euler2(double[][] Quaternions){
-			
-			double[][] EulerAngles = {{0},{0},{0}};
-			double w = Quaternions[0][0];
-			double x = Quaternions[1][0];
-			double y = Quaternions[2][0];
-			double z = Quaternions[3][0];
-
-	        double sqw = w * w;
-	        double sqx = x * x;
-	        double sqy = y * y;
-	        double sqz = z * z;
-	        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
-	        // is correction factor
-	        double test = x * y + z * w;
-	        if (test > 0.499 * unit) { // singularity at north pole
-	        	EulerAngles[1][0] = 2 * Math.atan2(x, w);
-	        	EulerAngles[0][0] = FastMath.PI/2;
-	        	EulerAngles[2][0] = 0;
-	        } else if (test < -0.499 * unit) { // singularity at south pole
-	        	EulerAngles[1][0] = -2 * FastMath.atan2(x, w);
-	        	EulerAngles[0][0] = -FastMath.PI/2;
-	        	EulerAngles[2][0] = 0;
-	        } else {
-	        	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
-	        	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
-	        	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
-	        }
-			//-------------------------
-			/*
-		    EulerAngles[0][0] = Math.atan2(2*(qw*qx+qy*qz), 1-2*(qx*qx+qy*qy));
-		    EulerAngles[1][0] = Math.asin(qw*qy - qz*qx);
-		    EulerAngles[2][0] = Math.atan2(2*(qw*qz+qx*qy), 1-2*(qy*qy + qz*qz));
-			*/
-		    
- 			return EulerAngles;
-		}
 
 		public static void SET_Constants(int TARGET) throws IOException{
 		    Lt    = DATA_MAIN[TARGET][3];    	// Average collision diameter (CO2)         [m]
@@ -518,6 +468,8 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    		Set_AngularVelocityEquationElements(x);
 	    		//----------------------------------------------------------------------------------------
 	    		// Quaternions:
+	    		boolean q_simple=true;
+	    		if(q_simple) {
 		    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
 		    				        {-x[13], 0    , x[11], x[12]},
 		    				        { x[12],-x[11], 0    , x[13]},
@@ -528,14 +480,59 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    	    q_vector[2][0] = x[9];
 		    	    q_vector[3][0] = x[10];
 		    	    
-		    	    EulerAngle = Quaternions2Euler2(q_vector);
+
 		    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_Matrices(Q, q_vector)); 
 		    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
 		    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
 		    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
 		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
 	
-		    	    EulerAngle = Quaternions2Euler2(q_vector);
+		    	    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
+	    		} else {
+		    		double[][] ElementMatrix = {{  -q_vector[1][0] , -q_vector[2][0]  , -q_vector[3][0]  }, 
+		    				         			{   q_vector[0][0] , -q_vector[3][0] ,   q_vector[2][0]  },
+		    				         			{   q_vector[3][0],   q_vector[0][0]  , -q_vector[1][0]  },
+		    				         			{  -q_vector[2][0] ,  q_vector[1][0]  ,  q_vector[0][0]  }};
+		    		
+		    		
+		    		double[][] PQR = {{x[11]},
+		    						  {x[12]},
+		    						  {x[13]}};
+		    		
+		    		double[][] Omega_NED = {{ 1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] },
+		    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[0] },
+		    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] * Math.tan(r_ECEF_spherical[1])}};
+		    		/*
+		    		double[][] OMEGA_ECEF = {{omega*Math.cos(r_ECEF_spherical[1])},
+		    							  	 {0},
+		    							  	 {-omega*Math.sin(r_ECEF_spherical[1])}};
+		    		*/
+		    		double[][] Element_10 =  Mathbox.Multiply_Scalar_Matrix(0.5, ElementMatrix);
+		    		double[][] Element_21 =  Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), Omega_NED);
+
+		    		//double[][] Element_22 = Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), OMEGA_ECEF);
+		    		//double[][] Element_20 = Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), Element_22);
+		    		double[][] Element_20 =  Mathbox.Substract_Matrices(PQR, Element_21);
+		    			    		
+		    		double[][] q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
+		    	    /*
+		    		for(int i=0;i<3;i++) {
+		    			System.out.println(Element_10[i][0]);
+		    		}
+		    		System.out.println("--------------");
+		    		*/
+		    		dxdt[7]  =  q_vector_dot[0][0];  // e1 dot
+		    		dxdt[8]  =  q_vector_dot[1][0];  // e2 dot 
+		    		dxdt[9]  =  q_vector_dot[2][0];  // e3 dot
+		    		dxdt[10] =  q_vector_dot[3][0];  // e4 dot
+		    		//-----------------------------------------
+		    		// Postprocessing Euler and Quarternions 
+		    	    q_vector[0][0] = x[7];
+		    	    q_vector[1][0] = x[8];
+		    	    q_vector[2][0] = x[9];
+		    	    q_vector[3][0] = x[10];
+		    		EulerAngle = Mathbox.Quaternions2Euler(q_vector);
+	    		}
 		    	    //----------------------------------------------------------------------------------------
 
 		    		// Angular Rates
