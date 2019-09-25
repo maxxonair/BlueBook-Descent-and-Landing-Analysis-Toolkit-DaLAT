@@ -11,7 +11,7 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
-import VisualEngine.animation.AnimationSet;
+import VisualEngine.entities.Entity;
 import VisualEngine.entities.Light;
 import VisualEngine.entities.Spacecraft;
 import VisualEngine.entities.ThirdPersonCamera;
@@ -32,15 +32,18 @@ import VisualEngine.textures.ModelTexture;
 import VisualEngine.textures.TerrainTexture;
 import VisualEngine.textures.TerrainTexturePack;
 
-public class worldAnimation {
+public class worldFly {
 	
 	static final boolean isOverlayDisplay=true;
+	static final boolean isHUD=true;
 	static final boolean isAnimate=false;
 	
     static List<RawModel> rawmodels = new ArrayList<RawModel>();
     static List<TexturedModel> texturedmodels = new ArrayList<TexturedModel>();
-    static List<Spacecraft> spaceElements = new ArrayList<Spacecraft>();
     static List<GuiTexture> HUD = new ArrayList<GuiTexture>();
+	static List<GuiTexture> Logos = new ArrayList<GuiTexture>();
+    static List<GUIText> guiTextsLeft = new ArrayList<GUIText>();
+    static List<GUIText> guiTextsRight = new ArrayList<GUIText>();
 
 	static Loader loader = new Loader();
 	static MasterRenderer renderer;
@@ -52,6 +55,9 @@ public class worldAnimation {
 	static GuiRenderer guirenderer;
 	
 	static float animationTime =0;
+	
+	static float tileSize = 2765f; 
+	static float terrainHeight = 50f;
 	
 	static int movableEntity =0;
 	
@@ -73,13 +79,31 @@ public class worldAnimation {
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
 	public enum State {
-		FLY, PAUSED;
+		FLY, PAUSED, CLEANDISPLAY;
 	}
 	
 	private static State state = State.FLY;
 	
 	@SuppressWarnings("static-access")
-	public static void launchVisualEngine(List<AnimationSet> animationSets) {
+	public static void launchVisualEngine() {
+		prepareSimulation();
+	//-------------------------------------------------------------------------------------------------------------
+	//						Visual Engine Loop
+	//-------------------------------------------------------------------------------------------------------------
+		 animationTime =0;
+     //-----------------------------------------------------------
+		while( !Display.isCloseRequested() ){
+			checkInput();
+			System.out.println(state);
+			run();
+		}
+		//---------------------------------------------------------------------------------------------------
+		//				Clean up 
+		//---------------------------------------------------------------------------------------------------
+		finalCleanUp();
+	}
+	
+	public static void prepareSimulation() {
 		DisplayManager.createDisplay();
 	    loader = new Loader();
 		 renderer = new MasterRenderer(loader);
@@ -88,8 +112,6 @@ public class worldAnimation {
         TextMaster.init(loader);
         String fontType = "arial";
         FontType font = new FontType(loader.loadFontTexture(fontType), new File("VisualEngine/fonts/"+fontType+".fnt"));
-        List<GUIText> guiTextsLeft = new ArrayList<GUIText>();
-        List<GUIText> guiTextsRight = new ArrayList<GUIText>();
         float yGap = 0.03f;
         int numberGuiTexts=17;
         for(int i=0;i<numberGuiTexts;i++) {
@@ -108,8 +130,6 @@ public class worldAnimation {
 		TerrainTexture backgroundTexture = new TerrainTexture(loader.loadTerrainTexture("greySand"));			
 		TerrainTexturePack texturePack = new TerrainTexturePack(backgroundTexture, backgroundTexture, backgroundTexture, backgroundTexture);
 		TerrainTexture blendMap = new TerrainTexture(loader.loadBlendMap("blendMap2"));
-		float tileSize = 2765f; 
-		float terrainHeight = 50f;
 		 terrain11 = new Terrain(0,0,0,0, loader, texturePack, blendMap, "moon/tile11", tileSize, terrainHeight);
 		 terrain12 = new Terrain(0,tileSize,0,0, loader, texturePack, blendMap, "moon/tile12", tileSize, terrainHeight);
 		//----------------------------------------------------------------
@@ -124,11 +144,7 @@ public class worldAnimation {
 		texture.setShineDamper(shine_value);
 		texture.setReflectivity(reflectivity_value);
 		Vector3f startPostion = null;
-		if(isAnimate) {
-		 startPostion = new Vector3f(0,animationSets.get(0).getAlt_init(),0);
-		} else {
 		 startPostion = new Vector3f(tileSize/2,200,0);
-		}
 		SpaceShip spaceShip = new SpaceShip();
 		spaceShip.setMass(10000);
 		spaceShip.getPropulsion().setPrimaryPropellant(340);
@@ -138,9 +154,7 @@ public class worldAnimation {
 		spaceShip.getPropulsion().setPrimaryThrustMax(45000);
 		spaceShip.setInitialQuarterions(quarternions);
 	    spacecraft = new Spacecraft(spaceShip,staticModel, startPostion,0,0,0,1);	
-		spacecraft.setQuarternions(quarternions);
-		spaceElements.add(spacecraft);
-		//spacecraft.setRotX(-25);
+		Spacecraft.setQuarternions(quarternions);
 		//----------------------------------------------------------------
 		// 					  Light Setting
 		//----------------------------------------------------------------
@@ -154,7 +168,6 @@ public class worldAnimation {
 		//----------------------------------------------------------------
 		//					Logo Settings
 		//----------------------------------------------------------------
-		List<GuiTexture> Logos = new ArrayList<GuiTexture>();
 		GuiTexture logo = new GuiTexture(loader.loadTerrainTexture("spaceLogo2"), 
 				new Vector2f(0.86f, -0.86f), new Vector2f(0.16f, 0.45f));
 		Logos.add(logo);
@@ -163,66 +176,75 @@ public class worldAnimation {
 		Logos.add(BackgroundFading);
 		addHudElements();
 		 guirenderer = new GuiRenderer(loader);
-	//-------------------------------------------------------------------------------------------------------------
-	//						Visual Engine Loop
-	//-------------------------------------------------------------------------------------------------------------
-		 animationTime =0;
-		int j=0;
-		//System.out.println(Spacecraft.getQuarternions()[0][0]);
-     //-----------------------------------------------------------
-		while( !Display.isCloseRequested() ){
-			checkInput();
-			System.out.println(state);
-			switch (state) {
-			case FLY:
-				checkInput();
-				renderer.processTerrain(terrain11);
-				renderer.processTerrain(terrain12);
-			    animationTime += DisplayManager.getFrameTimeSeconds();
-			    //System.out.println(animationSets.get(j).getTime());
-			    if(j<animationSets.size()) {
-				if(animationTime > animationSets.get(j).getTime() ) {j++;}}
-			    if(isAnimate) {
-						if(animationSets != null && j<(animationSets.size()-1) && isAnimate) {
-							AnimationSet animationSet = animationSets.get(j);
-							spacecraft.animate(terrain11, animationSet);
-						}
-				} else {
-					if(spacecraft.getPosition().x<tileSize) {
-						spacecraft.fly(terrain11);
-					} else {
-						spacecraft.fly(terrain12);
-					}
-				}
-				camera.move();	// Do not touch!!!
-				renderer.processEntity(spacecraft);
-				renderer.render(light, camera);
-				guirenderer.render(Logos);
-				guirenderer.render(HUD);
-				//----------------------------------------------------------------------------------------------
-				// 			Overlay Display
-				//----------------------------------------------------------------------------------------------
-				if(isOverlayDisplay) {
-					updateOverlayDisplayTextLeft(guiTextsLeft, spacecraft, animationTime);
-					updateOverlayDisplayTextRight(guiTextsRight, spacecraft);
-				TextMaster.render();
-				//----------------------------------------------------------------------------------------------
-				}
-				DisplayManager.updateDisplay(); 
-				break;
-			case PAUSED:
-				checkInput();
-				if(isOverlayDisplay) {
-					updateOverlayDisplayTextLeft(guiTextsLeft, spacecraft, animationTime);
-					updateOverlayDisplayTextRight(guiTextsRight, spacecraft);
-				TextMaster.render();
-				}
-				break;
+	}
+	
+	@SuppressWarnings("static-access")
+	public static void render() {
+		renderer.processTerrain(terrain11);
+		renderer.processTerrain(terrain12);
+	    animationTime += DisplayManager.getFrameTimeSeconds();
+			if(spacecraft.getPosition().x<tileSize) {
+				spacecraft.fly(terrain11);
+			} else {
+				spacecraft.fly(terrain12);
 			}
+		camera.move();	// Do not touch!!!
+		renderer.processEntity(spacecraft);
+		renderer.render(light, camera);
+		guirenderer.render(Logos);
+		if(isHUD) {
+		guirenderer.render(HUD);
 		}
-		//---------------------------------------------------------------------------------------------------
-		//				Clean up 
-		//---------------------------------------------------------------------------------------------------
+		//----------------------------------------------------------------------------------------------
+		// 			Overlay Display
+		//----------------------------------------------------------------------------------------------
+		if(isOverlayDisplay) {
+			updateOverlayDisplayTextLeft(guiTextsLeft, spacecraft, animationTime);
+			updateOverlayDisplayTextRight(guiTextsRight, spacecraft);
+		TextMaster.render();
+		//----------------------------------------------------------------------------------------------
+		}
+		DisplayManager.updateDisplay(); 
+	}
+	
+	public static void run() {
+		switch(state) {
+		case FLY:
+			render();
+			break;
+		case PAUSED:
+			renderer.processTerrain(terrain11);
+			renderer.processTerrain(terrain12);
+		    animationTime += DisplayManager.getFrameTimeSeconds();
+		    /*
+				if(Entity.getPosition().x<tileSize) {
+					spacecraft.fly(terrain11);
+				} else {
+					spacecraft.fly(terrain12);
+				}
+				*/
+			camera.move();	// Do not touch!!!
+			renderer.processEntity(spacecraft);
+			renderer.render(light, camera);
+			DisplayManager.updateDisplay(); 
+			break;
+		case CLEANDISPLAY:
+			renderer.processTerrain(terrain11);
+			renderer.processTerrain(terrain12);
+		    animationTime += DisplayManager.getFrameTimeSeconds();
+				if(Entity.getPosition().x<tileSize) {
+					spacecraft.fly(terrain11);
+				} else {
+					spacecraft.fly(terrain12);
+				}
+			camera.move();	// Do not touch!!!
+			renderer.processEntity(spacecraft);
+			renderer.render(light, camera);
+			DisplayManager.updateDisplay(); 
+			break;
+		}
+	}
+	private static void finalCleanUp() {
 		for(int i=0;i<guiTextsLeft.size();i++) {
 			guiTextsLeft.get(i).cleanUp();
 		}
@@ -236,27 +258,40 @@ public class worldAnimation {
 		DisplayManager.closeDisplay();
 	}
 	
-	public static void render() {
-
-	}
-	
-private static void checkInput() {
-	switch(state) {
-	case PAUSED:
-		if(Keyboard.isKeyDown(Keyboard.KEY_M)) {
+	private static void checkInput() {
+		switch(state) {
+		case FLY:
+			if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
+				state = State.PAUSED;
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
+		case PAUSED:
+			if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
 				state = State.FLY;
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_ESCAPE)) {
-			TextMaster.cleanUp();		
-			loader.cleanUp();
-			DisplayManager.closeDisplay();
-		}
-	case FLY:
-		if(Keyboard.isKeyDown(Keyboard.KEY_M)) {
-			state = State.PAUSED;
+				try {
+					Thread.sleep(300);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			break;
+		case CLEANDISPLAY:
+			if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
+				//state = State.FLY;
+			}
+			if(Keyboard.isKeyDown(Keyboard.KEY_0)) {
+				//state = State.CLEANDISPLAY;
+			}
+		break;
 		}
 	}
-}
 	//-------------------------------------------------------------------------------------------------------------
 	public static void addEntity(String fileName, String textureFile) {
 
@@ -368,3 +403,4 @@ private static void checkInput() {
 		}
 	}
 }
+

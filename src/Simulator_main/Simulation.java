@@ -43,6 +43,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
 	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
 		public static 		int SixDoF_Option = 1;  
+		public static       boolean FlatEarther = false;
 	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -84,9 +85,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double rm    = 0;    	    // Planets average radius                   [m]
 			public static double omega = 0 ;        // Planets rotational rate                  [rad/sec]
 			public static double g0 = 9.81;         // For normalized ISP 			
-			//public static double gn = 0;
-			//public static double gr = 0;
-		    public static double Thrust=0;
 		    public static int TARGET=0;						// Target body index
 		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
 		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
@@ -96,6 +94,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		    public static double Tz=0;
 		    public static double Thrust_max=0; 
 		    public static double Thrust_min=0;
+		    public static double Thrust_is=0;
 		    public static double cntr_h_init=0;
 		    public static double cntr_v_init=0;
 		    public static double cntr_t_init=0;
@@ -266,22 +265,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	}
 	    }
 	    
-
-	    public static void SequenceWriteOut_addRow() {
-			CTRL_steps.add(SEQUENCE_DATA_main.get(active_sequence).get_sequence_ID()+ " " + 
-				   SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()+" "+
-			       SEQUENCE_DATA_main.get(active_sequence).get_sequence_controller_ID()+ " "+
-			       cntr_v_init+" "+
-			       cntr_h_init+" "+
-			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_vel()+" "+
-			       Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_alt()+" "+
-			       SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve()+" "+
-			       SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve()  +" "+
-			       cntr_fpa_init+" "+
-			       SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_time()+" "+
-			       SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_fpa()+" "
-		  );
-	    }
 		public static void SET_Constants(int TARGET) throws IOException{
 		    Lt    = DATA_MAIN[TARGET][3];    	// Average collision diameter (CO2)         [m]
 		    mu    = DATA_MAIN[TARGET][1];    	// Standard gravitational constant          []
@@ -312,126 +295,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 			}
 		}
-		public static void SEQUENCE_MANAGER(double t, double[] x) {
-			//-------------------------------------------------------------------------------------------------------------
-			//		 WriteOut conditions at sequence to sequence hand-over: 
-			//-------------------------------------------------------------------------------------------------------------
-	    	if(active_sequence<SEQUENCE_DATA_main.size()-1) {
-				int trigger_type = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_type();
-				double trigger_value = SEQUENCE_DATA_main.get(active_sequence).get_trigger_end_value();
-				if(isFirstSequence) {
-					cntr_v_init = V_NED_ECEF_spherical[0];
-					cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
-					cntr_t_init = t;
-					cntr_fpa_init = V_NED_ECEF_spherical[1];
-					SequenceWriteOut_addRow();
-					isFirstSequence=false; 
-				}
-				if(trigger_type==0) {
-						if(Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME()>trigger_value) {
-							active_sequence++;
-							cntr_v_init = V_NED_ECEF_spherical[0];
-							cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
-							cntr_t_init = t;
-							cntr_fpa_init = V_NED_ECEF_spherical[1];
-							SequenceWriteOut_addRow();
-						}
-				} else if (trigger_type==1) {
-						if( (x[2]-rm-ref_ELEVATION)<trigger_value) {
-							active_sequence++;
-							cntr_v_init = V_NED_ECEF_spherical[0];
-							cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
-							cntr_t_init = t;
-							cntr_fpa_init = V_NED_ECEF_spherical[1];
-							SequenceWriteOut_addRow();}
-				} else if (trigger_type==2) {
-						if( V_NED_ECEF_spherical[0]<trigger_value) {
-							active_sequence++;
-							cntr_v_init = V_NED_ECEF_spherical[0];
-							cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
-							cntr_t_init = t;
-							cntr_fpa_init = V_NED_ECEF_spherical[1];
-							SequenceWriteOut_addRow();}
-	     		}
-	    	}
-	    	//-------------------------------------------------------------------------------------------------------------
-	    	//                   Last Sequence reached -> write SEQU.res
-	    	//-------------------------------------------------------------------------------------------------------------
-	    	if(active_sequence ==  (SEQUENCE_DATA_main.size()-1) && Sequence_RES_closed==false){
-				cntr_v_init = V_NED_ECEF_spherical[0];
-				cntr_h_init = r_ECEF_spherical[2]-rm-ref_ELEVATION;
-				cntr_t_init = t;
-				cntr_fpa_init = x[4];
-	    		System.out.println("Write: Sequence result file ");
-	    		try {
-	            String resultpath="";
-	            	String dir = System.getProperty("user.dir");
-	            	resultpath = dir + "/SEQU.res";
-	            PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
-	            for(String step: CTRL_steps) {
-	                writer.println(step);
-	            }
-	            writer.close();
-	            Sequence_RES_closed=true; 
-	        } catch(Exception e) {};
-	    	}
-	    	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + active_sequence);
-	    	int sequence_type_TM = SEQUENCE_DATA_main.get(active_sequence).get_sequence_type();
-	 
-	    	Flight_CTRL_ThrustMagnitude.get(active_sequence).Update_Flight_CTRL( true, x, M0, m_propellant_init,  cntr_v_init,  cntr_h_init,  t,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_vel(),SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_alt(),  Thrust_max,  Thrust_min,  SEQUENCE_DATA_main.get(active_sequence).get_ctrl_target_curve(),  val_dt) ;
-	    	//Flight_CTRL_PitchCntrl.get(active_sequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(active_sequence).get_TVC_ctrl_target_curve(), val_dt);	    	
-	    	if(sequence_type_TM==3) { // Controlled Flight Sequence 
-			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//                          Flight Controller ON - Controlled Fight Sequence
-			    	//-------------------------------------------------------------------------------------------------------------
-			    	if (ctrl_callout) {System.out.println("Altitude "+decf.format((x[2]-rm))+" | Controller " + Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_ID() +" set ON");}
-			    	Thrust        = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_thrust_cmd();
-			    	Throttle_CMD  = Flight_CTRL_ThrustMagnitude.get(active_sequence).get_ctrl_throttle_cmd();
-			    	
-			    	elevationangle = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
-	    	} else if (sequence_type_TM==2) { // Continuous propulsive Flight Sequence 
-			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//                          TM-FC OFF | TVC-FC ON - Continuous thrust
-			    	//-------------------------------------------------------------------------------------------------------------
-	    		elevationangle = 0.0;
-	    		elevationangle = Flight_CTRL_PitchCntrl.get(active_sequence).get_TVC_cmd();
-		    		if((m_propellant_init-(M0-x[6]))>0) {
-		    			//System.out.println((m_propellant_init-(M0-x[6])));
-		    			Thrust = Thrust_max; 
-		    			Throttle_CMD = 1; 
-		    		}else { // Empty tanks
-		        		Thrust = 0; 
-		        		Throttle_CMD = 0; 
-		    		}
-		    		
-	    	} else if (sequence_type_TM==1) { // Coasting Sequence 
-			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//                          Flight Controller OFF - Coasting - Thrust OFF
-			    	//-------------------------------------------------------------------------------------------------------------
-		    		Thrust = 0; 
-		    		Throttle_CMD = 0;
-	    	} else if (sequence_type_TM==4) { // Constrained continuous thrust 
-			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//                Flight Controller OFF - Uncontrolled/Constrained, continuous thrust TTM constraint
-			    	//-------------------------------------------------------------------------------------------------------------
-	    		    if(const_isFirst){const_tzer0=t;}
-		    		if((TTM_max * x[6])>Thrust_max) {
-		    			Thrust = Thrust_max;
-		    		} else {
-		    			Thrust = TTM_max * x[6]; 
-		    		}
-		    			Throttle_CMD = Thrust/Thrust_max;
-	    	} else if (sequence_type_TM==5) {
-			    	//-------------------------------------------------------------------------------------------------------------	
-			    	//            Flight Controller OFF - Uncontrolled/Constrained, continuous thrust Thrust vector turn
-			    	//-------------------------------------------------------------------------------------------------------------
-    		    if(const_isFirst){const_tzer0=t;}
-		    	
-				Thrust = Thrust_max;
-    			Throttle_CMD = Thrust/Thrust_max;	
-	    	} else { System.out.println("ERROR: Sequence type out of range");}
-		}
-		
 
 		
 		public static void Set_AngularVelocityEquationElements(double[] x) {
@@ -506,7 +369,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-    	SEQUENCE_MANAGER(t,  x);
+    //	SEQUENCE_MANAGER(t,  x);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
@@ -521,9 +384,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Thrust Forces | Body fixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
-	   	F_Thrust_B[0][0] =  Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
-	   	F_Thrust_B[1][0] =  Thrust * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
-	   	F_Thrust_B[2][0] =  Thrust * Math.sin(TVC_alpha);   
+	   	F_Thrust_B[0][0] =  Thrust_is * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
+	   	F_Thrust_B[1][0] =  Thrust_is * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
+	   	F_Thrust_B[2][0] =  Thrust_is * Math.sin(TVC_alpha);   
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Set up force vector in NED  
     	//------------------------------------------------------------------------------------------------------------------- 
@@ -615,7 +478,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	
 	    }	    
 	    // System mass [kg]
-	    dxdt[6] = - Thrust/(ISP_is*g0) ;   
+	    dxdt[6] = - Thrust_is/(ISP_is*g0) ;   
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
@@ -631,8 +494,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    		Set_AngularVelocityEquationElements(x);
 	    		//----------------------------------------------------------------------------------------
 	    		// Quaternions:
-	    		boolean q_simple=false;
-	    		if(q_simple) {
+	    		if(FlatEarther) {
 		    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
 		    				        {-x[13], 0    , x[11], x[12]},
 		    				        { x[12],-x[11], 0    , x[13]},
@@ -1059,8 +921,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  E_total+ " " + 
 	                    		  (Throttle_CMD*100)+ " "+ 
 	                    		  (m_propellant_init-(M0-y[6]))/m_propellant_init*100+" "+ 
-	                    		  (Thrust)+" "+
-	                    		  (Thrust/y[6])+" "+
+	                    		  (Thrust_is)+" "+
+	                    		  (Thrust_is/y[6])+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.cos(V_NED_ECEF_spherical[1]))+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.sin(V_NED_ECEF_spherical[1]))+" "+
 	                    		  (acc_deltav)+" "+
@@ -1231,4 +1093,10 @@ public class Simulation implements FirstOrderDifferentialEquations {
 				}
 	       
     }
+	public static double getRef_ELEVATION() {
+		return ref_ELEVATION;
+	}
+	public static double getRm() {
+		return rm;
+	}
 }

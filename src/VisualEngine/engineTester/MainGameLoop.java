@@ -10,8 +10,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import VisualEngine.animation.AnimationSet;
-import VisualEngine.engineLauncher.worldAnimation;
 //import VisualEngine.engineLauncher.worldGenerator;
+import VisualEngine.engineLauncher.worldFly;
 
 public class MainGameLoop {
 	
@@ -35,8 +35,7 @@ public class MainGameLoop {
 
 	public static void main(String[] args) {
 		// worldGenerator.launchVisualEngine();
-		List<AnimationSet> animationSets = READ_AnimationData();
-		worldAnimation.launchVisualEngine(animationSets);		
+		worldFly.launchVisualEngine();		
 	}
 	
     public static List<AnimationSet>  READ_AnimationData() {

@@ -8,7 +8,19 @@ public class GuiTexture {
 	private int texture;
 	private Vector2f position;
 	private Vector2f scale;
+	
+	private float rot;
+	
+	
 	 
+	public float getRot() {
+		return rot;
+	}
+
+	public void setRot(float rot) {
+		this.rot = rot;
+	}
+
 	public int getTexture() {
 		return texture;
 	}

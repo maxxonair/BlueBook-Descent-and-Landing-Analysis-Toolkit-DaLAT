@@ -1,4 +1,8 @@
-/Simulator_main/
-/VisualEngine/
-/Toolbox/
+/Controller/
+/FlightElement/
 /GUI/
+/Model/
+/Sequence/
+/Simulator_main/
+/Toolbox/
+/VisualEngine/

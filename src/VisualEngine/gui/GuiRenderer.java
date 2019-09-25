@@ -7,7 +7,9 @@ import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
+import org.lwjgl.util.vector.Vector3f;
 
+import VisualEngine.entities.Entity;
 import VisualEngine.models.RawModel;
 import VisualEngine.renderEngine.Loader;
 import VisualEngine.toolbox.Maths;
@@ -16,6 +18,7 @@ public class GuiRenderer {
 	
 	private final RawModel quad;
 	private GuiShader shader;
+	private static Vector3f position = new Vector3f();
 	
 	public GuiRenderer(Loader loader) {	
 		float[] positions = { -1, 1, -1, -1, 1,1,1,-1}; 
@@ -25,6 +28,7 @@ public class GuiRenderer {
 
 	public void render(List<GuiTexture> guis) {
 		shader.start();
+		//prepareInstance();
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -42,6 +46,15 @@ public class GuiRenderer {
 		GL20.glDisableVertexAttribArray(0);
 		GL30.glBindVertexArray(0);
 		shader.stop();
+	}
+	
+	private void prepareInstance() {
+		position.x=0;
+		position.y=0;
+		position.z=0;
+		Matrix4f transformationMatrix = Maths.createTransformationMatrix(position ,
+				25, 25, 25, 1);
+		shader.loadTransformation(transformationMatrix);
 	}
 	
 	public void cleanUp() {
