@@ -24,10 +24,9 @@ import Model.Atmosphere;
 import Model.AtmosphereModel;
 import Model.Gravity;
 import Model.atm_dataset;
+import Sequence.Sequence;
 import Sequence.SequenceElement;
 import Toolbox.Mathbox;
-import Controller.Flight_CTRL_ThrustMagnitude;
-import Controller.Flight_CTRL_PitchCntrl;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
 
@@ -36,13 +35,12 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		//				                              !!!  Control variables  !!!
 		//----------------------------------------------------------------------------------------------------------------------------
 		public static boolean HoverStop          = false; 
-	    public static boolean ctrl_callout       = false; 
-	    public static boolean ISP_Throttle_model = false; 
+	    public static boolean ctrl_callout       = false;  
 	    public static boolean stophandler_ON     = true; 
 	    
-	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
-	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
-		public static 		int SixDoF_Option = 1;  
+	    public static 	    boolean spherical   = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
+	    public static 		boolean is_6DOF     = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF
+		public static 		int SixDoF_Option   = 1;  
 		public static       boolean FlatEarther = false;
 	    //............................................                                       .........................................
 		//
@@ -72,7 +70,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		    public static double vminus=0;
 		    public static double val_dt=0;
 		    public static boolean switcher=true; 
-		    public static double cmd_min = 0;
 		    public static double cmd_max = 0;
 		    public static boolean cntrl_on ; 
 		    public static double acc_deltav = 0; 
@@ -86,42 +83,19 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double omega = 0 ;        // Planets rotational rate                  [rad/sec]
 			public static double g0 = 9.81;         // For normalized ISP 			
 		    public static int TARGET=0;						// Target body index
-		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
-		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
 		    public static double M0=0; 
-		    public static double Tx=0;
-		    public static double Ty=0;
-		    public static double Tz=0;
-		    public static double Thrust_max=0; 
-		    public static double Thrust_min=0;
 		    public static double Thrust_is=0;
-		    public static double cntr_h_init=0;
-		    public static double cntr_v_init=0;
-		    public static double cntr_t_init=0;
-		    public static double cntr_fpa_init=0;
-		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA 									 = new ArrayList<atm_dataset>(); 
 	        private static List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
 	        private static List<StopCondition> STOP_Handler 							 = new ArrayList<StopCondition>(); 
-	        private static List<Flight_CTRL_ThrustMagnitude> Flight_CTRL_ThrustMagnitude = new ArrayList<Flight_CTRL_ThrustMagnitude>(); 
-	        private static List<Flight_CTRL_PitchCntrl> Flight_CTRL_PitchCntrl 			 = new ArrayList<Flight_CTRL_PitchCntrl>(); 
-	        private static ArrayList<String> CTRL_steps 								 = new ArrayList<String>();
-	        static boolean PROPread = false; 
-	        public static int active_sequence = 0 ; 
-	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
-	        public static double ctrl_alt = 0 ; 			// Active Flight Controller target altitude [m]
+
 	        public static double v_touchdown=0; 			// Global touchdown velocity constraint [m/s]
-	        public static boolean isFirstSequence=true;
-	        public static boolean Sequence_RES_closed=false;
 	        public static double groundtrack = 0; 
 	        public static double phimin=0;
 	        public static double tetamin=0;
 	      	public static double fpa_dot =0;
 	      	public static double integ_t =0;
 	      	public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
-	        public static double Xfo = 0 ;
-	        public static double Yfo = 0 ; 
-	        public static double Zfo = 0 ; 
 	        public static double ISP_is=0;
 	        
 	        static double azimuth_inertFrame = 0 ;
@@ -137,9 +111,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			
 			static CoordinateTransformation coordinateTransformation;
 			
-			public static double[][] F_Aero_A    = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
-			public static double[][] F_Aero_NED  = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
-			public static double[][] F_Thrust_B  = {{0},{0},{0}};						// Thrust Force in body fixed system     [N]
+			public static double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
+			public static double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
+			public static double[][] F_Thrust_B    = {{0},{0},{0}};						// Thrust Force in body fixed system     [N]
 			public static double[][] F_Thrust_NED  = {{0},{0},{0}};						// Thrust Force in NED frame    		 [N]
 			public static double[][] F_Gravity_G   = {{0},{0},{0}};						// Gravity Force in ECEF coordinates     [N]
 			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
@@ -210,8 +184,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			//__________________________
 			
 	        public static double elevationangle; 
-	        public static double const_tzer0=0;
-	        public static boolean const_isFirst =true; 
 	        
 	        // TVC control angles: 
 	        public static double TVC_alpha =0;					// TVC angle alpha [rad]
@@ -227,10 +199,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static double Thrust_Deviation_dot =0;
 	        public static double TE_save =0;
 	        
-	        public static double ISP_min = 0; 
-	        public static double ISP_max = 0; 
-	        
-	        public static double TTM_max = 5.0;
+	       
 	        public static boolean engine_loss_indicator=false;
 	        
 	        public static SpaceShip spaceShip = new SpaceShip();
@@ -239,24 +208,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	      //----------------------------------------------------------------------------------------------------------------------------
-	    public double ThrottleMODEL_get_ISP(SpaceShip spaceShip, double Throttle_CMD) {
-	        	double IspOut=0;
-	        	if(Throttle_CMD>1 || Throttle_CMD<0) {
-	        		System.out.println("ERROR: ISP model - throttle command out of range" );
-	        		IspOut =  spaceShip.getPropulsion().getPrimaryISPMax();
-	        	} else if (ISP_min>ISP_max) {
-	        		System.out.println("ERROR: ISP model - minimum ISP is larger than maximum ISP" );
-	        		IspOut=spaceShip.getPropulsion().getPrimaryISPMax();
-	        	} else if (ISP_min<0 || ISP_max<0) {
-	        		System.out.println("ERROR: ISP model - ISP below 0");
-	        		IspOut=0; 
-	        	} else {
-	        		double m = (spaceShip.getPropulsion().getPrimaryISPMax() - spaceShip.getPropulsion().getPrimaryISPMin())/(1 - cmd_min);
-	        		double n = spaceShip.getPropulsion().getPrimaryISPMax() - m ; 
-	        		IspOut = m * Throttle_CMD + n; 
-	        	}
-	        	return IspOut; 
-	        }
+
 	    public int getDimension() {
 	    	if(is_6DOF) {
 	    		return 14; // 6 DOF model 
@@ -271,81 +223,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		    rm    = DATA_MAIN[TARGET][0];    	// Planets mean radius                      [m]
 		    omega = DATA_MAIN[TARGET][2];		// Planets rotational speed     		    [rad/s]
 		}
-		public static void UPDATE_FlightController_ThrustMagnitude(Flight_CTRL_ThrustMagnitude NewElement){	   
-			   if (Flight_CTRL_ThrustMagnitude.size()==0){ Simulation.Flight_CTRL_ThrustMagnitude.add(NewElement); 
-			   } else {Simulation.Flight_CTRL_ThrustMagnitude.add(NewElement); } 
-		   }
-		public static void UPDATE_FlightController_PitchControl(Flight_CTRL_PitchCntrl NewElement){	   
-			   if (Flight_CTRL_PitchCntrl.size()==0){ Simulation.Flight_CTRL_PitchCntrl.add(NewElement); 
-			   } else {Simulation.Flight_CTRL_PitchCntrl.add(NewElement); } 
-		   }
-		public static void INITIALIZE_FlightController(double[]x) {
-			for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
-				int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID()-1;
-				 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
-				 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
-				 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
-				 double ctrl_tend = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_time();
-				 int TVC_ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_TVCController_ID()-1;
-				// -> Create new Flight controller 
-				 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, true, x, 0,  m_propellant_init,  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  Thrust_max,  Thrust_min,  0,  0,  ctrl_curve,  val_dt,0,0,0,0,0, rm, ref_ELEVATION);
-				UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
-				
-				Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, true, -1, 0, ctrl_tend, ctrl_fpa, rm , ref_ELEVATION);
-				UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
-			}
-		}
-
 		
-		public static void Set_AngularVelocityEquationElements(double[] x) {
-			double Ixx = InertiaTensor[0][0];
-			double Iyy = InertiaTensor[1][1];
-			double Izz = InertiaTensor[2][2];
-			double Ixy = InertiaTensor[0][1];
-			double Ixz = InertiaTensor[0][2];
-			//  double Iyx = InertiaTensor[][];
-			double Iyz = InertiaTensor[2][1];
-			//double Izx = InertiaTensor[][];
-			//double Izy = InertiaTensor[][];
-			 det_I = Ixx*Iyy*Izz - 2*Ixy*Ixz*Iyz - Ixx*Iyz*Iyz - Iyy*Ixz*Ixz - Izz*Iyz*Iyz;
-			 EE_I01 = Iyy*Izz - Iyz*Iyz;
-			 EE_I02 = Ixy*Izz + Iyz*Ixz;
-			 EE_I03 = Ixy*Iyz + Iyy*Ixz;
-			 EE_I04 = Ixx*Izz - Ixz*Ixz;
-			 EE_I05 = Ixx*Iyz + Ixy*Ixz;
-			 EE_I06 = Ixx*Iyy - Ixy*Ixy;
-			
-			 EE_P_pp = -(Ixz*EE_I02 - Ixy*EE_I03)/det_I;
-			 EE_P_pq =  (Ixz*EE_I01 - Iyz*EE_I02 - (Iyy - Ixx)*EE_I03)/det_I;
-			 EE_P_pr = -(Ixy*EE_I01 + (Ixx-Izz)*EE_I02 - Iyz*EE_I03)/det_I;
-			 EE_P_qq =  (Iyz*EE_I01 - Ixy*EE_I03)/det_I;
-			 EE_P_qr = -((Izz-Iyy)*EE_I01 - Ixy*EE_I02 + Ixz*EE_I03)/det_I;
-			 EE_P_rr = -(Iyz*EE_I01 - Ixz*EE_I02)/det_I;
-			 EE_P_x  =   EE_I01/det_I;
-			 EE_P_y  =   EE_I02/det_I;
-			 EE_P_z  =   EE_I03/det_I;
-			
-			 EE_Q_pp = -(Ixz*EE_I02 - Ixy*EE_I05)/det_I;
-			 EE_Q_pq =  (Ixz*EE_I02 - Iyz*EE_I04 - (Iyy - Ixx)*EE_I05)/det_I;
-			 EE_Q_pr = -(Ixy*EE_I02 + (Ixx-Izz)*EE_I04 - Iyz*EE_I05)/det_I;
-			 EE_Q_qq =  (Iyz*EE_I02 - Ixy*EE_I05)/det_I;
-			 EE_Q_qr = -((Izz-Iyy)*EE_I02 - Ixy*EE_I04 + Ixz*EE_I05)/det_I;
-			 EE_Q_rr = -(Iyz*EE_I02 - Ixz*EE_I04)/det_I;
-			 EE_Q_x  = EE_I02/det_I;
-			 EE_Q_y  = EE_I04/det_I;
-			 EE_Q_z  = EE_I05/det_I;
-			
-			 EE_R_pp = -(Ixz*EE_I05 - Ixy*EE_I06)/det_I;
-			 EE_R_pq =  (Ixz*EE_I03 - Iyz*EE_I05 - (Iyy - Ixx)*EE_I06)/det_I;
-			 EE_R_pr = -(Ixy*EE_I03 + (Ixx-Izz)*EE_I05 - Iyz*EE_I06)/det_I;
-			 EE_R_qq =  (Iyz*EE_I03 - Ixy*EE_I06)/det_I;
-			 EE_R_qr = -((Izz-Iyy)*EE_I03 - Ixy*EE_I05 + Ixz*EE_I06)/det_I;
-			 EE_R_rr = -(Iyz*EE_I03 - Ixz*EE_I05)/det_I;
-			 EE_R_x  = EE_I03/det_I;
-			 EE_R_y  = EE_I05/det_I;
-			 EE_R_z  = EE_I06/det_I;
-			
-		}
 
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	integ_t=t;
@@ -364,12 +242,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	    	F_Gravity_NED[2][0] = x[6]*g_NED[2][0];
     		}
     		//Random rand = new Random();
-    		M_Thrust_B[1][0] = 1;
+    		//M_Thrust_B[1][0] = 1;
 
     	//-------------------------------------------------------------------------------------------------------------------
     	//								Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-    //	SEQUENCE_MANAGER(t,  x);
+    Sequence.sequenceManager(t,  x, V_NED_ECEF_spherical, r_ECEF_spherical );
+    Thrust_is = Sequence.getControlElements().getPrimaryThrust_is();
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
@@ -396,7 +275,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    				ISP model for engine throttling
     	//-------------------------------------------------------------------------------------------------------------------
-    	if(ISP_Throttle_model) {ISP_is = ThrottleMODEL_get_ISP(spaceShip, Throttle_CMD);}
+    	if(spaceShip.getPropulsion().isPrimaryThrottleModel()) {ISP_is = Sequence.ThrottleMODEL_get_ISP(spaceShip, Sequence.getControlElements().getPrimaryThrustThrottleCmd());}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
@@ -728,23 +607,14 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		System.out.println("READ: Initial Attitude set.");
 	}
 
-	    cntr_h_init=integratorData.getInitRadius()-rm;
-	    cntr_v_init=integratorData.getInitVelocity();
+	    Sequence.setCntr_h_init(integratorData.getInitRadius()-rm);
+	    Sequence.setCntr_v_init(integratorData.getInitVelocity());
 
-	    	 m_propellant_init = spaceShip.getPropulsion().getPrimaryPropellant();
-	    	 Thrust_max 	       = spaceShip.getPropulsion().getPrimaryThrustMax();
-	    	 Thrust_min		   = spaceShip.getPropulsion().getPrimaryThrustMin();
-	    	 ISP_is			   = spaceShip.getPropulsion().getPrimaryISPMax();
-	    	 if(spaceShip.getPropulsion().isPrimaryThrottleModel()) {
-	    		 ISP_max = spaceShip.getPropulsion().getPrimaryISPMax();
-	    		 ISP_min = spaceShip.getPropulsion().getPrimaryISPMin();
-	    		 ISP_Throttle_model=true; 
-	    	 }
+	    	 ISP_is		  = spaceShip.getPropulsion().getPrimaryISPMax();
 	    	 M0 			  = spaceShip.getMass()  ; 
 	    	 mminus	  	  = M0  ;
 	    	 vminus		  = integratorData.getInitVelocity()  ;
 	    	 v_touchdown	  = 0   ;
-	    	 PROPread		  = true; 
 
     	 phimin=integratorData.getInitLongitude();
     	 tetamin=integratorData.getInitLatitude();
@@ -762,9 +632,12 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
-		Sequence_RES_closed=false;
+		Sequence.setSequence_RES_closed(false);
 		SEQUENCE_DATA_main = SEQUENCE_DATA;  // Sequence data handover
-		CTRL_steps.clear();
+		for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
+		System.out.println(SEQUENCE_DATA_main.get(i).get_sequence_controller_ID()+"|"+SEQUENCE_DATA_main.get(i).get_trigger_end_value());
+		}
+		Sequence.getCTRL_steps().clear();
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -819,7 +692,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			  		        }
 	  		// S/C Mass        
 	  		        y[6] = spaceShip.getMass();
-	  				INITIALIZE_FlightController(y) ;
 	  				// Attitude and Rotational Motion
 	  				y[7]  = q_vector[0][0];
 	  				y[8]  = q_vector[1][0];
@@ -860,8 +732,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			        }
 			// S/C Mass        
 			        y[6] = spaceShip.getMass();
-					INITIALIZE_FlightController(y) ;
   			}
+	        Sequence.initializeFlightController(y, SEQUENCE_DATA_main);
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
 
@@ -881,11 +753,11 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                double CTRL_TM_Error =0;
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
-	                if(SEQUENCE_DATA_main.get(active_sequence).get_sequence_type()==3) {
-	                CTRL_TM_Error=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_ERROR();
-	                CTRL_TVC_Error=Flight_CTRL_PitchCntrl.get(active_sequence).get_CTRL_ERROR();  
+	                if(SEQUENCE_DATA_main.get(Sequence.getActiveSequence()).get_sequence_type()==3) {
+	                CTRL_TM_Error=Sequence.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_ERROR();
+	                CTRL_TVC_Error=Sequence.getFlight_CTRL_PitchCntrl().get(Sequence.getActiveSequence()).get_CTRL_ERROR();  
 	                }
-	                CTRL_Time=Flight_CTRL_ThrustMagnitude.get(active_sequence).get_CTRL_TIME();
+	                CTRL_Time=Sequence.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_TIME();
 	                if( t > twrite ) {
 	                	twrite = twrite + integratorData.getIntegTimeStep(); 
 	                    steps.add(t + " " + 
@@ -919,14 +791,14 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
 	                    		  E_total+ " " + 
-	                    		  (Throttle_CMD*100)+ " "+ 
-	                    		  (m_propellant_init-(M0-y[6]))/m_propellant_init*100+" "+ 
+	                    		  (Sequence.getControlElements().getPrimaryThrustThrottleCmd()*100)+ " "+ 
+	                    		  (spaceShip.getPropulsion().getPrimaryPropellant()-(M0-y[6]))/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
 	                    		  (Thrust_is)+" "+
 	                    		  (Thrust_is/y[6])+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.cos(V_NED_ECEF_spherical[1]))+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.sin(V_NED_ECEF_spherical[1]))+" "+
 	                    		  (acc_deltav)+" "+
-	                    		  active_sequence+" "+
+	                    		  Sequence.getActiveSequence()+" "+
 	                    		  (groundtrack/1000)+" "+
 	                    		  CTRL_TM_Error+" "+
 	                    		  CTRL_TVC_Error+" "+
@@ -995,7 +867,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                            writer.println(step);
 	                        }
 	                        System.out.println("Write: Result file. ");
-	                        if(Sequence_RES_closed==false) {System.out.println("Warning: Sequence end not reached - SEQU.res not built");}
+	                        if(!Sequence.isSequence_RES_closed()) {System.out.println("Warning: Sequence end not reached - SEQU.res not built");}
 	                        writer.close();
 	                    } catch(Exception e) {System.out.println("ERROR: Writing result file failed");System.out.println(e);};
 	                }
@@ -1098,5 +970,67 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	}
 	public static double getRm() {
 		return rm;
+	}
+	public static SpaceShip getSpaceShip() {
+		return spaceShip;
+	}
+	public static double getVal_dt() {
+		return val_dt;
+	}
+	
+	
+	
+	public static List<SequenceElement> getSEQUENCE_DATA_main() {
+		return SEQUENCE_DATA_main;
+	}
+
+	public static void Set_AngularVelocityEquationElements(double[] x) {
+		double Ixx = InertiaTensor[0][0];
+		double Iyy = InertiaTensor[1][1];
+		double Izz = InertiaTensor[2][2];
+		double Ixy = InertiaTensor[0][1];
+		double Ixz = InertiaTensor[0][2];
+		//  double Iyx = InertiaTensor[][];
+		double Iyz = InertiaTensor[2][1];
+		//double Izx = InertiaTensor[][];
+		//double Izy = InertiaTensor[][];
+		 det_I = Ixx*Iyy*Izz - 2*Ixy*Ixz*Iyz - Ixx*Iyz*Iyz - Iyy*Ixz*Ixz - Izz*Iyz*Iyz;
+		 EE_I01 = Iyy*Izz - Iyz*Iyz;
+		 EE_I02 = Ixy*Izz + Iyz*Ixz;
+		 EE_I03 = Ixy*Iyz + Iyy*Ixz;
+		 EE_I04 = Ixx*Izz - Ixz*Ixz;
+		 EE_I05 = Ixx*Iyz + Ixy*Ixz;
+		 EE_I06 = Ixx*Iyy - Ixy*Ixy;
+		
+		 EE_P_pp = -(Ixz*EE_I02 - Ixy*EE_I03)/det_I;
+		 EE_P_pq =  (Ixz*EE_I01 - Iyz*EE_I02 - (Iyy - Ixx)*EE_I03)/det_I;
+		 EE_P_pr = -(Ixy*EE_I01 + (Ixx-Izz)*EE_I02 - Iyz*EE_I03)/det_I;
+		 EE_P_qq =  (Iyz*EE_I01 - Ixy*EE_I03)/det_I;
+		 EE_P_qr = -((Izz-Iyy)*EE_I01 - Ixy*EE_I02 + Ixz*EE_I03)/det_I;
+		 EE_P_rr = -(Iyz*EE_I01 - Ixz*EE_I02)/det_I;
+		 EE_P_x  =   EE_I01/det_I;
+		 EE_P_y  =   EE_I02/det_I;
+		 EE_P_z  =   EE_I03/det_I;
+		
+		 EE_Q_pp = -(Ixz*EE_I02 - Ixy*EE_I05)/det_I;
+		 EE_Q_pq =  (Ixz*EE_I02 - Iyz*EE_I04 - (Iyy - Ixx)*EE_I05)/det_I;
+		 EE_Q_pr = -(Ixy*EE_I02 + (Ixx-Izz)*EE_I04 - Iyz*EE_I05)/det_I;
+		 EE_Q_qq =  (Iyz*EE_I02 - Ixy*EE_I05)/det_I;
+		 EE_Q_qr = -((Izz-Iyy)*EE_I02 - Ixy*EE_I04 + Ixz*EE_I05)/det_I;
+		 EE_Q_rr = -(Iyz*EE_I02 - Ixz*EE_I04)/det_I;
+		 EE_Q_x  = EE_I02/det_I;
+		 EE_Q_y  = EE_I04/det_I;
+		 EE_Q_z  = EE_I05/det_I;
+		
+		 EE_R_pp = -(Ixz*EE_I05 - Ixy*EE_I06)/det_I;
+		 EE_R_pq =  (Ixz*EE_I03 - Iyz*EE_I05 - (Iyy - Ixx)*EE_I06)/det_I;
+		 EE_R_pr = -(Ixy*EE_I03 + (Ixx-Izz)*EE_I05 - Iyz*EE_I06)/det_I;
+		 EE_R_qq =  (Iyz*EE_I03 - Ixy*EE_I06)/det_I;
+		 EE_R_qr = -((Izz-Iyy)*EE_I03 - Ixy*EE_I05 + Ixz*EE_I06)/det_I;
+		 EE_R_rr = -(Iyz*EE_I03 - Ixz*EE_I05)/det_I;
+		 EE_R_x  = EE_I03/det_I;
+		 EE_R_y  = EE_I05/det_I;
+		 EE_R_z  = EE_I06/det_I;
+		
 	}
 }

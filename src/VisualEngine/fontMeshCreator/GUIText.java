@@ -87,6 +87,10 @@ public class GUIText {
 	public void cleanUp() {
 		TextMaster.cleanUp();
 	}
+	
+	public void setPosition(Vector2f position) {
+		this.position = position; 
+	}
 
 	/**
 	 * @return The font used by this text.

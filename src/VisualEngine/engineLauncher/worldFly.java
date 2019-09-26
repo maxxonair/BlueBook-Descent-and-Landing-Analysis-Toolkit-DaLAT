@@ -11,7 +11,6 @@ import org.lwjgl.util.vector.Vector2f;
 import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
-import VisualEngine.entities.Entity;
 import VisualEngine.entities.Light;
 import VisualEngine.entities.Spacecraft;
 import VisualEngine.entities.ThirdPersonCamera;
@@ -41,6 +40,8 @@ public class worldFly {
     static List<RawModel> rawmodels = new ArrayList<RawModel>();
     static List<TexturedModel> texturedmodels = new ArrayList<TexturedModel>();
     static List<GuiTexture> HUD = new ArrayList<GuiTexture>();
+    static List<GUIText> HudVerticalSpeed = new ArrayList<GUIText>();
+    static List<GUIText> HudAltitude = new ArrayList<GUIText>();
 	static List<GuiTexture> Logos = new ArrayList<GuiTexture>();
     static List<GUIText> guiTextsLeft = new ArrayList<GUIText>();
     static List<GUIText> guiTextsRight = new ArrayList<GUIText>();
@@ -54,6 +55,7 @@ public class worldFly {
 	static ThirdPersonCamera camera;
 	static GuiRenderer guirenderer;
 	
+	
 	static float animationTime =0;
 	
 	static float tileSize = 2765f; 
@@ -61,20 +63,24 @@ public class worldFly {
 	
 	static int movableEntity =0;
 	
+
+	static float HudVerticalSpeedLengthAdjustment=20;
+	static float HudAltitudeLengthAdjustment=100;
+	
 	static float shine_value = 1;
 	static float reflectivity_value =0;
 	
     static double[][] InertiaTensorMatrix   =         {{   27364    ,    0       ,   0},
-													   {      0    ,    27314    ,   0},
-													   {      0    ,    0       ,   26114}};
+													   {      0     ,    27314    ,   0},
+													   {      0     ,    0        ,   26114}};
     private static double[][] MRCS = {{1900},
 			 						  {1900},
 			 						  {1900}};
     
 	private static double[][] quarternions = {	{-0.2164396},
-			{0},
-			{0},
-			{0.976296}}; 
+												{0},
+												{0},
+												{0.976296}}; 
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
@@ -124,6 +130,25 @@ public class worldFly {
             guiText.setColour(0.9f, 0.9f, 0.9f);
             guiTextsRight.add(guiText);
         }
+        GUIText HudTest1 = new GUIText("", 1f, font, new Vector2f(0.5f, 0.5f), 1f, false);
+        HudTest1.setColour(0.0f, 0.832f, 0.152f);
+
+
+        
+        
+        
+        for(int i=100;i>=0;i--) {
+        	float number = i*10-30;
+            GUIText guiText = new GUIText(Float.toString(number), 1f, font, new Vector2f(-0.92f, 0.0f), 1f, false);
+            guiText.setColour(0.0f, 0.8f, 0.152f);
+            HudAltitude.add(guiText);   
+        }  
+        for(int i=80;i>=0;i--) {
+        	float number = i*2-80;
+            GUIText guiText = new GUIText(Float.toString(number), 1f, font, new Vector2f(-0.92f, 0.0f), 1f, false);
+            guiText.setColour(0.0f, 0.8f, 0.152f);
+            HudVerticalSpeed.add(guiText);   
+        }  
 		//----------------------------------------------------------------
 		// 					Terrain Setting
 		//----------------------------------------------------------------
@@ -194,6 +219,13 @@ public class worldFly {
 		guirenderer.render(Logos);
 		if(isHUD) {
 		guirenderer.render(HUD);
+		//HudTest.get(0).updateTextString("Test");
+		//---------------------------------------------------
+		  
+            
+        updateHudElements();
+            
+          //---------------------------------------------------
 		}
 		//----------------------------------------------------------------------------------------------
 		// 			Overlay Display
@@ -216,31 +248,13 @@ public class worldFly {
 			renderer.processTerrain(terrain11);
 			renderer.processTerrain(terrain12);
 		    animationTime += DisplayManager.getFrameTimeSeconds();
-		    /*
-				if(Entity.getPosition().x<tileSize) {
-					spacecraft.fly(terrain11);
-				} else {
-					spacecraft.fly(terrain12);
-				}
-				*/
 			camera.move();	// Do not touch!!!
 			renderer.processEntity(spacecraft);
 			renderer.render(light, camera);
 			DisplayManager.updateDisplay(); 
 			break;
 		case CLEANDISPLAY:
-			renderer.processTerrain(terrain11);
-			renderer.processTerrain(terrain12);
-		    animationTime += DisplayManager.getFrameTimeSeconds();
-				if(Entity.getPosition().x<tileSize) {
-					spacecraft.fly(terrain11);
-				} else {
-					spacecraft.fly(terrain12);
-				}
-			camera.move();	// Do not touch!!!
-			renderer.processEntity(spacecraft);
-			renderer.render(light, camera);
-			DisplayManager.updateDisplay(); 
+			render(); 
 			break;
 		}
 	}
@@ -263,6 +277,7 @@ public class worldFly {
 		case FLY:
 			if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
 				state = State.PAUSED;
+				Display.setTitle("3D Visual Environment Mark1 - Paused");
 				try {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
@@ -274,6 +289,7 @@ public class worldFly {
 		case PAUSED:
 			if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
 				state = State.FLY;
+				Display.setTitle("3D Visual Environment Mark1");
 				try {
 					Thread.sleep(300);
 				} catch (InterruptedException e) {
@@ -321,16 +337,16 @@ public class worldFly {
 	}
 	public static void addHudElements() {
 		GuiTexture HudBoxLeft = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_box"), 
-				new Vector2f(-0.8f, 0.0f), new Vector2f(0.08f, 0.12f));
+				new Vector2f(-0.92f, 0.0f), new Vector2f(0.08f, 0.12f));
 		HUD.add(HudBoxLeft);
 		GuiTexture HudBoxRight = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_box"), 
-				new Vector2f(0.7f, 0.0f), new Vector2f(0.08f, 0.12f));
+				new Vector2f(0.65f, 0.0f), new Vector2f(0.08f, 0.12f));
 		HUD.add(HudBoxRight);
 		GuiTexture HudBarLeft = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_barLeft"), 
-				new Vector2f(-0.76f, -0.15f), new Vector2f(0.12f, 0.85f));
+				new Vector2f(-0.9f, -0.2f), new Vector2f(0.18f, 1.0f));
 		HUD.add(HudBarLeft);
 		GuiTexture HudBarRight = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_barRight"), 
-				new Vector2f(0.67f, -0.15f), new Vector2f(0.12f, 0.85f));
+				new Vector2f(0.65f, -0.25f), new Vector2f(0.15f, 0.95f));
 		HUD.add(HudBarRight);
 		GuiTexture Hud_HorizonBar = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_horizonBar"), 
 				new Vector2f(0.33f, -0.0f), new Vector2f(0.7f, 0.2f));
@@ -338,7 +354,29 @@ public class worldFly {
 	}
 	
 	public static void updateHudElements() {
-		
+	
+		float deltaSpeed = Spacecraft.getCurrentVerticalSpeed()/HudVerticalSpeedLengthAdjustment;
+	        for(int i=0;i<=80;i++) {
+	        	float number = i*2-80;
+	        	float newZ = 0.5f+number/HudVerticalSpeedLengthAdjustment+deltaSpeed;
+	        	if(newZ>0.8 || newZ<0.2) {
+	        	newZ = -10;
+	        	} 
+	    		Vector2f newPosition = new Vector2f(0.02f, newZ);
+	            HudVerticalSpeed.get(i).setPosition(newPosition);
+	        } 
+	 //--------------------------------------------------------------------------------------------       
+			float deltaAlt = Spacecraft.getPosition().y/HudAltitudeLengthAdjustment;
+	        for(int i=100;i>=0;i--) {
+	        	float number = i*10-30;
+	        	float newZ = -8.95f+number/HudAltitudeLengthAdjustment+deltaAlt;
+	        	if(newZ>0.8 || newZ<0.2) {
+	        	newZ = -10;
+	        	//HudAltitude.get(i).remove();
+	        	} 
+	    		Vector2f newPosition = new Vector2f(0.8f, newZ);
+	            HudAltitude.get(i).setPosition(newPosition);
+	        } 
 	}
 	
 	@SuppressWarnings("static-access")
@@ -386,6 +424,7 @@ public class worldFly {
 		}
 		guiTextsLeft.get(2).updateTextString("Vel T [m/s]: "+df2.format(spacecraft.getCurrentSpeed()));
 		guiTextsLeft.get(4).updateTextString("Pos X [m]: "+df2.format(spacecraft.getPosition().x));
+		guiTextsLeft.get(4).setPosition(new Vector2f(0.2f,0.0f));
 		guiTextsLeft.get(5).updateTextString("Pos Y [m]: "+df2.format(spacecraft.getPosition().y));
 		if(spacecraft.getPosition().y<30) {
 			guiTextsLeft.get(5).setColour(0.8f, 0.5f, 0.5f);
@@ -393,14 +432,18 @@ public class worldFly {
 			guiTextsLeft.get(5).setColour(0.9f, 0.9f, 0.9f);
 		}
 		guiTextsLeft.get(6).updateTextString("Pos Z [m]: "+df2.format(spacecraft.getPosition().z));
+		guiTextsLeft.get(5).setPosition(new Vector2f(0.35f,0.0f));
+		guiTextsLeft.get(6).setPosition(new Vector2f(0.5f,0.0f));
 		guiTextsLeft.get(8).updateTextString("Time [s]: "+df2.format(animationTime));
-		guiTextsLeft.get(8).setColour(0.5f, 0.5f, 0.8f);
+		guiTextsLeft.get(8).setColour(0.1f, 0.1f, 0.9f);
+		guiTextsLeft.get(8).setPosition(new Vector2f(0.87f,0.95f));
 		guiTextsLeft.get(10).updateTextString("Propellant [kg]: "+df2.format(spacecraft.getSCPropMass()));
 		if(spacecraft.getisThrust()) {
 			guiTextsLeft.get(10).setColour(1.0f, 0.647f, 0.5f);
 		} else {
-			guiTextsLeft.get(10).setColour(0.9f, 0.9f, 0.9f);
+			guiTextsLeft.get(10).setColour(0.2f, 0.2f, 0.2f);
 		}
+		guiTextsLeft.get(10).setPosition(new Vector2f(0.0f,0.9f));
 	}
 }
 
