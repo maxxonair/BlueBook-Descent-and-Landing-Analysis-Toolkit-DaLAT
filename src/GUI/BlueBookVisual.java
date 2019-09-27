@@ -582,7 +582,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
     	// System.out.println(System.getProperty("os.name"));
     	 if(System.getProperty("os.name").contains("Mac")) {
-    		 OS_is =1;
+    		 OS_is = 1;
     	 } else if(System.getProperty("os.name").contains("Win")) {
     		 OS_is = 2;
     	 } else if(System.getProperty("os.name").contains("Lin")) {

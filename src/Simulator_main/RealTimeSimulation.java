@@ -468,8 +468,8 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    		Set_AngularVelocityEquationElements(x);
 	    		//----------------------------------------------------------------------------------------
 	    		// Quaternions:
-	    		boolean q_simple=true;
-	    		if(q_simple) {
+	    		boolean FlatEarther = true;
+	    		if(FlatEarther) {
 		    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
 		    				        {-x[13], 0    , x[11], x[12]},
 		    				        { x[12],-x[11], 0    , x[13]},

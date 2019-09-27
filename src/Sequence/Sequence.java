@@ -48,7 +48,7 @@ public class Sequence {
 				isFirstSequence=false; 
 			}
 			if(trigger_type==0) {
-				System.out.println(Flight_CTRL_ThrustMagnitude.get(activeSequence).get_CTRL_TIME());
+				//System.out.println(Flight_CTRL_ThrustMagnitude.get(activeSequence).get_CTRL_TIME());
 					if(Flight_CTRL_ThrustMagnitude.get(activeSequence).get_CTRL_TIME()>trigger_value) {
 						activeSequence++;
 						cntr_v_init = V_NED_ECEF_spherical[0];
@@ -99,11 +99,12 @@ public class Sequence {
     	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + activeSequence);
     	int sequence_type_TM = Simulation.getSEQUENCE_DATA_main().get(activeSequence).get_sequence_type();
 //System.out.println(sequence_type_TM);
-    Flight_CTRL_ThrustMagnitude.get(activeSequence).Update_Flight_CTRL(true, x, Simulation.getSpaceShip().getMass(), Simulation.getSpaceShip().getPropulsion().getPrimaryPropellant(), 
-    		cntr_v_init, cntr_h_init, cntr_t_init, t, t, Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMax(), Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMin(), 
+    Flight_CTRL_ThrustMagnitude.get(activeSequence).Update_Flight_CTRL(true, x, t, Simulation.getSpaceShip().getMass(), Simulation.getSpaceShip().getPropulsion().getPrimaryPropellant(), 
+    		cntr_v_init, cntr_h_init, t, t, Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMax(), Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMin(), 
     		sequence_type_TM, Simulation.getVal_dt());
     	//Flight_CTRL_PitchCntrl.get(activeSequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(activeSequence).get_TVC_ctrl_target_curve(), val_dt);	    	
-    	if(sequence_type_TM==3) { // Controlled Flight Sequence 
+    	if(sequence_type_TM==3) {
+    		
 		    	//-------------------------------------------------------------------------------------------------------------	
 		    	//                          Flight Controller ON - Controlled Fight Sequence
 		    	//-------------------------------------------------------------------------------------------------------------
@@ -114,14 +115,16 @@ public class Sequence {
 		    	//-------------------------------------------------------------------------------------------------------------	
 		    	//                          TM-FC OFF | TVC-FC ON - Continuous thrust
 		    	//-------------------------------------------------------------------------------------------------------------
-System.out.println("Sequence Thrust reached");
 	    		if((Simulation.getSpaceShip().getPropulsion().getPrimaryPropellant()-(Simulation.getSpaceShip().getMass()-x[6]))>0) {
-	    			//System.out.println((m_propellant_init-(M0-x[6])));
+
 	    			controlElements.setPrimaryThrust_is(Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMax()); 
 	    			controlElements.setPrimaryThrustThrottleCmd(1);
+	    			
 	    		}else { // Empty tanks
+	    			
 		    		controlElements.setPrimaryThrust_is(0);  
 		    		controlElements.setPrimaryThrustThrottleCmd(0); 
+		    		
 	    		}
 	    		
     	} else if (sequence_type_TM==1) { // Coasting Sequence 

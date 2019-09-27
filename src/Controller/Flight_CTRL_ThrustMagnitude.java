@@ -32,7 +32,7 @@ public class Flight_CTRL_ThrustMagnitude{
 	private double cmd_min;			// controller output cmd min		[-]
 	private double cmd_max;			// controller output cmd max    [-]
 	private double CTRL_ERROR;		// controller Errror				[ ]
-	private double CTRL_TIME;		// controller Time 				[s]
+	private double CtrlTime;		// controller Time 				[s]
 	private double rm;				// Mean Radius					[m]
 	private double refElev;			// Reference Elevation			[m]
 	private int ctrl_type; 		// Controller Type 				[]
@@ -62,14 +62,14 @@ public class Flight_CTRL_ThrustMagnitude{
 		this.throttle_cmd = throttle_cmd; 
 		this.thrust_cmd   = thrust_cmd; 
 		this.ctrl_curve   = ctrl_curve; 
-		this.ctrl_dt	  = ctrl_dt; 
+		this.ctrl_dt	      = ctrl_dt; 
 		this.P_GAIN		  = P_GAIN;
-		this.I_GAIN 	  = I_GAIN;
+		this.I_GAIN 	      = I_GAIN;
 		this.D_GAIN       = D_GAIN;
 		this.cmd_min      = cmd_min;
 		this.cmd_max      = cmd_min; 
 		this.rm			  = rm;
-		this.refElev	  = refElev; 
+		this.refElev	      = refElev; 
 		
 		double[] readINP;
 		try {
@@ -235,9 +235,11 @@ public class Flight_CTRL_ThrustMagnitude{
 		return CTRL_ERROR;
 	}
 	public double get_CTRL_TIME() {
-		return CTRL_TIME; 
+		return CtrlTime; 
 	}
-	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double m0,  double mprop, double ctrl_vinit, double ctrl_hinit, double ctrl_tinit,  double ctrl_vel, double ctrl_alt, double thrust_max, double thrust_min, int ctrl_curve, double ctrl_dt) {
+	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double m0,  double mprop, double ctrl_vinit, 
+			double ctrl_hinit,  double ctrl_vel, double ctrl_alt, double thrust_max, 
+			double thrust_min, int ctrl_curve, double ctrl_dt) {
 		this.ctrl_on 	  = ctrl_on;
 		if(this.ctrl_ID==0) {this.ctrl_on=false;} // overwrite : controller off with no FC set
 		this.alt 		  = x[2]-rm-refElev;
@@ -248,15 +250,15 @@ public class Flight_CTRL_ThrustMagnitude{
 		this.mprop		  = mprop; 
 		this.ctrl_vinit   = ctrl_vinit;
 		this.ctrl_hinit   = ctrl_hinit;
-		this.ctrl_tinit   = ctrl_tinit;
 		this.ctrl_vel     = ctrl_vel;
 		this.ctrl_alt     = ctrl_alt;
 		this.thrust_max   = thrust_max;
 		this.thrust_min   = thrust_min;
 		this.ctrl_curve   = ctrl_curve; 
 		this.ctrl_dt	  = ctrl_dt; 
-		if(ctrl_tinit!=-1&&tswitch) {tzero=ctrl_tinit;tswitch=false;}
-		CTRL_TIME = ctrl_tinit-tzero; 
+
+		if(tswitch) {this.tzero=t;tswitch=false;}
+		this.CtrlTime = t-tzero; 
 	}
 	public void set_ctrl_on(boolean NewValue){
 		ctrl_on = NewValue;

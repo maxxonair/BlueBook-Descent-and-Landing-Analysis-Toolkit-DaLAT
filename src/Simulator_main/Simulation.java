@@ -634,9 +634,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //----------------------------------------------------------------------------------------------
 		Sequence.setSequence_RES_closed(false);
 		SEQUENCE_DATA_main = SEQUENCE_DATA;  // Sequence data handover
-		for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
-		System.out.println(SEQUENCE_DATA_main.get(i).get_sequence_controller_ID()+"|"+SEQUENCE_DATA_main.get(i).get_trigger_end_value());
-		}
 		Sequence.getCTRL_steps().clear();
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
