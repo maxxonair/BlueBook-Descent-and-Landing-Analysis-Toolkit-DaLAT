@@ -196,9 +196,12 @@ public class worldFly {
 		GuiTexture logo = new GuiTexture(loader.loadTerrainTexture("spaceLogo2"), 
 				new Vector2f(0.86f, -0.86f), new Vector2f(0.16f, 0.45f));
 		Logos.add(logo);
-		GuiTexture BackgroundFading = new GuiTexture(loader.loadTerrainTexture("FadeBackground"), 
-				new Vector2f(0.82f, 0.8f), new Vector2f(0.5f, 0.5f));
-		Logos.add(BackgroundFading);
+		GuiTexture BackgroundFadingLeft = new GuiTexture(loader.loadTerrainTexture("FadeBackground"), 
+				new Vector2f(0.95f, 0.6f), new Vector2f(0.3f, 1.8f));
+		Logos.add(BackgroundFadingLeft);
+		GuiTexture BackgroundFadingRight = new GuiTexture(loader.loadTerrainTexture("FadeBackgroundLeft"), 
+				new Vector2f(-0.93f, 0.6f), new Vector2f(0.3f, 2.8f));
+		Logos.add(BackgroundFadingRight);
 		addHudElements();
 		 guirenderer = new GuiRenderer(loader);
 	}
@@ -334,16 +337,16 @@ public class worldFly {
 	}
 	public static void addHudElements() {
 		GuiTexture HudBoxLeft = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_box"), 
-				new Vector2f(-0.92f, 0.0f), new Vector2f(0.08f, 0.12f));
+				new Vector2f(-0.92f, 0.3f), new Vector2f(0.08f, 0.12f));
 		HUD.add(HudBoxLeft);
 		GuiTexture HudBoxRight = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_box"), 
-				new Vector2f(0.65f, 0.0f), new Vector2f(0.08f, 0.12f));
+				new Vector2f(0.955f, 0.3f), new Vector2f(0.08f, 0.12f));
 		HUD.add(HudBoxRight);
 		GuiTexture HudBarLeft = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_barLeft"), 
-				new Vector2f(-0.9f, -0.2f), new Vector2f(0.18f, 1.0f));
+				new Vector2f(-0.9f, 0.1f), new Vector2f(0.18f, 1.0f));
 		HUD.add(HudBarLeft);
 		GuiTexture HudBarRight = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_barRight"), 
-				new Vector2f(0.65f, -0.25f), new Vector2f(0.15f, 0.95f));
+				new Vector2f(0.95f, 0.1f), new Vector2f(0.15f, 0.95f));
 		HUD.add(HudBarRight);
 		GuiTexture Hud_HorizonBar = new GuiTexture(loader.loadTerrainTexture("HUD_Display/hud_horizonBar"), 
 				new Vector2f(0.33f, -0.0f), new Vector2f(0.7f, 0.2f));
@@ -355,8 +358,8 @@ public class worldFly {
 		float deltaSpeed = Spacecraft.getCurrentVerticalSpeed()/HudVerticalSpeedLengthAdjustment;
 	        for(int i=0;i<=80;i++) {
 	        	float number = i*2-80;
-	        	float newZ = 0.5f+number/HudVerticalSpeedLengthAdjustment+deltaSpeed;
-	        	if(newZ>0.8 || newZ<0.2) {
+	        	float newZ = 0.33f+number/HudVerticalSpeedLengthAdjustment+deltaSpeed;
+	        	if(newZ>0.6 || newZ<-0.0) {
 	        	newZ = -10;
 	        	} 
 	    		Vector2f newPosition = new Vector2f(0.02f, newZ);
@@ -366,14 +369,15 @@ public class worldFly {
 			float deltaAlt = Spacecraft.getPosition().y/HudAltitudeLengthAdjustment;
 	        for(int i=100;i>=0;i--) {
 	        	float number = i*10-30;
-	        	float newZ = -8.95f+number/HudAltitudeLengthAdjustment+deltaAlt;
-	        	if(newZ>0.8 || newZ<0.2) {
+	        	float newZ = -9.08f+number/HudAltitudeLengthAdjustment+deltaAlt;
+	        	if(newZ>0.6 || newZ<0.0) {
 	        	newZ = -10;
 	        	//HudAltitude.get(i).remove();
 	        	} 
-	    		Vector2f newPosition = new Vector2f(0.8f, newZ);
+	    		Vector2f newPosition = new Vector2f(0.95f, newZ);
 	            HudAltitude.get(i).setPosition(newPosition);
 	        } 
+	        HUD.get(4).setRot(spacecraft.getRotZ());
 	}
 	
 	@SuppressWarnings("static-access")
@@ -382,9 +386,14 @@ public class worldFly {
 		guiTextsRight.get(5).setColour(0.9f, 0.9f, 0.9f);
 		guiTextsRight.get(6).setColour(0.9f, 0.9f, 0.9f);
 		guiTextsRight.get(7).setColour(0.9f, 0.9f, 0.9f);
+		guiTextsRight.get(5).setPosition(new Vector2f(0.2f,0.03f));
+		guiTextsRight.get(6).setPosition(new Vector2f(0.35f,0.03f));
+		guiTextsRight.get(7).setPosition(new Vector2f(0.5f,0.03f));
 		guiTextsRight.get(6).updateTextString("Pitch [deg]:"+df2.format(spacecraft.getRotZ()));
 		guiTextsRight.get(7).updateTextString("Yaw [deg]:"+df2.format(spacecraft.getRotY()));	
-		
+		guiTextsRight.get(9).setPosition(new Vector2f(0.2f,0.06f));
+		guiTextsRight.get(10).setPosition(new Vector2f(0.35f,0.06f));
+		guiTextsRight.get(11).setPosition(new Vector2f(0.5f,0.06f));
 		double rotTreshold = 3;
 		guiTextsRight.get(9).updateTextString("Pitch Rate [deg/s]:" +df2.format(Math.toDegrees(-spacecraft.getPQR()[0][0])));
 		if(Math.abs(Math.toDegrees(spacecraft.getPQR()[0][0]))>rotTreshold) {
@@ -420,6 +429,9 @@ public class worldFly {
 			guiTextsLeft.get(1).setColour(0.9f, 0.9f, 0.9f);
 		}
 		guiTextsLeft.get(2).updateTextString("Vel T [m/s]: "+df2.format(spacecraft.getCurrentSpeed()));
+		guiTextsLeft.get(0).setPosition(new Vector2f(0.2f,0.9f));
+		guiTextsLeft.get(1).setPosition(new Vector2f(0.35f,0.9f));
+		guiTextsLeft.get(2).setPosition(new Vector2f(0.5f,0.9f));
 		guiTextsLeft.get(4).updateTextString("Pos X [m]: "+df2.format(spacecraft.getPosition().x));
 		guiTextsLeft.get(4).setPosition(new Vector2f(0.2f,0.0f));
 		guiTextsLeft.get(5).updateTextString("Pos Y [m]: "+df2.format(spacecraft.getPosition().y));

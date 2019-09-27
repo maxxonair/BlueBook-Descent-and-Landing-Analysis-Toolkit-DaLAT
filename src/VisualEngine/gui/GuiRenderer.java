@@ -9,7 +9,6 @@ import org.lwjgl.opengl.GL30;
 import org.lwjgl.util.vector.Matrix4f;
 import org.lwjgl.util.vector.Vector3f;
 
-import VisualEngine.entities.Entity;
 import VisualEngine.models.RawModel;
 import VisualEngine.renderEngine.Loader;
 import VisualEngine.toolbox.Maths;
@@ -28,7 +27,7 @@ public class GuiRenderer {
 
 	public void render(List<GuiTexture> guis) {
 		shader.start();
-		//prepareInstance();
+		prepareInstance();
 		GL30.glBindVertexArray(quad.getVaoID());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
@@ -37,7 +36,7 @@ public class GuiRenderer {
 		for(GuiTexture gui:guis) {
 			GL13.glActiveTexture(GL13.GL_TEXTURE0 );
 			GL11.glBindTexture(GL11.GL_TEXTURE_2D, gui.getTexture() );
-			Matrix4f matrix = Maths.createTransformationMatrix(gui.getPosition(), gui.getScale());
+			Matrix4f matrix = Maths.createTransformationMatrix(gui.getPosition(), gui.getScale(), gui.getRot());
 			shader.loadTransformation(matrix);
 			GL11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, quad.getVertexCount() );
 		}

@@ -43,6 +43,7 @@ public class DisplayManager {
 			// Display.setFullscreen(true); // Be careful, no escape ... 
 			 Display.setResizable(true);
 			 Display.setLocation(0, 0);
+			 if(System.getProperty("os.name").contains("Mac")) {
 	         try {
 	             Application application = Application.getApplication();
 	             Image image = Toolkit.getDefaultToolkit().getImage(ICON_File);
@@ -50,6 +51,7 @@ public class DisplayManager {
 	             } catch(Exception e) {
 	            	 System.err.println("Taskbar icon could not be created");
 	             }
+			 }
 		} catch (LWJGLException e) {
 			e.printStackTrace();
 		}
