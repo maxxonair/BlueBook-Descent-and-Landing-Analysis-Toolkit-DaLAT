@@ -19,8 +19,10 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+import java.awt.RenderingHints;
 import java.awt.Shape;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
@@ -150,6 +152,7 @@ public class BlueBookVisual implements  ActionListener {
     
     public static String CASE_FileEnding   = ".case";
     public static String RESULT_FileEnding = ".res";
+    public static int OS_is = 1; 
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Relative File Paths
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -575,6 +578,16 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	 INTEG_File_04 = dir + INTEG_File_04; 
     	 INERTIA_File  = dir + INERTIA_File;
     	 InitialAttitude_File = dir + InitialAttitude_File;
+    	 
+
+    	 System.out.println(System.getProperty("os.name"));
+    	 if(System.getProperty("os.name").contains("Mac")) {
+    		 OS_is =1;
+    	 } else if(System.getProperty("os.name").contains("Win")) {
+    		 OS_is = 2;
+    	 } else if(System.getProperty("os.name").contains("Lin")) {
+    		 OS_is = 3;
+    	 }
      // ---------------------------------------------------------------------------------
     	 //       Define Task (FileWatcher) Update Result Overview
     	 // ---------------------------------------------------------------------------------
@@ -2981,10 +2994,16 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      AerodynamicInputPanel.setForeground(Color.white);
 			      AerodynamicInputPanel.setLayout(null);				
 				
-			      
 			     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
 			     	ImageIcon icon_inertia = new ImageIcon("images/inertia.png","");
 			     	ImageIcon icon_aerodynamic = new ImageIcon("images/aerodynamic.png","");
+			     	if(OS_is==2) {
+			     		// Resize image icons for Windows 
+			         	 int size=10;
+			         	icon_setup2 = new ImageIcon(getScaledImage(icon_setup2.getImage(),size,size));
+			         	icon_inertia = new ImageIcon(getScaledImage(icon_inertia.getImage(),size,size));
+			         	icon_aerodynamic = new ImageIcon(getScaledImage(icon_aerodynamic.getImage(),size,size));
+			      }
 			      
 				TabPane_SCDefinition.addTab("Basic" , icon_setup2, PropulsionInputPanel, null);
 				TabPane_SCDefinition.addTab("Attitude and Inertia" , icon_inertia, InertiaxPanel, null);
@@ -3945,12 +3964,31 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      	CreateChart_GroundClearance();
      	//---------------------------------------------------------------------
      	// Prepare icons
-     	
-     	ImageIcon icon_dashboard = new ImageIcon("images/comet.png","");
-     	ImageIcon icon_scSetup = new ImageIcon("images/startup.png","");
-     	ImageIcon icon_setup = new ImageIcon("images/setup.png","");
-     	ImageIcon icon_data = new ImageIcon("images/data.png","");
-     	ImageIcon icon_map = new ImageIcon("images/map.png","");
+     	ImageIcon icon_dashboard = null;
+     	ImageIcon icon_scSetup = null;
+     	ImageIcon icon_setup = null;
+     	ImageIcon icon_data = null;
+     	ImageIcon icon_map = null;
+     	if(OS_is==1) {
+     	 icon_dashboard = new ImageIcon("images/comet.png","");
+     	 icon_scSetup = new ImageIcon("images/startup.png","");
+     	 icon_setup = new ImageIcon("images/setup.png","");
+     	 icon_data = new ImageIcon("images/data.png","");
+     	 icon_map = new ImageIcon("images/map.png","");
+     	} else if(OS_is==2) {
+     	//	For Windows image icons have to be resized
+        	 icon_dashboard = new ImageIcon("images/comet.png","");
+         icon_scSetup = new ImageIcon("images/startup.png","");
+         icon_setup = new ImageIcon("images/setup.png","");
+         icon_data = new ImageIcon("images/data.png","");
+         icon_map = new ImageIcon("images/map.png","");
+         	 int size=10;
+     		icon_dashboard = new ImageIcon(getScaledImage(icon_dashboard.getImage(),size,size));
+     		icon_scSetup = new ImageIcon(getScaledImage(icon_scSetup.getImage(),size,size));
+     		icon_setup = new ImageIcon(getScaledImage(icon_setup.getImage(),size,size));
+     		icon_data = new ImageIcon(getScaledImage(icon_data.getImage(),size,size));
+     		icon_map = new ImageIcon(getScaledImage(icon_map.getImage(),size,size));
+     	}
      	// Create Tabs:
         Page04_subtabPane.addTab("Dashboard" , icon_dashboard, PageX04_Dashboard, null);
         Page04_subtabPane.addTab("Simulation Setup"+"\u2713", icon_setup, PageX04_SimSetup, null);
@@ -3999,6 +4037,17 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	}
     public void actionPerformed(ActionEvent e)  {
     	
+    }
+    
+    private Image getScaledImage(Image srcImg, int w, int h){
+        BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = resizedImg.createGraphics();
+
+        g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2.drawImage(srcImg, 0, 0, w, h, null);
+        g2.dispose();
+
+        return resizedImg;
     }
     
     public static void Rotating2Inertial() {
@@ -7032,12 +7081,15 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
         	MAIN_frame.setIconImage(myIcon);
          }catch(IIOException eIIO) {System.out.println(eIIO);}    
          // Create taskbar icon - for mac 
+         if(OS_is==1) {
+        	 // Set Taskbar Icon for MacOS
          try {
          Application application = Application.getApplication();
          Image image = Toolkit.getDefaultToolkit().getImage(ICON_File);
          application.setDockIconImage(image);
          } catch(Exception e) {
         	 System.err.println("Taskbar icon could not be created");
+         }
          }
     }
     
