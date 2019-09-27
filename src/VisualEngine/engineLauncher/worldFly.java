@@ -302,9 +302,6 @@ public class worldFly {
 			if(Keyboard.isKeyDown(Keyboard.KEY_P)) {
 				//state = State.FLY;
 			}
-			if(Keyboard.isKeyDown(Keyboard.KEY_0)) {
-				//state = State.CLEANDISPLAY;
-			}
 		break;
 		}
 	}

@@ -2962,7 +2962,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
 			    
 		//-----------------------------------------------------------------------------------------
-	// ---->>>>>                       TAB: Spacecraft Definition
+	    // ---->>>>>                       TAB: Spacecraft Definition
 		//-----------------------------------------------------------------------------------------			    
 			    
 			    // Main (SUB) tabbed Pane for this page
