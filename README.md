@@ -1,7 +1,7 @@
 BlueBook Descent and Landing Analysis Toolkit
 
 BlueBook Descent and Landing Analysis Tool 
-15/09/2019
+27/09/2019
 
 - 3 degree of freedom and 6 degree of freedom vehicle dynamics simulation, designed for various analyses between orbit and surface with respect to a variety of planetary bodies, with and without atmoshpere. 
 - Customizable to various problems (very simple to very complex), e.g re-entry trajectories, landing trajectories, ascent trajectories, atmospheric flight, controlled landing, system failure analysis ... 
@@ -9,6 +9,16 @@ BlueBook Descent and Landing Analysis Tool
 - Integrated gravity model (asymmetric gravity, rotating planet)
 - Integrated atmosphere model (free molecular flow and continuum model)
 - Integrated system error model to simulate partial subsystem failure(s) and analyse system robustness.# BlueBook Descent and Landing Analysis Toolkit
+
+General Infos:
+
+This project is divided in three core modules:
+
+1) The Simulation module (SIM): The SIM.jar is the core simulation. >>java -jar SIM.jar will start the simulation. This setup allows to shift pre- and postprocessing to a different environment (e.g. Matlab, python a.s.o). The folder INP/ contains all relevant input files to start the simulation
+
+2) The GUI module (GUI): The GUI BlueBook_DaLAT.jar allows to perform pre- and postprocessing and visualise results. 
+
+3) The VisualEngine (VE). The VisualEngine is a game engine environment developed to visualise simulation results and allow real time simulations with user inputs. The VE is currently in development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
 
 Note: 
 
