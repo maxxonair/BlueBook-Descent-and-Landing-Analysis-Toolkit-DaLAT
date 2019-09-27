@@ -18,7 +18,7 @@ This project is divided in three core modules:
 
 2) The GUI module (GUI): The GUI BlueBook_DaLAT.jar allows to perform pre- and postprocessing and visualise results. 
 
-3) The VisualEngine (VE). The VisualEngine is a game engine environment developed to visualise simulation results and allow real time simulations with user inputs. The VE is currently in development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
+3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations with user inputs. The VE is currently in development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
 
 Note: 
 
