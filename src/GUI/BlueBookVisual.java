@@ -126,6 +126,8 @@ import javax.swing.*;
 
 import Model.atm_dataset;
 import Sequence.SequenceElement;
+import GUI.FxElements.SpaceShipView3D;
+import GUI.FxElements.TargetView3D;
 import GUI.PostProcessing.CreateCustomChart;
 import GUI.Settings.Settings;
 import Toolbox.TextAreaOutputStream;
@@ -134,6 +136,8 @@ import Toolbox.ReadInput;
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.engineLauncher.worldAnimation;
 import VisualEngine.engineLauncher.worldGenerator;
+import javafx.application.Platform;
+import javafx.embed.swing.JFXPanel;
 
 import javax.swing.JFileChooser;
 import Controller.LandingCurve;
@@ -356,7 +360,7 @@ public class BlueBookVisual implements  ActionListener {
 			  									 "Velocity [m]",
 			  									 "FPA [rad]",
 			  									 "Azimuth [rad]",
-    											 "SC Mass [kg]"};
+    											     "SC Mass [kg]"};
     
 	public static String[] COLUMS_SEQUENCE = {"ID", 
 			 "Sequence END type", 
@@ -596,6 +600,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		      // here we code the action on a change
     		     // System.out.println( "File "+ file.getName() +" have change !" );
           		  UPDATE_Page01(true);
+          		  TargetView3D.changeTargetBody(indx_target);
     		    }
     		  };
     	   Timer timer = new Timer();
@@ -1027,7 +1032,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         
         SplitPane_Page1_Charts_horizontal = new JSplitPane();
         SplitPane_Page1_Charts_horizontal.setOrientation(JSplitPane.VERTICAL_SPLIT );
-        SplitPane_Page1_Charts_horizontal.setDividerLocation(0.5);
+        SplitPane_Page1_Charts_horizontal.setDividerLocation(0.35);
         SplitPane_Page1_Charts_horizontal.setDividerSize(3);
         SplitPane_Page1_Charts_horizontal.setUI(new BasicSplitPaneUI() {
                @SuppressWarnings("serial")
@@ -1082,7 +1087,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
     		        }
     		});
-        SplitPane_Page1_Charts_horizontal.setDividerLocation(500);
+        SplitPane_Page1_Charts_horizontal.setDividerLocation(400);
        	P1_Plotpanel.add(SplitPane_Page1_Charts_horizontal, BorderLayout.CENTER);
         
        	
@@ -3875,6 +3880,25 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				}
 		    	 
 		     });
+		     
+				JPanel SpaceShip3DPanel = new JPanel();
+				SpaceShip3DPanel.setLayout(new BorderLayout());
+				SpaceShip3DPanel.setLocation(800, 10);
+				//SpaceShip3DPanel.setBackground(Color.white);
+				//SpaceShip3DPanel.setForeground(Color.black);
+				SpaceShip3DPanel.setSize(400, 400);
+				SpaceShip3DPanel.setBorder(Moon_border);
+				InertiaxPanel.add(SpaceShip3DPanel);
+				
+		        final JFXPanel fxPanel = new JFXPanel();
+		        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
+
+		        Platform.runLater(new Runnable() {
+		            @Override
+		            public void run() {
+		            	SpaceShipView3D.start(fxPanel);
+		            }
+		       });
 
         //-----------------------------------------------------------------------------------------
         // Page 4.3
@@ -3957,7 +3981,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	//-------------------------------------------------------------------------------------------------------------------------------
         // Create Charts:
        CreateChart_DashboardOverviewChart_Altitude_Velocity(RM);
-       CreateChart_DashboardOverviewChart_Time_FPA();
+       //CreateChart_DashboardOverviewChart_Time_FPA();
+
      	CreateChart_DashBoardFlexibleChart();
      	CreateChart_MercatorMap();
      	CreateChart_PolarMap();
@@ -4022,6 +4047,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	    	System.out.println("Full data import supressed. Filesize prohibits fast startup.");
     	    }
     	    READ_INPUT();
+    	       createTargetView3D();
     		READ_CONTROLLER();
   	      		UpdateFC_LIST();
     		READ_SEQUENCE();
@@ -5895,6 +5921,19 @@ public static void EXPORT_Case() {
 					
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }
+	
+	public static void createTargetView3D() {
+        final JFXPanel fxPanel = new JFXPanel();
+        SplitPane_Page1_Charts_vertical.add(fxPanel,JSplitPane.RIGHT);
+
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+            	TargetView3D.start(fxPanel,indx_target);
+            }
+       });
+      
+	}
 	
 	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity(double RM) throws IOException {
 		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
