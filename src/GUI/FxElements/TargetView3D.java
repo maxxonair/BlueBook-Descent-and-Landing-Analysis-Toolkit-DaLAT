@@ -5,14 +5,15 @@ import java.awt.event.MouseWheelListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
-import javafx.concurrent.Task;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Sphere;
 import javafx.stage.Stage;
@@ -41,8 +42,9 @@ public class TargetView3D extends Application{
 	
 	private static double mouseSensitivity =0.1;
 	private static double mouseWheelZoomSensitivity = 800;
-	private static double targetBodySize = 6000;
-	private static double targetBodyInitialDistance = targetBodySize*6;
+	private static double targetBodyRadius = 6000;
+	private static double targetBodyInitialDistance = targetBodyRadius*6;
+	private static double targetBodyRotSpeed = 0.1;
 	
 	private static String[] Target = {"earth.jpg",
 							   "moon.jpg",
@@ -62,13 +64,18 @@ public class TargetView3D extends Application{
 		TargetBodyGroup.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
 		
+		Slider slider = prepareSlider();
+
+		
 		Group root = new Group();
-		root.getChildren().add(TargetBodyGroup);
 		root.getChildren().add(prepareImageView());
+		root.getChildren().add(TargetBodyGroup);
+		root.getChildren().add(slider);
 		
 		Camera camera = new PerspectiveCamera();
-		//camera.setNearClip(1);
-		//camera.setFarClip(10000);
+		camera.setNearClip(1);
+		camera.setFarClip(10000);
+		
 	
 		
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
@@ -108,6 +115,8 @@ public class TargetView3D extends Application{
 		
 		//scene.setTitle("JavaFx Tut Mark 1");
 		fxpanel.setScene(scene);
+		
+		prepareAnimation(slider);
 
 	}
 	
@@ -154,24 +163,51 @@ static class SmartGroup extends Group {
 	Rotate r;
 	Transform t = new Rotate();
 	
-	void rotateByX(int angle) {
+	void rotateByX(double angle) {
 		r = new Rotate(angle, Rotate.X_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
 	}
-	void rotateByY(int angle) {
+	void rotateByY(double angle) {
 		r = new Rotate(angle, Rotate.Y_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
 	}
-	void rotateByZ(int angle) {
+	void rotateByZ(double angle) {
 		r = new Rotate(angle, Rotate.Z_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
 	}
+}
+
+private static Slider prepareSlider() {
+	Slider slider = new Slider();
+	slider.setMax(1.0);
+	slider.setMin(0);
+	slider.setPrefWidth(300);
+	slider.setLayoutX(100);
+	slider.setLayoutY(350);
+	slider.setValue(targetBodyRotSpeed);
+	//slider.setShowTickLabels(false);
+	slider.setStyle("-fx-base: black");
+	return slider;
+}
+
+private static void prepareAnimation(Slider slider) {
+	AnimationTimer timer = new AnimationTimer() {
+
+		@Override
+		public void handle(long arg0) {
+		
+			targetBodyRotSpeed = slider.getValue();
+			TargetBodyGroup.rotateByY(TargetBodyGroup.getRotate()+targetBodyRotSpeed);
+		}
+		
+	};
+	timer.start();
 }
 
 private static ImageView prepareImageView() {
@@ -180,8 +216,11 @@ private static ImageView prepareImageView() {
 		Image backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
 	 imageView = new ImageView(backgroundImage);
 	//imageView.setPreserveRatio(true);
-	imageView.getTransforms().add(new Translate(0,0,-10000));
-	imageView.resize(30000, 30000);
+	imageView.getTransforms().add(new Translate(0,0,200000));
+	//imageView.setTranslateZ(targetBodySize*10);
+	imageView.setScaleX(100);
+	imageView.setScaleY(100);
+	//imageView.resize(300000, 300000);
 	
 	} catch (FileNotFoundException e) {
 		// TODO Auto-generated catch block
@@ -213,7 +252,7 @@ private static Node prepareSun(){
 }
     
     public static Sphere prepareTargetBody(int targetInd) {
-    	Sphere sphere = new Sphere(targetBodySize);
+    	Sphere sphere = new Sphere(targetBodyRadius);
     	PhongMaterial material = new PhongMaterial();
 
     	String dir = System.getProperty("user.dir");
@@ -233,38 +272,6 @@ private static Node prepareSun(){
     	sphere.setMaterial(material);
     	
     	return sphere;
-    }
-    
-    public static void changeTargetBody(int targetInd) {
-    	Task task = new Task<Void>() {
-    	    @Override public Void call() {
-    TargetBodyGroup.getChildren().remove(targetBody);
-    //	TargetBodyGroup.getChildren().removeAll();
-    targetBody = new Sphere(targetBodySize+150);
-    	PhongMaterial material = new PhongMaterial();
-
-    	String dir = System.getProperty("user.dir");
-    	//System.out.println(dir+"/resources/moonTexture.jpg");
-    //	material.setDiffuseMap( new Image(getClass().getResourceAsStream("/resources/moonTexture.jpg") ));
-    //	material.setDiffuseMap(new Image(getClass().getResourceAsStream("moonTexture.jpg")));
-    	try {
-			Image texture = new Image(new FileInputStream(dir+"/images/SurfaceTextures/"+Target[targetInd]));
-			material.setDiffuseMap(texture);
-		} catch (FileNotFoundException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-   material.setSpecularColor(Color.valueOf("#222222"));
-    	//material.setDiffuseMap( new Image(dir+"/resources/moonTexture.jpg") );
-    	
-   targetBody.setMaterial(material);
-    	
-    	TargetBodyGroup.getChildren().add(targetBody);
-		return null;
-
-    	    }
-    	};
-    	new Thread(task).start();
     }
     
 

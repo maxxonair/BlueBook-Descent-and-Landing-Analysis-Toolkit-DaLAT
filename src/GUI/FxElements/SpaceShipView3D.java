@@ -2,10 +2,6 @@ package GUI.FxElements;
 
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.net.MalformedURLException;
-import java.net.URL;
 
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import javafx.application.Application;
@@ -18,15 +14,11 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
-import javafx.scene.shape.Sphere;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
-import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
 public class SpaceShipView3D extends Application{
@@ -38,8 +30,14 @@ public class SpaceShipView3D extends Application{
 	private static double anchorY;
 	private static double anchorAngleX=0;
 	private static double anchorAngleY=0;
+	private static double anchorX2;
+	private static double anchorY2;
+	private static double anchorAngleX2=0;
+	private static double anchorAngleY2=0;
 	private static final DoubleProperty angleX = new SimpleDoubleProperty(0);
 	private static final DoubleProperty angleY = new SimpleDoubleProperty(0);
+	private static final DoubleProperty angleX2 = new SimpleDoubleProperty(0);
+	private static final DoubleProperty angleY2 = new SimpleDoubleProperty(0);
 	
 	private static double mouseSensitivity =0.1;
 	private static double mouseWheelZoomSensitivity = 8;
@@ -51,11 +49,13 @@ public class SpaceShipView3D extends Application{
 		//Box box = prepareBox();
 
 		Group model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/diamond.obj");
+		Group coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
 		//model.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
 		
 		Group root = new Group();
 		root.getChildren().add(model);
+		root.getChildren().add(coordinateSystem);
 		
 		Camera camera = new PerspectiveCamera();
 		camera.setNearClip(.001);
@@ -69,31 +69,48 @@ public class SpaceShipView3D extends Application{
 		model.translateYProperty().set(HEIGHT/2);
 		model.translateZProperty().set(targetBodyInitialDistance);
 		
-		initMouseControl(model, scene, fxpanel);
+		coordinateSystem.translateXProperty().set(WIDTH*3/4);
+		coordinateSystem.translateYProperty().set(HEIGHT/4);
+		coordinateSystem.translateZProperty().set(targetBodyInitialDistance/2);
+		
+		initMouseControl(model, coordinateSystem, scene, fxpanel);
 			
 		fxpanel.setScene(scene);
 
 	}
 	
 	
-private static void initMouseControl(Group group, Scene scene,JFXPanel fxpanel) {
+private static void initMouseControl(Group groupOne,Group groupTwo, Scene scene,JFXPanel fxpanel) {
 	Rotate xRotate;
 	Rotate yRotate;
-	group.getTransforms().addAll(
+	Rotate xRotate2;
+	Rotate yRotate2;
+	groupOne.getTransforms().addAll(
 			xRotate = new Rotate(0, Rotate.X_AXIS), 
 			yRotate = new Rotate(0, Rotate.Y_AXIS));
 	xRotate.angleProperty().bind(angleX);
 	yRotate.angleProperty().bind(angleY);
+	groupTwo.getTransforms().addAll(
+			xRotate2 = new Rotate(0, Rotate.X_AXIS), 
+			yRotate2 = new Rotate(0, Rotate.Y_AXIS));
+	xRotate2.angleProperty().bind(angleX2);
+	yRotate2.angleProperty().bind(angleY2);
 	
 	scene.setOnMousePressed(event -> {
 		anchorX = event.getSceneX();
 		anchorY = event.getSceneY();
 		anchorAngleX = angleX.get();
 		anchorAngleY = angleY.get();
+		anchorX2 = event.getSceneX();
+		anchorY2 = event.getSceneY();
+		anchorAngleX2 = angleX2.get();
+		anchorAngleY2 = angleY2.get();
 	});
 	scene.setOnMouseDragged(event ->{
 		angleX.set(anchorAngleX - (anchorY - event.getSceneY())*mouseSensitivity); 
 		angleY.set(anchorAngleY + (anchorX - event.getSceneX())*mouseSensitivity); 
+		angleX2.set(anchorAngleX2 + (anchorY2 - event.getSceneY())*mouseSensitivity); 
+		angleY2.set(anchorAngleY2 - (anchorX2 - event.getSceneX())*mouseSensitivity); 
 	});
 	
 	fxpanel.addMouseWheelListener(new MouseWheelListener() {
@@ -103,9 +120,9 @@ private static void initMouseControl(Group group, Scene scene,JFXPanel fxpanel) 
 			// TODO Auto-generated method stub
 				double wheelSpeed = arg0.getPreciseWheelRotation();
 					if(wheelSpeed>0) {
-						group.translateZProperty().set(group.getTranslateZ() + mouseWheelZoomSensitivity);
+						groupOne.translateZProperty().set(groupOne.getTranslateZ() + mouseWheelZoomSensitivity);
 					} else {
-						group.translateZProperty().set(group.getTranslateZ() - mouseWheelZoomSensitivity);
+						groupOne.translateZProperty().set(groupOne.getTranslateZ() - mouseWheelZoomSensitivity);
 					}
 
 		}
@@ -125,6 +142,27 @@ private static Group loadModel(String fileString) {
         modelRoot.getChildren().add(view);
     }
     double scale=30;
+modelRoot.setScaleX(scale);
+modelRoot.setScaleY(scale);
+modelRoot.setScaleZ(scale);
+    return modelRoot;
+}
+
+private static Group loadCoordinateSystem(String fileString) {
+    Group modelRoot = new Group();
+	PhongMaterial material = new PhongMaterial();
+    material.setDiffuseColor(Color.BLUE);
+    ObjModelImporter importer = new ObjModelImporter();
+   // importer.read(url);
+    importer.read(fileString);
+
+    for (MeshView view : importer.getImport()) {
+        modelRoot.getChildren().add(view);
+        view.setMaterial(material);
+    }
+	//material.setDiffuseMap( new Image(dir+"/resources/moonTexture.jpg") );
+	
+    double scale=5;
 modelRoot.setScaleX(scale);
 modelRoot.setScaleY(scale);
 modelRoot.setScaleZ(scale);
@@ -156,6 +194,7 @@ static class SmartGroup extends Group {
 }
 
 
+@SuppressWarnings("unused")
 private static Node prepareAmbientLight(){
 	
 	AmbientLight ambientLight = new AmbientLight();
