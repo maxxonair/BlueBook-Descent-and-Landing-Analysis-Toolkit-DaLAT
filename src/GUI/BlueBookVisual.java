@@ -600,7 +600,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		      // here we code the action on a change
     		     // System.out.println( "File "+ file.getName() +" have change !" );
           		  UPDATE_Page01(true);
-          		  TargetView3D.changeTargetBody(indx_target);
+          		refreshTargetView3D();
     		    }
     		  };
     	   Timer timer = new Timer();
@@ -1095,7 +1095,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         SplitPane_Page1_Charts_vertical = new JSplitPane();
        	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
         SplitPane_Page1_Charts_vertical.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-        SplitPane_Page1_Charts_vertical.setDividerLocation(0.5);
        //	SplitPane_Page1_Charts.setForeground(Color.black);
        //	SplitPane_Page1_Charts.setBackground(Color.gray);
         SplitPane_Page1_Charts_vertical.setDividerSize(3);
@@ -5926,6 +5925,20 @@ public static void EXPORT_Case() {
         final JFXPanel fxPanel = new JFXPanel();
         SplitPane_Page1_Charts_vertical.add(fxPanel,JSplitPane.RIGHT);
 
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+            	TargetView3D.start(fxPanel,indx_target);
+            }
+       });
+      
+	}
+	
+	public static void refreshTargetView3D() {
+		//SplitPane_Page1_Charts_vertical.remo
+        final JFXPanel fxPanel = new JFXPanel();
+        SplitPane_Page1_Charts_vertical.add(fxPanel,JSplitPane.RIGHT);
+        SplitPane_Page1_Charts_vertical.setDividerLocation(500);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
