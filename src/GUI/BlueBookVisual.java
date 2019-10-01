@@ -93,6 +93,8 @@ import javax.swing.KeyStroke;
 import javax.swing.SwingConstants;
 import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.DefaultTableModel;
@@ -424,6 +426,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	
 	public static int VelocityCoordinateSystem;
 	public static int DOF_System;
+	public static double rotX=0;
+	public static double rotY=0;
+	public static double rotZ=0;
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												GUI Elements
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -1134,7 +1139,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_LONG.setLocation(65, uy_p41 + 0 );
         LABEL_LONG.setSize(150, 20);
         LABEL_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_LONG.setBorder(Moon_border);
+        //LABEL_LONG.setBorder(Moon_border);
         LABEL_LONG.setBackground(Color.white);
         LABEL_LONG.setForeground(Color.black);
         P1_SidePanel.add(LABEL_LONG);
@@ -1142,7 +1147,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_LAT.setLocation(65, uy_p41 + 25 );
         LABEL_LAT.setSize(150, 20);
         LABEL_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_LAT.setBorder(Moon_border);
+        //LABEL_LAT.setBorder(Moon_border);
         LABEL_LAT.setBackground(Color.white);
         LABEL_LAT.setForeground(Color.black);
         P1_SidePanel.add(LABEL_LAT);
@@ -1150,7 +1155,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_ALT.setLocation(65, uy_p41 + 50 );
         LABEL_ALT.setSize(150, 20);
         LABEL_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_ALT.setBorder(Moon_border);
+        //LABEL_ALT.setBorder(Moon_border);
         LABEL_ALT.setBackground(Color.white);
         LABEL_ALT.setForeground(Color.black);
         P1_SidePanel.add(LABEL_ALT);
@@ -1160,7 +1165,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_VEL.setLocation(65, uy_p41 + 75 + y_ext_vel);
         LABEL_VEL.setSize(150, 20);
         LABEL_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_VEL.setBorder(Moon_border);
+        //LABEL_VEL.setBorder(Moon_border);
         LABEL_VEL.setBackground(Color.white);
         LABEL_VEL.setForeground(Color.black);
         P1_SidePanel.add(LABEL_VEL);
@@ -1168,7 +1173,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_FPA.setLocation(65, uy_p41 + 100 + y_ext_vel);
         LABEL_FPA.setSize(150, 20);
         LABEL_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_FPA.setBorder(Moon_border);
+        //LABEL_FPA.setBorder(Moon_border);
         LABEL_FPA.setBackground(Color.white);
         LABEL_FPA.setForeground(Color.black);
         P1_SidePanel.add(LABEL_FPA);
@@ -1176,7 +1181,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_AZI.setLocation(65, uy_p41 + 125 + y_ext_vel);
         LABEL_AZI.setSize(150, 20);
         LABEL_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_AZI.setBorder(Moon_border);
+        //LABEL_AZI.setBorder(Moon_border);
         LABEL_AZI.setBackground(Color.white);
         LABEL_AZI.setForeground(Color.black);
         P1_SidePanel.add(LABEL_AZI);
@@ -1186,7 +1191,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_M0.setLocation(65, uy_p41 + 150 + y_ext_vel*2);
         LABEL_M0.setSize(150, 20);
         LABEL_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_M0.setBorder(Moon_border);
+        //LABEL_M0.setBorder(Moon_border);
         LABEL_M0.setBackground(Color.white);
         LABEL_M0.setForeground(Color.black);
         P1_SidePanel.add(LABEL_M0);
@@ -1194,7 +1199,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 + y_ext_vel*2);
         LABEL_INTEGTIME.setSize(150, 20);
         LABEL_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_INTEGTIME.setBorder(Moon_border);
+        //LABEL_INTEGTIME.setBorder(Moon_border);
         LABEL_INTEGTIME.setBackground(Color.white);
         LABEL_INTEGTIME.setForeground(Color.black);
         P1_SidePanel.add(LABEL_INTEGTIME);
@@ -3485,7 +3490,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			        
 			        
 				      JLabel LABEL_Euler = new JLabel("Euler Angle Representation");
-				      LABEL_Euler.setLocation(152, 2);
+				      LABEL_Euler.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*4 +45);
 				      LABEL_Euler.setSize(150, 20);
 				      LABEL_Euler.setBackground(Color.white);
 				      LABEL_Euler.setForeground(Color.black);
@@ -3494,7 +3499,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      InitialAttitudePanel.add(LABEL_Euler);
 			        
 				      JLabel LABEL_Euler1 = new JLabel("Euler E1");
-				      LABEL_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0 - 15+45);
+				      LABEL_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5 - 15+45);
 				      LABEL_Euler1.setSize(box_size_InitialAttitude_x, 20);
 				      LABEL_Euler1.setBackground(Color.white);
 				      LABEL_Euler1.setForeground(Color.black);
@@ -3502,11 +3507,68 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      LABEL_Euler1.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler1);
 
+				        JSlider sliderEuler1 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
+				        JSlider sliderEuler2 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
+				        JSlider sliderEuler3 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
+				       sliderEuler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5-10+45);
+				       sliderEuler1.addChangeListener(new ChangeListener() {
+
+						@Override
+						public void stateChanged(ChangeEvent arg0) {
+
+							double drotX = sliderEuler1.getValue() - rotX;
+							rotX=sliderEuler1.getValue();
+							
+							SpaceShipView3D.setRotationX((int) drotX);
+							
+							INPUT_Euler1.setText(""+sliderEuler1.getValue());
+						}
+				    	   
+				       });
+				        InitialAttitudePanel.add(sliderEuler1);
+				       
+				        sliderEuler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*6-10+45);
+					       sliderEuler2.addChangeListener(new ChangeListener() {
+
+								@Override
+								public void stateChanged(ChangeEvent arg0) {
+
+									double drotY = sliderEuler2.getValue() - rotY;
+									rotY=sliderEuler2.getValue();
+									
+									SpaceShipView3D.setRotationZ((int) drotY);
+									
+									INPUT_Euler2.setText(""+sliderEuler2.getValue());
+								}
+						    	   
+						       });
+				        InitialAttitudePanel.add(sliderEuler2);
+				        
+				        sliderEuler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*7-10+45);
+					       sliderEuler3.addChangeListener(new ChangeListener() {
+
+								@Override
+								public void stateChanged(ChangeEvent arg0) {
+
+									double drotZ = sliderEuler3.getValue() - rotZ;
+									rotZ=sliderEuler3.getValue();
+									
+									SpaceShipView3D.setRotationY((int) drotZ);
+									
+									INPUT_Euler3.setText(""+sliderEuler3.getValue());
+								}
+						    	   
+						       });
+				        InitialAttitudePanel.add(sliderEuler3);
+				        sliderEuler1.setValue(0);
+				        sliderEuler2.setValue(0);
+				        sliderEuler3.setValue(0);
 			        
 			        INPUT_Euler1 = new JTextField();
-			        INPUT_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0+45);
+			        INPUT_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5+45);
 			        INPUT_Euler1.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 			        INPUT_Euler1.setBorder(Moon_border);
+			        INPUT_Euler1.setText("0");
 			        INPUT_Euler1.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
 			        INPUT_Euler1.addFocusListener(new FocusListener() {
 
@@ -3521,8 +3583,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      });
 			        InitialAttitudePanel.add(INPUT_Euler1);
 			        
+			        
 				      JLabel LABEL_Euler2 = new JLabel("Euler E2");
-				      LABEL_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1 - 15+45);
+				      LABEL_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*6 - 15+45);
 				      LABEL_Euler2.setSize(box_size_InitialAttitude_x, 20);
 				      LABEL_Euler2.setBackground(Color.white);
 				      LABEL_Euler2.setForeground(Color.black);
@@ -3532,9 +3595,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 			        
 			        INPUT_Euler2 = new JTextField();
-			        INPUT_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1+45);
+			        INPUT_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*6+45);
 			        INPUT_Euler2.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 			        INPUT_Euler2.setBorder(Moon_border);
+			        INPUT_Euler2.setText("0");
 			        INPUT_Euler2.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
 			        INPUT_Euler2.addFocusListener(new FocusListener() {
 
@@ -3549,8 +3613,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      });
 			        InitialAttitudePanel.add(INPUT_Euler2);
 			        
+			        
 				      JLabel LABEL_Euler3 = new JLabel("Euler E3");
-				      LABEL_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2 - 15+45);
+				      LABEL_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*7 - 15+45);
 				      LABEL_Euler3.setSize(box_size_InitialAttitude_x, 20);
 				      LABEL_Euler3.setBackground(Color.white);
 				      LABEL_Euler3.setForeground(Color.black);
@@ -3560,9 +3625,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 			        
 			        INPUT_Euler3 = new JTextField();
-			        INPUT_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2+45);
+			        INPUT_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*7+45);
 			        INPUT_Euler3.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 			        INPUT_Euler3.setBorder(Moon_border);
+			        INPUT_Euler3.setText("0");
 			        INPUT_Euler3.setSize(box_size_InitialAttitude_x, box_size_InitialAttitude_y);
 			        INPUT_Euler3.addFocusListener(new FocusListener() {
 
@@ -3576,6 +3642,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				    	  
 				      });
 			        InitialAttitudePanel.add(INPUT_Euler3);
+			        
 			    
 		        //---------------------------------------------------------------------------------------------
 		        //                         Propulsion Definition Block

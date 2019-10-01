@@ -43,17 +43,19 @@ public class SpaceShipView3D extends Application{
 	private static double mouseWheelZoomSensitivity = 8;
 	//private static double targetBodySize = 600;
 	private static double targetBodyInitialDistance = 0.5;
+	private static Group root = new Group();
+	private static SmartGroup model;
+	private static SmartGroup coordinateSystem;
 	
 	
 	public static void start(JFXPanel fxpanel) {
 		//Box box = prepareBox();
 
-		Group model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/diamond.obj");
-		Group coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
+		 model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/diamond.obj");
+	    coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
 		//model.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
 		
-		Group root = new Group();
 		root.getChildren().add(model);
 		root.getChildren().add(coordinateSystem);
 		
@@ -81,6 +83,7 @@ public class SpaceShipView3D extends Application{
 	
 	
 private static void initMouseControl(Group groupOne,Group groupTwo, Scene scene,JFXPanel fxpanel) {
+	/*
 	Rotate xRotate;
 	Rotate yRotate;
 	Rotate xRotate2;
@@ -112,7 +115,7 @@ private static void initMouseControl(Group groupOne,Group groupTwo, Scene scene,
 		angleX2.set(anchorAngleX2 + (anchorY2 - event.getSceneY())*mouseSensitivity); 
 		angleY2.set(anchorAngleY2 - (anchorX2 - event.getSceneX())*mouseSensitivity); 
 	});
-	
+	*/
 	fxpanel.addMouseWheelListener(new MouseWheelListener() {
 
 		@Override
@@ -131,8 +134,25 @@ private static void initMouseControl(Group groupOne,Group groupTwo, Scene scene,
 
 }
 
-private static Group loadModel(String fileString) {
-    Group modelRoot = new Group();
+public static void setRotationX(int deltaRotX) {
+	model.rotateByX(deltaRotX);
+	coordinateSystem.rotateByX(deltaRotX);
+	//model.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
+	//coordinateSystem.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
+}
+public static void setRotationY(int deltaRotY) {
+	model.rotateByY(deltaRotY);
+	coordinateSystem.rotateByY(deltaRotY);
+	//model.getTransforms().add(new Rotate(deltaRotY, Rotate.Y_AXIS));
+}
+public static void setRotationZ(int deltaRotZ) {
+	model.rotateByZ(deltaRotZ);
+	coordinateSystem.rotateByZ(deltaRotZ);
+	//model.getTransforms().add(new Rotate(deltaRotZ, Rotate.Z_AXIS));
+}
+
+private static SmartGroup loadModel(String fileString) {
+    SmartGroup modelRoot = new SmartGroup();
 
     ObjModelImporter importer = new ObjModelImporter();
    // importer.read(url);
@@ -148,8 +168,8 @@ modelRoot.setScaleZ(scale);
     return modelRoot;
 }
 
-private static Group loadCoordinateSystem(String fileString) {
-    Group modelRoot = new Group();
+private static SmartGroup loadCoordinateSystem(String fileString) {
+    SmartGroup modelRoot = new SmartGroup();
 	PhongMaterial material = new PhongMaterial();
     material.setDiffuseColor(Color.BLUE);
     ObjModelImporter importer = new ObjModelImporter();

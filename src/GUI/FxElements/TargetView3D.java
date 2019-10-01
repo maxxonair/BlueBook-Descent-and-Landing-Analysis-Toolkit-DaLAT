@@ -33,12 +33,12 @@ public class TargetView3D extends Application{
 	private static final double WIDTH  = 720;
 	private static final double HEIGHT = 800;
 	
-	private static double anchorX;
-	private static double anchorY;
-	private static double anchorAngleX=0;
-	private static double anchorAngleY=0;
-	private static final DoubleProperty angleX = new SimpleDoubleProperty(0);
-	private static final DoubleProperty angleY = new SimpleDoubleProperty(0);
+	private static double anchorCameraY;
+	private static double anchorCameraX;
+	private static double anchorAngleCameraY=0;
+	private static double anchorAngleCameraX=0;
+	private static final DoubleProperty angleCameraX = new SimpleDoubleProperty(0);
+	private static final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
 	
 	private static double mouseSensitivity =0.1;
 	private static double mouseWheelZoomSensitivity = 800;
@@ -47,13 +47,14 @@ public class TargetView3D extends Application{
 	private static double targetBodyRotSpeed = 0.1;
 	
 	private static String[] Target = {"earth.jpg",
-							   "moon.jpg",
-							   "mars.jpg",
-							   "venus.jpg",
-							   "mercury.jpg"
+							          "moon.jpg",
+							          "mars.jpg",
+							          "venus.jpg",
+							          "mercury.jpg"
 	};
 	private static Sphere targetBody;
 	private static SmartGroup TargetBodyGroup= new SmartGroup();
+	static ImageView imageView = null ;
 	
 	public static void start(JFXPanel fxpanel, int targetInd) {
 		targetBody = prepareTargetBody(targetInd);
@@ -86,7 +87,7 @@ public class TargetView3D extends Application{
 		TargetBodyGroup.translateYProperty().set(HEIGHT/2);
 		TargetBodyGroup.translateZProperty().set(targetBodyInitialDistance);
 		
-		initMouseControl(TargetBodyGroup, scene, fxpanel);
+		initMouseControl(TargetBodyGroup, scene, fxpanel, camera);
 				
 		/*
 		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
@@ -121,24 +122,31 @@ public class TargetView3D extends Application{
 	}
 	
 	
-private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel) {
+private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
 	Rotate xRotate;
 	Rotate yRotate;
-	group.getTransforms().addAll(
-			xRotate = new Rotate(0, Rotate.X_AXIS), 
-			yRotate = new Rotate(0, Rotate.Y_AXIS));
-	xRotate.angleProperty().bind(angleX);
-	yRotate.angleProperty().bind(angleY);
+
+	camera.getTransforms().addAll(
+			xRotate = new Rotate(0, Rotate.Y_AXIS),
+			yRotate = new Rotate(0, Rotate.X_AXIS)	
+			);
+	yRotate.angleProperty().bind(angleCameraY);
+	xRotate.angleProperty().bind(angleCameraX);
+	//camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(90-yRotate.getAngle())));
 	
 	scene.setOnMousePressed(event -> {
-		anchorX = event.getSceneX();
-		anchorY = event.getSceneY();
-		anchorAngleX = angleX.get();
-		anchorAngleY = angleY.get();
+		anchorCameraX = event.getSceneX();
+		anchorCameraY = event.getSceneY();
+		anchorAngleCameraX = angleCameraX.get();
+		anchorAngleCameraY = angleCameraY.get();
 	});
 	scene.setOnMouseDragged(event ->{
-		angleX.set(anchorAngleX - (anchorY - event.getSceneY())*mouseSensitivity); 
-		angleY.set(anchorAngleY + (anchorX - event.getSceneX())*mouseSensitivity); 
+		angleCameraX.set(anchorAngleCameraX - (anchorCameraX - event.getSceneX())*mouseSensitivity); 
+		angleCameraY.set(anchorAngleCameraY - (anchorCameraY - event.getSceneY())*mouseSensitivity); 
+		camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(angleCameraY.getValue()))));
+		//System.out.println(angleCameraX.getValue());		
+		//System.out.println(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraX.getValue()))));
+		camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraX.getValue())));
 	});
 	
 	fxpanel.addMouseWheelListener(new MouseWheelListener() {
@@ -204,6 +212,7 @@ private static void prepareAnimation(Slider slider) {
 		
 			targetBodyRotSpeed = slider.getValue();
 			TargetBodyGroup.rotateByY(TargetBodyGroup.getRotate()+targetBodyRotSpeed);
+			imageView.setTranslateX(imageView.getTranslateX()+targetBodyRotSpeed*80);
 		}
 		
 	};
@@ -211,7 +220,6 @@ private static void prepareAnimation(Slider slider) {
 }
 
 private static ImageView prepareImageView() {
-	ImageView imageView = null ;
 	try {
 		Image backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
 	 imageView = new ImageView(backgroundImage);
