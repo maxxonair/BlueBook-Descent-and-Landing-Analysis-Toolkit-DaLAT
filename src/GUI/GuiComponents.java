@@ -14,9 +14,9 @@ public class GuiComponents {
         JSlider slider = new JSlider(JSlider.HORIZONTAL);
         
         slider.setSize(length,40);
-        slider.setMaximum(180);
-        slider.setMinimum(-180);
-        slider.setMajorTickSpacing(20);
+        slider.setMaximum(high);
+        slider.setMinimum(low);
+        slider.setMajorTickSpacing((high-low)/18);
         slider.setPaintTicks(true);
         slider.setPaintLabels(true);
         

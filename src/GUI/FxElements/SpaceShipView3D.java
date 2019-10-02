@@ -3,10 +3,14 @@ package GUI.FxElements;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
+
+import GUI.BlueBookVisual;
 import javafx.application.Application;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
+import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import javafx.scene.AmbientLight;
 import javafx.scene.Camera;
@@ -23,9 +27,9 @@ import javafx.stage.Stage;
 
 public class SpaceShipView3D extends Application{
 	
-	private static final double WIDTH  = 400;
+	private static final double WIDTH  = 450;
 	private static final double HEIGHT = 400;
-	
+	/*
 	private static double anchorX;
 	private static double anchorY;
 	private static double anchorAngleX=0;
@@ -40,18 +44,22 @@ public class SpaceShipView3D extends Application{
 	private static final DoubleProperty angleY2 = new SimpleDoubleProperty(0);
 	
 	private static double mouseSensitivity =0.1;
+	*/
 	private static double mouseWheelZoomSensitivity = 8;
 	//private static double targetBodySize = 600;
 	private static double targetBodyInitialDistance = 0.5;
 	private static Group root = new Group();
 	private static SmartGroup model;
 	private static SmartGroup coordinateSystem;
+	static double rotX=0;
+	static double rotY=0;
+	static double rotZ=0;
 	
 	
 	public static void start(JFXPanel fxpanel) {
 		//Box box = prepareBox();
 
-		 model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/diamond.obj");
+		 model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj");
 	    coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
 		//model.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
@@ -71,12 +79,63 @@ public class SpaceShipView3D extends Application{
 		model.translateYProperty().set(HEIGHT/2);
 		model.translateZProperty().set(targetBodyInitialDistance);
 		
-		coordinateSystem.translateXProperty().set(WIDTH*3/4);
-		coordinateSystem.translateYProperty().set(HEIGHT/4);
+		coordinateSystem.translateXProperty().set(WIDTH*4/5);
+		coordinateSystem.translateYProperty().set(HEIGHT/5);
 		coordinateSystem.translateZProperty().set(targetBodyInitialDistance/2);
 		
 		initMouseControl(model, coordinateSystem, scene, fxpanel);
 			
+		BlueBookVisual.sliderEuler1.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+				double drotX = BlueBookVisual.sliderEuler1.getValue() - rotX;
+				rotX=BlueBookVisual.sliderEuler1.getValue();
+				
+				setRotationX( drotX);
+                    }
+                });
+			}
+			
+		});
+		BlueBookVisual.sliderEuler2.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+				double drotZ = BlueBookVisual.sliderEuler2.getValue() - rotZ;
+				rotZ=BlueBookVisual.sliderEuler2.getValue();
+				
+				setRotationZ( drotZ);
+                    }
+                });
+			}
+			
+		});
+		BlueBookVisual.sliderEuler3.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+                Platform.runLater(new Runnable() {
+                    @Override
+                    public void run() {
+				double drotY = BlueBookVisual.sliderEuler3.getValue() - rotY;
+				rotY=BlueBookVisual.sliderEuler3.getValue();
+				
+				setRotationY( drotY);
+                    }
+                });
+			}
+			
+		});
 		fxpanel.setScene(scene);
 
 	}
@@ -134,21 +193,27 @@ private static void initMouseControl(Group groupOne,Group groupTwo, Scene scene,
 
 }
 
-public static void setRotationX(int deltaRotX) {
+public static void setRotationX(double deltaRotX) {
 	model.rotateByX(deltaRotX);
 	coordinateSystem.rotateByX(deltaRotX);
 	//model.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
 	//coordinateSystem.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
+	model.translateZProperty().set(model.getTranslateZ() + 0.1);
+	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 }
-public static void setRotationY(int deltaRotY) {
+public static void setRotationY(double deltaRotY) {
 	model.rotateByY(deltaRotY);
 	coordinateSystem.rotateByY(deltaRotY);
 	//model.getTransforms().add(new Rotate(deltaRotY, Rotate.Y_AXIS));
+	model.translateZProperty().set(model.getTranslateZ() + 0.1);
+	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 }
-public static void setRotationZ(int deltaRotZ) {
+public static void setRotationZ(double deltaRotZ) {
 	model.rotateByZ(deltaRotZ);
 	coordinateSystem.rotateByZ(deltaRotZ);
 	//model.getTransforms().add(new Rotate(deltaRotZ, Rotate.Z_AXIS));
+	model.translateZProperty().set(model.getTranslateZ() + 0.1);
+	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 }
 
 private static SmartGroup loadModel(String fileString) {
@@ -161,7 +226,7 @@ private static SmartGroup loadModel(String fileString) {
     for (MeshView view : importer.getImport()) {
         modelRoot.getChildren().add(view);
     }
-    double scale=30;
+    double scale=3;
 modelRoot.setScaleX(scale);
 modelRoot.setScaleY(scale);
 modelRoot.setScaleZ(scale);
@@ -193,19 +258,19 @@ static class SmartGroup extends Group {
 	Rotate r;
 	Transform t = new Rotate();
 	
-	void rotateByX(int angle) {
+	void rotateByX(double angle) {
 		r = new Rotate(angle, Rotate.X_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
 	}
-	void rotateByY(int angle) {
+	void rotateByY(double angle) {
 		r = new Rotate(angle, Rotate.Y_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
 	}
-	void rotateByZ(int angle) {
+	void rotateByZ(double angle) {
 		r = new Rotate(angle, Rotate.Z_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();

@@ -57,6 +57,9 @@ public class ThirdPersonCamera {
 	private void calculateZoom() {
 		 float zoomLevel = Mouse.getDWheel() *  mouseWheelSensitivity; 
 		 distanceFromSpacecraft -= zoomLevel;
+		 if(distanceFromSpacecraft<0) {
+			 distanceFromSpacecraft=0;
+		 }
 	}
 	
 	private void calculatePitch() {

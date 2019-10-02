@@ -5,6 +5,7 @@ import java.awt.event.MouseWheelListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 
+import GUI.BlueBookVisual;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.beans.property.DoubleProperty;
@@ -34,17 +35,20 @@ public class TargetView3D extends Application{
 	private static final double HEIGHT = 800;
 	
 	private static double anchorCameraY;
+	private static double anchorCameraYSlider;
 	private static double anchorCameraX;
 	private static double anchorAngleCameraY=0;
+	private static double anchorAngleCameraYSlider=0;
 	private static double anchorAngleCameraX=0;
 	private static final DoubleProperty angleCameraX = new SimpleDoubleProperty(0);
 	private static final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
+	private static final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
 	
 	private static double mouseSensitivity =0.1;
 	private static double mouseWheelZoomSensitivity = 800;
 	private static double targetBodyRadius = 6000;
-	private static double targetBodyInitialDistance = targetBodyRadius*6;
-	private static double targetBodyRotSpeed = 0.1;
+	private static double targetBodyInitialDistance;
+	private static double targetBodyRotSpeed = 0.04;
 	
 	private static String[] Target = {"earth.jpg",
 							          "moon.jpg",
@@ -52,12 +56,14 @@ public class TargetView3D extends Application{
 							          "venus.jpg",
 							          "mercury.jpg"
 	};
-	private static Sphere targetBody;
-	private static SmartGroup TargetBodyGroup= new SmartGroup();
+	public static SmartGroup TargetBodyGroup= new SmartGroup();
 	static ImageView imageView = null ;
+	static Image backgroundImage;
+	static Slider slider ;
 	
 	public static void start(JFXPanel fxpanel, int targetInd) {
-		targetBody = prepareTargetBody(targetInd);
+    	TargetView3D.TargetBodyGroup.getChildren().clear();;
+		Sphere targetBody = prepareTargetBody(targetInd);
 		//Sphere sphere = prepareSphere(targetInd);
 		
 	    //TargetBodyGroup = new SmartGroup();
@@ -65,7 +71,7 @@ public class TargetView3D extends Application{
 		TargetBodyGroup.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
 		
-		Slider slider = prepareSlider();
+	  slider = prepareSlider();
 
 		
 		Group root = new Group();
@@ -85,6 +91,7 @@ public class TargetView3D extends Application{
 		
 		TargetBodyGroup.translateXProperty().set(WIDTH/2);
 		TargetBodyGroup.translateYProperty().set(HEIGHT/2);
+		targetBodyInitialDistance = targetBodyRadius*6;
 		TargetBodyGroup.translateZProperty().set(targetBodyInitialDistance);
 		
 		initMouseControl(TargetBodyGroup, scene, fxpanel, camera);
@@ -123,30 +130,33 @@ public class TargetView3D extends Application{
 	
 	
 private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
-	Rotate xRotate;
+	//Rotate xRotate;
 	Rotate yRotate;
+	Rotate yRotateSlider;
 
 	camera.getTransforms().addAll(
-			xRotate = new Rotate(0, Rotate.Y_AXIS),
-			yRotate = new Rotate(0, Rotate.X_AXIS)	
+			//xRotate = new Rotate(0, Rotate.Y_AXIS),
+			yRotate = new Rotate(0, Rotate.X_AXIS)	,
+			yRotateSlider = new Rotate(0, Rotate.X_AXIS)
 			);
 	yRotate.angleProperty().bind(angleCameraY);
-	xRotate.angleProperty().bind(angleCameraX);
+	//yRotateSlider.angleProperty().bind(angleCameraY);
+	//xRotate.angleProperty().bind(angleCameraX);
 	//camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(90-yRotate.getAngle())));
 	
 	scene.setOnMousePressed(event -> {
-		anchorCameraX = event.getSceneX();
+		//anchorCameraX = event.getSceneX();
 		anchorCameraY = event.getSceneY();
-		anchorAngleCameraX = angleCameraX.get();
+		anchorCameraYSlider = event.getSceneY();
+		//anchorAngleCameraX = angleCameraX.get();
 		anchorAngleCameraY = angleCameraY.get();
+		anchorAngleCameraYSlider = angleCameraYSlider.get();
 	});
 	scene.setOnMouseDragged(event ->{
-		angleCameraX.set(anchorAngleCameraX - (anchorCameraX - event.getSceneX())*mouseSensitivity); 
-		angleCameraY.set(anchorAngleCameraY - (anchorCameraY - event.getSceneY())*mouseSensitivity); 
-		camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(angleCameraY.getValue()))));
-		//System.out.println(angleCameraX.getValue());		
-		//System.out.println(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraX.getValue()))));
-		camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraX.getValue())));
+		//angleCameraX.set(anchorAngleCameraX - (anchorCameraX - event.getSceneX())*mouseSensitivity); 
+		angleCameraY.set(anchorAngleCameraY + (anchorCameraY - event.getSceneY())*mouseSensitivity); 
+		camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
+		camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
 	});
 	
 	fxpanel.addMouseWheelListener(new MouseWheelListener() {
@@ -156,18 +166,20 @@ private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpa
 			// TODO Auto-generated method stub
 				double wheelSpeed = arg0.getPreciseWheelRotation();
 					if(wheelSpeed>0) {
-						group.translateZProperty().set(group.getTranslateZ() + mouseWheelZoomSensitivity);
+						targetBodyInitialDistance += mouseWheelZoomSensitivity;
 					} else {
-						group.translateZProperty().set(group.getTranslateZ() - mouseWheelZoomSensitivity);
+						targetBodyInitialDistance -= mouseWheelZoomSensitivity;
 					}
-
+					group.translateZProperty().set(targetBodyInitialDistance);
+					camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
+					camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
 		}
 		
 	});
 
 }
 
-static class SmartGroup extends Group {
+public static class SmartGroup extends Group {
 	Rotate r;
 	Transform t = new Rotate();
 	
@@ -212,7 +224,11 @@ private static void prepareAnimation(Slider slider) {
 		
 			targetBodyRotSpeed = slider.getValue();
 			TargetBodyGroup.rotateByY(TargetBodyGroup.getRotate()+targetBodyRotSpeed);
-			imageView.setTranslateX(imageView.getTranslateX()+targetBodyRotSpeed*80);
+			if(imageView.getTranslateX()<(backgroundImage.getWidth()*imageView.getScaleX()*2/5)){
+				imageView.setTranslateX(imageView.getTranslateX()+targetBodyRotSpeed*80);	
+			} else {
+			imageView.setTranslateX(-(backgroundImage.getWidth()*imageView.getScaleX()*2/5));
+			}
 		}
 		
 	};
@@ -221,7 +237,7 @@ private static void prepareAnimation(Slider slider) {
 
 private static ImageView prepareImageView() {
 	try {
-		Image backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
+		 backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
 	 imageView = new ImageView(backgroundImage);
 	//imageView.setPreserveRatio(true);
 	imageView.getTransforms().add(new Translate(0,0,200000));
@@ -260,6 +276,7 @@ private static Node prepareSun(){
 }
     
     public static Sphere prepareTargetBody(int targetInd) {
+    	targetBodyRadius = BlueBookVisual.getRM()/1000;
     	Sphere sphere = new Sphere(targetBodyRadius);
     	PhongMaterial material = new PhongMaterial();
 
@@ -281,12 +298,8 @@ private static Node prepareSun(){
     	
     	return sphere;
     }
-    
+  
 
-
-	public static Sphere getTargetBody() {
-		return targetBody;
-	}
 
 
 	@Override

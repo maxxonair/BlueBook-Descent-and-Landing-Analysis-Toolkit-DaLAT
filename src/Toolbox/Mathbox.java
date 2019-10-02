@@ -233,5 +233,21 @@ public class Mathbox{
 			return EulerAngles;
 	}
 	
+	public static double[][] Euler2Quarternions(double[][] E){
+		double[][] Quarternions = {{1},{0},{0},{0}};
+		Quarternions[0][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
+				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
+		
+		Quarternions[1][0] = Math.sin(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
+				- Math.cos(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
+		
+		Quarternions[2][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
+				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
+		
+		Quarternions[3][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2)) 
+				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2));
+		
+		return Quarternions;
+	}
 
 }

@@ -54,7 +54,6 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
-import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -68,30 +67,6 @@ import java.util.TimerTask;
 
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
-import javax.swing.AbstractAction;
-import javax.swing.Action;
-import javax.swing.BorderFactory;
-import javax.swing.DefaultCellEditor;
-import javax.swing.JButton;
-import javax.swing.JCheckBox;
-import javax.swing.JComboBox;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
-import javax.swing.JMenuItem;
-import javax.swing.JPanel;
-import javax.swing.JRadioButton;
-import javax.swing.JScrollPane;
-import javax.swing.JSeparator;
-import javax.swing.JSplitPane;
-import javax.swing.JTabbedPane;
-import javax.swing.JTable;
-import javax.swing.JTextArea;
-import javax.swing.JTextField;
-import javax.swing.KeyStroke;
-import javax.swing.SwingConstants;
-import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -140,8 +115,6 @@ import VisualEngine.engineLauncher.worldAnimation;
 import VisualEngine.engineLauncher.worldGenerator;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-
-import javax.swing.JFileChooser;
 import Controller.LandingCurve;
 import Controller.PitchCurve;
 
@@ -223,6 +196,7 @@ public class BlueBookVisual implements  ActionListener {
    	public static Color light_gray = new Color(230,230,230);
    	
     static DecimalFormat decf 		  = new DecimalFormat("#.#");
+    static DecimalFormat decQuarternion =  new DecimalFormat("#.########");
     static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
     static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
     static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
@@ -495,6 +469,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static int vel_frame_hist = 1; 
     public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
     public static JTextField INPUT_Quarternion1, INPUT_Quarternion2, INPUT_Quarternion3, INPUT_Quarternion4, INPUT_Euler1, INPUT_Euler2,INPUT_Euler3;
+    
+    public static JSlider sliderEuler1;
+    public static JSlider sliderEuler2;
+    public static JSlider sliderEuler3;
     
     public static TimerTask task_Update;
     
@@ -3051,6 +3029,19 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				InertiaMatrixPanel.setBorder(Moon_border);
 				InertiaxPanel.add(InertiaMatrixPanel);
 				
+		        String path2 = "images/momentOfInertia.png";
+		        File file2 = new File(path2);
+		        try {
+		        BufferedImage image3 = ImageIO.read(file2);
+		        JLabel label2 = new JLabel(new ImageIcon(image3));
+		        label2.setSize(320,240);
+		        label2.setLocation(5, 125);
+		        label2.setBorder(Moon_border);
+		        InertiaMatrixPanel.add(label2);
+		        } catch (Exception e) {
+		        	System.err.println("Error: SpaceShip Setup/Aerodynamik - could not load image");
+		        }
+				
 				int box_size_x = 60;
 				int box_size_y = 25;
 				int gap_size_x =  4;
@@ -3498,7 +3489,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      LABEL_Euler.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler);
 			        
-				      JLabel LABEL_Euler1 = new JLabel("Euler E1");
+				      JLabel LABEL_Euler1 = new JLabel("Euler E1 - Roll [deg]");
 				      LABEL_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5 - 15+45);
 				      LABEL_Euler1.setSize(box_size_InitialAttitude_x, 20);
 				      LABEL_Euler1.setBackground(Color.white);
@@ -3507,20 +3498,29 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      LABEL_Euler1.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler1);
 
-				        JSlider sliderEuler1 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
-				        JSlider sliderEuler2 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
-				        JSlider sliderEuler3 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
-				       sliderEuler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5-10+45);
+				         sliderEuler1 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
+				         sliderEuler2 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -90, 0 ,90);
+				         sliderEuler3 = GuiComponents.getGuiSlider(small_font, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
+				        sliderEuler1.setValue(0);
+				        sliderEuler2.setValue(0);
+				        sliderEuler3.setValue(0);
+				        sliderEuler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5-10+45);
+				       
 				       sliderEuler1.addChangeListener(new ChangeListener() {
 
 						@Override
 						public void stateChanged(ChangeEvent arg0) {
+							
+							double[][] Euler = {{0},{0},{0}};
+							Euler[0][0] = Double.parseDouble(INPUT_Euler1.getText());
+							Euler[1][0] = Double.parseDouble(INPUT_Euler2.getText());
+							Euler[2][0] = Double.parseDouble(INPUT_Euler3.getText());
+							double[][] Quarternions = Mathbox.Euler2Quarternions(Euler);
+							INPUT_Quarternion1.setText(""+decQuarternion.format(Quarternions[0][0]));
+							INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
+							INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
+							INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
 
-							double drotX = sliderEuler1.getValue() - rotX;
-							rotX=sliderEuler1.getValue();
-							
-							SpaceShipView3D.setRotationX((int) drotX);
-							
 							INPUT_Euler1.setText(""+sliderEuler1.getValue());
 						}
 				    	   
@@ -3532,11 +3532,16 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 								@Override
 								public void stateChanged(ChangeEvent arg0) {
-
-									double drotY = sliderEuler2.getValue() - rotY;
-									rotY=sliderEuler2.getValue();
 									
-									SpaceShipView3D.setRotationZ((int) drotY);
+									double[][] Euler = {{0},{0},{0}};
+									Euler[0][0] = Double.parseDouble(INPUT_Euler1.getText());
+									Euler[1][0] = Double.parseDouble(INPUT_Euler2.getText());
+									Euler[2][0] = Double.parseDouble(INPUT_Euler3.getText());
+									double[][] Quarternions = Mathbox.Euler2Quarternions(Euler);
+									INPUT_Quarternion1.setText(""+decQuarternion.format(Quarternions[0][0]));
+									INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
+									INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
+									INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
 									
 									INPUT_Euler2.setText(""+sliderEuler2.getValue());
 								}
@@ -3549,20 +3554,22 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 								@Override
 								public void stateChanged(ChangeEvent arg0) {
-
-									double drotZ = sliderEuler3.getValue() - rotZ;
-									rotZ=sliderEuler3.getValue();
 									
-									SpaceShipView3D.setRotationY((int) drotZ);
+									double[][] Euler = {{0},{0},{0}};
+									Euler[0][0] = Double.parseDouble(INPUT_Euler1.getText());
+									Euler[1][0] = Double.parseDouble(INPUT_Euler2.getText());
+									Euler[2][0] = Double.parseDouble(INPUT_Euler3.getText());
+									double[][] Quarternions = Mathbox.Euler2Quarternions(Euler);
+									INPUT_Quarternion1.setText(""+decQuarternion.format(Quarternions[0][0]));
+									INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
+									INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
+									INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
 									
 									INPUT_Euler3.setText(""+sliderEuler3.getValue());
 								}
 						    	   
 						       });
 				        InitialAttitudePanel.add(sliderEuler3);
-				        sliderEuler1.setValue(0);
-				        sliderEuler2.setValue(0);
-				        sliderEuler3.setValue(0);
 			        
 			        INPUT_Euler1 = new JTextField();
 			        INPUT_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5+45);
@@ -3578,13 +3585,26 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						@Override
 						public void focusLost(FocusEvent e) {
 							WriteInitialAttitude();
+							sliderEuler1.setValue(Integer.parseInt(INPUT_Euler1.getText()));
 						}
 				    	  
 				      });
+			        INPUT_Euler1.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							// TODO Auto-generated method stub
+							WriteInitialAttitude();
+							if( Double.parseDouble(INPUT_Euler1.getText())>=-90 && Double.parseDouble(INPUT_Euler1.getText())<=90) {
+							sliderEuler1.setValue((int) Double.parseDouble(INPUT_Euler1.getText()));
+							}
+						}
+			        	
+			        });
 			        InitialAttitudePanel.add(INPUT_Euler1);
 			        
 			        
-				      JLabel LABEL_Euler2 = new JLabel("Euler E2");
+				      JLabel LABEL_Euler2 = new JLabel("Euler E2 - Pitch [deg]");
 				      LABEL_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*6 - 15+45);
 				      LABEL_Euler2.setSize(box_size_InitialAttitude_x, 20);
 				      LABEL_Euler2.setBackground(Color.white);
@@ -3608,13 +3628,26 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						@Override
 						public void focusLost(FocusEvent e) {
 							WriteInitialAttitude();
+							sliderEuler2.setValue(Integer.parseInt(INPUT_Euler2.getText()));
 						}
 				    	  
 				      });
+			        INPUT_Euler2.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							// TODO Auto-generated method stub
+							WriteInitialAttitude();
+							if( Double.parseDouble(INPUT_Euler2.getText())>=-90 && Double.parseDouble(INPUT_Euler2.getText())<=90) {
+							sliderEuler2.setValue((int) Double.parseDouble(INPUT_Euler2.getText()));
+							}
+						}
+			        	
+			        });
 			        InitialAttitudePanel.add(INPUT_Euler2);
 			        
 			        
-				      JLabel LABEL_Euler3 = new JLabel("Euler E3");
+				      JLabel LABEL_Euler3 = new JLabel("Euler E3 - Yaw [deg]");
 				      LABEL_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*7 - 15+45);
 				      LABEL_Euler3.setSize(box_size_InitialAttitude_x, 20);
 				      LABEL_Euler3.setBackground(Color.white);
@@ -3638,17 +3671,46 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						@Override
 						public void focusLost(FocusEvent e) {
 							WriteInitialAttitude();
+							sliderEuler3.setValue(Integer.parseInt(INPUT_Euler3.getText()));
 						}
 				    	  
 				      });
+			        INPUT_Euler3.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							// TODO Auto-generated method stub
+							WriteInitialAttitude();
+							if( Double.parseDouble(INPUT_Euler3.getText())>=-90 && Double.parseDouble(INPUT_Euler3.getText())<=90) {
+							sliderEuler3.setValue((int) Double.parseDouble(INPUT_Euler3.getText()));
+							}
+						}
+			        	
+			        });
 			        InitialAttitudePanel.add(INPUT_Euler3);
 			        
-			    
+					JPanel SpaceShip3DPanel = new JPanel();
+					SpaceShip3DPanel.setLayout(new BorderLayout());
+					SpaceShip3DPanel.setLocation(765, 10);
+					//SpaceShip3DPanel.setBackground(Color.white);
+					//SpaceShip3DPanel.setForeground(Color.black);
+					SpaceShip3DPanel.setSize(450, 400);
+					SpaceShip3DPanel.setBorder(Moon_border);
+					InertiaxPanel.add(SpaceShip3DPanel);
+					
+			        final JFXPanel fxPanel = new JFXPanel();
+			        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
+
+			        Platform.runLater(new Runnable() {
+			            @Override
+			            public void run() {
+			            	SpaceShipView3D.start(fxPanel);
+			            }
+			       });
 		        //---------------------------------------------------------------------------------------------
 		        //                         Propulsion Definition Block
 		        //--------------------------------------------------------------------------------------------- 
-			 
-		      
+			 		      
 		      JSeparator Separator_Page2_2 = new JSeparator();
 		      Separator_Page2_2.setLocation(0, 0 );
 		      Separator_Page2_2.setSize(SidePanel_Width, 1);
@@ -3656,6 +3718,18 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      Separator_Page2_2.setForeground(Color.black);
 		      PropulsionInputPanel.add(Separator_Page2_2);
 
+		        String path3 = "images/mercuryBlueprint.png";
+		        File file3 = new File(path3);
+		        try {
+		        BufferedImage image4 = ImageIO.read(file3);
+		        JLabel label3 = new JLabel(new ImageIcon(image4));
+		        label3.setSize(560,430);
+		        label3.setLocation(435, 5);
+		        label3.setBorder(Moon_border);
+		        PropulsionInputPanel.add(label3);
+		        } catch (Exception e) {
+		        	System.err.println("Error: SpaceShip Setup/Basic Setup - could not load image");
+		        }
 			  // Space intended for advanced integrator settings 
 		      JLabel LABEL_SpaceCraftSettings = new JLabel("Spacecraft Settings");
 		      LABEL_SpaceCraftSettings.setLocation(0, uy_p41 + 10 * 0  );
@@ -3947,24 +4021,19 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    	 
 		     });
 		     
-				JPanel SpaceShip3DPanel = new JPanel();
-				SpaceShip3DPanel.setLayout(new BorderLayout());
-				SpaceShip3DPanel.setLocation(800, 10);
-				//SpaceShip3DPanel.setBackground(Color.white);
-				//SpaceShip3DPanel.setForeground(Color.black);
-				SpaceShip3DPanel.setSize(400, 400);
-				SpaceShip3DPanel.setBorder(Moon_border);
-				InertiaxPanel.add(SpaceShip3DPanel);
-				
-		        final JFXPanel fxPanel = new JFXPanel();
-		        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
-
-		        Platform.runLater(new Runnable() {
-		            @Override
-		            public void run() {
-		            	SpaceShipView3D.start(fxPanel);
-		            }
-		       });
+		        String path = "images/milleniumSchlieren2.png";
+		        File file = new File(path);
+		        try {
+		        BufferedImage image2 = ImageIO.read(file);
+		        JLabel label = new JLabel(new ImageIcon(image2));
+		        label.setSize(300,260);
+		        label.setLocation(5, uy_p41 + 25 * 4);
+		        label.setBorder(Moon_border);
+		        AerodynamicInputPanel.add(label);
+		        } catch (Exception e) {
+		        	System.err.println("Error: SpaceShip Setup/Aerodynamik - could not load image");
+		        }
+		     
 
         //-----------------------------------------------------------------------------------------
         // Page 4.3
@@ -4083,7 +4152,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      	// Create Tabs:
         Page04_subtabPane.addTab("Dashboard" , icon_dashboard, PageX04_Dashboard, null);
         Page04_subtabPane.addTab("Simulation Setup"+"\u2713", icon_setup, PageX04_SimSetup, null);
-        Page04_subtabPane.addTab("S/C Setup"+"\u2713", icon_scSetup, PageX04_AttitudeSetup, null);
+        Page04_subtabPane.addTab("SpaceShip Setup"+"\u2713", icon_scSetup, PageX04_AttitudeSetup, null);
         Page04_subtabPane.addTab("Raw Data", icon_data, PageX04_RawDATA, null);
         Page04_subtabPane.addTab("Map" , icon_map, PageX04_Map, null);
         Page04_subtabPane.addTab("Polar Map" , icon_map, PageX04_PolarMap, null);
@@ -6009,6 +6078,7 @@ public static void EXPORT_Case() {
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
+            	TargetView3D.TargetBodyGroup.getChildren().removeAll();
             	TargetView3D.start(fxPanel,indx_target);
             }
        });
@@ -6711,6 +6781,7 @@ public static void EXPORT_Case() {
 		}
 		return ELEVATION;
 	}
+	/*
     public JPanel WINDOW_CreateLocalElevationFile() throws IOException, SQLException{
     	//---------------------------------------------------
     	// 				Data Select 
@@ -6745,12 +6816,14 @@ public static void EXPORT_Case() {
 	    		  // Get selected File Resolution from ResolutionChooser:
 	    		  int Resoltuion = Integer.parseInt((String) ResolutionChooser.getSelectedItem());
 	    		  // Create Elevation File:
+	    		  
               	try {
 						CreateLocalElevationFile(Resoltuion);
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();
 					}
+					
               	// Update Ground Clearance Chart with generated data:
               	ResultSet_GroundClearance_FlightPath.removeAllSeries();
         		ResultSet_GroundClearance_Elevation.removeAllSeries();
@@ -6769,6 +6842,7 @@ public static void EXPORT_Case() {
         MainGUI.setSize(extx,exty);
 	    return MainGUI;
     }
+    */
 	public static List<atm_dataset> INITIALIZE_Page03_storage_DATA() throws URISyntaxException{
     	   try{ // Temperature
     	       	FileInputStream fstream = null; 
@@ -7230,6 +7304,9 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		}
 		public static String getICON_File() {
 			return ICON_File;
+		}
+		public static double getRM() {
+			return RM;
 		}
 		
 		
