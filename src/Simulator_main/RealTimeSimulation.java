@@ -352,7 +352,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	   		//System.out.println("THRUST");
 	   		//F_Aero_A[0][0] -= Thrust;
 	   	} else {
-	   		Thrust_is=0;
+	   		Thrust_is=0.1 * Thrust_max;
 	   	}
 	   	
 	   	F_Thrust_B[0][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  

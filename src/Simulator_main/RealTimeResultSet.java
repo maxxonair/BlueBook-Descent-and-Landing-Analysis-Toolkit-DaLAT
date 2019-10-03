@@ -26,7 +26,9 @@ public class RealTimeResultSet {
 			 						 {0},
 			 						 {0}};
 	
-	
+	private double[][] CartesianPosECEF = {{0},
+			 							   {0},
+			 							   {0}};
 	
 	public double[][] getThrust_NED() {
 		return Thrust_NED;
@@ -118,6 +120,14 @@ public class RealTimeResultSet {
 
 	public  void setPQR(double[][] pQR) {
 		PQR = pQR;
+	}
+
+	public double[][] getCartesianPosECEF() {
+		return CartesianPosECEF;
+	}
+
+	public void setCartesianPosECEF(double[][] cartesianPosECEF) {
+		CartesianPosECEF = cartesianPosECEF;
 	}
 
 }

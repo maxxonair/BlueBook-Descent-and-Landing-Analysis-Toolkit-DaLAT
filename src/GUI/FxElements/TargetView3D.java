@@ -4,10 +4,14 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
+import java.util.List;
 
 import GUI.BlueBookVisual;
+import Simulator_main.RealTimeResultSet;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.JFXPanel;
@@ -28,6 +32,7 @@ import javafx.scene.transform.Rotate;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.KeyEvent;
 
 public class TargetView3D extends Application{
 	
@@ -60,15 +65,19 @@ public class TargetView3D extends Application{
 	static ImageView imageView = null ;
 	static Image backgroundImage;
 	static Slider slider ;
+	public static SmartGroup Spacecraft = new SmartGroup();
+	static AnimationTimer timer;
+	static boolean animationSwitch=true; 
 	
 	public static void start(JFXPanel fxpanel, int targetInd) {
     	TargetView3D.TargetBodyGroup.getChildren().clear();;
 		Sphere targetBody = prepareTargetBody(targetInd);
-		//Sphere sphere = prepareSphere(targetInd);
-		
-	    //TargetBodyGroup = new SmartGroup();
+		SmartGroup trajectorySet = prepareTrajectory();
+		 Spacecraft = prepareSpacecraft(0);
 		TargetBodyGroup.getChildren().add(targetBody);
-		TargetBodyGroup.getChildren().add(prepareAmbientLight());
+		TargetBodyGroup.getChildren().add(trajectorySet);
+		TargetBodyGroup.getChildren().add(Spacecraft);
+		//TargetBodyGroup.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
 		
 	  slider = prepareSlider();
@@ -83,8 +92,7 @@ public class TargetView3D extends Application{
 		camera.setNearClip(1);
 		camera.setFarClip(10000);
 		
-	
-		
+
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
 		scene.setFill(Color.BLACK);
 		scene.setCamera(camera);
@@ -96,32 +104,24 @@ public class TargetView3D extends Application{
 		
 		initMouseControl(TargetBodyGroup, scene, fxpanel, camera);
 				
-		/*
 		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-			switch (event.getCode())
-			{
-				case W:
-					sphere.translateZProperty().set(sphere.getTranslateZ() + 30);
-					break;
-				case S:
-					sphere.translateZProperty().set(sphere.getTranslateZ() - 30);
-					break;
-				case A:
-					//camera.translateXProperty().set(camera.getTranslateX()+ 30);
-					sphere.rotateProperty().set(sphere.getRotate()+20);
-					break;
-				case D:
-					//camera.translateXProperty().set(camera.getTranslateX()- 30);
-					Transform transform2 = new Rotate(sphere.getRotate()+2, new Point3D(0,1,0));
-					sphere.getTransforms().add(transform2);
-					break;
-			default:
+			switch (event.getCode()) {
+			case A:
+				rotatePlanet(false);
+				break;
+			case D:
+				rotatePlanet(true);
+				break;
+			case S:
+				if(animationSwitch) {
+					timer.stop();
+				} else {
+					timer.start();
+				}
+				animationSwitch = !animationSwitch;
 				break;
 			}
 		});
-		*/
-		
-		//scene.setTitle("JavaFx Tut Mark 1");
 		fxpanel.setScene(scene);
 		
 		prepareAnimation(slider);
@@ -206,18 +206,19 @@ public static class SmartGroup extends Group {
 private static Slider prepareSlider() {
 	Slider slider = new Slider();
 	slider.setMax(1.0);
-	slider.setMin(0);
+	slider.setMin(-0.5);
 	slider.setPrefWidth(300);
 	slider.setLayoutX(100);
 	slider.setLayoutY(350);
 	slider.setValue(targetBodyRotSpeed);
 	//slider.setShowTickLabels(false);
+	slider.setDisable(false);
 	slider.setStyle("-fx-base: black");
 	return slider;
 }
 
 private static void prepareAnimation(Slider slider) {
-	AnimationTimer timer = new AnimationTimer() {
+	 timer = new AnimationTimer() {
 
 		@Override
 		public void handle(long arg0) {
@@ -235,10 +236,25 @@ private static void prepareAnimation(Slider slider) {
 	timer.start();
 }
 
+private static void rotatePlanet(boolean direction) {
+	double rotSpeed=0.03;
+	if(direction) {
+		rotSpeed =  1  ;
+	} else {
+		rotSpeed = -1;
+	}
+	TargetBodyGroup.rotateByY(TargetBodyGroup.getRotate()+rotSpeed);
+	if(imageView.getTranslateX()<(backgroundImage.getWidth()*imageView.getScaleX()*2/5)){
+		imageView.setTranslateX(imageView.getTranslateX()+rotSpeed*80);	
+	} else {
+	imageView.setTranslateX(-(backgroundImage.getWidth()*imageView.getScaleX()*2/5));
+	}	
+}
+
 private static ImageView prepareImageView() {
 	try {
-		 backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
-	 imageView = new ImageView(backgroundImage);
+	backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
+	imageView = new ImageView(backgroundImage);
 	//imageView.setPreserveRatio(true);
 	imageView.getTransforms().add(new Translate(0,0,200000));
 	//imageView.setTranslateZ(targetBodySize*10);
@@ -251,6 +267,48 @@ private static ImageView prepareImageView() {
 		e.printStackTrace();
 	}
 	return imageView;
+}
+
+private static SmartGroup prepareTrajectory() {
+	List<RealTimeResultSet> resultSet = BlueBookVisual.getResultSet();
+	int trajectoryElementSize  = 9;
+	SmartGroup trajectorySet = new SmartGroup();
+	
+		for(int i=0;i<resultSet.size();i+=10) {
+	    	Sphere sphere = new Sphere(trajectoryElementSize);
+	    	PhongMaterial material = new PhongMaterial();
+	    material.setSpecularColor(Color.GREEN); 	
+	    material.setDiffuseColor(Color.GREEN);
+	    	sphere.setMaterial(material);	
+	    	sphere.translateXProperty().set( (resultSet.get(i).getCartesianPosECEF()[0][0]/1000) );
+	    	sphere.translateYProperty().set( (-resultSet.get(i).getCartesianPosECEF()[2][0]/1000) );
+	    	sphere.translateZProperty().set( (resultSet.get(i).getCartesianPosECEF()[1][0]/1000) );
+	    	trajectorySet.getChildren().add(sphere);
+		}
+		
+	return trajectorySet;
+}
+
+public static SmartGroup prepareSpacecraft(int indx) {
+    Platform.runLater(new Runnable() {
+        @Override
+        public void run() {
+				TargetView3D.Spacecraft.getChildren().clear();
+				List<RealTimeResultSet> resultSet = BlueBookVisual.getResultSet();
+				int trajectoryElementSize  = 15;
+				
+				    	Sphere sphere = new Sphere(trajectoryElementSize);
+				    	PhongMaterial material = new PhongMaterial();
+				    material.setSpecularColor(Color.RED); 	
+				    material.setDiffuseColor(Color.RED);
+				    	sphere.setMaterial(material);	
+				    	sphere.translateXProperty().set( (resultSet.get(indx).getCartesianPosECEF()[0][0]/1000) );
+				    	sphere.translateYProperty().set( (-resultSet.get(indx).getCartesianPosECEF()[2][0]/1000) );
+				    	sphere.translateZProperty().set( (resultSet.get(indx).getCartesianPosECEF()[1][0]/1000) );
+				    	Spacecraft.getChildren().add(sphere);
+        }
+    });	
+	return Spacecraft;		
 }
 
 private static Node prepareAmbientLight(){
@@ -291,16 +349,13 @@ private static Node prepareSun(){
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-   material.setSpecularColor(Color.valueOf("#222222"));
+   //material.setSpecularColor(Color.valueOf("#222222"));
     	//material.setDiffuseMap( new Image(dir+"/resources/moonTexture.jpg") );
     	
     	sphere.setMaterial(material);
     	
     	return sphere;
     }
-  
-
-
 
 	@Override
 	public void start(Stage arg0) throws Exception {

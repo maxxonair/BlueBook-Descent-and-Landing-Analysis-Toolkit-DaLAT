@@ -103,6 +103,7 @@ import javax.swing.*;
 
 import Model.atm_dataset;
 import Sequence.SequenceElement;
+import Simulator_main.RealTimeResultSet;
 import GUI.FxElements.SpaceShipView3D;
 import GUI.FxElements.TargetView3D;
 import GUI.PostProcessing.CreateCustomChart;
@@ -111,7 +112,6 @@ import Toolbox.TextAreaOutputStream;
 import Toolbox.Mathbox;
 import Toolbox.ReadInput;
 import VisualEngine.animation.AnimationSet;
-import VisualEngine.engineLauncher.worldAnimation;
 import VisualEngine.engineLauncher.worldGenerator;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -527,7 +527,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     static XYSeriesCollection ResultSet_PolarMap = new XYSeriesCollection();
     	static int page1_plot_y =380;
     	@SuppressWarnings("rawtypes")
-		public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
+    	public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
+    	
+    	
+    	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
 	//-----------------------------------------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JPanel createContentPane () throws IOException{
@@ -815,31 +818,32 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuBar.add(menu_VisualEngine);
         
         JMenuItem menuItem_Open = new JMenuItem("Open VisualEngine                 "); 
-        menuItem_Open.setForeground(Color.black);
+        menuItem_Open.setForeground(Color.gray);
         menuItem_Open.setFont(small_font);
         menuItem_Open.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_VisualEngine.add(menuItem_Open);
         menuItem_Open.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	  
+                	  /*
                 	   Thread thread = new Thread(new Runnable() {
                 		    public void run() {
                 		    	 worldGenerator.launchVisualEngine();
                 		    }
                 		});
                 		thread.start();
+                		*/
                     } });
         
         JMenuItem menuItem_Animation = new JMenuItem("Create Animation from Results         "); 
-        menuItem_Animation.setForeground(Color.black);
+        menuItem_Animation.setForeground(Color.gray);
         menuItem_Animation.setFont(small_font);
         menuItem_Animation.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_VisualEngine.add(menuItem_Animation);
         menuItem_Animation.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	  
+                	  /*
                 	   Thread thread = new Thread(new Runnable() {
                 		    public void run() {
                 		    	List<AnimationSet> animationSets = READ_AnimationData();
@@ -847,6 +851,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 		    }
                 		});
                 		thread.start();
+                		*/
                     } });
         
         JMenuItem menuItem_RealTime = new JMenuItem("Open Real Time Simulation Demo     "); 
@@ -884,7 +889,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
 
         JMenu menuItem_AddSpacecraft = new JMenu("Add Spacecraft                ");
-        menuItem_AddSpacecraft.setForeground(l_c);
+        menuItem_AddSpacecraft.setForeground(Color.gray);
         menuItem_AddSpacecraft.setBackground(bc_c);
         menuItem_AddSpacecraft.setFont(small_font);
         menuItem_AddSpacecraft.setMnemonic(KeyEvent.VK_A);
@@ -912,7 +917,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuItem_AddSpacecraft.add(menuItem);
         
         JMenu menuItem_setEnvironment = new JMenu("Set Environment               ");
-        menuItem_setEnvironment.setForeground(l_c);
+        menuItem_setEnvironment.setForeground(Color.gray);
         menuItem_setEnvironment.setBackground(bc_c);
         menuItem_setEnvironment.setFont(small_font);
         menuItem_setEnvironment.setMnemonic(KeyEvent.VK_A);
@@ -948,6 +953,52 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                      } });
          group_env.add(menuItem);
         menuItem_setEnvironment.add(menuItem);
+        
+        JMenu menu_Window = new JMenu("Window");
+        menu_Window.setForeground(l_c);
+        menu_Window.setBackground(bc_c);
+        menu_Window.setFont(small_font);
+        menu_Window.setMnemonic(KeyEvent.VK_A);
+        menuBar.add(menu_Window);
+        
+        JMenu menu_ThirdWindow = new JMenu("Set third window content");
+        menu_ThirdWindow.setForeground(l_c);
+        menu_ThirdWindow.setBackground(bc_c);
+        menu_ThirdWindow.setFont(small_font);
+        menu_ThirdWindow.setMnemonic(KeyEvent.VK_A);
+        menu_Window.add(menu_ThirdWindow);
+        
+        ButtonGroup thirdWindow = new ButtonGroup();
+        
+        menuItem = new JRadioButtonMenuItem("Flight Path Angle");
+        menuItem.setForeground(Color.black);
+        menuItem.setFont(small_font);
+        menuItem.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   try {
+					   CreateChart_DashboardOverviewChart_Time_FPA();
+					   SplitPane_Page1_Charts_vertical.setDividerLocation(500);
+					} catch (IOException e1) {
+					     System.err.println("Error: Thrid window could not be creaeted");
+					}
+                    } });
+        thirdWindow.add(menuItem);
+        menu_ThirdWindow.add(menuItem);
+
+         menuItem = new JRadioButtonMenuItem("3D Trajectory View");
+         menuItem.setForeground(Color.black);
+         menuItem.setFont(small_font);
+         menuItem.setSelected(true);
+         menuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+
+							createTargetView3D();
+						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
+                    	       
+                     } });
+         thirdWindow.add(menuItem);
+         menu_ThirdWindow.add(menuItem);
+         
       //--------------------------------------------------------------------------------------------------------------------------------
         PageX04_Dashboard = new JPanel();
         PageX04_Dashboard.setLocation(0, 0);
@@ -4121,7 +4172,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      	CreateChart_DashBoardFlexibleChart();
      	CreateChart_MercatorMap();
      	CreateChart_PolarMap();
-     	CreateChart_GroundClearance();
+     	//CreateChart_GroundClearance();
      	//---------------------------------------------------------------------
      	// Prepare icons
      	ImageIcon icon_dashboard = null;
@@ -4907,6 +4958,7 @@ fstream.close();
     }
     
     public static void READ_RAWDATA() {
+    	resultSet.clear();
     	// Delete all exisiting rows:
     	for(int j=MODEL_RAWData.getRowCount()-1;j>=0;j--) {MODEL_RAWData.removeRow(j);}
     	// Read all data from file: 
@@ -4919,6 +4971,15 @@ fstream.close();
 							while ((strLine = br.readLine()) != null )   {
 								Object[] tokens = strLine.split(" ");
 							    MODEL_RAWData.addRow(tokens);
+							    
+						     	RealTimeResultSet resultElement = new RealTimeResultSet();
+							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[78])},
+			 							   						{Double.parseDouble((String) tokens[79])},
+			 							   						{Double.parseDouble((String) tokens[80])}};
+							    resultElement.setCartesianPosECEF(CartesianPosition);
+							    resultElement.setVelocity(Float.parseFloat((String) tokens[6]) );
+							    resultSet.add(resultElement);
+							  
 							  }
 			       fstream.close();
 			       in.close();
@@ -6148,6 +6209,13 @@ public static void EXPORT_Case() {
 	            ValueAxis xAxis = plot.getDomainAxis();
 	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                    RectangleEdge.BOTTOM);
+	            
+	            double max = xAxis.getUpperBound();
+	            double min = xAxis.getLowerBound();
+	            int indx = (int) ( (1- x/(max-min))*resultSet.size());
+		            if(indx>0 && indx<resultSet.size()) {
+		            TargetView3D.prepareSpacecraft(indx);
+		            }
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
 	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
 	            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(y);
@@ -7307,6 +7375,9 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		}
 		public static double getRM() {
 			return RM;
+		}
+		public static List<RealTimeResultSet> getResultSet() {
+			return resultSet;
 		}
 		
 		
