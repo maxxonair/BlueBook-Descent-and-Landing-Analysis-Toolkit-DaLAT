@@ -19,6 +19,8 @@ This project is divided in three core modules:
 
 1) The Simulation module (SIM): The SIM.jar is the core simulation. >>java -jar SIM.jar will start the simulation. This setup allows to shift pre- and postprocessing to a different environment (e.g. Matlab, python a.s.o). The folder INP/ contains all relevant input files to start the simulation
 
+![Github SIM](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/FlowChart/flowchart.png)
+
 2) The GUI module (GUI): The GUI BlueBook_DaLAT.jar allows to perform pre- and postprocessing and visualise results. 
 
 3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations with user inputs. The VE is currently in development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
