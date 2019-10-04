@@ -529,6 +529,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	@SuppressWarnings("rawtypes")
     	public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
     	
+    	public static int thirdWindowIndx = 0;
+    	
     	
     	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
 	//-----------------------------------------------------------------------------
@@ -586,7 +588,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		      // here we code the action on a change
     		     // System.out.println( "File "+ file.getName() +" have change !" );
           		  UPDATE_Page01(true);
+          		  if(thirdWindowIndx==1) {
           		refreshTargetView3D();
+          		  }
     		    }
     		  };
     	   Timer timer = new Timer();
@@ -978,6 +982,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 	   try {
 					   CreateChart_DashboardOverviewChart_Time_FPA();
 					   SplitPane_Page1_Charts_vertical.setDividerLocation(500);
+					   thirdWindowIndx=0;
 					} catch (IOException e1) {
 					     System.err.println("Error: Thrid window could not be creaeted");
 					}
@@ -994,6 +999,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 							createTargetView3D();
 						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
+						thirdWindowIndx=1;
                     	       
                      } });
          thirdWindow.add(menuItem);

@@ -49,8 +49,8 @@ public class TargetView3D extends Application{
 	private static final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
 	private static final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
 	
-	private static double mouseSensitivity =0.1;
-	private static double mouseWheelZoomSensitivity = 800;
+	private static double mouseSensitivity =0.05;
+	private static double mouseWheelZoomSensitivity = 100;
 	private static double targetBodyRadius = 6000;
 	private static double targetBodyInitialDistance;
 	private static double targetBodyRotSpeed = 0.04;
@@ -168,7 +168,9 @@ private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpa
 					if(wheelSpeed>0) {
 						targetBodyInitialDistance += mouseWheelZoomSensitivity;
 					} else {
+						if(targetBodyInitialDistance>1.05*targetBodyRadius) {
 						targetBodyInitialDistance -= mouseWheelZoomSensitivity;
+						}
 					}
 					group.translateZProperty().set(targetBodyInitialDistance);
 					camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
