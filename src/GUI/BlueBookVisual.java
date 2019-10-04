@@ -6092,7 +6092,7 @@ public static void EXPORT_Case() {
 		           try {xyseries11.add(x  , y);} catch(org.jfree.data.general.SeriesException eSE) {
 		        	   //System.out.println(eSE);
 		        	   }
-		           
+		           //double noise = Noise.PerlinNoise.noise1((float) t);
 		           try {xyseries_FPA_is.add(t,fpa);} catch(org.jfree.data.general.SeriesException eSE) {
 		        	   //System.out.println(eSE);
 		        	   }

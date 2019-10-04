@@ -1,5 +1,6 @@
 package GUI;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.util.Hashtable;
 
@@ -18,6 +19,8 @@ public class GuiComponents {
         slider.setMinimum(low);
         slider.setMajorTickSpacing((high-low)/18);
         slider.setPaintTicks(true);
+        slider.setBackground(Color.WHITE);
+        slider.setForeground(Color.BLACK);
         slider.setPaintLabels(true);
         
         @SuppressWarnings("rawtypes")
