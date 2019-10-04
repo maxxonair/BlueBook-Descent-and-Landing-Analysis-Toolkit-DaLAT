@@ -17,7 +17,8 @@ import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
-import Model.Atmosphere;
+import Model.AtmosphereSet;
+import Model.AerodynamicSet;
 import Model.AtmosphereModel;
 import Model.Gravity;
 import Model.atm_dataset;
@@ -239,8 +240,9 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	        
 	        static CoordinateTransformation coordinateTransformation ;
-	        static Atmosphere atmosphere;
+	        static AtmosphereSet atmosphere;
 	        static SpaceShip spaceShip;
+	        static AerodynamicSet aerodynamicSet= new AerodynamicSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
 	    	if(is_6DOF) {
@@ -315,7 +317,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	integ_t=t;
-    	coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphere, EulerAngle, q_vector, 
+    	coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphere, aerodynamicSet, EulerAngle, q_vector, 
 	   			r_ECEF_spherical, V_NED_ECEF_spherical);
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
@@ -586,7 +588,7 @@ public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, d
 	
 	 coordinateTransformation = new CoordinateTransformation();
 	 
-	 atmosphere = new Atmosphere();
+	 atmosphere = new AtmosphereSet();
 	
 	
 //----------------------------------------------------------------------------------------------

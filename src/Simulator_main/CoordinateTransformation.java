@@ -1,6 +1,7 @@
 package Simulator_main;
 
-import Model.Atmosphere;
+import Model.AerodynamicSet;
+import Model.AtmosphereSet;
 import Toolbox.Mathbox;
 
 public class CoordinateTransformation {
@@ -22,7 +23,7 @@ public class CoordinateTransformation {
 	}
 
 
-	public  void initializeTranformationMatrices(double[] x, double t, double omega, Atmosphere atmosphere, double[][] euler_angle, 
+	public  void initializeTranformationMatrices(double[] x, double t, double omega, AtmosphereSet atmosphere, AerodynamicSet aerodynamicSet, double[][] euler_angle, 
 			double[][] q_vector, double[] r_ECEF_spherical,double[] V_NED_ECEF_spherical) {
 		//-------------------------------------------------------------------------------------------
 		//              Aerodynamic frame to North-East-Down
@@ -31,13 +32,13 @@ public class CoordinateTransformation {
 		C_A2NED[1][0] =  Math.sin(V_NED_ECEF_spherical[2])*Math.cos(V_NED_ECEF_spherical[1]);
 		C_A2NED[2][0] = -Math.sin(V_NED_ECEF_spherical[1]);
 		
-		C_A2NED[0][1] = -Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle()) - Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
-		C_A2NED[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(atmosphere.getBankAngle()) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
-		C_A2NED[2][1] = -Math.cos(V_NED_ECEF_spherical[1])*Math.sin(atmosphere.getBankAngle());
+		C_A2NED[0][1] = -Math.sin(V_NED_ECEF_spherical[1])*Math.cos(aerodynamicSet.getBankAngle()) - Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(aerodynamicSet.getBankAngle());
+		C_A2NED[1][1] =  Math.cos(V_NED_ECEF_spherical[2])*Math.cos(aerodynamicSet.getBankAngle()) - Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.sin(aerodynamicSet.getBankAngle());
+		C_A2NED[2][1] = -Math.cos(V_NED_ECEF_spherical[1])*Math.sin(aerodynamicSet.getBankAngle());
 		
-		C_A2NED[0][2] = -Math.sin(V_NED_ECEF_spherical[2])*Math.sin(atmosphere.getBankAngle()) + Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
-		C_A2NED[1][2] =  Math.cos(V_NED_ECEF_spherical[2])*Math.sin(atmosphere.getBankAngle()) + Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
-		C_A2NED[2][2] =  Math.cos(V_NED_ECEF_spherical[1])*Math.cos(atmosphere.getBankAngle());
+		C_A2NED[0][2] = -Math.sin(V_NED_ECEF_spherical[2])*Math.sin(aerodynamicSet.getBankAngle()) + Math.cos(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(aerodynamicSet.getBankAngle());
+		C_A2NED[1][2] =  Math.cos(V_NED_ECEF_spherical[2])*Math.sin(aerodynamicSet.getBankAngle()) + Math.sin(V_NED_ECEF_spherical[2])*Math.sin(V_NED_ECEF_spherical[1])*Math.cos(aerodynamicSet.getBankAngle());
+		C_A2NED[2][2] =  Math.cos(V_NED_ECEF_spherical[1])*Math.cos(aerodynamicSet.getBankAngle());
 		//-------------------------------------------------------------------------------------------
 		//             Body fixed frame to North-East-Down
 		//-------------------------------------------------------------------------------------------
@@ -121,17 +122,17 @@ public class CoordinateTransformation {
 		//-------------------------------------------------------------------------------------------
 		//             Bodyfixed frame to Aerodynamic frame
 		//-------------------------------------------------------------------------------------------
-		C_A2B[0][0] =  Math.cos(atmosphere.getAngleOfAttack())*Math.cos(atmosphere.getAngleOfSideslip());
-		C_A2B[1][0] =  Math.sin(atmosphere.getAngleOfSideslip());
-		C_A2B[2][0] =  Math.sin(atmosphere.getAngleOfAttack())*Math.cos(atmosphere.getAngleOfSideslip());
+		C_A2B[0][0] =  Math.cos(aerodynamicSet.getAngleOfAttack())*Math.cos(aerodynamicSet.getAngleOfSideslip());
+		C_A2B[1][0] =  Math.sin(aerodynamicSet.getAngleOfSideslip());
+		C_A2B[2][0] =  Math.sin(aerodynamicSet.getAngleOfAttack())*Math.cos(aerodynamicSet.getAngleOfSideslip());
 		
-		C_A2B[0][1] =  -Math.cos(atmosphere.getAngleOfAttack())*Math.sin(atmosphere.getAngleOfSideslip());
-		C_A2B[1][1] =   Math.cos(atmosphere.getAngleOfSideslip());
-		C_A2B[2][1] =  -Math.sin(atmosphere.getAngleOfAttack())*Math.sin(atmosphere.getAngleOfSideslip());
+		C_A2B[0][1] =  -Math.cos(aerodynamicSet.getAngleOfAttack())*Math.sin(aerodynamicSet.getAngleOfSideslip());
+		C_A2B[1][1] =   Math.cos(aerodynamicSet.getAngleOfSideslip());
+		C_A2B[2][1] =  -Math.sin(aerodynamicSet.getAngleOfAttack())*Math.sin(aerodynamicSet.getAngleOfSideslip());
 		
-		C_A2B[0][2] =  -Math.sin(atmosphere.getAngleOfAttack());
+		C_A2B[0][2] =  -Math.sin(aerodynamicSet.getAngleOfAttack());
 		C_A2B[1][2] =  0;
-		C_A2B[2][2] =   Math.cos(atmosphere.getAngleOfAttack());
+		C_A2B[2][2] =   Math.cos(aerodynamicSet.getAngleOfAttack());
 		//-------------------------------------------------------------------------------------------
 		//             ECEF to ECI
 		//-------------------------------------------------------------------------------------------

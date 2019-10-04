@@ -1,8 +1,5 @@
 package Model;
 
-import static java.lang.Math.cos;
-import static java.lang.Math.sin;
-
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
@@ -165,11 +162,11 @@ public static double atm_read(int variable, double altitude) {
 	return atm_read;
 }
 
-public static void ATMOSPHERE_MANAGER(double[] x, double rm, int TARGET, double Lt, Atmosphere atmosphere, SpaceShip spaceShip, double[] V_NED_ECEF_spherical) {
+public static void ATMOSPHERE_MANAGER(double[] x, double rm, int TARGET, double Lt, AtmosphereSet atmosphere, SpaceShip spaceShip, double[] V_NED_ECEF_spherical) {
 	double altitude = x[2] - rm ; 
 	if (altitude>200000 || TARGET == 1){ // In space conditions: 
 		// Set atmosphere properties to zero: 
-			atmosphere.setDensity(0);  							// Density 							[kg/m3]
+		atmosphere.setDensity(0);  						    // Density 							[kg/m3]
     		atmosphere.setDynamicPressure(0);  					// Dynamic pressure 					[Pa]
     		atmosphere.setStaticTemperature(0); 					// Temperature 						[K]
     		atmosphere.setGamma(0);  							// Heat capacity ratio 				[-]
@@ -177,23 +174,16 @@ public static void ATMOSPHERE_MANAGER(double[] x, double rm, int TARGET, double 
     		atmosphere.setMach(0); 	  							// Mach number 						[-]
       	//----------------------------------------------------------------------------------------------
 	} else { // In atmosphere conditions (if any)
-		atmosphere.setDensity(AtmosphereModel.atm_read(1, altitude) );        					// density                         [kg/m3]
-		atmosphere.setDynamicPressure(0.5 * atmosphere.getDensity() * ( V_NED_ECEF_spherical[0] * V_NED_ECEF_spherical[0]));                 	// Dynamic pressure                [Pa]
-		atmosphere.setStaticTemperature(AtmosphereModel.atm_read(2, altitude));                     		// Temperature                     [K]
-		atmosphere.setGamma(AtmosphereModel.atm_read(4, altitude)) ;              	        	// Heat capacity ratio			   [-]
-    	atmosphere.setGasConstant(AtmosphereModel.atm_read(3, altitude ));                       						// Gas Constant                    [J/kgK]
-    	atmosphere.setStaticPressure(atmosphere.getDensity()*atmosphere.getGasConstant()*atmosphere.getStaticTemperature());   																			// Ambient pressure 			   [Pa]
-    	atmosphere.setMach(V_NED_ECEF_spherical[0] / Math.sqrt( atmosphere.getStaticTemperature() * atmosphere.getGamma() * atmosphere.getGasConstant()));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
-	    atmosphere.setCdC(AtmosphereModel.get_CdC(altitude,0));                           							// Continuum flow drag coefficient [-]
-    	atmosphere.setDragCoefficient(AtmosphereModel.load_Drag(V_NED_ECEF_spherical[0], altitude, atmosphere.getStaticPressure(), atmosphere.getStaticTemperature(), 
-    	atmosphere.getCdC(), Lt, atmosphere.getGasConstant())); 		    	// Lift coefficient                [-]
-    	atmosphere.setFlowzone(AtmosphereModel.calc_flowzone(V_NED_ECEF_spherical[0], altitude, atmosphere.getStaticPressure(), atmosphere.getStaticTemperature(), Lt));         	// Continous/Transition/Free molecular flow [-]
+		atmosphere.setDensity(AtmosphereModel.atm_read(1, altitude) );        													 // density                         [kg/m3]
+		atmosphere.setDynamicPressure(0.5 * atmosphere.getDensity() * ( V_NED_ECEF_spherical[0] * V_NED_ECEF_spherical[0]));     // Dynamic pressure                [Pa]
+		atmosphere.setStaticTemperature(AtmosphereModel.atm_read(2, altitude));                     								// Temperature                     [K]
+		atmosphere.setGamma(AtmosphereModel.atm_read(4, altitude)) ;              	        										// Heat capacity ratio			   [-]
+		atmosphere.setGasConstant(AtmosphereModel.atm_read(3, altitude ));                       								// Gas Constant                    [J/kgK]
+		atmosphere.setStaticPressure(atmosphere.getDensity()*atmosphere.getGasConstant()*atmosphere.getStaticTemperature());   																			// Ambient pressure 			   [Pa]
+		atmosphere.setMach(V_NED_ECEF_spherical[0] / Math.sqrt( atmosphere.getStaticTemperature() * atmosphere.getGamma() * atmosphere.getGasConstant()));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
+        	// Continous/Transition/Free molecular flow [-]
 	}
- 	//-----------------------------------------------------------------------------------------------
-	 atmosphere.setDragForce(atmosphere.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * atmosphere.getDragCoefficient());  		// Aerodynamic drag Force 		   [N]
-	 atmosphere.setLiftForce(atmosphere.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * atmosphere.getLiftCoefficient() * cos( atmosphere.getBankAngle() ) );               // Aerodynamic lift Force 		   [N]
-	 atmosphere.setSideForce(atmosphere.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * atmosphere.getC_SF() * sin( atmosphere.getBankAngle() )); 	                  // Aerodynamic side Force 		   [N]
-	//----------------------------------------------------------------------------------------------
+
 }
 
 }

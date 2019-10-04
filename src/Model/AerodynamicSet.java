@@ -1,27 +1,19 @@
 package Model;
 
-public class Atmosphere {
+public class AerodynamicSet {
+    public   int flowzone=0; 								// Flow zone continuum - transitional - free molecular flwo
+    public   double DragCoefficientContinuumFlow = 0; 	    // Drag coefficient in contiuum flow;
+    public   double CdC=0; 									// Continuum Flow Drag Coefficient [-]
+    public   double SurfaceArea =0;
+    public   double BankAngle =0;
+    public   double AngleOfAttack=0;
+    public   double AngleOfSideslip=0; 
 	public   double DragForce = 0;
 	public   double SideForce = 0;
 	public   double LiftForce = 0;
     public   double DragCoefficient=0;
     public   double C_SF=0;
     public   double LiftCoefficient=0;
-    public   double DynamicPressure=0;
-    public   double SurfaceArea =0;
-    public   double BankAngle =0;
-    public   double AngleOfAttack=0;
-    public   double AngleOfSideslip=0; 
-    public   double Density =0;
-    public   double gamma =0;
-    public   double GasConstant=0;
-    public   double Mach=0;
-    public   double StaticTemperature=0;
-    public   double CdC=0; 
-    public   double StaticPressure = 0 ;      				//   pressure [Pa]
-    public   double PressureCoefficient = 0;				//  
-    public   int flowzone=0; 								// Flow zone continuum - transitional - free molecular flwo
-    public   double DragCoefficientContinuumFlow = 0; 	    // Drag coefficient in contiuum flow;
     
     
 	public   double getDragForce() {
@@ -60,12 +52,6 @@ public class Atmosphere {
 	public   void setLiftCoefficient(double liftCoefficient) {
 		LiftCoefficient = liftCoefficient;
 	}
-	public   double getDynamicPressure() {
-		return DynamicPressure;
-	}
-	public   void setDynamicPressure(double dynamicPressure) {
-		DynamicPressure = dynamicPressure;
-	}
 	public   double getSurfaceArea() {
 		return SurfaceArea;
 	}
@@ -90,54 +76,6 @@ public class Atmosphere {
 	public   void setAngleOfSideslip(double angleOfSideslip) {
 		AngleOfSideslip = angleOfSideslip;
 	}
-	public   double getDensity() {
-		return Density;
-	}
-	public   void setDensity(double density) {
-		Density = density;
-	}
-	public   double getGamma() {
-		return gamma;
-	}
-	public   void setGamma(double gamma) {
-		this.gamma = gamma;
-	}
-	public   double getGasConstant() {
-		return GasConstant;
-	}
-	public   void setGasConstant(double gasConstant) {
-		GasConstant = gasConstant;
-	}
-	public   double getMach() {
-		return Mach;
-	}
-	public   void setMach(double mach) {
-		Mach = mach;
-	}
-	public   double getStaticTemperature() {
-		return StaticTemperature;
-	}
-	public   void setStaticTemperature(double  Temperature) {
-		StaticTemperature =  Temperature;
-	}
-	public   double getCdC() {
-		return CdC;
-	}
-	public   void setCdC(double cdC) {
-		CdC = cdC;
-	}
-	public   double getStaticPressure() {
-		return StaticPressure;
-	}
-	public   void setStaticPressure(double  Pressure) {
-		StaticPressure =  Pressure;
-	}
-	public   double getPressureCoefficient() {
-		return PressureCoefficient;
-	}
-	public   void setPressureCoefficient(double pressureCoefficient) {
-		PressureCoefficient = pressureCoefficient;
-	}
 	public   int getFlowzone() {
 		return flowzone;
 	}
@@ -150,7 +88,10 @@ public class Atmosphere {
 	public   void setDragCoefficientContinuumFlow(double dragCoefficientContinuumFlow) {
 		DragCoefficientContinuumFlow = dragCoefficientContinuumFlow;
 	}
-    
-    
-    
+	public   double getCdC() {
+		return CdC;
+	}
+	public   void setCdC(double cdC) {
+		CdC = cdC;
+	}
 }
