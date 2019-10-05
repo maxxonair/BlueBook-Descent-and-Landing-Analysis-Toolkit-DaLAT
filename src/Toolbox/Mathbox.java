@@ -147,6 +147,20 @@ public class Mathbox{
     			
     			return X; 
     }
+    public static double[][] normalizeVector(double[][] vector) {
+    	double lengthVector = Math.sqrt(vector[0][0]*vector[0][0] + vector[1][0]*vector[1][0] + vector[2][0]*vector[2][0]);
+    	vector[0][0] = vector[0][0]/lengthVector;
+    vector[1][0] = vector[1][0]/lengthVector;
+    vector[1][0] = vector[2][0]/lengthVector;
+    return vector;
+    }
+    
+    public static double[][] vectorDotSquare(double[][] vector){
+    	for(int i=0;i<vector.length;i++) {
+    		vector[i][0] =  vector[i][0] * vector[i][0];
+    	}
+    	return vector;
+    }
 	public static double[] Spherical2Cartesian_Velocity(double[] X) {
 		double[] result = new double[3];
 		result[0]  =  X[0] * Math.cos(X[1]) * Math.cos(X[2]);

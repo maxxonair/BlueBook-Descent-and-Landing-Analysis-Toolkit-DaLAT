@@ -1,5 +1,8 @@
 package Model;
 
+import FlightElement.SpaceShip;
+import Model.Aerodynamic.AerodynamicModel;
+import Model.Aerodynamic.AerodynamicSet;
 import Sequence.Sequence;
 import Simulator_main.Simulation;
 import Toolbox.Mathbox;
@@ -7,7 +10,8 @@ import Toolbox.Mathbox;
 public class ForceModel {
 	
 	
-	public static void FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet) {
+	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, 
+									 ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, SpaceShip spaceShip) {
 		  double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic frame [N]
 		  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame 		   [N]
 		  double[][] F_Thrust_B    = {{0},{0},{0}};						// Thrust Force in body fixed system     			   [N]
@@ -22,6 +26,8 @@ public class ForceModel {
 		  //double[][] M_Aero_A      = {{0},{0},{0}};
 		  //double[][] M_Aero_B      = {{0},{0},{0}};
 		  //double[][] M_Thrust_B    = {{0},{0},{0}};
+		  
+		  MasterSet masterSet = new MasterSet();
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------  
@@ -38,13 +44,13 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
-    	AtmosphereModel.ATMOSPHERE_MANAGER(Simulation.getxIS(), Simulation.getRm(), Simulation.getTARGET(), 
-    			Simulation.getLt(), atmosphereSet, Simulation.getSpaceShip(), Simulation.getV_NED_ECEF_spherical());
+	atmosphereSet = AtmosphereModel.getAtmosphereSet(Simulation.getxIS(), Simulation.getRm(), Simulation.getTARGET(), 
+    			Simulation.getLt(), Simulation.getSpaceShip(), Simulation.getV_NED_ECEF_spherical());
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Aerodynamic
     	//-------------------------------------------------------------------------------------------------------------------  
     	
-    	AerodynamicModel.AERODYNAMIC_MANAGER(aerodynamicSet, atmosphereSet);
+    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet);
     	
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	
@@ -57,11 +63,12 @@ public class ForceModel {
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
 	   	
-    Sequence.sequenceManager(Simulation.gettIS(),  Simulation.getxIS(), Simulation.getV_NED_ECEF_spherical() , 
-    							 Simulation.getR_ECEF_spherical() );
+    controlCommandSet = Sequence.getControlCommandSet(Simulation.gettIS(),  Simulation.getxIS(), 
+    		Simulation.getV_NED_ECEF_spherical() , Simulation.getR_ECEF_spherical() , controlCommandSet);
     
-    forceMomentumSet.setThrustTotal(Sequence.getControlElements().getPrimaryThrust_is());
+    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip);
     
+    forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Thrust Forces | Body fixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
@@ -72,7 +79,7 @@ public class ForceModel {
 	   	
 	   	forceMomentumSet.setF_Thrust_B(F_Thrust_B);
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									           Set up force vector in NED  
+    	// 									           Finalize Force Setup -> Transfrom vectors to NED  
     	//------------------------------------------------------------------------------------------------------------------- 
     	F_Aero_NED   	= Mathbox.Multiply_Matrices(Simulation.getCoordinateTransformation().getC_A2NED(), F_Aero_A) ; 
     	forceMomentumSet.setF_Aero_NED(F_Aero_NED);
@@ -83,6 +90,15 @@ public class ForceModel {
     	F_total_NED   	= Mathbox.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
     	forceMomentumSet.setF_total_NED(F_total_NED);
     	//-------------------------------------------------------------------------------------------------------------------
+    	// Prepare ResultSet
+    	//-------------------------------------------------------------------------------------------------------------------
+    	masterSet.setActuatorSet(actuatorSet);
+    	masterSet.setAerodynamicSet(aerodynamicSet);
+    	masterSet.setAtmosphereSet(atmosphereSet);
+    	masterSet.setForceMomentumSet(forceMomentumSet);
+    	masterSet.setGravitySet(gravitySet);
+    	masterSet.setControlCommandSet(controlCommandSet);
+    	return masterSet;
 	}
 
 }

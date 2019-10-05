@@ -1,7 +1,7 @@
 package Simulator_main;
 
-import Model.AerodynamicSet;
 import Model.AtmosphereSet;
+import Model.Aerodynamic.AerodynamicSet;
 import Toolbox.Mathbox;
 
 public class CoordinateTransformation {

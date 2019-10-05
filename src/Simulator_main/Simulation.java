@@ -21,13 +21,17 @@ import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
 import Model.AtmosphereSet;
+import Model.ControlCommandSet;
+import Model.ControllerModel;
 import Model.ForceModel;
 import Model.ForceMomentumSet;
-import Model.AerodynamicSet;
+import Model.ActuatorSet;
 import Model.AtmosphereModel;
 import Model.Gravity;
 import Model.GravitySet;
+import Model.MasterSet;
 import Model.atm_dataset;
+import Model.Aerodynamic.AerodynamicSet;
 import Sequence.Sequence;
 import Sequence.SequenceElement;
 import Toolbox.Mathbox;
@@ -96,7 +100,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static double tetamin=0;
 	      	public static double fpa_dot =0;
 	      	public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
-	        public static double ISP_is=0;
 	        
 	        static double azimuth_inertFrame = 0 ;
 	        static double fpa_inertFrame     = 0 ;
@@ -195,6 +198,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
 	        public static GravitySet gravitySet = new GravitySet();
 	        public static AerodynamicSet aerodynamicSet = new AerodynamicSet();
+	        public static ControlCommandSet controlCommandSet = new ControlCommandSet();
+	        public static ActuatorSet actuatorSet = new ActuatorSet();
+	        public static MasterSet masterSet = new MasterSet();
 	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
@@ -221,19 +227,14 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//
     	//
     	//-------------------------------------------------------------------------------------------------------------------
-    	xIS=x;
-    	tIS=t;
+    	xIS=x;				// Current state vector set 
+    	tIS=t;				// Current time value
 	coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphereSet, aerodynamicSet, EulerAngle, 
 															 q_vector, r_ECEF_spherical, V_NED_ECEF_spherical);
-	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    				ISP model for engine throttling
-    	//-------------------------------------------------------------------------------------------------------------------
-    	if(spaceShip.getPropulsion().isPrimaryThrottleModel()) {ISP_is = Sequence.ThrottleMODEL_get_ISP(spaceShip, 
-    			Sequence.getControlElements().getPrimaryThrustThrottleCmd());}
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
-    	acc_deltav = acc_deltav + ISP_is*g0*Math.log(mminus/x[6]);
+    	acc_deltav = acc_deltav + actuatorSet.getPrimaryISP_is()*g0*Math.log(mminus/x[6]);
     	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										  Ground track 
@@ -251,7 +252,14 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									    		 Force Model 
     	//-------------------------------------------------------------------------------------------------------------------
-    	ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet);
+    	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
+    							 controlCommandSet, spaceShip);
+    	forceMomentumSet = masterSet.getForceMomentumSet();
+    	gravitySet = masterSet.getGravitySet();
+    	atmosphereSet = masterSet.getAtmosphereSet();
+    	aerodynamicSet = masterSet.getAerodynamicSet();
+    	actuatorSet = masterSet.getActuatorSet();
+    	controlCommandSet = masterSet.getControlCommandSet();
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									     Equations of Motion
     	//-------------------------------------------------------------------------------------------------------------------
@@ -315,7 +323,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	
 	    }	    
 	    // System mass [kg]
-	    dxdt[6] = - forceMomentumSet.getThrustTotal()/(ISP_is*g0) ;   
+	    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ;   
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
@@ -364,25 +372,21 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		    		double[][] Omega_NED = {{ 1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] },
 		    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[0] },
 		    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] * Math.tan(r_ECEF_spherical[1])}};
-		    		/*
+		    		
+		    		double[][] q_vector_dot = {{1},{0},{0},{0}};
 		    		double[][] OMEGA_ECEF = {{omega*Math.cos(r_ECEF_spherical[1])},
 		    							  	 {0},
 		    							  	 {-omega*Math.sin(r_ECEF_spherical[1])}};
-		    		*/
+		    		
 		    		double[][] Element_10 =  Mathbox.Multiply_Scalar_Matrix(0.5, ElementMatrix);
 		    		double[][] Element_21 =  Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), Omega_NED);
 
 		    		//double[][] Element_22 = Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), OMEGA_ECEF);
 		    		//double[][] Element_20 = Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), Element_22);
-		    		double[][] Element_20 =  Mathbox.Substract_Matrices(PQR, Element_21);
+		    		double[][] Element_20 =  Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), OMEGA_ECEF);;
 		    			    		
-		    		double[][] q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
-		    	    /*
-		    		for(int i=0;i<3;i++) {
-		    			System.out.println(Element_10[i][0]);
-		    		}
-		    		System.out.println("--------------");
-		    		*/
+		    		q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
+
 		    		dxdt[7]  =  q_vector_dot[0][0];  // e1 dot
 		    		dxdt[8]  =  q_vector_dot[1][0];  // e2 dot 
 		    		dxdt[9]  =  q_vector_dot[2][0];  // e3 dot
@@ -407,7 +411,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	
 	    	}
 	    else  if (SixDoF_Option == 2) {
-	//System.out.println("6DoF running! Option 2");
 	    		// Quaternions:
 	
 	    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
@@ -456,51 +459,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    		dxdt[13] = (Ixz * Lb + Ixx * Nb + (Ixz * (Iyy - Ixx - Izz) * x[13] + (Ixz*Ixz + Ixx * (Ixx - Iyy)) 
 	    					* x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
 
-} else if (SixDoF_Option == 3) {
-	//System.out.println("6DoF running! Option 3");
-	// Quaternions:
-
-	double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
-			        {-x[13], 0    , x[11], x[12]},
-			        { x[12],-x[11], 0    , x[13]},
-			        {-x[11],-x[12],-x[13], 0    }}; 
-	
-    q_vector[0][0] = x[7];
-    q_vector[1][0] = x[8];
-    q_vector[2][0] = x[9];
-    q_vector[3][0] = x[10];
-    
-    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
-	double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_Matrices(Q, q_vector)); 
-	dxdt[7] =  q_vector_dot[0][0];  // e1 dot
-	dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
-	dxdt[9] =  q_vector_dot[2][0];  // e3 dot
-	dxdt[10] = q_vector_dot[3][0];  // e4 dot
-
-    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
-    //----------------------------------------------------------------------------------------
-    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
-	
-	double Ixx = InertiaTensor[0][0];
-	double Iyy = InertiaTensor[1][1];
-	double Izz = InertiaTensor[2][2];
-	//double Ixy = InertiaTensor[0][1];
-	double Ixz = InertiaTensor[0][2];
-	//  double Iyx = InertiaTensor[][];
-	//double Iyz = InertiaTensor[2][1];
-	
-	// Angular Rates
-	// p dot:
-	dxdt[11] = 1/(Ixx + Ixz*Ixz/Izz) * (Lb + Ixz/Izz * Nb - Ixz*(Iyy-Ixx)/Izz*x[11]*x[12] - Ixz*Ixz/Izz*x[12]*x[13]);
-	// q dot:
-	dxdt[12] = 1/Iyy * (Mb - (Ixx-Izz)*x[11]*x[13] - Ixz * (x[11]*x[11] - x[13]*x[13])); 
-	// r dot:
-	dxdt[13] = 1/(Izz - Ixz/Ixx) * (Lb/Ixx + Nb + Ixz/Ixx * x[11]*x[12] - (Izz - Iyy)/Ixx * x[13]*x[12] - 
-			( Iyy - Ixx )*x[11]*x[12] - Ixz*x[12]*x[13]); 
-
-	}
+} 
 	AngularMomentum_B[0][0] = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
 	AngularMomentum_B[1][0] = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
 	AngularMomentum_B[2][0] = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;	
@@ -567,10 +526,10 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		System.out.println("READ: Initial Attitude set.");
 	}
 
-	    Sequence.setCntr_h_init(integratorData.getInitRadius()-rm);
-	    Sequence.setCntr_v_init(integratorData.getInitVelocity());
+	    ControllerModel.setCntr_h_init(integratorData.getInitRadius()-rm);
+	    ControllerModel.setCntr_v_init(integratorData.getInitVelocity());
 
-	    	 ISP_is		  = spaceShip.getPropulsion().getPrimaryISPMax();
+	     actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
 	    	 M0 			  = spaceShip.getMass()  ; 
 	    	 mminus	  	  = M0  ;
 	    	 vminus		  = integratorData.getInitVelocity()  ;
@@ -594,7 +553,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //----------------------------------------------------------------------------------------------
 		Sequence.setSequence_RES_closed(false);
 		SEQUENCE_DATA_main = SEQUENCE_DATA;  // Sequence data handover
-		Sequence.getCTRL_steps().clear();
+		ControllerModel.getCTRL_steps().clear();
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -690,7 +649,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			// S/C Mass        
 			        y[6] = spaceShip.getMass();
   			}
-	        Sequence.initializeFlightController(y, SEQUENCE_DATA_main);
+  			ControllerModel.initializeFlightController(y, SEQUENCE_DATA_main);
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
 
@@ -711,10 +670,10 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
 	                if(SEQUENCE_DATA_main.get(Sequence.getActiveSequence()).get_sequence_type()==3) {
-	                CTRL_TM_Error=Sequence.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_ERROR();
-	                CTRL_TVC_Error=Sequence.getFlight_CTRL_PitchCntrl().get(Sequence.getActiveSequence()).get_CTRL_ERROR();  
+	                CTRL_TM_Error=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_ERROR();
+	                CTRL_TVC_Error=ControllerModel.getFlight_CTRL_PitchCntrl().get(Sequence.getActiveSequence()).get_CTRL_ERROR();  
 	                }
-	                CTRL_Time=Sequence.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_TIME();
+	                CTRL_Time=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_TIME();
 	                if( t > twrite ) {
 	                	twrite = twrite + integratorData.getIntegTimeStep(); 
 	                    steps.add(t + " " + 
@@ -748,8 +707,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
 	                    		  E_total+ " " + 
-	                    		  (Sequence.getControlElements().getPrimaryThrustThrottleCmd()*100)+ " "+ 
-	                    		  (spaceShip.getPropulsion().getPrimaryPropellant()-(M0-y[6]))/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
+	                    		  (Sequence.getControlCommandSet().getPrimaryThrustThrottleCmd()*100)+ " "+ 
+	                    		  (spaceShip.getPropulsion().getPrimaryPropellant()-(actuatorSet.getPrimaryPropellant_is()))/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
 	                    		  (forceMomentumSet.getThrustTotal())+" "+
 	                    		  (forceMomentumSet.getThrustTotal()/y[6])+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.cos(V_NED_ECEF_spherical[1]))+" "+
@@ -778,7 +737,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  q_vector[1][0]+" "+
 	                    		  q_vector[2][0]+" "+
 	                    		  q_vector[3][0]+" "+
-	                    		  ISP_is+" "+
+	                    		  actuatorSet.getPrimaryISP_is()+" "+
 	                    		  forceMomentumSet.getF_total_NED()[0][0]+" "+
 	                    		  forceMomentumSet.getF_total_NED()[1][0]+" "+
 	                    		  forceMomentumSet.getF_total_NED()[2][0]+" "+

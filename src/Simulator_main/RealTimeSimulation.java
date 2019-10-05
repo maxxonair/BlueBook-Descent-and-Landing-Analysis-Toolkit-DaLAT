@@ -18,10 +18,10 @@ import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
 import Model.AtmosphereSet;
-import Model.AerodynamicSet;
 import Model.AtmosphereModel;
 import Model.Gravity;
 import Model.atm_dataset;
+import Model.Aerodynamic.AerodynamicSet;
 import Toolbox.Mathbox;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
