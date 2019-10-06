@@ -77,7 +77,6 @@ import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.LineIterator;
-import org.apache.commons.math3.util.FastMath;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -985,7 +984,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                      } });
          group_env.add(menuItem);
         menuItem_setEnvironment.add(menuItem);
-        
+   //-------------------------------------------------------------------------     
         JMenu menu_Window = new JMenu("Window");
         menu_Window.setForeground(l_c);
         menu_Window.setBackground(bc_c);
@@ -1034,19 +1033,27 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
          thirdWindow.add(menuItem);
          menu_ThirdWindow.add(menuItem);
          
-         menuItem = new JRadioButtonMenuItem("Select 3D SpaceShip File");
-         menuItem.setForeground(Color.gray);
-         menuItem.setFont(small_font);
-         menuItem.setSelected(true);
-         menuItem.addActionListener(new ActionListener() {
+        JMenuItem menuItemSelect3D = new JMenuItem("Select 3D SpaceShip");
+        menuItemSelect3D.setForeground(Color.black);
+         menuItemSelect3D.setFont(small_font);
+         menuItemSelect3D.setSelected(true);
+         menuItemSelect3D.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                     	// Refresh Object file path
                     	// refresh SpaceShipView3D
                     	// refresh SpaceShipView3dFrontPage
+                       	File myfile;
+                		myfile = new File(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/");
+                    	JFileChooser fileChooser = new JFileChooser(myfile);
+                   	if (fileChooser.showOpenDialog(menuItemSelect3D) == JFileChooser.APPROVE_OPTION) {
+                        File file = fileChooser.getSelectedFile() ;
+                        String filePath = file.getAbsolutePath();
+                        SpaceShipView3DFrontPage.setModelObjectPath(filePath);
+                        refreshSpaceCraftView() ;
+                   	}
                     	       
                      } });
-         thirdWindow.add(menuItem);
-         menu_Window.add(menuItem);
+         menu_Window.add(menuItemSelect3D);
          
       //--------------------------------------------------------------------------------------------------------------------------------
         PageX04_Dashboard = new JPanel();
@@ -3559,7 +3566,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 												 {Double.parseDouble(INPUT_Quarternion2.getText())},
 												 {Double.parseDouble(INPUT_Quarternion3.getText())},
 												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
-							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							double[][] EulerAngles = Mathbox.Quaternions2Euler2(qvector);
 							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
 							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
 							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
@@ -3598,7 +3605,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 												 {Double.parseDouble(INPUT_Quarternion2.getText())},
 												 {Double.parseDouble(INPUT_Quarternion3.getText())},
 												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
-							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							double[][] EulerAngles = Mathbox.Quaternions2Euler2(qvector);
 							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
 							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
 							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
@@ -3637,7 +3644,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 												 {Double.parseDouble(INPUT_Quarternion2.getText())},
 												 {Double.parseDouble(INPUT_Quarternion3.getText())},
 												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
-							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							double[][] EulerAngles = Mathbox.Quaternions2Euler2(qvector);
 							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
 							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
 							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
@@ -3676,7 +3683,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 												 {Double.parseDouble(INPUT_Quarternion2.getText())},
 												 {Double.parseDouble(INPUT_Quarternion3.getText())},
 												 {Double.parseDouble(INPUT_Quarternion4.getText())}};
-							double[][] EulerAngles = Quaternions2Euler2(qvector);
+							double[][] EulerAngles = Mathbox.Quaternions2Euler2(qvector);
 							DecimalFormat numberFormat = new DecimalFormat("#.0000000");
 							INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
 							INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
@@ -4452,43 +4459,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		SequenceFCCombobox.addItem("PID "+(i+1));
     		}
     }
-	public static double[][] Quaternions2Euler2(double[][] Quaternions){
-		
-		double[][] EulerAngles = {{0},{0},{0}};
-		double w = Quaternions[0][0];
-		double x = Quaternions[1][0];
-		double y = Quaternions[2][0];
-		double z = Quaternions[3][0];
 
-        double sqw = w * w;
-        double sqx = x * x;
-        double sqy = y * y;
-        double sqz = z * z;
-        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
-        // is correction factor
-        double test = x * y + z * w;
-        if (test > 0.499 * unit) { // singularity at north pole
-        	EulerAngles[1][0] = 2 * Math.atan2(x, w);
-        	EulerAngles[0][0] = FastMath.PI/2;
-        	EulerAngles[2][0] = 0;
-        } else if (test < -0.499 * unit) { // singularity at south pole
-        	EulerAngles[1][0] = -2 * FastMath.atan2(x, w);
-        	EulerAngles[0][0] = -FastMath.PI/2;
-        	EulerAngles[2][0] = 0;
-        } else {
-        	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
-        	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
-        	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
-        }
-		//-------------------------
-		/*
-	    EulerAngles[0][0] = Math.atan2(2*(qw*qx+qy*qz), 1-2*(qx*qx+qy*qy));
-	    EulerAngles[1][0] = Math.asin(qw*qy - qz*qx);
-	    EulerAngles[2][0] = Math.atan2(2*(qw*qz+qx*qy), 1-2*(qy*qy + qz*qz));
-		*/
-	    
-			return EulerAngles;
-	}
     public static void Inertial2Rotating() {
     	try {
     	double vel_inert = Double.parseDouble(INPUT_VEL_Is.getText());

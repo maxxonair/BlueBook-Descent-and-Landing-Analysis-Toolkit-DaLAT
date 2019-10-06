@@ -41,12 +41,18 @@ public class SpaceShipView3DFrontPage {
 	static double rotX=0;
 	static double rotY=0;
 	static double rotZ=0;
+	private static String modelObjectPath = System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj";
 	
 	
+	public static void setModelObjectPath(String modelObjectPath) {
+		SpaceShipView3DFrontPage.modelObjectPath = modelObjectPath;
+	}
+
+
 	public static void start(JFXPanel fxpanel) {
 		//Box box = prepareBox();
 
-		 model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj");
+		 model =  loadModel(modelObjectPath);
 	    coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
 		
 		Group root = new Group();
