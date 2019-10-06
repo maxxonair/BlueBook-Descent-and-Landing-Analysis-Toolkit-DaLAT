@@ -105,6 +105,7 @@ import Model.atm_dataset;
 import Sequence.SequenceElement;
 import Simulator_main.RealTimeResultSet;
 import GUI.FxElements.SpaceShipView3D;
+import GUI.FxElements.SpaceShipView3DFrontPage;
 import GUI.FxElements.TargetView3D;
 import GUI.PostProcessing.CreateCustomChart;
 import GUI.Settings.Settings;
@@ -431,6 +432,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JPanel PageX04_AttitudeSetup;
     public static JSplitPane SplitPane_Page1_Charts_horizontal; 
     public static JSplitPane SplitPane_Page1_Charts_vertical; 
+    public static JSplitPane SplitPane_Page1_Charts_vertical2; 
     public static JFreeChart Chart_MercatorMap;
     public static JFreeChart Chart_GroundClearance;
 	public static JFreeChart CHART_P1_DashBoardOverviewChart_Altitude_Velocity;
@@ -469,7 +471,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static int vel_frame_hist = 1; 
     public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
     public static JTextField INPUT_Quarternion1, INPUT_Quarternion2, INPUT_Quarternion3, INPUT_Quarternion4, INPUT_Euler1, INPUT_Euler2,INPUT_Euler3;
-    
+    public static JTextField INPUT_AngularRate_X, INPUT_AngularRate_Y, INPUT_AngularRate_Z;
     public static JSlider sliderEuler1;
     public static JSlider sliderEuler2;
     public static JSlider sliderEuler3;
@@ -529,7 +531,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	@SuppressWarnings("rawtypes")
     	public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
     	
-    	public static int thirdWindowIndx = 0;
+    	public static int thirdWindowIndx = 1;
     	
     	
     	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
@@ -591,6 +593,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
           		  if(thirdWindowIndx==1) {
           		refreshTargetView3D();
           		  }
+            		refreshSpaceCraftView();
     		    }
     		  };
     	   Timer timer = new Timer();
@@ -612,12 +615,31 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         Page04_subtabPane.setPreferredSize(new Dimension(extx_main, exty_main));
         Page04_subtabPane.setBackground(bc_c);
         Page04_subtabPane.setForeground(l_c);
+        
+     	ImageIcon icon_BlueBook = null;
+     	ImageIcon icon_windowSelect = null;
+     	ImageIcon icon_visualEngine = null;
+     	int sizeUpperBar=20;
+		icon_BlueBook = new ImageIcon("images/BB_icon2.png","");
+		icon_windowSelect = new ImageIcon("images/windowSelect.png","");
+		icon_visualEngine = new ImageIcon("images/visualEngine.png","");
+     	if(OS_is==1) {
+        	 icon_BlueBook = new ImageIcon(getScaledImage(icon_BlueBook.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_windowSelect = new ImageIcon(getScaledImage(icon_windowSelect.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_visualEngine = new ImageIcon(getScaledImage(icon_visualEngine.getImage(),sizeUpperBar,sizeUpperBar));
+     	} else if(OS_is==2) {
+     	//	For Windows image icons have to be resized
+        	 icon_BlueBook = new ImageIcon(getScaledImage(icon_BlueBook.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_windowSelect = new ImageIcon(getScaledImage(icon_windowSelect.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_visualEngine = new ImageIcon(getScaledImage(icon_visualEngine.getImage(),sizeUpperBar,sizeUpperBar));
+     	}
         //Build the first menu.
         JMenu menu_BlueBook = new JMenu("BlueBook");
         menu_BlueBook.setForeground(l_c);
         menu_BlueBook.setBackground(bc_c);
         menu_BlueBook.setFont(small_font);
         menu_BlueBook.setMnemonic(KeyEvent.VK_A);
+        menu_BlueBook.setIcon(icon_BlueBook);
         menuBar.add(menu_BlueBook);
         JMenuItem menuItem_OpenResultfile = new JMenuItem("Open Resultfile                 "); 
         menuItem_OpenResultfile.setForeground(Color.gray);
@@ -818,6 +840,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_VisualEngine.setForeground(l_c);
         menu_VisualEngine.setBackground(bc_c);
         menu_VisualEngine.setFont(small_font);
+        menu_VisualEngine.setIcon(icon_visualEngine);
         menu_VisualEngine.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_VisualEngine);
         
@@ -872,7 +895,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 		    		// Create new window here 
                   				try {
                   					String line;
-                  					Process proc = Runtime.getRuntime().exec("java -jar FlyMeToTheMoon.jar");
+                  					Process proc = null;
+                  					if(OS_is==1) {
+                  						 proc = Runtime.getRuntime().exec("java -jar FlyMeToTheMoon_OSX.jar");
+                  					} else if (OS_is==2){
+                  						 proc = Runtime.getRuntime().exec("java -jar FlyMeToTheMoon_WIN.jar");
+                  					}
                   					InputStream in = proc.getInputStream();
                   					InputStream err = proc.getErrorStream();
                   					System.out.println(in);
@@ -962,6 +990,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_Window.setForeground(l_c);
         menu_Window.setBackground(bc_c);
         menu_Window.setFont(small_font);
+        menu_Window.setIcon(icon_windowSelect);
         menu_Window.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_Window);
         
@@ -1004,6 +1033,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                      } });
          thirdWindow.add(menuItem);
          menu_ThirdWindow.add(menuItem);
+         
+         menuItem = new JRadioButtonMenuItem("Select 3D SpaceShip File");
+         menuItem.setForeground(Color.gray);
+         menuItem.setFont(small_font);
+         menuItem.setSelected(true);
+         menuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                    	// Refresh Object file path
+                    	// refresh SpaceShipView3D
+                    	// refresh SpaceShipView3dFrontPage
+                    	       
+                     } });
+         thirdWindow.add(menuItem);
+         menu_Window.add(menuItem);
          
       //--------------------------------------------------------------------------------------------------------------------------------
         PageX04_Dashboard = new JPanel();
@@ -1156,6 +1199,31 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
            });
         SplitPane_Page1_Charts_vertical.setDividerLocation(500);
         SplitPane_Page1_Charts_horizontal.add(SplitPane_Page1_Charts_vertical, JSplitPane.TOP);
+        
+        SplitPane_Page1_Charts_vertical2 = new JSplitPane();
+       	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
+        SplitPane_Page1_Charts_vertical2.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
+       //	SplitPane_Page1_Charts.setForeground(Color.black);
+       //	SplitPane_Page1_Charts.setBackground(Color.gray);
+        SplitPane_Page1_Charts_vertical2.setDividerSize(3);
+        SplitPane_Page1_Charts_vertical2.setUI(new BasicSplitPaneUI() {
+               @SuppressWarnings("serial")
+   			public BasicSplitPaneDivider createDefaultDivider() {
+               return new BasicSplitPaneDivider(this) {
+                   @SuppressWarnings("unused")
+   				public void setBorder( Border b) {
+                   }
+                   @Override
+                       public void paint(Graphics g) {
+                       g.setColor(Color.gray);
+                       g.fillRect(0, 0, getSize().width, getSize().height);
+                           super.paint(g);
+                       }
+               };
+               }
+           });
+        SplitPane_Page1_Charts_vertical2.setDividerLocation(500);
+        SplitPane_Page1_Charts_horizontal.add(SplitPane_Page1_Charts_vertical2, JSplitPane.BOTTOM);
        	
        	
        	
@@ -1512,7 +1580,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       //---------------------------------------------------------------------------------------------
       JPanel PANEL_InitialState = new JPanel();
       PANEL_InitialState.setLayout(null);
-      PANEL_InitialState.setSize(SidePanel_Width, 350);
+      PANEL_InitialState.setSize(SidePanel_Width, 430);
       PANEL_InitialState.setLocation(0,0);
       PANEL_InitialState.setBackground(bc_c);
       PANEL_InitialState.setForeground(l_c);
@@ -1887,15 +1955,98 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       });
       PANEL_InitialState.add(INPUT_AZI_Rs);
       
+      JLabel LABEL_AngularRate = new JLabel("Initial Angular Rate: ");
+      LABEL_AngularRate.setLocation(2, uy_p41 + 25 * 12);
+      LABEL_AngularRate.setSize(150, 20);
+      LABEL_AngularRate.setBackground(Color.white);
+      LABEL_AngularRate.setForeground(Color.black);
+      PANEL_InitialState.add(LABEL_AngularRate);
+      
+      JLabel LABEL_AngularRateX = new JLabel("Body X [deg/s]");
+      LABEL_AngularRateX.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 13 );
+      LABEL_AngularRateX.setSize(250, 20);
+      LABEL_AngularRateX.setBackground(Color.white);
+      LABEL_AngularRateX.setForeground(Color.black);
+      LABEL_AngularRateX.setFont(small_font);;
+      PANEL_InitialState.add(LABEL_AngularRateX);
+      JLabel LABEL_AngularRateY = new JLabel("Body Y [deg/s]");
+      LABEL_AngularRateY.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 14);
+      LABEL_AngularRateY.setSize(250, 20);
+      LABEL_AngularRateY.setBackground(Color.white);
+      LABEL_AngularRateY.setForeground(Color.black);
+      LABEL_AngularRateY.setFont(small_font);
+      PANEL_InitialState.add(LABEL_AngularRateY);
+      JLabel LABEL_AngularRateZ = new JLabel("Body Z [deg/s]");
+      LABEL_AngularRateZ.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 15 );
+      LABEL_AngularRateZ.setSize(250, 20);
+      LABEL_AngularRateZ.setBackground(Color.white);
+      LABEL_AngularRateZ.setFont(small_font);
+      LABEL_AngularRateZ.setForeground(Color.black);
+      PANEL_InitialState.add(LABEL_AngularRateZ);
+      
+      INPUT_AngularRate_X = new JTextField(10);
+      INPUT_AngularRate_X.setLocation(2+INPUT_width+5, uy_p41 + 25 * 13 );
+      INPUT_AngularRate_X.setSize(INPUT_width, 20);
+      INPUT_AngularRate_X.setHorizontalAlignment(JTextField.RIGHT);
+      INPUT_AngularRate_X.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			//WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_AngularRate_X);
+      
+      INPUT_AngularRate_Y = new JTextField(10);
+      INPUT_AngularRate_Y.setLocation(2+INPUT_width+5, uy_p41 + 25 * 14 );
+      INPUT_AngularRate_Y.setSize(INPUT_width, 20);
+      INPUT_AngularRate_Y.setHorizontalAlignment(JTextField.RIGHT);
+      INPUT_AngularRate_Y.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			//WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_AngularRate_Y);
+      
+      INPUT_AngularRate_Z = new JTextField(10);
+      INPUT_AngularRate_Z.setLocation(2+INPUT_width+5, uy_p41 + 25 * 15 );
+      INPUT_AngularRate_Z.setSize(INPUT_width, 20);
+      INPUT_AngularRate_Z.setHorizontalAlignment(JTextField.RIGHT);
+      INPUT_AngularRate_Z.addFocusListener(new FocusListener() {
+
+		@Override
+		public void focusGained(FocusEvent arg0) { }
+
+		@Override
+		public void focusLost(FocusEvent e) {
+			// TODO Auto-generated method stub
+			//WRITE_INIT();
+		}
+    	  
+      });
+      PANEL_InitialState.add(INPUT_AngularRate_Z);
+      
       JLabel LABEL_Time = new JLabel("Time: ");
-      LABEL_Time.setLocation(2, uy_p41 + 25 * 12);
+      LABEL_Time.setLocation(2, uy_p41 + 25 * 16);
       LABEL_Time.setSize(50, 20);
       LABEL_Time.setBackground(Color.white);
       LABEL_Time.setForeground(Color.black);
       PANEL_InitialState.add(LABEL_Time);
       
       INPUT_TIME = new JTextField(10);
-      INPUT_TIME.setLocation(55, uy_p41 + 25 * 12 );
+      INPUT_TIME.setLocation(55, uy_p41 + 25 * 16 );
       INPUT_TIME.setSize(INPUT_width*2, 20);
       INPUT_TIME.setHorizontalAlignment(JTextField.LEFT);
       INPUT_TIME.addFocusListener(new FocusListener() {
@@ -1917,7 +2068,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       //                         Integrator Definition Block
       //---------------------------------------------------------------------------------------------       
       JPanel IntegratorInputPanel = new JPanel();
-      IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 14 );
+      IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 18 );
       IntegratorInputPanel.setSize(SidePanel_Width, 825);
       IntegratorInputPanel.setBackground(Color.white);
       IntegratorInputPanel.setForeground(Color.white);
@@ -1932,7 +2083,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       IntegratorInputPanel.add(Separator_Page2_1);
       
       JLabel LABEL_IntegSetting = new JLabel("Integrator Settings");
-      LABEL_IntegSetting.setLocation(0, uy_p41 + 10 * 0 );
+      LABEL_IntegSetting.setLocation(0, uy_p41 + 25 * 0 );
       LABEL_IntegSetting.setSize(400, 20);
       LABEL_IntegSetting.setBackground(Color.white);
       LABEL_IntegSetting.setForeground(Color.black);
@@ -1992,7 +2143,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      IntegratorInputPanel.add(INPUT_WRITETIME);
 
     JLabel LABEL_TARGETBODY = new JLabel("Target Body");
-    LABEL_TARGETBODY.setLocation(163, uy_p41 + 25 * 4   );
+    LABEL_TARGETBODY.setLocation(163, uy_p41 + 25 * 5   );
     LABEL_TARGETBODY.setSize(150, 20);
     LABEL_TARGETBODY.setBackground(Color.white);
     LABEL_TARGETBODY.setForeground(Color.black);
@@ -2000,7 +2151,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     
 	  Target_chooser = new JComboBox(Target_Options);
 	  Target_chooser.setBackground(Color.white);
-	  Target_chooser.setLocation(2, uy_p41 + 25 * 4 );
+	  Target_chooser.setLocation(2, uy_p41 + 25 * 5 );
 	  Target_chooser.setSize(150,25);
 	  Target_chooser.setSelectedIndex(3);
 	  Target_chooser.addActionListener(new ActionListener() { 
@@ -3757,7 +3908,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					
 			        final JFXPanel fxPanel = new JFXPanel();
 			        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
-
 			        Platform.runLater(new Runnable() {
 			            @Override
 			            public void run() {
@@ -4176,6 +4326,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        //CreateChart_DashboardOverviewChart_Time_FPA();
 
      	CreateChart_DashBoardFlexibleChart();
+     	createChart_3DRotation();
      	CreateChart_MercatorMap();
      	CreateChart_PolarMap();
      	//CreateChart_GroundClearance();
@@ -4983,7 +5134,12 @@ fstream.close();
 			 							   						{Double.parseDouble((String) tokens[79])},
 			 							   						{Double.parseDouble((String) tokens[80])}};
 							    resultElement.setCartesianPosECEF(CartesianPosition);
+							    resultElement.setEulerX(Float.parseFloat((String) tokens[87]));
+							    resultElement.setEulerY(Float.parseFloat((String) tokens[88]));
+							    resultElement.setEulerZ(Float.parseFloat((String) tokens[89]));
 							    resultElement.setVelocity(Float.parseFloat((String) tokens[6]) );
+							    resultElement.setTime(Float.parseFloat((String) tokens[0]));
+							    resultElement.setFpa(Float.parseFloat((String) tokens[7]));
 							    resultSet.add(resultElement);
 							  
 							  }
@@ -6152,6 +6308,23 @@ public static void EXPORT_Case() {
       
 	}
 	
+	public static void refreshSpaceCraftView() {
+		//SplitPane_Page1_Charts_vertical.remo
+        final JFXPanel fxPanel = new JFXPanel();
+        SplitPane_Page1_Charts_vertical2.add(fxPanel,JSplitPane.RIGHT);
+        SplitPane_Page1_Charts_vertical2.setDividerLocation(500);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+            	SpaceShipView3DFrontPage.model.getChildren().removeAll();
+            	SpaceShipView3DFrontPage.coordinateSystem.getChildren().removeAll();
+            	//SpaceShipView3DFrontPage.root.getChildren().removeAll();
+            	SpaceShipView3DFrontPage.start(fxPanel);
+            }
+       });
+      
+	}
+	
 	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity(double RM) throws IOException {
 		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
 		CHART_P1_DashBoardOverviewChart_Altitude_Velocity = ChartFactory.createStackedXYAreaChart("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
@@ -6221,6 +6394,10 @@ public static void EXPORT_Case() {
 	            int indx = (int) ( (1- x/(max-min))*resultSet.size());
 		            if(indx>0 && indx<resultSet.size()) {
 		            TargetView3D.prepareSpacecraft(indx);
+		            		if(thirdWindowIndx==0) {
+			            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getTime());
+			            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getFpa()*rad2deg);
+						}
 		            }
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
 	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
@@ -6277,9 +6454,9 @@ public static void EXPORT_Case() {
 		ChartPanel_DashBoardOverviewChart_Time_FPA.setMouseWheelEnabled(true);
 		ChartPanel_DashBoardOverviewChart_Time_FPA.setPreferredSize(new Dimension(900, page1_plot_y));
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    xCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(0, Color.GRAY, new BasicStroke(0f));
 	    xCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
-	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(0, Color.GRAY, new BasicStroke(0f));
 	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
 	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Time_FPA);
 	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
@@ -6386,7 +6563,7 @@ public static void EXPORT_Case() {
 	   PlotPanel_X44.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.PAGE_START);
 	    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
 	    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
-	    SplitPane_Page1_Charts_horizontal.add(ChartPanel_DashBoardFlexibleChart, JSplitPane.BOTTOM);
+	   SplitPane_Page1_Charts_vertical2.add(ChartPanel_DashBoardFlexibleChart, JSplitPane.LEFT);
 		//jPanel4.validate();	
 		Chart_MercatorMap4_fd = false;
 	}
@@ -6398,6 +6575,26 @@ public static void EXPORT_Case() {
 	    	Chart_MercatorMap4.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
 	    	}
+	}
+	
+	public static void createChart_3DRotation() {
+		JPanel SpaceShip3DPanel = new JPanel();
+		SpaceShip3DPanel.setLayout(new BorderLayout());
+		SpaceShip3DPanel.setLocation(765, 10);
+		//SpaceShip3DPanel.setBackground(Color.white);
+		//SpaceShip3DPanel.setForeground(Color.black);
+		SpaceShip3DPanel.setSize(450, 400);
+		//SpaceShip3DPanel.setBorder(Moon_border);
+		
+        final JFXPanel fxPanel = new JFXPanel();
+        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
+        SplitPane_Page1_Charts_vertical2.add(SpaceShip3DPanel, JSplitPane.RIGHT);
+        Platform.runLater(new Runnable() {
+            @Override
+            public void run() {
+            	SpaceShipView3DFrontPage.start(fxPanel);
+            }
+       });
 	}
 	public static XYSeriesCollection AddDataset_DashboardFlexibleChart(int x, int y) throws IOException , IIOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
 	   			  XYSeries xyseries10 = new XYSeries("", false, true); 

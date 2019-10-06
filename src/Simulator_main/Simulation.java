@@ -90,7 +90,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double g0 = 9.81;         // For normalized ISP 			
 		    public static int TARGET=0;						// Target body index
 		    public static double M0=0; 
-	        private static List<atm_dataset> ATM_DATA 									 = new ArrayList<atm_dataset>(); 
+	        private static List<atm_dataset> ATM_DATA 							     = new ArrayList<atm_dataset>(); 
 	        private static List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
 	        private static List<StopCondition> STOP_Handler 							 = new ArrayList<StopCondition>(); 
 
@@ -120,9 +120,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 														{0},
 														{0},
 														{0}}; 							// Quarternion vector
-			public static double[][] AngularRate     = {{0},
-														{0},
-														{0}};							 // Angular Velcity {P, Q, R}T [rad/s] 
+			public static double[][] AngularRate     = {{0.0},
+														{0.0},
+														{0.0}};							 // Angular Velcity {P, Q, R}T [rad/s] 
 			public static double[][] EulerAngle      = {{0},{0},{0}};				     // Euler Angle Vector [rad]
 			public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0},
@@ -721,9 +721,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  CTRL_Time+" "+
 	                    		  (PI-y[4]-Thrust_Deviation)+" "+
 	                    		  Thrust_Deviation+" "+
-	                    		  coordinateTransformation.getC_B2NED()[0][0]+" "+
-	                    		  coordinateTransformation.getC_B2NED()[1][0]+" "+
-	                    		  coordinateTransformation.getC_B2NED()[2][0]+" "+
+	                    		  forceMomentumSet.getF_Thrust_B()[0][0]+" "+
+	                    		  forceMomentumSet.getF_Thrust_B()[1][0]+" "+
+	                    		  forceMomentumSet.getF_Thrust_B()[2][0]+" "+
 	                    		  vel_inertFrame+" "+
 	                    		  fpa_inertFrame+" "+
 	                    		  azimuth_inertFrame+" "+

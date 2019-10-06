@@ -30,6 +30,18 @@ public class RealTimeResultSet {
 			 							   {0},
 			 							   {0}};
 	
+	private float time =0;
+	
+	
+	
+	public float getTime() {
+		return time;
+	}
+
+	public void setTime(float time) {
+		this.time = time;
+	}
+
 	public double[][] getThrust_NED() {
 		return Thrust_NED;
 	}
