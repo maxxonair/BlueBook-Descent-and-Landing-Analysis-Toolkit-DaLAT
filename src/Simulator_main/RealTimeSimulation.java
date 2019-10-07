@@ -13,15 +13,23 @@ import java.util.List;
 import org.apache.commons.math3.exception.NoBracketingException;
 import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
-import org.apache.commons.math3.ode.nonstiff.ClassicalRungeKuttaIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
 import Model.AtmosphereSet;
+import Model.ControlCommandSet;
+import Model.ControllerModel;
+import Model.ForceModel;
+import Model.ForceMomentumSet;
+import Model.GravityModel;
+import Model.ActuatorSet;
 import Model.AtmosphereModel;
-import Model.Gravity;
+import Model.GravitySet;
+import Model.MasterSet;
 import Model.atm_dataset;
 import Model.Aerodynamic.AerodynamicSet;
+import Sequence.Sequence;
+import Sequence.SequenceElement;
 import Toolbox.Mathbox;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
@@ -35,8 +43,10 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    public static boolean ISP_Throttle_model = false; 
 	    public static boolean stophandler_ON     = true; 
 	    
-	    public static 	    boolean spherical = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
-	    public static 		boolean is_6DOF   = false;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
+	    public static 	    boolean spherical   = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
+	    public static 		boolean is_6DOF     = true;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
+		public static 		int SixDoF_Option   = 1;  
+		public static       boolean FlatEarther = false;
 	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -164,7 +174,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 			public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0}};  // Inertia Tensor []
-			public static double[][] AngularMomentum = {{0},
+			public static double[][] AngularMomentum_B = {{0},
 														{0},
 														{0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
 			
@@ -240,16 +250,19 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
 	        
 	        static CoordinateTransformation coordinateTransformation ;
-	        static AtmosphereSet atmosphere;
-	        static SpaceShip spaceShip;
-	        static AerodynamicSet aerodynamicSet= new AerodynamicSet();
+	        
+	        public static SpaceShip spaceShip = new SpaceShip();
+	        public static AtmosphereSet atmosphereSet = new AtmosphereSet();
+	        public static ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
+	        public static GravitySet gravitySet = new GravitySet();
+	        public static AerodynamicSet aerodynamicSet = new AerodynamicSet();
+	        public static ControlCommandSet controlCommandSet = new ControlCommandSet();
+	        public static ActuatorSet actuatorSet = new ActuatorSet();
+	        public static CurrentDataSet currentDataSet = new CurrentDataSet();
+	        public static MasterSet masterSet = new MasterSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
-	    	if(is_6DOF) {
 	    		return 14; // 6 DOF model 
-	        } else {
-	    		return 7; // 3 DOF model 
-	    	}
 	    }
 	    
 		public static double getRm() {
@@ -315,163 +328,202 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 			
 		}
 
-    public void computeDerivatives(double t, double[] x, double[] dxdt) {
-    	integ_t=t;
-    	coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphere, aerodynamicSet, EulerAngle, q_vector, 
-	   			r_ECEF_spherical, V_NED_ECEF_spherical);
-    	//-------------------------------------------------------------------------------------------------------------------
-    	//								    	Gravitational environment
-    	//-------------------------------------------------------------------------------------------------------------------   
-    		if(spherical) {}// 2D model for shperical velcotity vector computation
-    		else {
-    			g = Gravity.getGravity3D(x, r_ECEF_cartesian); 
-        		g_NED   =  Mathbox.Multiply_Matrices(coordinateTransformation.getC_ECEF2NED(), g);	 
-        		// Gravitational Force (wrt NED System)
-	    	    	F_Gravity_NED[0][0] = x[6]*g_NED[0][0];
-	    	    	F_Gravity_NED[1][0] = x[6]*g_NED[1][0];
-	    	    	F_Gravity_NED[2][0] = x[6]*g_NED[2][0];
-    		}
-    	//-------------------------------------------------------------------------------------------------------------------
-    	//								Sequence management and Flight controller 
-    	//-------------------------------------------------------------------------------------------------------------------
+	    public void computeDerivatives(double t, double[] x, double[] dxdt) {
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	//
+	    	//
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	currentDataSet.setxIS(x);
+	    	currentDataSet.settIS(t);
+	    	currentDataSet.setValDt(val_dt);
+	    	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
+	    	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
+	    	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+		coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphereSet, aerodynamicSet, EulerAngle, 
+																 q_vector, r_ECEF_spherical, V_NED_ECEF_spherical);
+		currentDataSet.setCoordinateTransformation(coordinateTransformation);
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// 										Delta-v integration
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	acc_deltav = acc_deltav + actuatorSet.getPrimaryISP_is()*g0*Math.log(mminus/x[6]);
+	    	mminus=x[6];
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// 										  Ground track 
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	double r=rm;  // <-- reference radius for projection. Current projection set for mean radius 
+	    	double phi=x[0];
+	    	double theta = x[1];
+	    double dphi = Math.abs(phi-phimin);
+	    	double dtheta = Math.abs(theta-tetamin); 
+	    	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
+	    	//System.out.println(ds);
+	    	groundtrack = groundtrack + ds;
+	    	phimin=phi;
+	    	tetamin=theta; 
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// 									    		 Force Model 
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
+	    							 controlCommandSet, spaceShip, currentDataSet);
+	    	forceMomentumSet = masterSet.getForceMomentumSet();
+	    	gravitySet = masterSet.getGravitySet();
+	    	atmosphereSet = masterSet.getAtmosphereSet();
+	    	aerodynamicSet = masterSet.getAerodynamicSet();
+	    	actuatorSet = masterSet.getActuatorSet();
+	    	controlCommandSet = masterSet.getControlCommandSet();
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// 									     Equations of Motion
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// 									     Translational Motion
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// Position vector with respect to spherical velocity vector
+	    	int optionR = 1; 
+		    if(optionR==1) {
+		   	 	  // Longitude
+			    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
+			          // Latitude
+			    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
+			    	  // Radius 
+			    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
+		   	
+		    } else if (optionR==2) {
+		 	 	  // longitude/ tau
+			    dxdt[0] = 	V_NED_ECEF_cartesian[1] / (x[2]*Math.cos(x[1]));
+		         // latitude - delta
+			    dxdt[1] = 	V_NED_ECEF_cartesian[0] /  x[2];
+		  	     // radius - r
+			    dxdt[2] = - V_NED_ECEF_cartesian[2];
+		    }
+		    r_ECEF_spherical[0] = x[0];
+		    r_ECEF_spherical[1] = x[1];
+		    r_ECEF_spherical[2] = x[2];
+		    r_ECEF_cartesian = Mathbox.Spherical2Cartesian_Position(r_ECEF_spherical);
+		    //--------------------------------
+		    // Velocity vector
+		    	//--------------------------------
+		    if(spherical) {
+		    	// velocity
+		    dxdt[3] = -GravityModel.getGravity2D(currentDataSet)[0] * sin( x[4] ) + GravityModel.getGravity2D(currentDataSet)[1] * cos( x[5] ) * cos( x[4] ) + forceMomentumSet.getF_Aero_A()[0][0] / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
+		    	// flight path angle 
+		    dxdt[4] = ( x[3] / x[2] - GravityModel.getGravity2D(currentDataSet)[0]/ x[3] ) * cos( x[4] ) - GravityModel.getGravity2D(currentDataSet)[1] * cos( x[5] ) * sin( x[4] ) / x[3] - forceMomentumSet.getF_Aero_A()[2][0] / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
+		    	// local azimuth
+		    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - GravityModel.getGravity2D(currentDataSet)[1] * sin( x[5] ) / x[3] + forceMomentumSet.getF_Aero_A()[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
 
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 									           Atmosphere
-    	//-------------------------------------------------------------------------------------------------------------------
-    		AtmosphereModel.ATMOSPHERE_MANAGER(x, rm, TARGET, Lt, atmosphere, spaceShip, V_NED_ECEF_spherical);
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
-    	//-------------------------------------------------------------------------------------------------------------------
-	   	F_Aero_A[0][0] = -  DragForce  ;
-	   	F_Aero_A[1][0] =    SideForce  ;
-	   	F_Aero_A[2][0] = -  LiftForce  ;
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    Force Definition - Thrust Forces | Body fixed Frame |
-    	//-------------------------------------------------------------------------------------------------------------------
-	   	
-	   	if(IsThrust) {
-	   		Thrust_is = Thrust_max;
-	   		//System.out.println("THRUST");
-	   		//F_Aero_A[0][0] -= Thrust;
-	   	} else {
-	   		Thrust_is=0.1 * Thrust_max;
-	   	}
-	   	
-	   	F_Thrust_B[0][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.cos(TVC_beta);  
-	   	F_Thrust_B[1][0] =  0;//Thrust * Math.cos(TVC_alpha)*Math.sin(TVC_beta);   
-	   	F_Thrust_B[2][0] =  -Thrust_is;//-Thrust;//Thrust * Math.sin(TVC_alpha);   
-	   	
-	   // 	M_Thrust_NED = Mathbox.Multiply_Matrices(C_B2ECI, M_Thrust_B);
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 									           Set up force vector in NED  
-    	//-------------------------------------------------------------------------------------------------------------------
-    	F_Aero_NED   	= Mathbox.Multiply_Matrices(coordinateTransformation.getC_A2NED(), F_Aero_A) ;    	
-    	F_Thrust_NED 	= Mathbox.Multiply_Matrices(coordinateTransformation.getC_B2NED(), F_Thrust_B) ;
-    	F_total_NED   	= Mathbox.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    				ISP model for engine throttling
-    	//-------------------------------------------------------------------------------------------------------------------
-    //	if(ISP_Throttle_model) {ThrottleMODEL_get_ISP( ISP_min,  ISP_max,  Throttle_CMD);}
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 										Delta-v integration
-    	//-------------------------------------------------------------------------------------------------------------------
-    	acc_deltav = acc_deltav + ISP_is*g0*Math.log(mminus/x[6]);
-    	mminus=x[6];
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 										  Ground track 
-    	//-------------------------------------------------------------------------------------------------------------------
-    	double r=rm;  // <-- reference radius for projection. Current projection set for mean radius 
-    	double phi    = x[0];
-    	double theta  = x[1];
-    double dphi   = Math.abs(phi-phimin);
-    	double dtheta = Math.abs(theta-tetamin); 
-    	double ds     = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
-    	//System.out.println(ds);
-    	groundtrack = groundtrack + ds;
-    	phimin=phi;
-    	tetamin=theta; 
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 									     Equations of Motion
-    	//-------------------------------------------------------------------------------------------------------------------
-    	//
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 									     Translational Motion
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// Position vector with respect to spherical velocity vector
-    	int optionR = 1; 
-	    if(optionR==1) {
-	   	 	  // Longitude
-		    dxdt[0] = V_NED_ECEF_spherical[0] * Math.cos(V_NED_ECEF_spherical[1] )  * Math.sin( V_NED_ECEF_spherical[2] ) / ( x[2] * Math.cos( x[1] ) ); 
-		          // Latitude
-		    dxdt[1] = V_NED_ECEF_spherical[0] * Math.cos( V_NED_ECEF_spherical[1] ) * Math.cos( V_NED_ECEF_spherical[2] ) / ( x[2] 			   );
-		    	  // Radius 
-		    dxdt[2] = V_NED_ECEF_spherical[0] * Math.sin( V_NED_ECEF_spherical[1] );	
-	   	
-	    } else if (optionR==2) {
-	 	 	  // longitude/ tau
-		    dxdt[0] = 	V_NED_ECEF_cartesian[1] / (x[2]*Math.cos(x[1]));
-	         // latitude - delta
-		    dxdt[1] = 	V_NED_ECEF_cartesian[0] /  x[2];
-	  	     // radius - r
-		    dxdt[2] = - V_NED_ECEF_cartesian[2];
-	    }
-	    r_ECEF_spherical[0] = x[0];
-	    r_ECEF_spherical[1] = x[1];
-	    r_ECEF_spherical[2] = x[2];
-	    r_ECEF_cartesian = Mathbox.Spherical2Cartesian_Position(r_ECEF_spherical);
-	    //--------------------------------
-	    // Velocity vector
-	    	//--------------------------------
-	    if(spherical) {
-	    	// velocity
-		dxdt[3] = -Gravity.getGravity2D(x)[0] * sin( x[4] ) + Gravity.getGravity2D(x)[1] * cos( x[5] ) * cos( x[4] ) + F_Aero_A[0][0] / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
-	    	// flight path angle 
-	    dxdt[4] = ( x[3] / x[2] - Gravity.getGravity2D(x)[0]/ x[3] ) * cos( x[4] ) - Gravity.getGravity2D(x)[1] * cos( x[5] ) * sin( x[4] ) / x[3] - F_Aero_A[2][0] / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
-	    	// local azimuth
-	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - Gravity.getGravity2D(x)[1] * sin( x[5] ) / x[3] + F_Aero_A[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
+	    	V_NED_ECEF_spherical[0]=x[3];
+	    	V_NED_ECEF_spherical[1]=x[4];
+	    	V_NED_ECEF_spherical[2]=x[5];
+	    	
+	    	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
+	    	
+		    } else {
+		    		// Derived from Titterton, Strapdown Navigation: 								
+		    		// u - North
+		    		dxdt[3] = forceMomentumSet.getF_total_NED()[0][0]/x[6] + gravitySet.getG_NED()[0][0] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	     - omega*omega*x[2]/2*Math.sin(2*x[1])       ;
+		    		// v - East
+		    		dxdt[4] = forceMomentumSet.getF_total_NED()[1][0]/x[6] + gravitySet.getG_NED()[1][0] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1]))   + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])) 											     ;
+		    		// w - Down
+		    		dxdt[5] = forceMomentumSet.getF_total_NED()[2][0]/x[6] + gravitySet.getG_NED()[2][0] - 2 * omega * x[4]   * Math.cos(x[1])   						  - (x[4]*x[4] + x[3]*x[3])/x[2]   					 - omega*omega*x[2]/2*(1 + Math.cos(2*x[1])) ;
+		    	//System.out.println(forceMomentumSet.getF_total_NED()[0][0]);
+		    		//System.out.println(gravitySet.getG_NED()[2][0]);
+	    	V_NED_ECEF_cartesian[0]=x[3];
+	    	V_NED_ECEF_cartesian[1]=x[4];
+	    	V_NED_ECEF_cartesian[2]=x[5];
+	    	
+	    	V_NED_ECEF_spherical = Mathbox.Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
+	    	
+		    }	    
+		    // System mass [kg]
+		    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ;   
+	    	//-------------------------------------------------------------------------------------------------------------------
+	    	// 						   Rotataional motion
+	    	//-------------------------------------------------------------------------------------------------------------------
+		    if(is_6DOF) {
+		    	if (SixDoF_Option ==1) {
+		    		//-------------------------------------------------------------------------------------------------------------------------------------------
+		    		// EoM for Angular Rate model from: 
+		    		// Duke, E.L. Antoniewicz, R.F.  and Krambeer "Derivation and definition of a linear aircraft model", NASA Reference Publication 1207, 1988
+		    		// The following equations for to solve the angular rates are the full set on non-linear Euler equations:
+		    		// The innertial equations are separated and prepared by Set_AngularVelocityEquationElements(StateVector)
+		    		// This function has to be called before each solving step.
+		    		//-------------------------------------------------------------------------------------------------------------------------------------------
+		    		Set_AngularVelocityEquationElements(x);
+		    		//----------------------------------------------------------------------------------------
+		    		// Quaternions:
+		    		if(FlatEarther) {
+			    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
+			    				        {-x[13], 0    , x[11], x[12]},
+			    				        { x[12],-x[11], 0    , x[13]},
+			    				        {-x[11],-x[12],-x[13], 0    }}; 
+			    		
+			    	    q_vector[0][0] = x[7];
+			    	    q_vector[1][0] = x[8];
+			    	    q_vector[2][0] = x[9];
+			    	    q_vector[3][0] = x[10];
+			    	    
 
-    	V_NED_ECEF_spherical[0]=x[3];
-    	V_NED_ECEF_spherical[1]=x[4];
-    	V_NED_ECEF_spherical[2]=x[5];
-    	
-    	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
-    	
-	    } else {
-	    		// Derived from Titterton, Strapdown Navigation: 								
-	    		// u - North
-	    		dxdt[3] = F_total_NED[0][0]/x[6] + g_NED[0][0] - 2 * omega * x[4]   * Math.sin(x[1])   						  + (x[3]*x[5] - x[4]*x[4]*Math.tan(x[1]))/x[2] 	     - omega*omega*x[2]/2*Math.sin(2*x[1])       ;
-	    		// v - East
-	    		dxdt[4] = F_total_NED[1][0]/x[6] + g_NED[1][0] + 2 * omega * ( x[3] * Math.sin(x[1]) + x[5] * Math.cos(x[1]))   + x[4]/x[2] * (x[5] + x[3] * Math.tan(x[1])) 											     ;
-	    		// w - Down
-	    		dxdt[5] = F_total_NED[2][0]/x[6] + g_NED[2][0] - 2 * omega * x[4]   * Math.cos(x[1])   						  - (x[4]*x[4] + x[3]*x[3])/x[2]   					 - omega*omega*x[2]/2*(1 + Math.cos(2*x[1])) ;
+			    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_Matrices(Q, q_vector)); 
+			    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
+			    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
+			    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
+			    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
+		
+			    	    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
+		    		} else {
+			    		double[][] ElementMatrix = {{  -q_vector[1][0] , -q_vector[2][0]  , -q_vector[3][0]  }, 
+			    				         			{   q_vector[0][0] , -q_vector[3][0] ,   q_vector[2][0]  },
+			    				         			{   q_vector[3][0],   q_vector[0][0]  , -q_vector[1][0]  },
+			    				         			{  -q_vector[2][0] ,  q_vector[1][0]  ,  q_vector[0][0]  }};
+			    		
+			    		
+			    		double[][] PQR = {{x[11]},
+			    						  {x[12]},
+			    						  {x[13]}};
+			    		
+			    		double[][] Omega_NED = {{ 1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] },
+			    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[0] },
+			    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] * Math.tan(r_ECEF_spherical[1])}};
+			    		
+			    		double[][] q_vector_dot = {{1},{0},{0},{0}};
+			    		double[][] OMEGA_ECEF = {{omega*Math.cos(r_ECEF_spherical[1])},
+			    							  	 {0},
+			    							  	 {-omega*Math.sin(r_ECEF_spherical[1])}};
+			    		
+			    		double[][] Element_10 =  Mathbox.Multiply_Scalar_Matrix(0.5, ElementMatrix);
+			    		double[][] Element_21 =  Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), Omega_NED);
 
-    	V_NED_ECEF_cartesian[0]=x[3];
-    	V_NED_ECEF_cartesian[1]=x[4];
-    	V_NED_ECEF_cartesian[2]=x[5];
-    	
-    	V_NED_ECEF_spherical = Mathbox.Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
-    	
-	    }	    
-	    // System mass [kg]
-	   //System.out.println(Thrust);
-	    dxdt[6] = - Thrust_is/(ISP_is*g0) ;   
-	   // System.out.println(Thrust+" | "+ISP);
-    	//-------------------------------------------------------------------------------------------------------------------
-    	// 						   Rotataional motion
-    	//-------------------------------------------------------------------------------------------------------------------
-	    if(is_6DOF) {
-	    		//-------------------------------------------------------------------------------------------------------------------------------------------
-	    		// EoM for Angular Rate model from: 
-	    		// Duke, E.L. Antoniewicz, R.F.  and Krambeer "Derivation and definition of a linear aircraft model", NASA Reference Publication 1207, 1988
-	    		// The following equations for to solve the angular rates are the full set on non-linear Euler equations:
-	    		// The innertial equations are separated and prepared by Set_AngularVelocityEquationElements(StateVector)
-	    		// This function has to be called before each solving step.
-	    		//-------------------------------------------------------------------------------------------------------------------------------------------
-	    		Set_AngularVelocityEquationElements(x);
-	    		//----------------------------------------------------------------------------------------
-	    		// Quaternions:
-	    		boolean FlatEarther = true;
-	    		if(FlatEarther) {
+			    		//double[][] Element_22 = Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), OMEGA_ECEF);
+			    		//double[][] Element_20 = Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), Element_22);
+			    		double[][] Element_20 =  Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), OMEGA_ECEF);;
+			    			    		
+			    		q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
+
+			    		dxdt[7]  =  q_vector_dot[0][0];  // e1 dot
+			    		dxdt[8]  =  q_vector_dot[1][0];  // e2 dot 
+			    		dxdt[9]  =  q_vector_dot[2][0];  // e3 dot
+			    		dxdt[10] =  q_vector_dot[3][0];  // e4 dot
+			    		//-----------------------------------------
+			    		// Postprocessing Euler and Quarternions 
+			    	    q_vector[0][0] = x[7];
+			    	    q_vector[1][0] = x[8];
+			    	    q_vector[2][0] = x[9];
+			    	    q_vector[3][0] = x[10];
+			    		EulerAngle = Mathbox.Quaternions2Euler(q_vector);
+		    		}
+		    	    //----------------------------------------------------------------------------------------
+		    	    // System.out.println("model 1 running");
+		    	    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
+		    	    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
+		    	    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
+		    	    
+		    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
+		    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
+		    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
+		    	
+		    	}
+		    else  if (SixDoF_Option == 2) {
+		    		// Quaternions:
+		
 		    		double[][] Q = {{ 0    , x[13],-x[12], x[11]}, 
 		    				        {-x[13], 0    , x[11], x[12]},
 		    				        { x[12],-x[11], 0    , x[13]},
@@ -482,234 +534,197 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    	    q_vector[2][0] = x[9];
 		    	    q_vector[3][0] = x[10];
 		    	    
-
+		    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
 		    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_Matrices(Q, q_vector)); 
 		    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
 		    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
 		    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
 		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
-	
-		    	    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
-	    		} else {
-		    		double[][] ElementMatrix = {{  -q_vector[1][0] , -q_vector[2][0]  , -q_vector[3][0]  }, 
-		    				         			{   q_vector[0][0] , -q_vector[3][0] ,   q_vector[2][0]  },
-		    				         			{   q_vector[3][0],   q_vector[0][0]  , -q_vector[1][0]  },
-		    				         			{  -q_vector[2][0] ,  q_vector[1][0]  ,  q_vector[0][0]  }};
-		    		
-		    		
-		    		double[][] PQR = {{x[11]},
-		    						  {x[12]},
-		    						  {x[13]}};
-		    		
-		    		double[][] Omega_NED = {{ 1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] },
-		    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[0] },
-		    								{-1/r_ECEF_spherical[2] * V_NED_ECEF_cartesian[1] * Math.tan(r_ECEF_spherical[1])}};
-		    		/*
-		    		double[][] OMEGA_ECEF = {{omega*Math.cos(r_ECEF_spherical[1])},
-		    							  	 {0},
-		    							  	 {-omega*Math.sin(r_ECEF_spherical[1])}};
-		    		*/
-		    		double[][] Element_10 =  Mathbox.Multiply_Scalar_Matrix(0.5, ElementMatrix);
-		    		double[][] Element_21 =  Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), Omega_NED);
 
-		    		//double[][] Element_22 = Mathbox.Multiply_Matrices(coordinateTransformation.getC_NED2B(), OMEGA_ECEF);
-		    		//double[][] Element_20 = Mathbox.Substract_Matrices(Mathbox.Substract_Matrices(PQR, Element_21), Element_22);
-		    		double[][] Element_20 =  Mathbox.Substract_Matrices(PQR, Element_21);
-		    			    		
-		    		double[][] q_vector_dot = Mathbox.Multiply_Matrices(Element_10, Element_20);
-		    	    /*
-		    		for(int i=0;i<3;i++) {
-		    			System.out.println(Element_10[i][0]);
-		    		}
-		    		System.out.println("--------------");
-		    		*/
-		    		dxdt[7]  =  q_vector_dot[0][0];  // e1 dot
-		    		dxdt[8]  =  q_vector_dot[1][0];  // e2 dot 
-		    		dxdt[9]  =  q_vector_dot[2][0];  // e3 dot
-		    		dxdt[10] =  q_vector_dot[3][0];  // e4 dot
-		    		//-----------------------------------------
-		    		// Postprocessing Euler and Quarternions 
 		    	    q_vector[0][0] = x[7];
 		    	    q_vector[1][0] = x[8];
 		    	    q_vector[2][0] = x[9];
 		    	    q_vector[3][0] = x[10];
-		    		EulerAngle = Mathbox.Quaternions2Euler(q_vector);
-	    		}
-		    	    //----------------------------------------------------------------------------------------
-
-		    		// Angular Rates
-		    	    double Lb = M_Aero_B[0][0] + M_Thrust_B[0][0] ;
-		    	    double Mb = M_Aero_B[1][0] + M_Thrust_B[1][0] ;
-		    	    double Nb = M_Aero_B[2][0] + M_Thrust_B[2][0] ;
 		    	    
-		    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
-		    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
-		    	    dxdt[13] = EE_R_pp * x[11]*x[11] + EE_R_pq * x[11]*x[12] + EE_R_pr * x[11]*x[13] + EE_R_qq *x[12]*x[12] + EE_R_qr * x[12]*x[13] + EE_R_rr * x[13]*x[13] + EE_R_x*Lb + EE_R_y*Mb + EE_R_z*Nb;
-		    	
-		    		//----------------------------------------------------------------------------------------
-AngularMomentum[0][0] = M_Aero_NED[0][0] + M_Thrust_NED[0][0] ;
-AngularMomentum[1][0] = M_Aero_NED[1][0] + M_Thrust_NED[1][0] ;
-AngularMomentum[2][0] = M_Aero_NED[2][0] + M_Thrust_NED[2][0] ;	
-AngularRate[0][0] = x[11];
-AngularRate[1][0] = x[12];
-AngularRate[2][0] = x[13];
-//AngleOfAttack = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
-	    }
-}
-    
-public static RealTimeResultSet Launch_Integrator( int INTEGRATOR, int target, double x0, double x1, double x2, 
-		double x3, double x4, double x5, double x6, double t, double dt_write, double reference_elevation, 
-		double[][] Init_Quarternions , double[][] InitPQR, boolean isThrust, double[][] MRCS, SpaceShip spaceElementData){
-//----------------------------------------------------------------------------------------------
-// 						Prepare integration 
-//----------------------------------------------------------------------------------------------
-	try {
-			SET_Constants(target);
-		} catch (IOException e2) {
-			// TODO Auto-generated catch block
-			e2.printStackTrace();
+		    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
+		    	    //----------------------------------------------------------------------------------------
+		    	    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
+		    	    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
+		    	    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
+		    		
+					double Ixx = InertiaTensor[0][0];
+					double Iyy = InertiaTensor[1][1];
+					double Izz = InertiaTensor[2][2];
+					//double Ixy = InertiaTensor[0][1];
+					double Ixz = InertiaTensor[0][2];
+					//  double Iyx = InertiaTensor[][];
+					//double Iyz = InertiaTensor[2][1];
+					//System.out.println(Ixx+" | "+x[7]);
+		    		// Angular Rates
+				// p dot:
+		    		dxdt[11] = (Izz * Lb + Ixz * Nb - (Ixz * (Iyy - Ixx - Izz) * x[11] + (Ixz*Ixz + Izz * (Izz - Iyy)) 
+		    					* x[12]) * x[11]) / (Ixx * Izz - Ixz*Ixz); 
+		    		// q dot:
+		    		dxdt[12] = (Mb - (Ixx - Izz) * x[11] * x[13] - Ixz * (x[11]*x[11] - x[13]*x[13])) / Iyy; 
+		    		// r dot:
+		    		dxdt[13] = (Ixz * Lb + Ixx * Nb + (Ixz * (Iyy - Ixx - Izz) * x[13] + (Ixz*Ixz + Ixx * (Ixx - Iyy)) 
+		    					* x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
+
+	} 
+		AngularMomentum_B[0][0] = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
+		AngularMomentum_B[1][0] = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
+		AngularMomentum_B[2][0] = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;	
+		AngularRate[0][0] = x[11];
+		AngularRate[1][0] = x[12];
+		AngularRate[2][0] = x[13];
+		//atmosphere.getAngleOfAttack() = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 		}
+
+	}
+	//********************************************************************************************************************************** 
+	/*
+	    
+	  										Launch Integration Module  
+	    
+	*/    
+	//********************************************************************************************************************************** 
+	    public static RealTimeResultSet launchIntegrator( IntegratorData integratorData, 
+	    										 			  SpaceShip spaceElement ){
 //----------------------------------------------------------------------------------------------
-//	
+//				Prepare integration 
+//----------------------------------------------------------------------------------------------
+try {
+SET_Constants(integratorData.getTargetBody());
+currentDataSet.setRM(rm);
+currentDataSet.setLt(Lt);
+currentDataSet.setMu(mu);
+} catch (IOException e2) {
+// TODO Auto-generated catch block
+e2.printStackTrace();
+}
+//----------------------------------------------------------------------------------------------
+//
+//Initialise Simulation: 
+//
+//- Read propulsion setting:	Propulsion/Controller INIT
+//- Initialise ground track computation
+
+spaceShip = spaceElement;
+coordinateTransformation =  new CoordinateTransformation();
+gravitySet = new GravitySet();
+forceMomentumSet = new ForceMomentumSet();
 //----------------------------------------------------------------------------------------------	
-	
-	spaceShip = spaceElementData; 
-	
-	M_Thrust_B = MRCS;
-	
-	q_vector    = Init_Quarternions;
-	AngularRate = InitPQR;
-	InertiaTensor = spaceShip.getInertiaTensorMatrix();
-	
-	spherical=false;
-	is_6DOF=true;
-	
-	IsThrust = isThrust;
-	
-	 coordinateTransformation = new CoordinateTransformation();
-	 
-	 atmosphere = new AtmosphereSet();
-	
-	
+if(integratorData.getVelocityVectorCoordSystem()==1) {
+spherical = true;
+} else if (integratorData.getVelocityVectorCoordSystem()==2) {
+spherical = false;
+}
+
+InertiaTensor = spaceShip.getInertiaTensorMatrix();
+
+q_vector      = spaceShip.getInitialQuarterions();
+
+ControllerModel.setCntr_h_init(integratorData.getInitRadius()-rm);
+ControllerModel.setCntr_v_init(integratorData.getInitVelocity());
+
+actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
+ M0 			  = spaceShip.getMass()  ; 
+ mminus	  	  = M0  ;
+ vminus		  = integratorData.getInitVelocity()  ;
+ v_touchdown	  = 0   ;
+
+phimin=integratorData.getInitLongitude();
+tetamin=integratorData.getInitLatitude();
+groundtrack=0;
+ref_ELEVATION =  integratorData.getRefElevation();
 //----------------------------------------------------------------------------------------------
-//	Gravity Setup	
+//Sequence Setup	
 //----------------------------------------------------------------------------------------------
-Gravity.setMu(mu);
-Gravity.setRm(rm);
-Gravity.setTARGET(target);	
+currentDataSet.setLocalElevation(integratorData.getRefElevation());
+currentDataSet.setTARGET(integratorData.getTargetBody());
+Sequence.setSequence_RES_closed(false);
+List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>();
+SequenceElement newSequenceElement = new SequenceElement( 0, 0,  100,  1,  0, 0, 0, 0, 0, 0, 0, 0);
+SEQUENCE_DATA.add(newSequenceElement);
+currentDataSet.setSEQUENCE_DATA_main(SEQUENCE_DATA);
+ControllerModel.getCTRL_steps().clear();
 //----------------------------------------------------------------------------------------------
-	    cntr_h_init=x2-rm;
-	    cntr_v_init=x3;
-	    	 ISP_is          	   = spaceShip.getPropulsion().getPrimaryISPMax();
-	    	 m_propellant_init = spaceShip.getPropulsion().getPrimaryPropellant();
-	    	 Thrust_max 	       = spaceShip.getPropulsion().getPrimaryThrustMax();
-	    	 Thrust_min        = spaceShip.getPropulsion().getPrimaryThrustMin();
-	    	 SurfaceArea  	   = spaceShip.getAeroElements().getSurfaceArea();
-	    	 M0 			  = x6  ; 
-	    	 mminus	  	  = M0  ;
-	    	 vminus		  = x3  ;
-	    	 v_touchdown	  = 0   ;
-	    	 PROPread		  = true; 
-    	 phimin=x0;
-    	 tetamin=x1;
-    	 groundtrack=0;
-    	 ref_ELEVATION =  reference_elevation;
+//Integrator setup	
 //----------------------------------------------------------------------------------------------
-//					Integrator setup	
+FirstOrderIntegrator IntegratorModule = integratorData.getIntegrator();
 //----------------------------------------------------------------------------------------------
-		FirstOrderIntegrator dp853;
-	         dp853 = new ClassicalRungeKuttaIntegrator(dt_write);
+FirstOrderDifferentialEquations ode = new RealTimeSimulation();
+//------------------------------
+ATM_DATA.removeAll(ATM_DATA);
+try {
+ATM_DATA = AtmosphereModel.INITIALIZE_ATM_DATA(integratorData.getTargetBody());
+} catch (URISyntaxException e1) {
+// TODO Auto-generated catch block
+e1.printStackTrace();
+}
+for (int i = 0;i<ATM_DATA.size();i++){
+//System.out.println(ATM_DATA.get(i).get_altitude() + " | " + ATM_DATA.get(i).get_density());
+}
 //----------------------------------------------------------------------------------------------
-	        FirstOrderDifferentialEquations ode = new RealTimeSimulation();
-	        //------------------------------
-	        ATM_DATA.removeAll(ATM_DATA);
-	        try {
-				ATM_DATA = AtmosphereModel.INITIALIZE_ATM_DATA(target);
-			} catch (URISyntaxException e1) {
-				// TODO Auto-generated catch block
-				e1.printStackTrace();
-			}
-  			for (int i = 0;i<ATM_DATA.size();i++){
-				//System.out.println(ATM_DATA.get(i).get_altitude() + " | " + ATM_DATA.get(i).get_density());
-			}
-//----------------------------------------------------------------------------------------------
-  			// 						Result vector setup - DO NOT TOUCH
-  			int dimension = 0;
-	    	if(is_6DOF) { dimension =  14; // 6 DOF model 
-	        } else {dimension =  7; // 3 DOF model 
+// 						Result vector setup - DO NOT TOUCH
+int dimension = 0;
+if(is_6DOF) { dimension =  14; // 6 DOF model 
+} else {  dimension =  7; // 3 DOF model 
+}
+double[] y = new double[dimension]; // Result vector
+if(is_6DOF) {
+ // double[] y = new double[13]; // Result vector
+	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+	V_NED_ECEF_spherical[1]= integratorData.getInitFpa();
+	V_NED_ECEF_spherical[2]= integratorData.getInitAzimuth();
+// Position 
+  y[0] = integratorData.getInitLongitude();
+  y[1] = integratorData.getInitLatitude();
+  y[2] = integratorData.getInitRadius();
+  r_ECEF_spherical[0] = y[0];
+  r_ECEF_spherical[1] = y[1];
+  r_ECEF_spherical[2] = y[2];
+  r_ECEF_cartesian = Mathbox.Spherical2Cartesian_Position(r_ECEF_spherical);
+// Velocity
+	        if(spherical) {
+	        	
+	        y[3] = integratorData.getInitVelocity();
+	        y[4] = integratorData.getInitFpa();
+	        y[5] = integratorData.getInitAzimuth();
+    	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+    	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+    	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
+	        } else {
+	        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+	        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+	        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
+	        	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
+		        y[3] = V_NED_ECEF_cartesian[0];
+		        y[4] = V_NED_ECEF_cartesian[1];
+		        y[5] = V_NED_ECEF_cartesian[2];
+		        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
+		        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
 	        }
-		        double[] y = new double[dimension]; // Result vector
-  			if(is_6DOF) {
-	  		       // double[] y = new double[13]; // Result vector
-	  	        	V_NED_ECEF_spherical[0]=x3;
-	  	        	V_NED_ECEF_spherical[1]=x4;
-	  	        	V_NED_ECEF_spherical[2]=x5;
-	  		// Position 
-	  		        y[0] = x0;
-	  		        y[1] = x1;
-	  		        y[2] = x2+rm;
-	  		        
-	  		// Velocity
-			  		        if(spherical) {
-			  		        	
-			  		        y[3] = x3;
-			  		        y[4] = x4;
-			  		        y[5] = x5;
-			  		        
-			  		        } else {
-			  		        	V_NED_ECEF_spherical[0]=x3;
-			  		        	V_NED_ECEF_spherical[1]=x4;
-			  		        	V_NED_ECEF_spherical[2]=x5;
-			  		        	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
-			  			        y[3] = V_NED_ECEF_cartesian[0];
-			  			        y[4] = V_NED_ECEF_cartesian[1];
-			  			        y[5] = V_NED_ECEF_cartesian[2];
-			  			        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
-			  			        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
-			  		        }
-	  		// S/C Mass        
-	  		        y[6] = x6;
-	  				// Attitude and Rotational Motion
-	  				y[7]  = Init_Quarternions[0][0];
-	  				y[8]  = Init_Quarternions[1][0];
-	  				y[9]  = Init_Quarternions[2][0];
-	  				y[10] = Init_Quarternions[3][0];
-	  				y[11] = InitPQR[0][0];
-	  				y[12] = InitPQR[1][0];
-	  				y[13] = InitPQR[2][0];
-	  				
-  				
-  			} else { // 3DOF case
-			      //  double[] y = new double[7]; // Result vector
-		        	V_NED_ECEF_spherical[0]=x3;
-		        	V_NED_ECEF_spherical[1]=x4;
-		        	V_NED_ECEF_spherical[2]=x5;
-			// Position 
-			        y[0] = x0;
-			        y[1] = x1;
-			        y[2] = x2+rm;
-			        
-			// Velocity
-			        if(spherical) {
-			        	
-			        y[3] = x3;
-			        y[4] = x4;
-			        y[5] = x5;
-			        
-			        } else {
-			        	V_NED_ECEF_spherical[0]=x3;
-			        	V_NED_ECEF_spherical[1]=x4;
-			        	V_NED_ECEF_spherical[2]=x5;
-			        	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
-				        y[3] = V_NED_ECEF_cartesian[0];
-				        y[4] = V_NED_ECEF_cartesian[1];
-				        y[5] = V_NED_ECEF_cartesian[2];
-				        //V_NED_ECEF_spherical = Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
-				        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
-			        }
-			// S/C Mass        
-			        y[6] = x6;
-  			}
+// S/C Mass        
+  y[6] = spaceShip.getMass();
+	// Attitude and Rotational Motion
+	y[7]  = q_vector[0][0];
+	y[8]  = q_vector[1][0];
+	y[9]  = q_vector[2][0];
+	y[10] = q_vector[3][0];
+	y[11] = AngularRate[0][0];
+	y[12] = AngularRate[1][0];
+	y[13] = AngularRate[2][0];
+	
+// S/C Mass        
+y[6] = spaceShip.getMass();
+}
+currentDataSet.setxIS(y);
+currentDataSet.settIS(0);
+currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
+currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
+currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+ControllerModel.initializeFlightController(spaceShip, currentDataSet);		
 //----------------------------------------------------------------------------------------------
   			RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	        StepHandler WriteOut = new StepHandler() {
@@ -740,7 +755,7 @@ Gravity.setTARGET(target);
 	            
 	        };
 
-	        dp853.addStepHandler(WriteOut);
+	        IntegratorModule.addStepHandler(WriteOut);
 	        /*
 	        System.out.println("----------------------");
 	        for(int i=0;i<y.length;i++) {
@@ -748,7 +763,8 @@ Gravity.setTARGET(target);
 	        }
 	        */
 	        try {
-	        dp853.integrate(ode, 0.0, y, t, y);
+	        	double t= integratorData.getMaxIntegTime();
+	        	IntegratorModule.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        	System.out.println("ERROR: Integrator failed:");
 	        }

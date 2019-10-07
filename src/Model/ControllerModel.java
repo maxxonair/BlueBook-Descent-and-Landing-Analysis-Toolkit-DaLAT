@@ -5,8 +5,8 @@ import java.util.List;
 
 import Controller.Flight_CTRL_PitchCntrl;
 import Controller.Flight_CTRL_ThrustMagnitude;
-import Sequence.SequenceElement;
-import Simulator_main.Simulation;
+import FlightElement.SpaceShip;
+import Simulator_main.CurrentDataSet;
 
 public class ControllerModel {
 	
@@ -23,24 +23,24 @@ public class ControllerModel {
     private static int ctrl_curve;
     
     
-	public static void initializeFlightController(double[]x, List<SequenceElement> SEQUENCE_DATA_main) {
-		for(int i=0;i<SEQUENCE_DATA_main.size();i++) {
-			int ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_controller_ID()-1;
-			 ctrl_vel = SEQUENCE_DATA_main.get(i).get_ctrl_target_vel();
-			 ctrl_alt = SEQUENCE_DATA_main.get(i).get_ctrl_target_alt();
-			 double ctrl_fpa = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_fpa();
-			 double ctrl_tend = SEQUENCE_DATA_main.get(i).get_TVC_ctrl_target_time();
-			 int TVC_ctrl_ID = SEQUENCE_DATA_main.get(i).get_sequence_TVCController_ID()-1;
+	public static void initializeFlightController(SpaceShip spaceShip, CurrentDataSet currentDataSet) {
+		for(int i=0;i<currentDataSet.getSEQUENCE_DATA_main().size();i++) {
+			int ctrl_ID = currentDataSet.getSEQUENCE_DATA_main().get(i).get_sequence_controller_ID()-1;
+			 ctrl_vel = currentDataSet.getSEQUENCE_DATA_main().get(i).get_ctrl_target_vel();
+			 ctrl_alt = currentDataSet.getSEQUENCE_DATA_main().get(i).get_ctrl_target_alt();
+			 double ctrl_fpa = currentDataSet.getSEQUENCE_DATA_main().get(i).get_TVC_ctrl_target_fpa();
+			 double ctrl_tend = currentDataSet.getSEQUENCE_DATA_main().get(i).get_TVC_ctrl_target_time();
+			 int TVC_ctrl_ID = currentDataSet.getSEQUENCE_DATA_main().get(i).get_sequence_TVCController_ID()-1;
 			// -> Create new Flight controller 
 			 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, 
-					 true, x, 0,  Simulation.getSpaceShip().getPropulsion().getPrimaryPropellant(),  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  
-					 Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMax(),  
-					 Simulation.getSpaceShip().getPropulsion().getPrimaryThrustMin(),  0,  0,  ctrl_curve,  
-					 Simulation.getVal_dt(),0,0,0,0,0, Simulation.getRm(), Simulation.getRef_ELEVATION());
+					 true, currentDataSet.getxIS(), 0,  spaceShip.getPropulsion().getPrimaryPropellant(),  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  
+					 spaceShip.getPropulsion().getPrimaryThrustMax(),  
+					 spaceShip.getPropulsion().getPrimaryThrustMin(),  0,  0,  ctrl_curve,  
+					 currentDataSet.getValDt(),0,0,0,0,0, currentDataSet.getRM(), currentDataSet.getLocalElevation());
 			UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
 			
 			Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, 
-					true, -1, 0, ctrl_tend, ctrl_fpa, Simulation.getRm() , Simulation.getRef_ELEVATION());
+					true, -1, 0, ctrl_tend, ctrl_fpa, currentDataSet.getRM() , currentDataSet.getLocalElevation());
 			UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
 		}	
 	}

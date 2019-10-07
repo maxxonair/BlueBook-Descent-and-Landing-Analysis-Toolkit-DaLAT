@@ -1,11 +1,15 @@
 package VisualEngine.entities;
 
+import java.io.IOException;
+
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
+import Simulator_main.IntegratorData;
 import Simulator_main.RealTimeResultSet;
 import Simulator_main.RealTimeSimulation;
+import Toolbox.ReadInput;
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.models.TexturedModel;
 import VisualEngine.renderEngine.DisplayManager;
@@ -17,7 +21,7 @@ public class Spacecraft extends Entity {
 	
 	private static float CG_Y = 0.9f;
 	private static float azimuth=(float) Math.toRadians(0);
-	
+	static double[] IntegINP ;
 
 	@SuppressWarnings("unused")
 	private  static  float currentVerticalSpeed   =   -5;
@@ -63,6 +67,12 @@ public class Spacecraft extends Entity {
 			Spacecraft.SCPropMass = (float) spaceShip.getPropulsion().getPrimaryPropellant();
 			Spacecraft.SCMainThrust = (float) spaceShip.getPropulsion().getPrimaryThrustMax();
 			Spacecraft.MRCS = spaceShip.getPropulsion().getSecondaryMomentum();
+			try {
+				 IntegINP = ReadInput.readIntegratorInput(1);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
 	}
 	
 	
@@ -240,13 +250,28 @@ public class Spacecraft extends Entity {
 		} else {
 			//System.out.println("Timestep: "+timestep);
 		}
-	    double rm = RealTimeSimulation.getRm();
-	    double ref = RealTimeSimulation.getRef_ELEVATION();
 //Spacecraft.getPosition().y
-	  
+	  /*
 		realTimeResultSet = RealTimeSimulation.Launch_Integrator(INTEGRATOR, target, 0, 0, Spacecraft.getPosition().y+rm+ref, vel, fpa, 
 				azi, Spacecraft.getSCMass(), timestep, timestep, 0, Spacecraft.getQuarternions(), Spacecraft.getPQR(), 
 			    isThrust, Thrust_Momentum, spaceShip);
+			    */
+	    IntegratorData integratorData = new IntegratorData();
+	    integratorData.setDegreeOfFreedom(6);
+	    integratorData.setMaxIntegTime(timestep);
+	    integratorData.setIntegTimeStep(timestep);
+	    integratorData.setTargetBody(target);
+	    integratorData.setInitRadius(Spacecraft.getPosition().y);
+	    integratorData.setInitLongitude(0);
+	    integratorData.setInitLatitude(0);
+	    integratorData.setInitVelocity(vel);
+	    integratorData.setInitFpa(fpa);
+	    integratorData.setInitAzimuth(azi);
+	    integratorData.setIntegInput(IntegINP);	
+	    integratorData.setIntegratorType(INTEGRATOR);
+		spaceShip.setInitialQuarterions(Spacecraft.getQuarternions());
+		spaceShip.setAngularRate(Spacecraft.getPQR());
+		realTimeResultSet = RealTimeSimulation.launchIntegrator(integratorData, spaceShip);
 		Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
 		Spacecraft.setPQR(realTimeResultSet.getPQR());
 		Spacecraft.setQuarternions(realTimeResultSet.getQuarternions());

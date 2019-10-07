@@ -4,14 +4,14 @@ import FlightElement.SpaceShip;
 import Model.Aerodynamic.AerodynamicModel;
 import Model.Aerodynamic.AerodynamicSet;
 import Sequence.Sequence;
-import Simulator_main.Simulation;
+import Simulator_main.CurrentDataSet;
 import Toolbox.Mathbox;
 
 public class ForceModel {
 	
 	
 	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, 
-									 ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, SpaceShip spaceShip) {
+									 ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
 		  double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic frame [N]
 		  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame 		   [N]
 		  double[][] F_Thrust_B    = {{0},{0},{0}};						// Thrust Force in body fixed system     			   [N]
@@ -32,25 +32,23 @@ public class ForceModel {
     	//								    	Gravitational environment
     	//-------------------------------------------------------------------------------------------------------------------  
 		  
-		  gravitySet.setG_NED(Mathbox.Multiply_Matrices(Simulation.getCoordinateTransformation().getC_ECEF2NED(), 
-        				Gravity.getGravity3D(Simulation.getxIS(), Simulation.getR_ECEF_cartesian())));	
+		  gravitySet = GravityModel.getGravitySet(currentDataSet)	;
 		  
         		// Gravitational Force (wrt NED System)
-	    	    	F_Gravity_NED[0][0] = Simulation.getxIS()[6]*gravitySet.getG_NED()[0][0];
-	    	    	F_Gravity_NED[1][0] = Simulation.getxIS()[6]*gravitySet.getG_NED()[1][0];
-	    	    	F_Gravity_NED[2][0] = Simulation.getxIS()[6]*gravitySet.getG_NED()[2][0];
+	    	    	F_Gravity_NED[0][0] = currentDataSet.getxIS()[6]*gravitySet.getG_NED()[0][0];
+	    	    	F_Gravity_NED[1][0] = currentDataSet.getxIS()[6]*gravitySet.getG_NED()[1][0];
+	    	    	F_Gravity_NED[2][0] = currentDataSet.getxIS()[6]*gravitySet.getG_NED()[2][0];
 	    	    	
 	    	    	forceMomentumSet.setF_Gravity_NED(F_Gravity_NED);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
-	atmosphereSet = AtmosphereModel.getAtmosphereSet(Simulation.getxIS(), Simulation.getRm(), Simulation.getTARGET(), 
-    			Simulation.getLt(), Simulation.getSpaceShip(), Simulation.getV_NED_ECEF_spherical());
+	atmosphereSet = AtmosphereModel.getAtmosphereSet(spaceShip, currentDataSet);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Aerodynamic
     	//-------------------------------------------------------------------------------------------------------------------  
     	
-    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet);
+    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet, spaceShip, currentDataSet);
     	
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	
@@ -63,28 +61,27 @@ public class ForceModel {
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
 	   	
-    controlCommandSet = Sequence.getControlCommandSet(Simulation.gettIS(),  Simulation.getxIS(), 
-    		Simulation.getV_NED_ECEF_spherical() , Simulation.getR_ECEF_spherical() , controlCommandSet);
+    controlCommandSet = Sequence.getControlCommandSet(currentDataSet, spaceShip);
     
-    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip);
+    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet);
     
     forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Thrust Forces | Body fixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------
     
-	   	F_Thrust_B[0][0] =  forceMomentumSet.getThrustTotal() * Math.cos(Simulation.getTVC_alpha())*Math.cos(Simulation.getTVC_beta());  
-	   	F_Thrust_B[1][0] =  forceMomentumSet.getThrustTotal() * Math.cos(Simulation.getTVC_alpha())*Math.sin(Simulation.getTVC_beta());   
-	   	F_Thrust_B[2][0] =  forceMomentumSet.getThrustTotal() * Math.sin(Simulation.getTVC_alpha());  
+	   	F_Thrust_B[0][0] =  forceMomentumSet.getThrustTotal() * Math.cos(ActuatorSet.getTVC_alpha())*Math.cos(ActuatorSet.getTVC_beta());  
+	   	F_Thrust_B[1][0] =  forceMomentumSet.getThrustTotal() * Math.cos(ActuatorSet.getTVC_alpha())*Math.sin(ActuatorSet.getTVC_beta());   
+	   	F_Thrust_B[2][0] =  forceMomentumSet.getThrustTotal() * Math.sin(ActuatorSet.getTVC_alpha());  
 	   	
 	   	forceMomentumSet.setF_Thrust_B(F_Thrust_B);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Finalize Force Setup -> Transfrom vectors to NED  
     	//------------------------------------------------------------------------------------------------------------------- 
-    	F_Aero_NED   	= Mathbox.Multiply_Matrices(Simulation.getCoordinateTransformation().getC_A2NED(), F_Aero_A) ; 
+    	F_Aero_NED   	= Mathbox.Multiply_Matrices(currentDataSet.getCoordinateTransformation().getC_A2NED(), F_Aero_A) ; 
     	forceMomentumSet.setF_Aero_NED(F_Aero_NED);
     	
-    	F_Thrust_NED 	= Mathbox.Multiply_Matrices(Simulation.getCoordinateTransformation().getC_B2NED(), F_Thrust_B) ;
+    	F_Thrust_NED 	= Mathbox.Multiply_Matrices(currentDataSet.getCoordinateTransformation().getC_B2NED(), F_Thrust_B) ;
     	forceMomentumSet.setF_Thrust_NED(F_Thrust_NED);
     	
     	F_total_NED   	= Mathbox.Addup_Matrices(F_Aero_NED , F_Thrust_NED );

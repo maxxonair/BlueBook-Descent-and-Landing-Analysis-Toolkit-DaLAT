@@ -27,7 +27,7 @@ import Model.ForceModel;
 import Model.ForceMomentumSet;
 import Model.ActuatorSet;
 import Model.AtmosphereModel;
-import Model.Gravity;
+import Model.GravityModel;
 import Model.GravitySet;
 import Model.MasterSet;
 import Model.atm_dataset;
@@ -91,7 +91,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 		    public static int TARGET=0;						// Target body index
 		    public static double M0=0; 
 	        private static List<atm_dataset> ATM_DATA 							     = new ArrayList<atm_dataset>(); 
-	        private static List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
 	        private static List<StopCondition> STOP_Handler 							 = new ArrayList<StopCondition>(); 
 
 	        public static double v_touchdown=0; 			// Global touchdown velocity constraint [m/s]
@@ -174,12 +173,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			
 	        public static double elevationangle; 
 	        
-	        // TVC control angles: 
-	        public static double TVC_alpha =0;					// TVC angle alpha [rad]
-	        public static double TVC_beta  =0;					// TVC angle beta [rad]
-	        
-	        public static double tvc_alpha_MAX = 15;
-	        public static double tvc_beta_MAX  = 15;
 	        //____________________________
 	        
 	        public static double Thrust_Deviation=0; 
@@ -190,8 +183,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        
 	       
 	        public static boolean engine_loss_indicator=false;
-	        public static double[] xIS ;
-	        public static double tIS;
+	       // public static double[] xIS ;
+	       // public static double tIS;
 	        
 	        public static SpaceShip spaceShip = new SpaceShip();
 	        public static AtmosphereSet atmosphereSet = new AtmosphereSet();
@@ -200,6 +193,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static AerodynamicSet aerodynamicSet = new AerodynamicSet();
 	        public static ControlCommandSet controlCommandSet = new ControlCommandSet();
 	        public static ActuatorSet actuatorSet = new ActuatorSet();
+	        public static CurrentDataSet currentDataSet = new CurrentDataSet();
 	        public static MasterSet masterSet = new MasterSet();
 	        
 	        static DecimalFormat decf = new DecimalFormat("###.#");
@@ -227,10 +221,16 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	//
     	//
     	//-------------------------------------------------------------------------------------------------------------------
-    	xIS=x;				// Current state vector set 
-    	tIS=t;				// Current time value
+    	currentDataSet.setxIS(x);
+    	currentDataSet.settIS(t);
+    	currentDataSet.setValDt(val_dt);
+    	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
+    	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
+    	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+    	
 	coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphereSet, aerodynamicSet, EulerAngle, 
 															 q_vector, r_ECEF_spherical, V_NED_ECEF_spherical);
+	currentDataSet.setCoordinateTransformation(coordinateTransformation);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
@@ -253,7 +253,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	// 									    		 Force Model 
     	//-------------------------------------------------------------------------------------------------------------------
     	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-    							 controlCommandSet, spaceShip);
+    							 controlCommandSet, spaceShip, currentDataSet);
     	forceMomentumSet = masterSet.getForceMomentumSet();
     	gravitySet = masterSet.getGravitySet();
     	atmosphereSet = masterSet.getAtmosphereSet();
@@ -293,11 +293,11 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	//--------------------------------
 	    if(spherical) {
 	    	// velocity
-	    dxdt[3] = -Gravity.getGravity2D(x)[0] * sin( x[4] ) + Gravity.getGravity2D(x)[1] * cos( x[5] ) * cos( x[4] ) + forceMomentumSet.getF_Aero_A()[0][0] / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
+	    dxdt[3] = -GravityModel.getGravity2D(currentDataSet)[0] * sin( x[4] ) + GravityModel.getGravity2D(currentDataSet)[1] * cos( x[5] ) * cos( x[4] ) + forceMomentumSet.getF_Aero_A()[0][0] / x[6] + omega * omega * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
 	    	// flight path angle 
-	    dxdt[4] = ( x[3] / x[2] - Gravity.getGravity2D(x)[0]/ x[3] ) * cos( x[4] ) - Gravity.getGravity2D(x)[1] * cos( x[5] ) * sin( x[4] ) / x[3] - forceMomentumSet.getF_Aero_A()[2][0] / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
+	    dxdt[4] = ( x[3] / x[2] - GravityModel.getGravity2D(currentDataSet)[0]/ x[3] ) * cos( x[4] ) - GravityModel.getGravity2D(currentDataSet)[1] * cos( x[5] ) * sin( x[4] ) / x[3] - forceMomentumSet.getF_Aero_A()[2][0] / ( x[3] * x[6] ) + 2 * omega * sin( x[5] ) * cos( x[1] ) + omega * omega * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
 	    	// local azimuth
-	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - Gravity.getGravity2D(x)[1] * sin( x[5] ) / x[3] + forceMomentumSet.getF_Aero_A()[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
+	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - GravityModel.getGravity2D(currentDataSet)[1] * sin( x[5] ) / x[3] + forceMomentumSet.getF_Aero_A()[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * omega * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + omega * omega * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
 
     	V_NED_ECEF_spherical[0]=x[3];
     	V_NED_ECEF_spherical[1]=x[4];
@@ -491,8 +491,11 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //----------------------------------------------------------------------------------------------
 	try {
 			SET_Constants(integratorData.getTargetBody());
+	    	currentDataSet.setRM(rm);
+	    	currentDataSet.setLt(Lt);
+	    	currentDataSet.setMu(mu);
 		} catch (IOException e2) {
-			// TODO Auto-generated catch block
+			System.err.println("ERROR: Set constants failed.");
 			e2.printStackTrace();
 		}
 //----------------------------------------------------------------------------------------------
@@ -543,16 +546,12 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	 STOP_Handler = integratorData.getIntegStopHandler(); 
  		}
 //----------------------------------------------------------------------------------------------
-//					Gravity Setup	
-//----------------------------------------------------------------------------------------------
- 		Gravity.setMu(mu);
- 		Gravity.setRm(rm);
- 		Gravity.setTARGET(integratorData.getTargetBody());
-//----------------------------------------------------------------------------------------------
 //					Sequence Setup	
 //----------------------------------------------------------------------------------------------
+    	currentDataSet.setLocalElevation(integratorData.getRefElevation());
+    	currentDataSet.setTARGET(integratorData.getTargetBody());
 		Sequence.setSequence_RES_closed(false);
-		SEQUENCE_DATA_main = SEQUENCE_DATA;  // Sequence data handover
+    	currentDataSet.setSEQUENCE_DATA_main(SEQUENCE_DATA);
 		ControllerModel.getCTRL_steps().clear();
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
@@ -587,14 +586,19 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	  		        y[0] = integratorData.getInitLongitude();
 	  		        y[1] = integratorData.getInitLatitude();
 	  		        y[2] = integratorData.getInitRadius();
-	  		        
+	  			    r_ECEF_spherical[0] = y[0];
+	  			    r_ECEF_spherical[1] = y[1];
+	  			    r_ECEF_spherical[2] = y[2];
+	  			    r_ECEF_cartesian = Mathbox.Spherical2Cartesian_Position(r_ECEF_spherical);
 	  		// Velocity
 			  		        if(spherical) {
 			  		        	
 			  		        y[3] = integratorData.getInitVelocity();
 			  		        y[4] = integratorData.getInitFpa();
 			  		        y[5] = integratorData.getInitAzimuth();
-			  		        
+				        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+				        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+				        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
 			  		        } else {
 			  		        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
 			  		        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
@@ -634,7 +638,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			        y[3] = integratorData.getInitVelocity();
 			        y[4] = integratorData.getInitFpa();
 			        y[5] = integratorData.getInitAzimuth();
-			        
+			        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+			        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
+			        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
 			        } else {
 			        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
 			        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
@@ -649,7 +655,12 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			// S/C Mass        
 			        y[6] = spaceShip.getMass();
   			}
-  			ControllerModel.initializeFlightController(y, SEQUENCE_DATA_main);
+  			currentDataSet.setxIS(y);
+  	      	currentDataSet.settIS(0);
+  	     	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
+  	     	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
+  	     	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+  			ControllerModel.initializeFlightController(spaceShip, currentDataSet);
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
 
@@ -664,12 +675,12 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};if(tis!=tminus) {val_dt=Math.abs(tis-tminus);}else{val_dt=0.01;};
 	                double[] y     = interpolator.getInterpolatedState();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
-	                double g_total = Math.sqrt(Gravity.getGravity2D(y)[0]*Gravity.getGravity2D(y)[0]+Gravity.getGravity2D(y)[1]*Gravity.getGravity2D(y)[1]);
+	                double g_total = 0;
 	                double E_total = y[6]*(g_total*(y[2]-rm)+0.5*vel_inertFrame*vel_inertFrame);
 	                double CTRL_TM_Error =0;
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
-	                if(SEQUENCE_DATA_main.get(Sequence.getActiveSequence()).get_sequence_type()==3) {
+	                if(currentDataSet.getSEQUENCE_DATA_main().get(Sequence.getActiveSequence()).get_sequence_type()==3) {
 	                CTRL_TM_Error=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_ERROR();
 	                CTRL_TVC_Error=ControllerModel.getFlight_CTRL_PitchCntrl().get(Sequence.getActiveSequence()).get_CTRL_ERROR();  
 	                }
@@ -689,8 +700,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  aerodynamicSet.getDragForce() + " " +
 	                    		  aerodynamicSet.getLiftForce() + " " +
 	                    		  aerodynamicSet.getSideForce() + " " +
-	                    		  Gravity.getGravity2D(y)[0] + " " +
-	                    		  Gravity.getGravity2D(y)[1] + " " +
+	                    		  GravityModel.getGravity2D(currentDataSet)[0] + " " +
+	                    		  GravityModel.getGravity2D(currentDataSet)[1] + " " +
 	                    		  g_total + " " +
 	                    		  atmosphereSet.getStaticTemperature()+ " " +
 	                    		  atmosphereSet.getMach()+ " " +
@@ -707,7 +718,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
 	                    		  E_total+ " " + 
-	                    		  (Sequence.getControlCommandSet().getPrimaryThrustThrottleCmd()*100)+ " "+ 
+	                    		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
 	                    		  (spaceShip.getPropulsion().getPrimaryPropellant()-(actuatorSet.getPrimaryPropellant_is()))/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
 	                    		  (forceMomentumSet.getThrustTotal())+" "+
 	                    		  (forceMomentumSet.getThrustTotal()/y[6])+" "+
@@ -881,71 +892,10 @@ public class Simulation implements FirstOrderDifferentialEquations {
 				}
 	       
     }
-	public static double getRef_ELEVATION() {
-		return ref_ELEVATION;
-	}
-	public static double getRm() {
-		return rm;
-	}
-	public static SpaceShip getSpaceShip() {
-		return spaceShip;
-	}
-	public static double getVal_dt() {
-		return val_dt;
-	}
-	
-	
-	
-	public static double getTVC_alpha() {
-		return TVC_alpha;
-	}
-
-	public static double getTVC_beta() {
-		return TVC_beta;
-	}
-
-	public static double getLt() {
-		return Lt;
-	}
+    
 
 	public static CoordinateTransformation getCoordinateTransformation() {
 		return coordinateTransformation;
-	}
-
-	public static boolean isSpherical() {
-		return spherical;
-	}
-
-	public static double[] getV_NED_ECEF_spherical() {
-		return V_NED_ECEF_spherical;
-	}
-
-	public static double[] getV_NED_ECEF_cartesian() {
-		return V_NED_ECEF_cartesian;
-	}
-
-	public static double[] getR_ECEF_cartesian() {
-		return r_ECEF_cartesian;
-	}
-
-	public static double[] getR_ECEF_spherical() {
-		return r_ECEF_spherical;
-	}
-
-	public static List<SequenceElement> getSEQUENCE_DATA_main() {
-		return SEQUENCE_DATA_main;
-	}
-
-	public static int getTARGET() {
-		return TARGET;
-	}
-
-	public static double gettIS() {
-		return tIS;
-	}
-
-	public static double[] getxIS() {
-		return xIS;
 	}
 
 	public static void Set_AngularVelocityEquationElements(double[] x) {

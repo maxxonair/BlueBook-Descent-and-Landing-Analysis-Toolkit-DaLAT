@@ -9,9 +9,13 @@ import javax.swing.event.ChangeListener;
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
 import GUI.BlueBookVisual;
+import GUI.FxElements.TargetView3D.SmartGroup;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
+import javafx.geometry.Point3D;
 import javafx.scene.AmbientLight;
 import javafx.scene.Camera;
 import javafx.scene.Group;
@@ -21,6 +25,7 @@ import javafx.scene.Scene;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.shape.MeshView;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Transform;
 import javafx.stage.Stage;
@@ -68,7 +73,7 @@ public class SpaceShipView3D extends Application{
 		coordinateSystem.translateZProperty().set(targetBodyInitialDistance/2);
 		
 		initMouseControl(model, coordinateSystem, scene, fxpanel);
-			
+
 		BlueBookVisual.sliderEuler1.addChangeListener(new ChangeListener() {
 
 			@Override
@@ -77,10 +82,12 @@ public class SpaceShipView3D extends Application{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                    	
 				double drotX = BlueBookVisual.sliderEuler1.getValue() - rotX;
 				rotX=BlueBookVisual.sliderEuler1.getValue();
-				
 				setRotationX( drotX);
+				//new TurnAction(model.rz, 15);
+
                     }
                 });
 			}
@@ -94,10 +101,11 @@ public class SpaceShipView3D extends Application{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                    	/*
 				double drotZ = BlueBookVisual.sliderEuler2.getValue() - rotZ;
 				rotZ=BlueBookVisual.sliderEuler2.getValue();
-				
 				setRotationZ( drotZ);
+				*/
                     }
                 });
 			}
@@ -111,10 +119,12 @@ public class SpaceShipView3D extends Application{
                 Platform.runLater(new Runnable() {
                     @Override
                     public void run() {
+                    	/*
 				double drotY = BlueBookVisual.sliderEuler3.getValue() - rotY;
 				rotY=BlueBookVisual.sliderEuler3.getValue();
 				
 				setRotationY( drotY);
+				*/
                     }
                 });
 			}
@@ -167,8 +177,9 @@ public static void setRotationZ(double deltaRotZ) {
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 }
 
+
 private static SmartGroup loadModel(String fileString) {
-    SmartGroup modelRoot = new SmartGroup();
+	SmartGroup modelRoot = new SmartGroup();
 
     ObjModelImporter importer = new ObjModelImporter();
    // importer.read(url);
@@ -183,6 +194,7 @@ modelRoot.setScaleY(scale);
 modelRoot.setScaleZ(scale);
     return modelRoot;
 }
+
 
 private static SmartGroup loadCoordinateSystem(String fileString) {
     SmartGroup modelRoot = new SmartGroup();

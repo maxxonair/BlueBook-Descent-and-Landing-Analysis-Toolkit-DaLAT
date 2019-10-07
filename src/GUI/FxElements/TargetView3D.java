@@ -15,9 +15,11 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.JFXPanel;
+import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.SceneAntialiasing;
 import javafx.scene.control.Slider;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Sphere;
@@ -28,6 +30,7 @@ import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
 import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
+import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.image.Image;
@@ -66,7 +69,7 @@ public class TargetView3D extends Application{
 	static Image backgroundImage;
 	static Slider slider ;
 	public static SmartGroup Spacecraft = new SmartGroup();
-	static AnimationTimer timer;
+	//static AnimationTimer timer;
 	static boolean animationSwitch=true; 
 	
 	public static void start(JFXPanel fxpanel, int targetInd) {
@@ -93,7 +96,7 @@ public class TargetView3D extends Application{
 		camera.setFarClip(10000);
 		
 
-		Scene scene = new Scene(root, WIDTH, HEIGHT);
+		Scene scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
 		scene.setFill(Color.BLACK);
 		scene.setCamera(camera);
 		
@@ -104,6 +107,10 @@ public class TargetView3D extends Application{
 		
 		initMouseControl(TargetBodyGroup, scene, fxpanel, camera);
 				
+		fxpanel.setScene(scene);
+		
+		AnimationTimer timer = prepareAnimation(slider);
+		
 		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
 			switch (event.getCode()) {
 			case A:
@@ -122,9 +129,6 @@ public class TargetView3D extends Application{
 				break;
 			}
 		});
-		fxpanel.setScene(scene);
-		
-		prepareAnimation(slider);
 
 	}
 	
@@ -205,6 +209,7 @@ public static class SmartGroup extends Group {
 	}
 }
 
+
 private static Slider prepareSlider() {
 	Slider slider = new Slider();
 	slider.setMax(1.0);
@@ -219,8 +224,8 @@ private static Slider prepareSlider() {
 	return slider;
 }
 
-private static void prepareAnimation(Slider slider) {
-	 timer = new AnimationTimer() {
+private static AnimationTimer prepareAnimation(Slider slider) {
+	AnimationTimer timer = new AnimationTimer() {
 
 		@Override
 		public void handle(long arg0) {
@@ -236,6 +241,7 @@ private static void prepareAnimation(Slider slider) {
 		
 	};
 	timer.start();
+	return timer;
 }
 
 private static void rotatePlanet(boolean direction) {

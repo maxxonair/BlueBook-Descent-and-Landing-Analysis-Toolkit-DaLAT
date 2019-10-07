@@ -2,13 +2,13 @@ package Model;
 
 import FlightElement.SpaceShip;
 import Sequence.Sequence;
-import Simulator_main.Simulation;
+import Simulator_main.CurrentDataSet;
 
 public class ActuatorModel {
 	
-	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip) {
+	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
 		ActuatorSet actuatorSet = new ActuatorSet();
-		double deltaPropellant = spaceShip.getMass() - Simulation.getxIS()[6];
+		double deltaPropellant = spaceShip.getMass() - currentDataSet.getxIS()[6];
 		
 		double primaryPropellant = spaceShip.getPropulsion().getPrimaryPropellant()-deltaPropellant;
 		// Set Propellant in tanks: 
