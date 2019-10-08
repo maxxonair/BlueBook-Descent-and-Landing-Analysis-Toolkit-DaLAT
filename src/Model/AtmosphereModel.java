@@ -25,7 +25,7 @@ double is_value = 0 ;
 private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 
 public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
-public static double PI    = 3.14159265359;                // Pi                                         [-]
+public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 
 public static double sigma = 1.6311e-9;     // Average collision diameter (<- check that again)
 
@@ -80,57 +80,6 @@ if (k==0){
 	   return ATM_DATA;	
 }
 
-//----------------------------------------------------------------------------------------------------------------------------
-//
-//                                        Calculate Drag with three flowzone approach
-//                                      Free molecular -> transitional -> Contiuum flow
-//
-//----------------------------------------------------------------------------------------------------------------------------
-public static double load_Drag(double vel, double h, double P, double T, double CdC, double Lt, double R)
-{
-double CD = 0;
-//double Lt = read_data(file_cship,2);
-double Kn = kB * T / ( Math.sqrt(2) * PI * sigma * sigma * P * Lt );
-if(Kn<0.1){
-//               Continuum flow        <---------------
-CD=CdC;
-}
-if(Kn>0.1 && Kn<10){
-//               Transtional zone      <---------------
-double S = vel / Math.sqrt(2 * R * T);
-double Cdfm= 1.75 + Math.sqrt(PI)/(2 * S);
-CD= CdC + ( Cdfm - CdC ) * ( 1/3 * Math.log10( Kn / Math.sin( PI / 6 ) ) * 0.5113 ) ;
-}
-if(Kn>10){
-//               Free molecular zone   <---------------
-double S = vel / Math.sqrt(2 * R * T);
-CD= 1.75 + Math.sqrt(PI)/(2 * S);
-}
-return CD;
-}
-//----------------------------------------------------------------------------------------------------------------------------
-public static int calc_flowzone( double vel, double h , double P , double T, double Lt)
-{
-double Kn = kB * T / ( Math.sqrt(2) * PI * sigma * sigma * P * Lt );
-int flowzone = 0;
-if(Kn<0.1){
-flowzone = 1;
-}
-if(Kn>0.1 && Kn<10){
-flowzone = 2;
-}
-if(Kn>10){
-flowzone = 3;
-}
-return flowzone;
-}
-
-public static double get_CdC(double h, double AoA){
-	double CdC = 1.55 ; 
-	
-	
-	return CdC; 
-}
 
 public static double atm_read(int variable, double altitude) {
 	double atm_read = 0;

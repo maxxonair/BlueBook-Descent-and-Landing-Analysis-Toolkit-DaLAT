@@ -20,9 +20,7 @@ public class CurrentDataSet {
 	private  List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
 	private double mu;
 	private CoordinateTransformation coordinateTransformation = new CoordinateTransformation();
-	
-	
-	
+
 	public CoordinateTransformation getCoordinateTransformation() {
 		return coordinateTransformation;
 	}

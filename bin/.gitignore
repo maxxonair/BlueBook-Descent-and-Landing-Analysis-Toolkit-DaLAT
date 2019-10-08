@@ -1,4 +1,5 @@
-/Simulator_main/
-/Model/
-/Sequence/
 /Controller/
+/FlightElement/
+/GUI/
+/Model/
+/Simulator_main/

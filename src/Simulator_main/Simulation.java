@@ -506,6 +506,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //   - Initialise ground track computation
 
 	spaceShip = spaceElement;
+	spaceShip.getAeroElements().setHeatshieldRadius(1.5);
 	coordinateTransformation =  new CoordinateTransformation();
 	gravitySet = new GravitySet();
 	forceMomentumSet = new ForceMomentumSet();
