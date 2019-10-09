@@ -187,6 +187,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	       // public static double tIS;
 	        
 	        public static SpaceShip spaceShip = new SpaceShip();
+	        public static IntegratorData integratorData = new IntegratorData();
 	        public static AtmosphereSet atmosphereSet = new AtmosphereSet();
 	        public static ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
 	        public static GravitySet gravitySet = new GravitySet();
@@ -253,7 +254,7 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	// 									    		 Force Model 
     	//-------------------------------------------------------------------------------------------------------------------
     	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-    							 controlCommandSet, spaceShip, currentDataSet);
+    							 controlCommandSet, spaceShip, currentDataSet, integratorData);
     	forceMomentumSet = masterSet.getForceMomentumSet();
     	gravitySet = masterSet.getGravitySet();
     	atmosphereSet = masterSet.getAtmosphereSet();
@@ -506,6 +507,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //   - Initialise ground track computation
 
 	spaceShip = spaceElement;
+	System.out.println("RB: "+spaceShip.getAeroElements().getHeatshieldRadius());
+	Simulation.integratorData = integratorData;
 	spaceShip.getAeroElements().setHeatshieldRadius(1.5);
 	coordinateTransformation =  new CoordinateTransformation();
 	gravitySet = new GravitySet();

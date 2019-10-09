@@ -35,6 +35,8 @@ public class IntegratorData {
 	
 	int IntegratorType;
 	
+	int AeroDragModel;
+	
 
 	FirstOrderIntegrator Integrator;
 	
@@ -50,6 +52,16 @@ public class IntegratorData {
 
 	public int getIntegratorType() {
 		return IntegratorType;
+	}
+
+
+	public int getAeroDragModel() {
+		return AeroDragModel;
+	}
+
+
+	public void setAeroDragModel(int aeroDragModel) {
+		AeroDragModel = aeroDragModel;
 	}
 
 

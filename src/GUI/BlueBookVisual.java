@@ -162,6 +162,7 @@ public class BlueBookVisual implements  ActionListener {
 	public static String INTEG_File_04 			= "/INP/INTEG/03_AdamsBashfordIntegrator.inp";
 	public static String INERTIA_File 		    = "/INP/INERTIA.inp";
 	public static String InitialAttitude_File   = "/INP/INITIALATTITUDE.inp";
+    public static String Aero_file 		        = System.getProperty("user.dir") + "/INP/AERO/aeroBasic.inp";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -188,10 +189,10 @@ public class BlueBookVisual implements  ActionListener {
     //											Styles, Fonts, Colors
     //-----------------------------------------------------------------------------------------------------------------------------------------
     public static int gg = 235;
-    //public static Color l_c = new Color(0,0,0);    					// Label Color
-    public static Color l_c = new Color(220,220,220);    					// Label Color
-   	//public static Color bc_c = new Color(255,255,255);				// Background Color
-   	public static Color bc_c = new Color(41,41,41);				// Background Color
+    //public static Color labelColor = new Color(0,0,0);    					// Label Color
+    public static Color labelColor = new Color(220,220,220);    					// Label Color
+   	//public static Color backgroundColor = new Color(255,255,255);				// Background Color
+   	public static Color backgroundColor = new Color(41,41,41);				// Background Color
    	public static Color w_c = new Color(gg,gg,gg);					// Box background color
    //	public static Color t_c = new Color(255,255,255);				// Table background color
    	public static Color t_c = new Color(61,61,61);				// Table background color
@@ -210,6 +211,8 @@ public class BlueBookVisual implements  ActionListener {
     static Font targetfont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     public static DecimalFormat df 	  = new DecimalFormat();
+    
+    static List<JRadioButton> DragModelSet = new ArrayList<JRadioButton>();
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Variables and Container Arrays
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -462,7 +465,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG, INDICATOR_LAT,INDICATOR_LONG,INDICATOR_ALT,INDICATOR_VEL,INDICATOR_FPA,INDICATOR_AZI,INDICATOR_M0,INDICATOR_INTEGTIME, INDICATOR_TARGET;
     public static JTextField INPUT_LONG_Is,INPUT_LAT_Is,INPUT_ALT_Is,INPUT_VEL_Is,INPUT_FPA_Is,INPUT_AZI_Is;   // Input vector inertial Frame / spherical coordinates -> Is
     public static JTextField INPUT_LONG_Rs,INPUT_LAT_Rs,INPUT_ALT_Rs,INPUT_VEL_Rs,INPUT_FPA_Rs,INPUT_AZI_Rs;   // Input vector rotating Frame / spherical coordinates -> Rs
-    public static JTextField INPUT_TIME; 
+    public static JTextField INPUT_TIME, INPUT_RB; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_REFELEV,INPUT_ISPMIN, INPUT_SURFACEAREA, INPUT_BALLISTICCOEFFICIENT;
     public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator,Module_Indicator;
@@ -478,7 +481,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JSlider sliderEuler1;
     public static JSlider sliderEuler2;
     public static JSlider sliderEuler3;
-    
+    public static JPanel SpaceShip3DControlPanel ;
     public static TimerTask task_Update;
     
     static DefaultTableModel MODEL_RAWData;
@@ -543,7 +546,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	public JPanel createContentPane () throws IOException{
     	JPanel MainGUI = new JPanel();
     	MainGUI = new JPanel();
-    	MainGUI.setBackground(bc_c);
+    	MainGUI.setBackground(backgroundColor);
     	MainGUI.setLayout(new BorderLayout());
     	//---------------------------------------------------------------------------------------
     	//                Initialize paths from relative to absolute file paths
@@ -608,38 +611,67 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	decf.setMaximumFractionDigits(1);
     	decf.setMinimumFractionDigits(1);
         //Create the menu bar.
-        JMenuBar menuBar = new JMenuBar();
+        try {
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (ClassNotFoundException ex) {
+        } catch (InstantiationException ex) {
+        } catch (IllegalAccessException ex) {
+        } catch (UnsupportedLookAndFeelException ex) {
+        }
+        UIManager.put("MenuBar.background", Color.green);
+       // UIManager.put("Menu.background", labelColor);
+      //  UIManager.put("MenuItem.background", labelColor);
+        UIManager.put("Menu.opaque", true);
+        
+      	BackgroundMenuBar menuBar = new BackgroundMenuBar();
         //menuBar.setLocation(0, 0);
-        menuBar.setBackground(bc_c);
-        menuBar.setPreferredSize(new Dimension(1200, 20));
+        menuBar.setColor(new Color(250,250,250));
+        menuBar.setOpaque(true);
+        menuBar.setPreferredSize(new Dimension(1200, 25));
         MainGUI.add(menuBar, BorderLayout.NORTH);
 
         JTabbedPane Page04_subtabPane = (JTabbedPane) new JTabbedPane();
         Page04_subtabPane.setPreferredSize(new Dimension(extx_main, exty_main));
-        Page04_subtabPane.setBackground(bc_c);
-        Page04_subtabPane.setForeground(l_c);
+        Page04_subtabPane.setBackground(backgroundColor);
+        Page04_subtabPane.setForeground(Color.BLACK);
         
      	ImageIcon icon_BlueBook = null;
      	ImageIcon icon_windowSelect = null;
      	ImageIcon icon_visualEngine = null;
+     	ImageIcon icon_preProcessing =null;
+     	ImageIcon icon_postProcessing =null;
+     	ImageIcon icon_simulation =null;
      	int sizeUpperBar=20;
+     	try {
 		icon_BlueBook = new ImageIcon("images/BB_icon2.png","");
 		icon_windowSelect = new ImageIcon("images/windowSelect.png","");
 		icon_visualEngine = new ImageIcon("images/visualEngine.png","");
+		icon_preProcessing = new ImageIcon("images/preprocessingIcon.png","");
+		icon_postProcessing = new ImageIcon("images/postprocessingIcon.png","");
+		icon_simulation = new ImageIcon("images/simulationIcon.jpg","");
      	if(OS_is==1) {
         	 icon_BlueBook = new ImageIcon(getScaledImage(icon_BlueBook.getImage(),sizeUpperBar,sizeUpperBar));
         	 icon_windowSelect = new ImageIcon(getScaledImage(icon_windowSelect.getImage(),sizeUpperBar,sizeUpperBar));
         	 icon_visualEngine = new ImageIcon(getScaledImage(icon_visualEngine.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_simulation = new ImageIcon(getScaledImage(icon_simulation.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_preProcessing = new ImageIcon(getScaledImage(icon_preProcessing.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_postProcessing = new ImageIcon(getScaledImage(icon_postProcessing.getImage(),sizeUpperBar,sizeUpperBar));
      	} else if(OS_is==2) {
      	//	For Windows image icons have to be resized
         	 icon_BlueBook = new ImageIcon(getScaledImage(icon_BlueBook.getImage(),sizeUpperBar,sizeUpperBar));
         	 icon_windowSelect = new ImageIcon(getScaledImage(icon_windowSelect.getImage(),sizeUpperBar,sizeUpperBar));
         	 icon_visualEngine = new ImageIcon(getScaledImage(icon_visualEngine.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_simulation = new ImageIcon(getScaledImage(icon_simulation.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_preProcessing = new ImageIcon(getScaledImage(icon_preProcessing.getImage(),sizeUpperBar,sizeUpperBar));
+        	 icon_postProcessing = new ImageIcon(getScaledImage(icon_postProcessing.getImage(),sizeUpperBar,sizeUpperBar));
+     	}
+     	} catch (Exception e) {
+     		System.err.println("Error: Loading image icons failed");
      	}
         //Build the first menu.
-        JMenu menu_BlueBook = new JMenu("BlueBook");
-        menu_BlueBook.setForeground(l_c);
-        menu_BlueBook.setBackground(bc_c);
+     	JMenu menu_BlueBook = new JMenu("BlueBook");
+     	menu_BlueBook.setOpaque(true);
+     	menu_BlueBook.setBackground(labelColor);
         menu_BlueBook.setFont(small_font);
         menu_BlueBook.setMnemonic(KeyEvent.VK_A);
         menu_BlueBook.setIcon(icon_BlueBook);
@@ -657,7 +689,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Import = new JMenuItem("Settings                "); 
-        menuItem_Import.setForeground(l_c);
+        menuItem_Import.setForeground(labelColor);
         menuItem_Import.setFont(small_font);
         menuItem_Import.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -678,7 +710,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                  		thread.start();
                     } });
         JMenuItem menuItem_Export = new JMenuItem("Results save as                "); 
-        menuItem_Export.setForeground(l_c);
+        menuItem_Export.setForeground(labelColor);
         menuItem_Export.setFont(small_font);
         menuItem_Export.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -701,7 +733,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Exit = new JMenuItem("Exit                  "); 
-        menuItem_Exit.setForeground(l_c);
+        menuItem_Exit.setForeground(labelColor);
         menuItem_Exit.setFont(small_font);
         menuItem_Exit.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -712,13 +744,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_SIM = new JMenu("Simulation");
-        menu_SIM.setForeground(l_c);
-        menu_SIM.setBackground(bc_c);
+        menu_SIM.setForeground(labelColor);
+        menu_SIM.setBackground(backgroundColor);
         menu_SIM.setFont(small_font);
+        menu_SIM.setIcon(icon_simulation);
         menu_SIM.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_SIM);
         JMenuItem menuItem_SimSettings = new JMenuItem("Run Simulation                 "); 
-        menuItem_SimSettings.setForeground(l_c);
+        menuItem_SimSettings.setForeground(labelColor);
         menuItem_SimSettings.setFont(small_font);
         menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_R, ActionEvent.ALT_MASK));
@@ -745,7 +778,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       				} 
                     } });
         JMenuItem menuItem_Update = new JMenuItem("Update Data                 "); 
-        menuItem_Update.setForeground(l_c);
+        menuItem_Update.setForeground(labelColor);
         menuItem_Update.setFont(small_font);
         menuItem_Update.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_U, ActionEvent.ALT_MASK));
@@ -756,14 +789,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PreProcessing = new JMenu("PreProcessing");
-        menu_PreProcessing.setForeground(l_c);
-        menu_PreProcessing.setBackground(bc_c);
+        menu_PreProcessing.setForeground(labelColor);
+        menu_PreProcessing.setBackground(backgroundColor);
         menu_PreProcessing.setFont(small_font);
+        menu_PreProcessing.setIcon(icon_preProcessing);
         menu_PreProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PreProcessing);
         
         JMenuItem menuItem_ImportScenario = new JMenuItem("Simulation Setup Open               "); 
-        menuItem_ImportScenario.setForeground(l_c);
+        menuItem_ImportScenario.setForeground(labelColor);
         menuItem_ImportScenario.setFont(small_font);
         menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -787,7 +821,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                 	   Page04_subtabPane.setSelectedIndex(1);
                     } });
         JMenuItem menuItem_ExportScenario = new JMenuItem("Simulation Setup Save as              "); 
-        menuItem_ExportScenario.setForeground(l_c);
+        menuItem_ExportScenario.setForeground(labelColor);
         menuItem_ExportScenario.setFont(small_font);
         menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -809,14 +843,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PostProcessing = new JMenu("PostProcessing");
-        menu_PostProcessing.setForeground(l_c);
-        menu_PostProcessing.setBackground(bc_c);
+        menu_PostProcessing.setForeground(labelColor);
+        menu_PostProcessing.setBackground(backgroundColor);
         menu_PostProcessing.setFont(small_font);
+        menu_PostProcessing.setIcon(icon_postProcessing);
         menu_PostProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PostProcessing);
         
         JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Custom Data Plot               "); 
-        menuItem_CreateLocalElevation.setForeground(l_c);
+        menuItem_CreateLocalElevation.setForeground(labelColor);
         menuItem_CreateLocalElevation.setFont(small_font);
         menuItem_CreateLocalElevation.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -840,8 +875,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
       //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_VisualEngine = new JMenu("Visual Engine");
-        menu_VisualEngine.setForeground(l_c);
-        menu_VisualEngine.setBackground(bc_c);
+        menu_VisualEngine.setForeground(labelColor);
+        menu_VisualEngine.setBackground(backgroundColor);
         menu_VisualEngine.setFont(small_font);
         menu_VisualEngine.setIcon(icon_visualEngine);
         menu_VisualEngine.setMnemonic(KeyEvent.VK_A);
@@ -885,7 +920,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         
         JMenuItem menuItem_RealTime = new JMenuItem("Open Real Time Simulation Demo     "); 
-        menuItem_RealTime.setForeground(l_c);
+        menuItem_RealTime.setForeground(labelColor);
         menuItem_RealTime.setFont(small_font);
         menuItem_RealTime.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -925,14 +960,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
         JMenu menuItem_AddSpacecraft = new JMenu("Add Spacecraft                ");
         menuItem_AddSpacecraft.setForeground(Color.gray);
-        //menuItem_AddSpacecraft.setBackground(bc_c);
+        //menuItem_AddSpacecraft.setBackground(backgroundColor);
         menuItem_AddSpacecraft.setFont(small_font);
         menuItem_AddSpacecraft.setMnemonic(KeyEvent.VK_A);
         menu_VisualEngine.add(menuItem_AddSpacecraft);
         ButtonGroup group_sc = new ButtonGroup();
 
         JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem("Gemini");
-        menuItem.setForeground(l_c);
+        menuItem.setForeground(labelColor);
         menuItem.setFont(small_font);
         menuItem_AddSpacecraft.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
@@ -942,7 +977,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuItem_AddSpacecraft.add(menuItem);
 
         menuItem = new JRadioButtonMenuItem("Mars Global Surveyor");
-        menuItem.setForeground(l_c);
+        menuItem.setForeground(labelColor);
         menuItem.setFont(small_font);
         menuItem_AddSpacecraft.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
@@ -953,14 +988,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         
         JMenu menuItem_setEnvironment = new JMenu("Set Environment               ");
         menuItem_setEnvironment.setForeground(Color.gray);
-        //menuItem_setEnvironment.setBackground(bc_c);
+        //menuItem_setEnvironment.setBackground(backgroundColor);
         menuItem_setEnvironment.setFont(small_font);
         menuItem_setEnvironment.setMnemonic(KeyEvent.VK_A);
         menu_VisualEngine.add(menuItem_setEnvironment);
         ButtonGroup group_env = new ButtonGroup();
         
         menuItem = new JRadioButtonMenuItem("Space");
-        menuItem.setForeground(l_c);
+        menuItem.setForeground(labelColor);
         menuItem.setFont(small_font);
         menuItem_AddSpacecraft.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
@@ -970,7 +1005,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuItem_setEnvironment.add(menuItem);
 
          menuItem = new JRadioButtonMenuItem("Earth");
-         menuItem.setForeground(l_c);
+         menuItem.setForeground(labelColor);
          menuItem.setFont(small_font);
          menuItem_AddSpacecraft.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -980,7 +1015,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         
         menuItem_setEnvironment.add(menuItem);
          menuItem = new JRadioButtonMenuItem("Moon");
-         menuItem.setForeground(l_c);
+         menuItem.setForeground(labelColor);
          menuItem.setFont(small_font);
          menuItem_AddSpacecraft.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
@@ -989,17 +1024,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
          group_env.add(menuItem);
         menuItem_setEnvironment.add(menuItem);
    //-------------------------------------------------------------------------     
-        JMenu menu_Window = new JMenu("Window");
-        menu_Window.setForeground(l_c);
-        menu_Window.setBackground(bc_c);
+        JMenu menu_Window = new JMenu();
+        menu_Window.setText("Window");
+       // menu_Window.setForeground(labelColor);
+        //menu_Window.setBackground(backgroundColor);
+        menu_Window.setForeground(Color.black);
+       //menu_Window.setColor(labelColor);
         menu_Window.setFont(small_font);
         menu_Window.setIcon(icon_windowSelect);
         menu_Window.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_Window);
         
         JMenu menu_ThirdWindow = new JMenu("Set third window content");
-        menu_ThirdWindow.setForeground(l_c);
-        menu_ThirdWindow.setBackground(bc_c);
+        //menu_ThirdWindow.setForeground(labelColor);
+        //menu_ThirdWindow.setBackground(backgroundColor);
         menu_ThirdWindow.setFont(small_font);
         menu_ThirdWindow.setMnemonic(KeyEvent.VK_A);
         menu_Window.add(menu_ThirdWindow);
@@ -1007,7 +1045,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         ButtonGroup thirdWindow = new ButtonGroup();
         
         menuItem = new JRadioButtonMenuItem("Flight Path Angle");
-        menuItem.setForeground(l_c);
+       //menuItem.setForeground(labelColor);
         menuItem.setFont(small_font);
         menuItem.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
@@ -1023,7 +1061,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_ThirdWindow.add(menuItem);
 
          menuItem = new JRadioButtonMenuItem("3D Trajectory View");
-         menuItem.setForeground(l_c);
+        // menuItem.setForeground(labelColor);
          menuItem.setFont(small_font);
          menuItem.setSelected(true);
          menuItem.addActionListener(new ActionListener() {
@@ -1038,9 +1076,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
          menu_ThirdWindow.add(menuItem);
          
         JMenuItem menuItemSelect3D = new JMenuItem("Select 3D SpaceShip");
-        menuItemSelect3D.setForeground(l_c);
+       // menuItemSelect3D.setForeground(labelColor);
          menuItemSelect3D.setFont(small_font);
-         menuItemSelect3D.setSelected(true);
+         menuItemSelect3D.setForeground(Color.black);
+         //menuItemSelect3D.setSelected(true);
          menuItemSelect3D.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
                     	// Refresh Object file path
@@ -1064,63 +1103,63 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         PageX04_Dashboard.setLocation(0, 0);
         PageX04_Dashboard.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_Dashboard.setLayout(new BorderLayout());
-        PageX04_Dashboard.setBackground(bc_c);
-        PageX04_Dashboard.setForeground(l_c);
+        PageX04_Dashboard.setBackground(backgroundColor);
+        PageX04_Dashboard.setForeground(labelColor);
         PageX04_Map = new JPanel();
         PageX04_Map.setLocation(0, 0);
         PageX04_Map.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_Map.setLayout(new BorderLayout());
-        PageX04_Map.setBackground(bc_c);
-        PageX04_Map.setForeground(l_c);
+        PageX04_Map.setBackground(backgroundColor);
+        PageX04_Map.setForeground(labelColor);
         PageX04_3 = new JPanel();
         PageX04_3.setLocation(0, 0);
         PageX04_3.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_3.setLayout(new BorderLayout());
-        PageX04_3.setBackground(bc_c);
-        PageX04_3.setForeground(l_c);
+        PageX04_3.setBackground(backgroundColor);
+        PageX04_3.setForeground(labelColor);
         PageX04_SimSetup = new JPanel(); 
         PageX04_SimSetup.setLocation(0, 0);
         PageX04_SimSetup.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_SimSetup.setLayout(new BorderLayout());
-        PageX04_SimSetup.setBackground(bc_c);
-        PageX04_SimSetup.setForeground(l_c);
+        PageX04_SimSetup.setBackground(backgroundColor);
+        PageX04_SimSetup.setForeground(labelColor);
         PageX04_PolarMap = new JPanel();
         PageX04_PolarMap.setLocation(0, 0);
         PageX04_PolarMap.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_PolarMap.setLayout(new BorderLayout());
-        PageX04_PolarMap.setBackground(bc_c);
-        PageX04_PolarMap.setForeground(l_c);
+        PageX04_PolarMap.setBackground(backgroundColor);
+        PageX04_PolarMap.setForeground(labelColor);
         PageX04_GroundClearance = new JPanel();
         PageX04_GroundClearance.setLocation(0, 0);
         PageX04_GroundClearance.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_GroundClearance.setLayout(new BorderLayout());
-        PageX04_GroundClearance.setBackground(bc_c);
-        PageX04_GroundClearance.setForeground(l_c);
+        PageX04_GroundClearance.setBackground(backgroundColor);
+        PageX04_GroundClearance.setForeground(labelColor);
         PageX04_RawDATA = new JPanel();
         PageX04_RawDATA.setLocation(0, 0);
         PageX04_RawDATA.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_RawDATA.setLayout(new BorderLayout());
-        PageX04_RawDATA.setBackground(bc_c);
-        PageX04_RawDATA.setForeground(l_c);
+        PageX04_RawDATA.setBackground(backgroundColor);
+        PageX04_RawDATA.setForeground(labelColor);
         PageX04_AttitudeSetup = new JPanel();
         PageX04_AttitudeSetup.setLocation(0, 0);
         PageX04_AttitudeSetup.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_AttitudeSetup.setLayout(new BorderLayout());
-        PageX04_AttitudeSetup.setBackground(bc_c);
-        PageX04_AttitudeSetup.setForeground(l_c);
+        PageX04_AttitudeSetup.setBackground(backgroundColor);
+        PageX04_AttitudeSetup.setForeground(labelColor);
 
         // Page 4.1
         P1_SidePanel = new JPanel();
         P1_SidePanel.setLayout(null);
         P1_SidePanel.setPreferredSize(new Dimension(385, exty_main));
-        P1_SidePanel.setBackground(bc_c);
-        P1_SidePanel.setForeground(l_c);
+        P1_SidePanel.setBackground(backgroundColor);
+        P1_SidePanel.setForeground(labelColor);
         PageX04_Dashboard.add(P1_SidePanel, BorderLayout.LINE_START);
         
         P1_Plotpanel = new JPanel();
         P1_Plotpanel.setLayout(new BorderLayout());
         P1_Plotpanel.setPreferredSize(new Dimension(900, exty_main-100));
-        P1_Plotpanel.setBackground(bc_c);
+        P1_Plotpanel.setBackground(backgroundColor);
         P1_Plotpanel.setForeground(Color.white);
         PageX04_Dashboard.add(P1_Plotpanel,BorderLayout.LINE_END);
         
@@ -1189,7 +1228,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         SplitPane_Page1_Charts_vertical = new JSplitPane();
        	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
         SplitPane_Page1_Charts_vertical.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-       //	SplitPane_Page1_Charts.setForeground(l_c);
+       //	SplitPane_Page1_Charts.setForeground(labelColor);
        //	SplitPane_Page1_Charts.setBackground(Color.gray);
         SplitPane_Page1_Charts_vertical.setDividerSize(3);
         SplitPane_Page1_Charts_vertical.setUI(new BasicSplitPaneUI() {
@@ -1214,7 +1253,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         SplitPane_Page1_Charts_vertical2 = new JSplitPane();
        	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
         SplitPane_Page1_Charts_vertical2.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-       //	SplitPane_Page1_Charts.setForeground(l_c);
+       //	SplitPane_Page1_Charts.setForeground(labelColor);
        //	SplitPane_Page1_Charts.setBackground(Color.gray);
         SplitPane_Page1_Charts_vertical2.setDividerSize(3);
         SplitPane_Page1_Charts_vertical2.setUI(new BasicSplitPaneUI() {
@@ -1236,8 +1275,59 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         SplitPane_Page1_Charts_vertical2.setDividerLocation(500);
         SplitPane_Page1_Charts_horizontal.add(SplitPane_Page1_Charts_vertical2, JSplitPane.BOTTOM);
        	
-       	
-       	
+	    SpaceShip3DControlPanel = new JPanel();
+		SpaceShip3DControlPanel.setLayout(new BorderLayout());
+		//SpaceShip3DControlPanel.setSize(450, 400);
+		SplitPane_Page1_Charts_vertical.add(SpaceShip3DControlPanel, JSplitPane.RIGHT);
+		
+	    JPanel TargetViewControlPanel = new JPanel();
+	    TargetViewControlPanel.setLayout(new BorderLayout());
+	    TargetViewControlPanel.setPreferredSize(new Dimension(450, 25));
+	    TargetViewControlPanel.setBackground(backgroundColor);
+	    SpaceShip3DControlPanel.add(TargetViewControlPanel, BorderLayout.PAGE_END);
+	    
+     	ImageIcon iconPlayPause =null;
+     	 sizeUpperBar=25;
+     	try {
+     		iconPlayPause = new ImageIcon("images/playPauseIcon.png","");
+     		iconPlayPause = new ImageIcon(getScaledImage(iconPlayPause.getImage(),sizeUpperBar,sizeUpperBar));
+     	} catch (Exception e) {
+     		System.err.println("Error: Dashboard control panel icons could not be loaded."); 
+     	}
+	    
+        JButton ButtonTargetViewControlPlay = new JButton("");
+        ButtonTargetViewControlPlay.setLocation(100, 0);
+        ButtonTargetViewControlPlay.setSize(45,25);
+        ButtonTargetViewControlPlay.setBackground(backgroundColor);
+        ButtonTargetViewControlPlay.setOpaque(true);
+        ButtonTargetViewControlPlay.setBorderPainted(false);
+        ButtonTargetViewControlPlay.setIcon(iconPlayPause);
+        ButtonTargetViewControlPlay.addActionListener(new ActionListener() { 
+        	  public void actionPerformed(ActionEvent e) {
+	                Platform.runLater(new Runnable() {
+	                    @Override
+	                    public void run() {
+	                    			TargetView3D.playPauseAnimation();
+	                    }
+	                    });
+        	}} );
+	    TargetViewControlPanel.add(ButtonTargetViewControlPlay, BorderLayout.CENTER);
+	    
+	    JSlider SpeedSliderTargetViewControl = GuiComponents.getGuiSliderSpeed(small_font, 100, 0, 10, 40, labelColor, backgroundColor);
+	    SpeedSliderTargetViewControl.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				// TODO Auto-generated method stub
+				double rotspeed = ((double) (SpeedSliderTargetViewControl.getValue()))/100;
+				TargetView3D.targetBodyRotSpeed = rotspeed;
+			}
+	    	
+	    });
+	    TargetViewControlPanel.add(SpeedSliderTargetViewControl, BorderLayout.EAST);
+	    
+	    
+		
         JScrollPane scrollPane_P1 = new JScrollPane(P1_SidePanel);
         scrollPane_P1.setPreferredSize(new Dimension(415, exty_main));
         scrollPane_P1.getVerticalScrollBar().setUnitIncrement(16);
@@ -1254,24 +1344,24 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_LONG.setSize(150, 20);
         LABEL_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_LONG.setBorder(Moon_border);
-        LABEL_LONG.setBackground(bc_c);
-        LABEL_LONG.setForeground(l_c);
+        LABEL_LONG.setBackground(backgroundColor);
+        LABEL_LONG.setForeground(labelColor);
         P1_SidePanel.add(LABEL_LONG);
         JLabel LABEL_LAT = new JLabel(" Latitude [deg]");
         LABEL_LAT.setLocation(65, uy_p41 + 25 );
         LABEL_LAT.setSize(150, 20);
         LABEL_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_LAT.setBorder(Moon_border);
-        LABEL_LAT.setBackground(bc_c);
-        LABEL_LAT.setForeground(l_c);
+        LABEL_LAT.setBackground(backgroundColor);
+        LABEL_LAT.setForeground(labelColor);
         P1_SidePanel.add(LABEL_LAT);
         JLabel LABEL_ALT = new JLabel(" Altitude [m]");
         LABEL_ALT.setLocation(65, uy_p41 + 50 );
         LABEL_ALT.setSize(150, 20);
         LABEL_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_ALT.setBorder(Moon_border);
-        LABEL_ALT.setBackground(bc_c);
-        LABEL_ALT.setForeground(l_c);
+        LABEL_ALT.setBackground(backgroundColor);
+        LABEL_ALT.setForeground(labelColor);
         P1_SidePanel.add(LABEL_ALT);
         
         
@@ -1280,24 +1370,24 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_VEL.setSize(150, 20);
         LABEL_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_VEL.setBorder(Moon_border);
-        LABEL_VEL.setBackground(bc_c);
-        LABEL_VEL.setForeground(l_c);
+        LABEL_VEL.setBackground(backgroundColor);
+        LABEL_VEL.setForeground(labelColor);
         P1_SidePanel.add(LABEL_VEL);
         JLabel LABEL_FPA = new JLabel(" Flight Path Angle [deg]");
         LABEL_FPA.setLocation(65, uy_p41 + 100 + y_ext_vel);
         LABEL_FPA.setSize(150, 20);
         LABEL_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_FPA.setBorder(Moon_border);
-        LABEL_FPA.setBackground(bc_c);
-        LABEL_FPA.setForeground(l_c);
+        LABEL_FPA.setBackground(backgroundColor);
+        LABEL_FPA.setForeground(labelColor);
         P1_SidePanel.add(LABEL_FPA);
         JLabel LABEL_AZI = new JLabel(" Azimuth [deg]");
         LABEL_AZI.setLocation(65, uy_p41 + 125 + y_ext_vel);
         LABEL_AZI.setSize(150, 20);
         LABEL_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_AZI.setBorder(Moon_border);
-        LABEL_AZI.setBackground(bc_c);
-        LABEL_AZI.setForeground(l_c);
+        LABEL_AZI.setBackground(backgroundColor);
+        LABEL_AZI.setForeground(labelColor);
         P1_SidePanel.add(LABEL_AZI);
         
         
@@ -1306,31 +1396,31 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_M0.setSize(150, 20);
         LABEL_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_M0.setBorder(Moon_border);
-        LABEL_M0.setBackground(bc_c);
-        LABEL_M0.setForeground(l_c);
+        LABEL_M0.setBackground(backgroundColor);
+        LABEL_M0.setForeground(labelColor);
         P1_SidePanel.add(LABEL_M0);
         JLabel LABEL_INTEGTIME = new JLabel(" Integration Time [s]");
         LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 + y_ext_vel*2);
         LABEL_INTEGTIME.setSize(150, 20);
         LABEL_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_INTEGTIME.setBorder(Moon_border);
-        LABEL_INTEGTIME.setBackground(bc_c);
-        LABEL_INTEGTIME.setForeground(l_c);
+        LABEL_INTEGTIME.setBackground(backgroundColor);
+        LABEL_INTEGTIME.setForeground(labelColor);
         P1_SidePanel.add(LABEL_INTEGTIME);
         
         Error_Indicator = new JLabel("");
         Error_Indicator.setLocation(225, uy_p41 + 25 * 9);
         Error_Indicator.setSize(150, 20);
-        //Error_Indicator.setBackground(bc_c);
+        //Error_Indicator.setBackground(backgroundColor);
         Error_Indicator.setFont(labelfont_small);
-        Error_Indicator.setForeground(l_c);
+        Error_Indicator.setForeground(labelColor);
         P1_SidePanel.add(Error_Indicator);
         
         Module_Indicator = new JLabel("");
         Module_Indicator.setLocation(225, uy_p41 + 25 * 10);
         Module_Indicator.setSize(150, 20);
         Module_Indicator.setFont(labelfont_small);
-        Module_Indicator.setForeground(l_c);
+        Module_Indicator.setForeground(labelColor);
         P1_SidePanel.add(Module_Indicator);
         
          INDICATOR_LONG = new JLabel();
@@ -1338,8 +1428,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         INDICATOR_LONG.setSize(60, 20);
         INDICATOR_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_LONG.setBorder(Moon_border);
-        INDICATOR_LONG.setBackground(bc_c);
-        INDICATOR_LONG.setForeground(l_c);
+        INDICATOR_LONG.setBackground(backgroundColor);
+        INDICATOR_LONG.setForeground(labelColor);
         INDICATOR_LONG.setFont(small_font);
         P1_SidePanel.add(INDICATOR_LONG);
         INDICATOR_LAT = new JLabel();
@@ -1347,43 +1437,43 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         INDICATOR_LAT.setSize(60, 20);
         INDICATOR_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_LAT.setBorder(Moon_border);
-        INDICATOR_LAT.setBackground(bc_c);
+        INDICATOR_LAT.setBackground(backgroundColor);
         INDICATOR_LAT.setFont(small_font);
-        INDICATOR_LAT.setForeground(l_c);
+        INDICATOR_LAT.setForeground(labelColor);
         P1_SidePanel.add(INDICATOR_LAT);
          INDICATOR_ALT = new JLabel();
         INDICATOR_ALT.setLocation(2, uy_p41 + 25 * 2 );
         INDICATOR_ALT.setSize(60, 20);
         INDICATOR_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_ALT.setBorder(Moon_border);
-        INDICATOR_ALT.setBackground(bc_c);
+        INDICATOR_ALT.setBackground(backgroundColor);
         INDICATOR_ALT.setFont(small_font);
-        INDICATOR_ALT.setForeground(l_c);
+        INDICATOR_ALT.setForeground(labelColor);
         P1_SidePanel.add(INDICATOR_ALT);
         INDICATOR_VEL = new JLabel();
         INDICATOR_VEL.setLocation(2, uy_p41 + 25 * 3 + y_ext_vel);
         INDICATOR_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_VEL.setBorder(Moon_border);
-        INDICATOR_VEL.setBackground(bc_c);
+        INDICATOR_VEL.setBackground(backgroundColor);
         INDICATOR_VEL.setFont(small_font);
-        INDICATOR_VEL.setForeground(l_c);
+        INDICATOR_VEL.setForeground(labelColor);
         INDICATOR_VEL.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_VEL);
         INDICATOR_FPA = new JLabel();
         INDICATOR_FPA.setLocation(2, uy_p41 + 25 * 4 + y_ext_vel);
         INDICATOR_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_FPA.setBorder(Moon_border);
-        INDICATOR_FPA.setBackground(bc_c);
+        INDICATOR_FPA.setBackground(backgroundColor);
         INDICATOR_FPA.setFont(small_font);
-        INDICATOR_FPA.setForeground(l_c);
+        INDICATOR_FPA.setForeground(labelColor);
         INDICATOR_FPA.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_FPA);
         INDICATOR_AZI = new JLabel();
         INDICATOR_AZI.setLocation(2, uy_p41 + 25 * 5 + y_ext_vel);
         INDICATOR_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_AZI.setBorder(Moon_border);
-        INDICATOR_AZI.setBackground(bc_c);
-        INDICATOR_AZI.setForeground(l_c);
+        INDICATOR_AZI.setBackground(backgroundColor);
+        INDICATOR_AZI.setForeground(labelColor);
         INDICATOR_AZI.setFont(small_font);
         INDICATOR_AZI.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_AZI);        
@@ -1391,8 +1481,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         INDICATOR_M0.setLocation(2, uy_p41 + 25 * 6 + y_ext_vel*2);
         INDICATOR_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_M0.setBorder(Moon_border);
-        INDICATOR_M0.setBackground(bc_c);
-        INDICATOR_M0.setForeground(l_c);
+        INDICATOR_M0.setBackground(backgroundColor);
+        INDICATOR_M0.setForeground(labelColor);
         INDICATOR_M0.setFont(small_font);
         INDICATOR_M0.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_M0);
@@ -1400,8 +1490,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         INDICATOR_INTEGTIME.setLocation(2, uy_p41 + 25 * 7 + y_ext_vel*2);
         INDICATOR_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         INDICATOR_INTEGTIME.setBorder(Moon_border);
-        INDICATOR_INTEGTIME.setBackground(bc_c);
-        INDICATOR_INTEGTIME.setForeground(l_c);
+        INDICATOR_INTEGTIME.setBackground(backgroundColor);
+        INDICATOR_INTEGTIME.setForeground(labelColor);
         INDICATOR_INTEGTIME.setFont(small_font);
         INDICATOR_INTEGTIME.setSize(60, 20);
        P1_SidePanel.add(INDICATOR_INTEGTIME);
@@ -1412,15 +1502,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        JLabel LABEL_TARGET = new JLabel("Target Body:");
        LABEL_TARGET.setLocation(5, uy_p41 + 25 * 9  );
        LABEL_TARGET.setSize(250, 20);
-       LABEL_TARGET.setBackground(bc_c);
-       LABEL_TARGET.setForeground(l_c);
+       LABEL_TARGET.setBackground(backgroundColor);
+       LABEL_TARGET.setForeground(labelColor);
        P1_SidePanel.add(LABEL_TARGET);
        INDICATOR_TARGET = new JLabel();
        INDICATOR_TARGET.setLocation(2, uy_p41 + 25 * 10 );
        INDICATOR_TARGET.setText("");
        INDICATOR_TARGET.setSize(100, 25);
-       INDICATOR_TARGET.setBackground(bc_c);
-       INDICATOR_TARGET.setForeground(l_c);
+       INDICATOR_TARGET.setBackground(backgroundColor);
+       INDICATOR_TARGET.setForeground(labelColor);
        INDICATOR_TARGET.setHorizontalAlignment(SwingConstants.CENTER);
        INDICATOR_TARGET.setVerticalTextPosition(JLabel.CENTER);
        INDICATOR_TARGET.setFont(targetfont);
@@ -1432,28 +1522,28 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_VTOUCHDOWN.setLocation(55, uy_p41 + 285  + 25 *0 );
       LABEL_VTOUCHDOWN.setSize(200, 20);
       LABEL_VTOUCHDOWN.setBackground(Color.black);
-      LABEL_VTOUCHDOWN.setForeground(l_c);
+      LABEL_VTOUCHDOWN.setForeground(labelColor);
       LABEL_VTOUCHDOWN.setFont(small_font);
       P1_SidePanel.add(LABEL_VTOUCHDOWN);
       JLabel LABEL_DELTAV = new JLabel("  Total D-V [m/s]");
       LABEL_DELTAV.setLocation(55, uy_p41 + 285 + 25 *1 );
       LABEL_DELTAV.setSize(200, 20);
       LABEL_DELTAV.setBackground(Color.black);
-      LABEL_DELTAV.setForeground(l_c);
+      LABEL_DELTAV.setForeground(labelColor);
       LABEL_DELTAV.setFont(small_font);
       P1_SidePanel.add(LABEL_DELTAV);
       JLabel LABEL_PROPPERC = new JLabel("  Used Propellant [kg]");
       LABEL_PROPPERC.setLocation(270, uy_p41 + 285 + 25 *0 );
       LABEL_PROPPERC.setSize(200, 20);
       LABEL_PROPPERC.setBackground(Color.black);
-      LABEL_PROPPERC.setForeground(l_c);
+      LABEL_PROPPERC.setForeground(labelColor);
       LABEL_PROPPERC.setFont(small_font);
       P1_SidePanel.add(LABEL_PROPPERC);
       JLabel LABEL_RESPROP = new JLabel("  Residual Propellant [%]");
       LABEL_RESPROP.setLocation(260, uy_p41 + 285 + 25 *1 );
       LABEL_RESPROP.setSize(200, 20);
       LABEL_RESPROP.setBackground(Color.black);
-      LABEL_RESPROP.setForeground(l_c);
+      LABEL_RESPROP.setForeground(labelColor);
       LABEL_RESPROP.setFont(small_font);
       P1_SidePanel.add(LABEL_RESPROP);
       
@@ -1461,32 +1551,34 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       INDICATOR_VTOUCHDOWN.setLocation(5, uy_p41 + 285  + 25 *0 );
       INDICATOR_VTOUCHDOWN.setSize(50, 20);
       INDICATOR_VTOUCHDOWN.setBackground(Color.black);
-      INDICATOR_VTOUCHDOWN.setForeground(l_c);
+      INDICATOR_VTOUCHDOWN.setForeground(labelColor);
       P1_SidePanel.add(INDICATOR_VTOUCHDOWN);
        INDICATOR_DELTAV = new JLabel("");
       INDICATOR_DELTAV.setLocation(5, uy_p41 + 285 + 25 *1 );
       INDICATOR_DELTAV.setSize(50, 20);
       INDICATOR_DELTAV.setBackground(Color.black);
-      INDICATOR_DELTAV.setForeground(l_c);
+      INDICATOR_DELTAV.setForeground(labelColor);
       P1_SidePanel.add(INDICATOR_DELTAV);
        INDICATOR_PROPPERC = new JLabel("");
       INDICATOR_PROPPERC.setLocation(225, uy_p41 + 285 + 25 *0 );
       INDICATOR_PROPPERC.setSize(50, 20);
       INDICATOR_PROPPERC.setBackground(Color.black);
-      INDICATOR_PROPPERC.setForeground(l_c);
+      INDICATOR_PROPPERC.setForeground(labelColor);
       P1_SidePanel.add(INDICATOR_PROPPERC);
        INDICATOR_RESPROP = new JLabel("");
       INDICATOR_RESPROP.setLocation(225, uy_p41 + 285 + 25 *1 );
       INDICATOR_RESPROP.setSize(40, 20);
       INDICATOR_RESPROP.setBackground(Color.black);
-      INDICATOR_RESPROP.setForeground(l_c);
+      INDICATOR_RESPROP.setForeground(labelColor);
       P1_SidePanel.add(INDICATOR_RESPROP);
 
         JButton Button_RunSimulation = new JButton("Run Simulation");
-        Button_RunSimulation.setLocation(250, uy_p41 + 25 * 0);
+        Button_RunSimulation.setLocation(240, uy_p41 + 25 * 0);
         Button_RunSimulation.setSize(145,25);
-        Button_RunSimulation.setBackground(bc_c);
-        Button_RunSimulation.setForeground(l_c);
+        Button_RunSimulation.setBackground(labelColor);
+        Button_RunSimulation.setForeground(backgroundColor);
+        Button_RunSimulation.setOpaque(true);
+        Button_RunSimulation.setBorderPainted(false);
         Button_RunSimulation.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) {
         		  System.out.println("Action: RUN SIMULATION");
@@ -1518,29 +1610,29 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JLabel LABEL_CONSOLE = new JLabel("Console:");
         LABEL_CONSOLE.setLocation(5, uy_p41 + 25 *17 );
         LABEL_CONSOLE.setSize(200, 20);
-        LABEL_CONSOLE.setBackground(bc_c);
-        LABEL_CONSOLE.setForeground(l_c);
+        LABEL_CONSOLE.setBackground(backgroundColor);
+        LABEL_CONSOLE.setForeground(labelColor);
         P1_SidePanel.add(LABEL_CONSOLE);
         
         JPanel JP_EnginModel = new JPanel();
         JP_EnginModel.setSize(console_size_x,console_size_y);
         JP_EnginModel.setLocation(5, uy_p41 + 25 * 18);
-        JP_EnginModel.setBackground(bc_c);
-        JP_EnginModel.setForeground(l_c);
+        JP_EnginModel.setBackground(backgroundColor);
+        JP_EnginModel.setForeground(labelColor);
          JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
         //JP_EnginModel.setBackground(Color.red);
         taOutputStream = null; 
         taOutputStream = new TextAreaOutputStream(textArea, ""); 
-        textArea.setForeground(l_c);
-        textArea.setBackground(bc_c);
+        textArea.setForeground(labelColor);
+        textArea.setBackground(backgroundColor);
         JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
         JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        JSP_EnginModel.setBackground(bc_c);
-        JSP_EnginModel.setForeground(l_c);
-        JSP_EnginModel.getVerticalScrollBar().setForeground(l_c);
-        JSP_EnginModel.getHorizontalScrollBar().setForeground(l_c);
-        JSP_EnginModel.getHorizontalScrollBar().setBackground(bc_c);
-        JSP_EnginModel.getVerticalScrollBar().setBackground(bc_c);
+        JSP_EnginModel.setBackground(backgroundColor);
+        JSP_EnginModel.setForeground(labelColor);
+        JSP_EnginModel.getVerticalScrollBar().setForeground(labelColor);
+        JSP_EnginModel.getHorizontalScrollBar().setForeground(labelColor);
+        JSP_EnginModel.getHorizontalScrollBar().setBackground(backgroundColor);
+        JSP_EnginModel.getVerticalScrollBar().setBackground(backgroundColor);
         JSP_EnginModel.setOpaque(true);
         JSP_EnginModel.setPreferredSize(new Dimension(console_size_x-5,console_size_y-10));
         JSP_EnginModel.setLocation(5, 5);
@@ -1554,20 +1646,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_XAxis.setLocation(5, uy_p41 + 25 * 14 );
       LABEL_XAxis.setSize(150, 20);
       LABEL_XAxis.setHorizontalAlignment(0);
-      LABEL_XAxis.setBackground(bc_c);
-      LABEL_XAxis.setForeground(l_c);
+      LABEL_XAxis.setBackground(backgroundColor);
+      LABEL_XAxis.setForeground(labelColor);
       P1_SidePanel.add(LABEL_XAxis);
       JLabel LABEL_YAxis = new JLabel("Y-Axis");
       LABEL_YAxis.setLocation(200, uy_p41 + 25 * 14 );
       LABEL_YAxis.setSize(150, 20);
       LABEL_YAxis.setHorizontalAlignment(0);
-      LABEL_YAxis.setBackground(bc_c);
-      LABEL_YAxis.setForeground(l_c);
+      LABEL_YAxis.setBackground(backgroundColor);
+      LABEL_YAxis.setForeground(labelColor);
       P1_SidePanel.add(LABEL_YAxis);
 	  axis_chooser = new JComboBox(Axis_Option_NR);
-	  axis_chooser.setBackground(bc_c);
+	  axis_chooser.setBackground(backgroundColor);
 	  axis_chooser2 = new JComboBox(Axis_Option_NR);
-	  axis_chooser2.setBackground(bc_c);
+	  axis_chooser2.setBackground(backgroundColor);
       axis_chooser2.setLocation(210, uy_p41 + 25 * 15);
       //axis_chooser2.setPreferredSize(new Dimension(150,25));
       axis_chooser2.setSize(180,25);
@@ -1593,27 +1685,66 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  //-----------------------------------------------------------------------------------------
 	  // 										Page 4.2
 	  //-----------------------------------------------------------------------------------------
+      JTabbedPane TabPane_SimulationSetup = (JTabbedPane) new JTabbedPane();
+      TabPane_SimulationSetup.setPreferredSize(new Dimension(extx_main, exty_main));
+      TabPane_SimulationSetup.setBackground(backgroundColor);
+      TabPane_SimulationSetup.setForeground(labelColor);
+//-------------------------------------------------------------------------------------------	    
+      // Main panels for each page 
+		JPanel AerodynamicSetupPanel = new JPanel();
+		AerodynamicSetupPanel.setLocation(0, 0);
+		AerodynamicSetupPanel.setBackground(backgroundColor);
+		AerodynamicSetupPanel.setForeground(labelColor);
+		AerodynamicSetupPanel.setSize(400, 600);
+		AerodynamicSetupPanel.setLayout(new BorderLayout()); 
+		
+	      JPanel BasicAndControllerPanel = new JPanel();
+	      BasicAndControllerPanel.setLocation(0, uy_p41 + 26 * 38 );
+	      BasicAndControllerPanel.setPreferredSize(new Dimension(1350, 1350));
+	      BasicAndControllerPanel.setBackground(backgroundColor);
+	      BasicAndControllerPanel.setForeground(Color.white);
+	      BasicAndControllerPanel.setLayout(new BorderLayout());
+			
+		
+	     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
+	     	ImageIcon icon_inertia = new ImageIcon("images/inertia.png","");
+	     	ImageIcon icon_aerodynamic = new ImageIcon("images/aerodynamic.png","");
+	     	if(OS_is==2) {
+	     		// Resize image icons for Windows 
+	         	 int size=10;
+	         	icon_setup2 = new ImageIcon(getScaledImage(icon_setup2.getImage(),size,size));
+	         	icon_inertia = new ImageIcon(getScaledImage(icon_inertia.getImage(),size,size));
+	         	icon_aerodynamic = new ImageIcon(getScaledImage(icon_aerodynamic.getImage(),size,size));
+	      }
+	      
+	     	TabPane_SimulationSetup.addTab("Basic and Controller Setup" , icon_setup2, BasicAndControllerPanel, null);
+	     	TabPane_SimulationSetup.addTab("Aerodynamic" , icon_aerodynamic, AerodynamicSetupPanel, null);
+	     	PageX04_SimSetup.add(TabPane_SimulationSetup);
+		TabPane_SimulationSetup.setSelectedIndex(0);
+		TabPane_SimulationSetup.setFont(small_font);
+		
+		
       int INPUT_width = 120;
       int SidePanel_Width = 380; 
       JPanel PANEL_LEFT_InputSection = new JPanel();
       PANEL_LEFT_InputSection.setLayout(null);
       PANEL_LEFT_InputSection.setPreferredSize(new Dimension(SidePanel_Width, 1350));
-      PANEL_LEFT_InputSection.setBackground(bc_c);
-      PANEL_LEFT_InputSection.setForeground(l_c);
+      PANEL_LEFT_InputSection.setBackground(backgroundColor);
+      PANEL_LEFT_InputSection.setForeground(labelColor);
       
       JPanel PANEL_RIGHT_InputSection = new JPanel();
       PANEL_RIGHT_InputSection.setLayout(new BorderLayout());
       PANEL_RIGHT_InputSection.setPreferredSize(new Dimension(405, exty_main));
-      PANEL_RIGHT_InputSection.setBackground(bc_c);
-      PANEL_RIGHT_InputSection.setForeground(l_c);
+      PANEL_RIGHT_InputSection.setBackground(backgroundColor);
+      PANEL_RIGHT_InputSection.setForeground(labelColor);
       
       JScrollPane scrollPane_LEFT_InputSection = new JScrollPane(PANEL_LEFT_InputSection,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
       scrollPane_LEFT_InputSection.setPreferredSize(new Dimension(405, exty_main));
       scrollPane_LEFT_InputSection.getVerticalScrollBar().setUnitIncrement(16);
-      PageX04_SimSetup.add(scrollPane_LEFT_InputSection, BorderLayout.LINE_START);
+      BasicAndControllerPanel.add(scrollPane_LEFT_InputSection, BorderLayout.LINE_START);
       JScrollPane scrollPane_RIGHT_InputSection = new JScrollPane(PANEL_RIGHT_InputSection,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
       scrollPane_RIGHT_InputSection.getVerticalScrollBar().setUnitIncrement(16);
-      PageX04_SimSetup.add(scrollPane_RIGHT_InputSection, BorderLayout.CENTER);
+      BasicAndControllerPanel.add(scrollPane_RIGHT_InputSection, BorderLayout.CENTER);
       //---------------------------------------------------------------------------------------------
       //                       Initial State Definition Block
       //---------------------------------------------------------------------------------------------
@@ -1621,15 +1752,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       PANEL_InitialState.setLayout(null);
       PANEL_InitialState.setSize(SidePanel_Width, 430);
       PANEL_InitialState.setLocation(0,0);
-      PANEL_InitialState.setBackground(bc_c);
-      PANEL_InitialState.setForeground(l_c);
+      PANEL_InitialState.setBackground(backgroundColor);
+      PANEL_InitialState.setForeground(labelColor);
       PANEL_LEFT_InputSection.add(PANEL_InitialState);
       
       JLabel LABEL_InitState = new JLabel("Initial State");
       LABEL_InitState.setLocation(5, uy_p41 + 25 * 0  );
       LABEL_InitState.setSize(350, 20);
-      LABEL_InitState.setBackground(bc_c);
-      LABEL_InitState.setForeground(l_c);
+      LABEL_InitState.setBackground(backgroundColor);
+      LABEL_InitState.setForeground(labelColor);
       LABEL_InitState.setFont(HeadlineFont);
       LABEL_InitState.setHorizontalAlignment(0);
       PANEL_InitialState.add(LABEL_InitState);
@@ -1638,69 +1769,69 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_InertialFrame.setLocation(2, uy_p41 + 25 * 1 );
       LABEL_InertialFrame.setSize(INPUT_width, 20);
       LABEL_InertialFrame.setHorizontalAlignment(JLabel.CENTER);
-      LABEL_InertialFrame.setBackground(bc_c);
-      LABEL_InertialFrame.setForeground(l_c);
+      LABEL_InertialFrame.setBackground(backgroundColor);
+      LABEL_InertialFrame.setForeground(labelColor);
       LABEL_InertialFrame.setFont(small_font);
       PANEL_InitialState.add(LABEL_InertialFrame);
       JLabel LABEL_RotatingFrame = new JLabel("Rotating Frame [ECEF]");
       LABEL_RotatingFrame.setLocation(2+INPUT_width+5, uy_p41 + 25 * 1  );
       LABEL_RotatingFrame.setSize(INPUT_width+40, 20);
       LABEL_RotatingFrame.setHorizontalAlignment(JLabel.CENTER);
-      LABEL_RotatingFrame.setBackground(bc_c);
-      LABEL_RotatingFrame.setForeground(l_c);
+      LABEL_RotatingFrame.setBackground(backgroundColor);
+      LABEL_RotatingFrame.setForeground(labelColor);
       LABEL_RotatingFrame.setFont(small_font);
       PANEL_InitialState.add(LABEL_RotatingFrame);
       
       JLabel LABEL_longitude = new JLabel("Longitude [deg]");
       LABEL_longitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 2  );
       LABEL_longitude.setSize(250, 20);
-      LABEL_longitude.setBackground(bc_c);
-      LABEL_longitude.setForeground(l_c);
+      LABEL_longitude.setBackground(backgroundColor);
+      LABEL_longitude.setForeground(labelColor);
       LABEL_longitude.setFont(small_font);
       PANEL_InitialState.add(LABEL_longitude);
       JLabel LABEL_latitude = new JLabel("Latitude [deg]");
       LABEL_latitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 3 );
       LABEL_latitude.setSize(250, 20);
-      LABEL_latitude.setBackground(bc_c);
-      LABEL_latitude.setForeground(l_c);
+      LABEL_latitude.setBackground(backgroundColor);
+      LABEL_latitude.setForeground(labelColor);
       LABEL_latitude.setFont(small_font);
       PANEL_InitialState.add(LABEL_latitude);
       JLabel LABEL_altitude = new JLabel("Altitude [m]");
       LABEL_altitude.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 4);
       LABEL_altitude.setSize(250, 20);
-      LABEL_altitude.setBackground(bc_c);
-      LABEL_altitude.setForeground(l_c);
+      LABEL_altitude.setBackground(backgroundColor);
+      LABEL_altitude.setForeground(labelColor);
       LABEL_altitude.setFont(small_font);
       PANEL_InitialState.add(LABEL_altitude);
       
       JLabel LABEL_referenceelevation = new JLabel("Ref. Elevation [m]");
       LABEL_referenceelevation.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 5 );
       LABEL_referenceelevation.setSize(250, 20);
-      LABEL_referenceelevation.setBackground(bc_c);
-      LABEL_referenceelevation.setForeground(l_c);
+      LABEL_referenceelevation.setBackground(backgroundColor);
+      LABEL_referenceelevation.setForeground(labelColor);
       LABEL_referenceelevation.setFont(small_font);
       PANEL_InitialState.add(LABEL_referenceelevation);
       
       JLabel LABEL_velocity = new JLabel("Velocity [m/s]");
       LABEL_velocity.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 8 );
       LABEL_velocity.setSize(250, 20);
-      LABEL_velocity.setBackground(bc_c);
-      LABEL_velocity.setForeground(l_c);
+      LABEL_velocity.setBackground(backgroundColor);
+      LABEL_velocity.setForeground(labelColor);
       LABEL_velocity.setFont(small_font);;
       PANEL_InitialState.add(LABEL_velocity);
       JLabel LABEL_fpa = new JLabel("Flight Path angle [deg]");
       LABEL_fpa.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 9);
       LABEL_fpa.setSize(250, 20);
-      LABEL_fpa.setBackground(bc_c);
-      LABEL_fpa.setForeground(l_c);
+      LABEL_fpa.setBackground(backgroundColor);
+      LABEL_fpa.setForeground(labelColor);
       LABEL_fpa.setFont(small_font);
       PANEL_InitialState.add(LABEL_fpa);
       JLabel LABEL_azimuth = new JLabel("Azimuth [deg]");
       LABEL_azimuth.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 10 );
       LABEL_azimuth.setSize(250, 20);
-      LABEL_azimuth.setBackground(bc_c);
+      LABEL_azimuth.setBackground(backgroundColor);
       LABEL_azimuth.setFont(small_font);
-      LABEL_azimuth.setForeground(l_c);
+      LABEL_azimuth.setForeground(labelColor);
       PANEL_InitialState.add(LABEL_azimuth);
 
       INPUT_LONG_Is = new JTextField(10);
@@ -1892,7 +2023,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       
       
 	  JComboBox VelocityFrame_chooser = new JComboBox(Vel_Frame_options);
-	  VelocityFrame_chooser.setBackground(bc_c);
+	  VelocityFrame_chooser.setBackground(backgroundColor);
 	  VelocityFrame_chooser.setLocation(2+INPUT_width+5, uy_p41 + 25 * 7);
 	  VelocityFrame_chooser.setSize(380-(2+INPUT_width+5),20);
 	  VelocityFrame_chooser.setSelectedIndex(1);
@@ -1997,30 +2128,30 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       JLabel LABEL_AngularRate = new JLabel("Initial Angular Rate: ");
       LABEL_AngularRate.setLocation(2, uy_p41 + 25 * 12);
       LABEL_AngularRate.setSize(150, 20);
-      LABEL_AngularRate.setBackground(bc_c);
-      LABEL_AngularRate.setForeground(l_c);
+      LABEL_AngularRate.setBackground(backgroundColor);
+      LABEL_AngularRate.setForeground(labelColor);
       PANEL_InitialState.add(LABEL_AngularRate);
       
       JLabel LABEL_AngularRateX = new JLabel("Body X [deg/s]");
       LABEL_AngularRateX.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 13 );
       LABEL_AngularRateX.setSize(250, 20);
-      LABEL_AngularRateX.setBackground(bc_c);
-      LABEL_AngularRateX.setForeground(l_c);
+      LABEL_AngularRateX.setBackground(backgroundColor);
+      LABEL_AngularRateX.setForeground(labelColor);
       LABEL_AngularRateX.setFont(small_font);;
       PANEL_InitialState.add(LABEL_AngularRateX);
       JLabel LABEL_AngularRateY = new JLabel("Body Y [deg/s]");
       LABEL_AngularRateY.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 14);
       LABEL_AngularRateY.setSize(250, 20);
-      LABEL_AngularRateY.setBackground(bc_c);
-      LABEL_AngularRateY.setForeground(l_c);
+      LABEL_AngularRateY.setBackground(backgroundColor);
+      LABEL_AngularRateY.setForeground(labelColor);
       LABEL_AngularRateY.setFont(small_font);
       PANEL_InitialState.add(LABEL_AngularRateY);
       JLabel LABEL_AngularRateZ = new JLabel("Body Z [deg/s]");
       LABEL_AngularRateZ.setLocation(2+(INPUT_width+5)*2, uy_p41 + 25 * 15 );
       LABEL_AngularRateZ.setSize(250, 20);
-      LABEL_AngularRateZ.setBackground(bc_c);
+      LABEL_AngularRateZ.setBackground(backgroundColor);
       LABEL_AngularRateZ.setFont(small_font);
-      LABEL_AngularRateZ.setForeground(l_c);
+      LABEL_AngularRateZ.setForeground(labelColor);
       PANEL_InitialState.add(LABEL_AngularRateZ);
       
       INPUT_AngularRate_X = new JTextField(10);
@@ -2080,8 +2211,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       JLabel LABEL_Time = new JLabel("Time: ");
       LABEL_Time.setLocation(2, uy_p41 + 25 * 16);
       LABEL_Time.setSize(50, 20);
-      LABEL_Time.setBackground(bc_c);
-      LABEL_Time.setForeground(l_c);
+      LABEL_Time.setBackground(backgroundColor);
+      LABEL_Time.setForeground(labelColor);
       PANEL_InitialState.add(LABEL_Time);
       
       INPUT_TIME = new JTextField(10);
@@ -2109,7 +2240,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       JPanel IntegratorInputPanel = new JPanel();
       IntegratorInputPanel.setLocation(0, uy_p41 + 25 * 18 );
       IntegratorInputPanel.setSize(SidePanel_Width, 825);
-      IntegratorInputPanel.setBackground(bc_c);
+      IntegratorInputPanel.setBackground(backgroundColor);
       IntegratorInputPanel.setForeground(Color.white);
       IntegratorInputPanel.setLayout(null);
       PANEL_LEFT_InputSection.add(IntegratorInputPanel);
@@ -2118,20 +2249,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       Separator_Page2_1.setLocation(0, uy_p41 + 25 * 0 );
       Separator_Page2_1.setSize(SidePanel_Width, 1);
       Separator_Page2_1.setBackground(Color.black);
-      Separator_Page2_1.setForeground(l_c);
+      Separator_Page2_1.setForeground(labelColor);
       IntegratorInputPanel.add(Separator_Page2_1);
       
       JLabel LABEL_IntegSetting = new JLabel("Integrator Settings");
       LABEL_IntegSetting.setLocation(0, uy_p41 + 25 * 0 );
       LABEL_IntegSetting.setSize(400, 20);
-      LABEL_IntegSetting.setBackground(bc_c);
-      LABEL_IntegSetting.setForeground(l_c);
+      LABEL_IntegSetting.setBackground(backgroundColor);
+      LABEL_IntegSetting.setForeground(labelColor);
       LABEL_IntegSetting.setFont(HeadlineFont);
       LABEL_IntegSetting.setHorizontalAlignment(0);
       IntegratorInputPanel.add(LABEL_IntegSetting);
       
 	  AscentDescent_SwitchChooser = new JComboBox(Thrust_switch);
-	  AscentDescent_SwitchChooser.setBackground(bc_c);
+	  AscentDescent_SwitchChooser.setBackground(backgroundColor);
 	  AscentDescent_SwitchChooser.setLocation(2, uy_p41 + 26 * 1 );
 	  AscentDescent_SwitchChooser.setSize(250,25);
 	  AscentDescent_SwitchChooser.setSelectedIndex(0);
@@ -2159,8 +2290,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       JLabel LABEL_writetime = new JLabel("Write time step [s]");
       LABEL_writetime.setLocation(65, uy_p41 + 25 * 3 );
       LABEL_writetime.setSize(250, 20);
-      LABEL_writetime.setBackground(bc_c);
-      LABEL_writetime.setForeground(l_c);
+      LABEL_writetime.setBackground(backgroundColor);
+      LABEL_writetime.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_writetime);
 
      INPUT_WRITETIME = new JTextField(10);
@@ -2184,12 +2315,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     JLabel LABEL_TARGETBODY = new JLabel("Target Body");
     LABEL_TARGETBODY.setLocation(163, uy_p41 + 25 * 5   );
     LABEL_TARGETBODY.setSize(150, 20);
-    LABEL_TARGETBODY.setBackground(bc_c);
-    LABEL_TARGETBODY.setForeground(l_c);
+    LABEL_TARGETBODY.setBackground(backgroundColor);
+    LABEL_TARGETBODY.setForeground(labelColor);
     IntegratorInputPanel.add(LABEL_TARGETBODY);
     
 	  Target_chooser = new JComboBox(Target_Options);
-	  Target_chooser.setBackground(bc_c);
+	  Target_chooser.setBackground(backgroundColor);
 	  Target_chooser.setLocation(2, uy_p41 + 25 * 5 );
 	  Target_chooser.setSize(150,25);
 	  Target_chooser.setSelectedIndex(3);
@@ -2216,7 +2347,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  IntegratorInputPanel.add(Target_chooser);
 	  
 	  Integrator_chooser = new JComboBox(Integrator_Options);
-	  Integrator_chooser.setBackground(bc_c);
+	  Integrator_chooser.setBackground(backgroundColor);
 	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 6 );
 	  Integrator_chooser.setSize(380,25);
 	  Integrator_chooser.setSelectedIndex(3);
@@ -2246,8 +2377,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_01 = new JLabel("");
       LABEL_IntegratorSetting_01.setLocation(65, uy_p41 + 25 * 8 );
       LABEL_IntegratorSetting_01.setSize(250, 20);
-      LABEL_IntegratorSetting_01.setBackground(bc_c);
-      LABEL_IntegratorSetting_01.setForeground(l_c);
+      LABEL_IntegratorSetting_01.setBackground(backgroundColor);
+      LABEL_IntegratorSetting_01.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_01);
       INPUT_IntegratorSetting_01 = new JTextField(10);
       INPUT_IntegratorSetting_01.setLocation(2, uy_p41 + 25 * 8 );
@@ -2269,8 +2400,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_02 = new JLabel("");
       LABEL_IntegratorSetting_02.setLocation(65, uy_p41 + 25 * 9 );
       LABEL_IntegratorSetting_02.setSize(250, 20);
-      LABEL_IntegratorSetting_02.setBackground(bc_c);
-      LABEL_IntegratorSetting_02.setForeground(l_c);
+      LABEL_IntegratorSetting_02.setBackground(backgroundColor);
+      LABEL_IntegratorSetting_02.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_02);
       INPUT_IntegratorSetting_02 = new JTextField(10);
       INPUT_IntegratorSetting_02.setLocation(2, uy_p41 + 25 * 9 );
@@ -2292,8 +2423,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_03 = new JLabel("");
       LABEL_IntegratorSetting_03.setLocation(65, uy_p41 + 25 * 10 );
       LABEL_IntegratorSetting_03.setSize(250, 20);
-      LABEL_IntegratorSetting_03.setBackground(bc_c);
-      LABEL_IntegratorSetting_03.setForeground(l_c);
+      LABEL_IntegratorSetting_03.setBackground(backgroundColor);
+      LABEL_IntegratorSetting_03.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_03);
       INPUT_IntegratorSetting_03 = new JTextField(10);
       INPUT_IntegratorSetting_03.setLocation(2, uy_p41 + 25 * 10 );
@@ -2315,8 +2446,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_04 = new JLabel("");
       LABEL_IntegratorSetting_04.setLocation(65, uy_p41 + 25 * 11 );
       LABEL_IntegratorSetting_04.setSize(250, 20);
-      LABEL_IntegratorSetting_04.setBackground(bc_c);
-      LABEL_IntegratorSetting_04.setForeground(l_c);
+      LABEL_IntegratorSetting_04.setBackground(backgroundColor);
+      LABEL_IntegratorSetting_04.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_04);
       INPUT_IntegratorSetting_04 = new JTextField(10);
       INPUT_IntegratorSetting_04.setLocation(2, uy_p41 + 25 * 11 );
@@ -2338,8 +2469,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_05 = new JLabel("");
       LABEL_IntegratorSetting_05.setLocation(65, uy_p41 + 25 * 12 );
       LABEL_IntegratorSetting_05.setSize(250, 20);
-      LABEL_IntegratorSetting_05.setBackground(bc_c);
-      LABEL_IntegratorSetting_05.setForeground(l_c);
+      LABEL_IntegratorSetting_05.setBackground(backgroundColor);
+      LABEL_IntegratorSetting_05.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_05);
       INPUT_IntegratorSetting_05 = new JTextField(10);
       INPUT_IntegratorSetting_05.setLocation(2, uy_p41 + 25 * 12 );
@@ -2367,20 +2498,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       JLabel LABEL_VCoordinateSystem = new JLabel("Select Coordinate System to solve the Velocity Vector");
       LABEL_VCoordinateSystem.setLocation(5, uy_p41 + 25 * 13   );
       LABEL_VCoordinateSystem.setSize(350, 20);
-      LABEL_VCoordinateSystem.setBackground(bc_c);
-      LABEL_VCoordinateSystem.setForeground(l_c);
+      LABEL_VCoordinateSystem.setBackground(backgroundColor);
+      LABEL_VCoordinateSystem.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_VCoordinateSystem);
       
       SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
       SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
       SELECT_VelocitySpherical.setLocation(5, uy_p41 + 25 * 14 );
       SELECT_VelocitySpherical.setSize(220,20);
-      SELECT_VelocitySpherical.setBackground(bc_c);
-      SELECT_VelocitySpherical.setForeground(l_c);
+      SELECT_VelocitySpherical.setBackground(backgroundColor);
+      SELECT_VelocitySpherical.setForeground(labelColor);
       SELECT_VelocitySpherical.setFont(small_font);
       SELECT_VelocityCartesian.setLocation(5, uy_p41 + 25 * 15);
       SELECT_VelocityCartesian.setSize(220,20);
-      SELECT_VelocityCartesian.setBackground(bc_c);
+      SELECT_VelocityCartesian.setBackground(backgroundColor);
       SELECT_VelocityCartesian.setFont(small_font);
      ButtonGroup bg_velocity=new ButtonGroup();    
      bg_velocity.add(SELECT_VelocitySpherical);
@@ -2418,20 +2549,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      JLabel LABEL_SelectDoF = new JLabel("Select Degrees of Freedom");
      LABEL_SelectDoF.setLocation(5, uy_p41 + 25 * 16   );
      LABEL_SelectDoF.setSize(350, 20);
-     LABEL_SelectDoF.setBackground(bc_c);
-     LABEL_SelectDoF.setForeground(l_c);
+     LABEL_SelectDoF.setBackground(backgroundColor);
+     LABEL_SelectDoF.setForeground(labelColor);
      IntegratorInputPanel.add(LABEL_SelectDoF);
      
      SELECT_3DOF =new JRadioButton("3DOF Model");    
      SELECT_6DOF =new JRadioButton("6DOF Model");      
      SELECT_3DOF.setLocation(5, uy_p41 + 25 * 17 );
      SELECT_3DOF.setSize(220,20);
-     SELECT_3DOF.setBackground(bc_c);
-     SELECT_3DOF.setForeground(l_c);
+     SELECT_3DOF.setBackground(backgroundColor);
+     SELECT_3DOF.setForeground(labelColor);
      SELECT_3DOF.setFont(small_font);
      SELECT_6DOF.setLocation(5, uy_p41 + 25 * 18);
      SELECT_6DOF.setSize(220,20);
-     SELECT_6DOF.setBackground(bc_c);
+     SELECT_6DOF.setBackground(backgroundColor);
      SELECT_6DOF.setFont(small_font);
     ButtonGroup bg_dof=new ButtonGroup();    
     bg_dof.add(SELECT_3DOF);
@@ -2469,8 +2600,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    JLabel LABEL_EventHandler = new JLabel("Solver stop conditions:");
 	    LABEL_EventHandler.setLocation(2, uy_p41 + 25 * 23   );
 	    LABEL_EventHandler.setSize(150, 20);
-	    LABEL_EventHandler.setBackground(bc_c);
-	    LABEL_EventHandler.setForeground(l_c);
+	    LABEL_EventHandler.setBackground(backgroundColor);
+	    LABEL_EventHandler.setForeground(labelColor);
 	    IntegratorInputPanel.add(LABEL_EventHandler);
 
 	    TABLE_EventHandler = new JTable();
@@ -2509,12 +2640,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	
 	    MODEL_EventHandler.setColumnIdentifiers(COLUMS_EventHandler);
 	    TABLE_EventHandler.setModel(MODEL_EventHandler);
-	    TABLE_EventHandler.setBackground(bc_c);
+	    TABLE_EventHandler.setBackground(backgroundColor);
 	    int tablewidth_EventHandler = 385;
 	    int tableheight_EventHandler = 230;
 	  // ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
-	    TABLE_EventHandler.setBackground(bc_c);
-	    TABLE_EventHandler.setForeground(l_c);
+	    TABLE_EventHandler.setBackground(backgroundColor);
+	    TABLE_EventHandler.setForeground(labelColor);
 	    TABLE_EventHandler.setSize(tablewidth_EventHandler, tableheight_EventHandler);
 	    TABLE_EventHandler.getTableHeader().setReorderingAllowed(false);
 	    TABLE_EventHandler.setRowHeight(35);
@@ -2525,10 +2656,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    EventHandlerType_colum.setPreferredWidth(300);
 		    EventHandlerValue_column.setPreferredWidth(100);
 
-		    TABLE_EventHandler.getTableHeader().setBackground(bc_c);
-		    TABLE_EventHandler.getTableHeader().setForeground(l_c);
+		    TABLE_EventHandler.getTableHeader().setBackground(backgroundColor);
+		    TABLE_EventHandler.getTableHeader().setForeground(labelColor);
 	    
-	    EventHandlerTypeCombobox.setBackground(bc_c);
+	    EventHandlerTypeCombobox.setBackground(backgroundColor);
 	    try {
 	    for (int i=0;i<EventHandler_Type.length;i++) {EventHandlerTypeCombobox.addItem(EventHandler_Type[i]);}
 	    } catch(NullPointerException eNPE) {
@@ -2539,9 +2670,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 	    
 	    JScrollPane TABLE_EventHandler_ScrollPane = new JScrollPane(TABLE_EventHandler,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	    TABLE_EventHandler_ScrollPane.getVerticalScrollBar().setBackground(bc_c);
-	    TABLE_EventHandler_ScrollPane.getHorizontalScrollBar().setBackground(bc_c);
-	    TABLE_EventHandler_ScrollPane.setBackground(bc_c);
+	    TABLE_EventHandler_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
+	    TABLE_EventHandler_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
+	    TABLE_EventHandler_ScrollPane.setBackground(backgroundColor);
 	    TABLE_EventHandler_ScrollPane.setSize(tablewidth_EventHandler,tableheight_EventHandler);
 	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 24 );
 	    TABLE_EventHandler_ScrollPane.setOpaque(false);
@@ -2556,8 +2687,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 23);
         BUTTON_AddEventHandler.setSize(65,20);
         BUTTON_AddEventHandler.setEnabled(true);
-        BUTTON_AddEventHandler.setForeground(l_c);
-        BUTTON_AddEventHandler.setBackground(bc_c);
+        BUTTON_AddEventHandler.setForeground(labelColor);
+        BUTTON_AddEventHandler.setBackground(backgroundColor);
         BUTTON_AddEventHandler.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
         	    	ROW_EventHandler[0] = ""+EventHandler_Type[1];
@@ -2571,8 +2702,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 23);
         BUTTON_DeleteEventHandler.setSize(75,20);
         BUTTON_DeleteEventHandler.setEnabled(true);
-        BUTTON_DeleteEventHandler.setForeground(l_c);
-        BUTTON_DeleteEventHandler.setBackground(bc_c);
+        BUTTON_DeleteEventHandler.setForeground(labelColor);
+        BUTTON_DeleteEventHandler.setBackground(backgroundColor);
         BUTTON_DeleteEventHandler.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
         	    	int j = TABLE_EventHandler.getSelectedRow();
@@ -2588,14 +2719,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     JPanel P2_ControllerPane = new JPanel();
    // P2_ControllerPane.setLayout(null);
     //P2_ControllerPane.setPreferredSize(new Dimension((exty_main+400),290));
-    P2_ControllerPane.setBackground(bc_c);
-    P2_ControllerPane.setForeground(l_c);
+    P2_ControllerPane.setBackground(backgroundColor);
+    P2_ControllerPane.setForeground(labelColor);
     
     JPanel P2_SequenceMAIN = new JPanel();
     P2_SequenceMAIN.setLayout(new BorderLayout());
    // P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
-    P2_SequenceMAIN.setBackground(bc_c);
-    P2_SequenceMAIN.setForeground(l_c);
+    P2_SequenceMAIN.setBackground(backgroundColor);
+    P2_SequenceMAIN.setForeground(labelColor);
     PANEL_RIGHT_InputSection.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
     //-----------------------------------------------------------------------------------------------------------------------------
     //                  Sequence table 
@@ -2617,19 +2748,19 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
             try {
             	if (value.equals(""+SequenceType[2])) {
                     comp.setBackground(Color.orange);
-                    comp.setForeground(l_c);
+                    comp.setForeground(labelColor);
             	} else if (value.equals(""+SequenceType[0])) {
-                    comp.setBackground(bc_c);
-                    comp.setForeground(l_c);
+                    comp.setBackground(backgroundColor);
+                    comp.setForeground(labelColor);
             	} else if (value.equals(""+SequenceType[1])) {
                     comp.setBackground(Color.blue);
                     comp.setForeground(Color.white);
             	} else if (value.equals(""+SequenceType[3])) {
                     comp.setBackground(Color.green);
-                    comp.setForeground(l_c);
+                    comp.setForeground(labelColor);
             	} else if (value.equals(""+SequenceType[4])) {
                     comp.setBackground(Color.CYAN);
-                    comp.setForeground(l_c);
+                    comp.setForeground(labelColor);
             	} else if (value.equals(""+SequenceType[5])) {
                     comp.setBackground(Color.red);
                     comp.setForeground(Color.white);
@@ -2652,8 +2783,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     comp.setBackground(light_gray);
                     comp.setForeground(Color.gray);
             	}  else {
-                    comp.setBackground(bc_c);
-                    comp.setForeground(l_c);
+                    comp.setBackground(backgroundColor);
+                    comp.setForeground(labelColor);
             	}         
             } catch (NullPointerException e) {
             	
@@ -2707,9 +2838,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     }; 
     MODEL_SEQUENCE.setColumnIdentifiers(COLUMS_SEQUENCE);
     TABLE_SEQUENCE.setModel(MODEL_SEQUENCE);
-    TABLE_SEQUENCE.setBackground(bc_c);
-    TABLE_SEQUENCE.setBackground(bc_c);
-    TABLE_SEQUENCE.setForeground(l_c);
+    TABLE_SEQUENCE.setBackground(backgroundColor);
+    TABLE_SEQUENCE.setBackground(backgroundColor);
+    TABLE_SEQUENCE.setForeground(labelColor);
     TABLE_SEQUENCE.getTableHeader().setReorderingAllowed(false);
     TABLE_SEQUENCE.setRowHeight(45);
     
@@ -2747,10 +2878,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    
 	    ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
     
-    TABLE_SEQUENCE.getTableHeader().setBackground(bc_c);
-    TABLE_SEQUENCE.getTableHeader().setForeground(l_c);
+    TABLE_SEQUENCE.getTableHeader().setBackground(backgroundColor);
+    TABLE_SEQUENCE.getTableHeader().setForeground(labelColor);
     
-    SequenceENDTypeCombobox.setBackground(bc_c);
+    SequenceENDTypeCombobox.setBackground(backgroundColor);
     try {
     for (int i=0;i<SequenceENDType.length;i++) {
     	SequenceENDTypeCombobox.addItem(SequenceENDType[i]);
@@ -2760,7 +2891,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     }
     SequENDTypeColumn.setCellEditor(new DefaultCellEditor(SequenceENDTypeCombobox));
     
-    SequenceTypeCombobox.setBackground(bc_c);
+    SequenceTypeCombobox.setBackground(backgroundColor);
     try {
     for (int i=0;i<SequenceType.length;i++) {
     	SequenceTypeCombobox.addItem(SequenceType[i]);
@@ -2770,7 +2901,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     }
     SequTypeColumn.setCellEditor(new DefaultCellEditor(SequenceTypeCombobox));
     
-    SequenceFCCombobox.setBackground(bc_c);
+    SequenceFCCombobox.setBackground(backgroundColor);
     try {
     for (int i=0;i<SequenceFC.length;i++) {
     	SequenceFCCombobox.addItem(SequenceFC[i]);
@@ -2780,7 +2911,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     }
     SequenceFCColumn.setCellEditor(new DefaultCellEditor(SequenceFCCombobox));
     
-    FCTargetCurveCombobox.setBackground(bc_c);
+    FCTargetCurveCombobox.setBackground(backgroundColor);
     try {
     for (int i=0;i<FCTargetCurve.length;i++) {
     	FCTargetCurveCombobox.addItem(FCTargetCurve[i]);
@@ -2790,7 +2921,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     }
     FCtargetCurveColumn.setCellEditor(new DefaultCellEditor(FCTargetCurveCombobox));
     
-    SequenceTVCFCCombobox.setBackground(bc_c);
+    SequenceTVCFCCombobox.setBackground(backgroundColor);
     try {
     for (int i=0;i<SequenceTVCFC.length;i++) {
     	SequenceTVCFCCombobox.addItem(SequenceTVCFC[i]);
@@ -2800,7 +2931,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     }
     TVCFCColumn.setCellEditor(new DefaultCellEditor(SequenceTVCFCCombobox));
     
-    TVCFCTargetCurveCombobox.setBackground(bc_c);
+    TVCFCTargetCurveCombobox.setBackground(backgroundColor);
     try {
     for (int i=0;i<TargetCurve_Options_TVC.length;i++) {
     	TVCFCTargetCurveCombobox.addItem(TargetCurve_Options_TVC[i]);
@@ -2812,9 +2943,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     
     JScrollPane TABLE_SEQUENCE_ScrollPane = new JScrollPane(TABLE_SEQUENCE,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
     //TABLE_SEQUENCE_ScrollPane.setLayout(null);
-    TABLE_SEQUENCE_ScrollPane.getVerticalScrollBar().setBackground(bc_c);
-    TABLE_SEQUENCE_ScrollPane.getHorizontalScrollBar().setBackground(bc_c);
-    TABLE_SEQUENCE_ScrollPane.setBackground(bc_c);
+    TABLE_SEQUENCE_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
+    TABLE_SEQUENCE_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
+    TABLE_SEQUENCE_ScrollPane.setBackground(backgroundColor);
     //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
     //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
     P2_SequenceMAIN.add(TABLE_SEQUENCE_ScrollPane, BorderLayout.PAGE_START);
@@ -2822,8 +2953,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     JPanel SequenceControlPanel = new JPanel();
     SequenceControlPanel.setLayout(null);
     SequenceControlPanel.setPreferredSize(new Dimension(400, 60));
-    SequenceControlPanel.setBackground(bc_c);
-    SequenceControlPanel.setForeground(l_c);
+    SequenceControlPanel.setBackground(backgroundColor);
+    SequenceControlPanel.setForeground(labelColor);
     P2_SequenceMAIN.add(SequenceControlPanel, BorderLayout.PAGE_END);
 
     JButton BUTTON_AddSequence = new JButton("Add Sequence");
@@ -2938,8 +3069,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     Pane_Sequence.setLocation(0, 0);
     Pane_Sequence.setPreferredSize(new Dimension(900, 200));
     Pane_Sequence.setLayout(new BorderLayout());
-    Pane_Sequence.setBackground(bc_c);
-    Pane_Sequence.setForeground(l_c);
+    Pane_Sequence.setBackground(backgroundColor);
+    Pane_Sequence.setForeground(labelColor);
     PANEL_RIGHT_InputSection.add(Pane_Sequence, BorderLayout.CENTER);
 
     JSplitPane SplitPane_Page2_Charts_HorizontalSplit = new JSplitPane();
@@ -3060,9 +3191,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    }; 
 	    MODEL_CONTROLLER.setColumnIdentifiers(COLUMS_CONTROLLER);
 	    TABLE_CONTROLLER.setModel(MODEL_CONTROLLER);
-	    TABLE_CONTROLLER.setBackground(bc_c);
-	    TABLE_CONTROLLER.setBackground(bc_c);
-	    TABLE_CONTROLLER.setForeground(l_c);
+	    TABLE_CONTROLLER.setBackground(backgroundColor);
+	    TABLE_CONTROLLER.setBackground(backgroundColor);
+	    TABLE_CONTROLLER.setForeground(labelColor);
 	    TABLE_CONTROLLER.getTableHeader().setReorderingAllowed(false);
 	    TABLE_CONTROLLER.setRowHeight(45);
 
@@ -3088,14 +3219,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    
 		    ((JTable) TABLE_CONTROLLER).setFillsViewportHeight(true);
 	    
-		    TABLE_CONTROLLER.getTableHeader().setBackground(bc_c);
-		    TABLE_CONTROLLER.getTableHeader().setForeground(l_c);
+		    TABLE_CONTROLLER.getTableHeader().setBackground(backgroundColor);
+		    TABLE_CONTROLLER.getTableHeader().setForeground(labelColor);
 		    
 		    JScrollPane TABLE_CONTROLLER_ScrollPane = new JScrollPane(TABLE_CONTROLLER,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		    //TABLE_SEQUENCE_ScrollPane.setLayout(null);
-		    TABLE_CONTROLLER_ScrollPane.getVerticalScrollBar().setBackground(bc_c);
-		    TABLE_CONTROLLER_ScrollPane.getHorizontalScrollBar().setBackground(bc_c);
-		    TABLE_CONTROLLER_ScrollPane.setBackground(bc_c);
+		    TABLE_CONTROLLER_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
+		    TABLE_CONTROLLER_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
+		    TABLE_CONTROLLER_ScrollPane.setBackground(backgroundColor);
 		    //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
 		    //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
 		   // P2_ControllerPane.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
@@ -3154,9 +3285,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    }; 
 		    MODEL_ERROR.setColumnIdentifiers(COLUMS_ERROR);
 		    TABLE_ERROR.setModel(MODEL_ERROR);
-		    TABLE_ERROR.setBackground(bc_c);
-		    TABLE_ERROR.setBackground(bc_c);
-		    TABLE_ERROR.setForeground(l_c);
+		    TABLE_ERROR.setBackground(backgroundColor);
+		    TABLE_ERROR.setBackground(backgroundColor);
+		    TABLE_ERROR.setForeground(labelColor);
 		    TABLE_ERROR.getTableHeader().setReorderingAllowed(false);
 		    TABLE_ERROR.setRowHeight(45);
 
@@ -3176,10 +3307,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    
 			    ((JTable) TABLE_ERROR).setFillsViewportHeight(true);
 		    
-			    TABLE_ERROR.getTableHeader().setBackground(bc_c);
-			    TABLE_ERROR.getTableHeader().setForeground(l_c);
+			    TABLE_ERROR.getTableHeader().setBackground(backgroundColor);
+			    TABLE_ERROR.getTableHeader().setForeground(labelColor);
 			    
-			    ErrorTypeCombobox.setBackground(bc_c);
+			    ErrorTypeCombobox.setBackground(backgroundColor);
 			    try {
 			    for (int i=0;i<ErrorType.length;i++) {
 			    	ErrorTypeCombobox.addItem(ErrorType[i]);
@@ -3190,11 +3321,98 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    ErrorType_column.setCellEditor(new DefaultCellEditor(ErrorTypeCombobox));
 			    
 			    JScrollPane TABLE_ERROR_ScrollPane = new JScrollPane(TABLE_ERROR,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			    TABLE_ERROR_ScrollPane.getVerticalScrollBar().setBackground(bc_c);
-			    TABLE_ERROR_ScrollPane.getHorizontalScrollBar().setBackground(bc_c);
-			    TABLE_ERROR_ScrollPane.setBackground(bc_c);
+			    TABLE_ERROR_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
+			    TABLE_ERROR_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
+			    TABLE_ERROR_ScrollPane.setBackground(backgroundColor);
 			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
 			    
+				//-----------------------------------------------------------------------------------------
+			    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
+				//-----------------------------------------------------------------------------------------		    
+			    
+				JPanel AerodynamicRightPanel = new JPanel();
+				AerodynamicRightPanel.setLocation(0, 0);
+				AerodynamicRightPanel.setBackground(backgroundColor);
+				AerodynamicRightPanel.setForeground(labelColor);
+				AerodynamicRightPanel.setSize(400, 600);
+				AerodynamicRightPanel.setLayout(null); 
+
+			   
+				JPanel AerodynamicLeftPanel = new JPanel();
+			    AerodynamicLeftPanel.setLocation(0, 0);
+			    AerodynamicLeftPanel.setBackground(backgroundColor);
+			    AerodynamicLeftPanel.setForeground(labelColor);
+			    AerodynamicLeftPanel.setSize(400, 600);
+			    AerodynamicLeftPanel.setLayout(null); 
+			    
+
+			      
+			      JPanel AerodynamicInputPanel = new JPanel();
+			      AerodynamicInputPanel.setLocation(0, uy_p41 + 26 * 38 );
+			      AerodynamicInputPanel.setSize(SidePanel_Width, 750);
+			      AerodynamicInputPanel.setBackground(backgroundColor);
+			      AerodynamicInputPanel.setForeground(Color.white);
+			      AerodynamicInputPanel.setLayout(null);	
+			  
+			      JScrollPane ScrollPaneAerodynamicInput = new JScrollPane(AerodynamicLeftPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			      ScrollPaneAerodynamicInput.setPreferredSize(new Dimension(405, exty_main));
+			      ScrollPaneAerodynamicInput.getVerticalScrollBar().setUnitIncrement(16);
+			      AerodynamicSetupPanel.add(ScrollPaneAerodynamicInput, BorderLayout.LINE_START);
+			      JScrollPane ScrollPaneAerodynamicInput2 = new JScrollPane(AerodynamicRightPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			      ScrollPaneAerodynamicInput2.setPreferredSize(new Dimension(405, exty_main));
+			      ScrollPaneAerodynamicInput2.getVerticalScrollBar().setUnitIncrement(16);
+			      AerodynamicSetupPanel.add(ScrollPaneAerodynamicInput2, BorderLayout.CENTER);
+			    
+			      JLabel LABELdragModel = new JLabel("Select Aerodynamic Drag Model:");
+			      LABELdragModel.setLocation(3, 5 + 25 * 0  );
+			      LABELdragModel.setSize(190, 20);
+			      LABELdragModel.setBackground(backgroundColor);
+			      LABELdragModel.setForeground(labelColor);
+			      LABELdragModel.setFont(small_font);
+			      LABELdragModel.setHorizontalAlignment(0);
+			      AerodynamicLeftPanel.add(LABELdragModel);
+			      
+			      ButtonGroup dragModelGroup = new ButtonGroup();  
+				     
+			      JRadioButton aeroButton = new JRadioButton("Constant drag coefficient");
+			      aeroButton.setLocation(3, 5 + 25 * 1  );
+			      aeroButton.setSize(190, 20);
+			      aeroButton.setBackground(backgroundColor);
+			      aeroButton.setForeground(labelColor);
+			      aeroButton.setFont(small_font);
+			      aeroButton.addChangeListener(new ChangeListener() {
+
+					@Override
+					public void stateChanged(ChangeEvent arg0) {
+						WRITE_AERO();
+					}
+			    	  
+			      });
+			      //aeroButton.setSelected(true);
+			      DragModelSet.add(aeroButton);
+			      //aeroButton.setHorizontalAlignment(0);
+			      AerodynamicLeftPanel.add(aeroButton);
+			      dragModelGroup.add(aeroButton);
+			       aeroButton = new JRadioButton("Hypersonic Panel Model");
+			      aeroButton.setLocation(3, 5 + 25 * 2  );
+			      aeroButton.setSize(190, 20);
+			      aeroButton.setBackground(backgroundColor);
+			      aeroButton.setForeground(labelColor);
+			      aeroButton.setFont(small_font);
+			      DragModelSet.add(aeroButton);
+			      aeroButton.addChangeListener(new ChangeListener() {
+
+					@Override
+					public void stateChanged(ChangeEvent arg0) {
+							WRITE_AERO();
+					}
+			    	  
+			      });
+			     // aeroButton.setHorizontalAlignment(0);
+			      AerodynamicLeftPanel.add(aeroButton);
+			      dragModelGroup.add(aeroButton);
+
+			      // System.out.println(dragModelGroup.getSelection().);
 		//-----------------------------------------------------------------------------------------
 	    // ---->>>>>                       TAB: Spacecraft Definition
 		//-----------------------------------------------------------------------------------------			    
@@ -3202,35 +3420,25 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    // Main (SUB) tabbed Pane for this page
 		        JTabbedPane TabPane_SCDefinition = (JTabbedPane) new JTabbedPane();
 		        TabPane_SCDefinition.setPreferredSize(new Dimension(extx_main, exty_main));
-		        TabPane_SCDefinition.setBackground(bc_c);
-		        TabPane_SCDefinition.setForeground(l_c);
+		        TabPane_SCDefinition.setBackground(backgroundColor);
+		        TabPane_SCDefinition.setForeground(labelColor);
 		//-------------------------------------------------------------------------------------------	    
 		        // Main panels for each page 
 				JPanel InertiaxPanel = new JPanel();
 				InertiaxPanel.setLocation(0, 0);
-				InertiaxPanel.setBackground(bc_c);
-				InertiaxPanel.setForeground(l_c);
+				InertiaxPanel.setBackground(backgroundColor);
+				InertiaxPanel.setForeground(labelColor);
 				InertiaxPanel.setSize(400, 600);
 				InertiaxPanel.setLayout(null); 
 	    		
 			      JPanel PropulsionInputPanel = new JPanel();
 			      PropulsionInputPanel.setLocation(0, uy_p41 + 26 * 38 );
 			      PropulsionInputPanel.setSize(SidePanel_Width, 750);
-			      PropulsionInputPanel.setBackground(bc_c);
+			      PropulsionInputPanel.setBackground(backgroundColor);
 			      PropulsionInputPanel.setForeground(Color.white);
 			      PropulsionInputPanel.setLayout(null);
-
-			      
-			      JPanel AerodynamicInputPanel = new JPanel();
-			      AerodynamicInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-			      AerodynamicInputPanel.setSize(SidePanel_Width, 750);
-			      AerodynamicInputPanel.setBackground(bc_c);
-			      AerodynamicInputPanel.setForeground(Color.white);
-			      AerodynamicInputPanel.setLayout(null);				
+			
 				
-			     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
-			     	ImageIcon icon_inertia = new ImageIcon("images/inertia.png","");
-			     	ImageIcon icon_aerodynamic = new ImageIcon("images/aerodynamic.png","");
 			     	if(OS_is==2) {
 			     		// Resize image icons for Windows 
 			         	 int size=10;
@@ -3253,15 +3461,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      Separator_Inertia.setLocation(0, 0 );
 			      Separator_Inertia.setSize(SidePanel_Width, 1);
 			      Separator_Inertia.setBackground(Color.black);
-			      Separator_Inertia.setForeground(l_c);
+			      Separator_Inertia.setForeground(labelColor);
 			      InertiaxPanel.add(Separator_Inertia);
 
 				  // Space intended for advanced integrator settings 
 			      JLabel LABEL_InertiaTensor = new JLabel("Inertia Tensor [kg m\u00b2 ] ");
 			      LABEL_InertiaTensor.setLocation(0, uy_p41 + 10 * 0  );
 			      LABEL_InertiaTensor.setSize(190, 20);
-			      LABEL_InertiaTensor.setBackground(bc_c);
-			      LABEL_InertiaTensor.setForeground(l_c);
+			      LABEL_InertiaTensor.setBackground(backgroundColor);
+			      LABEL_InertiaTensor.setForeground(labelColor);
 			      LABEL_InertiaTensor.setFont(HeadlineFont);
 			      LABEL_InertiaTensor.setHorizontalAlignment(0);
 			      InertiaxPanel.add(LABEL_InertiaTensor);
@@ -3270,8 +3478,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				JPanel InertiaMatrixPanel = new JPanel();
 				InertiaMatrixPanel.setLayout(null);
 				InertiaMatrixPanel.setLocation(10, 40);
-				InertiaMatrixPanel.setBackground(bc_c);
-				InertiaMatrixPanel.setForeground(l_c);
+				InertiaMatrixPanel.setBackground(backgroundColor);
+				InertiaMatrixPanel.setForeground(labelColor);
 				InertiaMatrixPanel.setSize(330, 370);
 				InertiaMatrixPanel.setBorder(Moon_border);
 				InertiaxPanel.add(InertiaMatrixPanel);
@@ -3315,8 +3523,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IXX = new JLabel("Ixx");
 			      LABEL_IXX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*0 - 15);
 			      LABEL_IXX.setSize(box_size_x, 20);
-			      LABEL_IXX.setBackground(bc_c);
-			      LABEL_IXX.setForeground(l_c);
+			      LABEL_IXX.setBackground(backgroundColor);
+			      LABEL_IXX.setForeground(labelColor);
 			      LABEL_IXX.setFont(small_font);
 			      LABEL_IXX.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IXX);
@@ -3344,8 +3552,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IXY = new JLabel("Ixy");
 			      LABEL_IXY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*0 - 15);
 			      LABEL_IXY.setSize(box_size_x, 20);
-			      LABEL_IXY.setBackground(bc_c);
-			      LABEL_IXY.setForeground(l_c);
+			      LABEL_IXY.setBackground(backgroundColor);
+			      LABEL_IXY.setForeground(labelColor);
 			      LABEL_IXY.setFont(small_font);
 			      LABEL_IXY.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IXY);
@@ -3371,8 +3579,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IXZ = new JLabel("Ixz");
 			      LABEL_IXZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*0 - 15);
 			      LABEL_IXZ.setSize(box_size_x, 20);
-			      LABEL_IXZ.setBackground(bc_c);
-			      LABEL_IXZ.setForeground(l_c);
+			      LABEL_IXZ.setBackground(backgroundColor);
+			      LABEL_IXZ.setForeground(labelColor);
 			      LABEL_IXZ.setFont(small_font);
 			      LABEL_IXZ.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IXZ);
@@ -3400,8 +3608,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IYX = new JLabel("Iyx");
 			      LABEL_IYX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*1 - 15);
 			      LABEL_IYX.setSize(box_size_x, 20);
-			      LABEL_IYX.setBackground(bc_c);
-			      LABEL_IYX.setForeground(l_c);
+			      LABEL_IYX.setBackground(backgroundColor);
+			      LABEL_IYX.setForeground(labelColor);
 			      LABEL_IYX.setFont(small_font);
 			      LABEL_IYX.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IYX);
@@ -3427,8 +3635,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IYY = new JLabel("Iyy");
 			      LABEL_IYY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*1 - 15);
 			      LABEL_IYY.setSize(box_size_x, 20);
-			      LABEL_IYY.setBackground(bc_c);
-			      LABEL_IYY.setForeground(l_c);
+			      LABEL_IYY.setBackground(backgroundColor);
+			      LABEL_IYY.setForeground(labelColor);
 			      LABEL_IYY.setFont(small_font);
 			      LABEL_IYY.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IYY);
@@ -3457,7 +3665,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      LABEL_IYZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*1 - 15);
 			      LABEL_IYZ.setSize(box_size_x, 20);
 			      LABEL_IYZ.setBackground(Color.gray);
-			      LABEL_IYZ.setForeground(l_c);
+			      LABEL_IYZ.setForeground(labelColor);
 			      LABEL_IYZ.setFont(small_font);
 			      LABEL_IYZ.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IYZ);
@@ -3483,8 +3691,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IZX = new JLabel("Izx");
 			      LABEL_IZX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*2 - 15);
 			      LABEL_IZX.setSize(box_size_x, 20);
-			      LABEL_IZX.setBackground(bc_c);
-			      LABEL_IZX.setForeground(l_c);
+			      LABEL_IZX.setBackground(backgroundColor);
+			      LABEL_IZX.setForeground(labelColor);
 			      LABEL_IZX.setFont(small_font);
 			      LABEL_IZX.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IZX);
@@ -3512,8 +3720,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IZY = new JLabel("Izy");
 			      LABEL_IZY.setLocation(gap_size_x+(box_size_x + gap_size_x)*1, gap_size_y + (gap_size_y + box_size_y)*2 - 15);
 			      LABEL_IZY.setSize(box_size_x, 20);
-			      LABEL_IZY.setBackground(bc_c);
-			      LABEL_IZY.setForeground(l_c);
+			      LABEL_IZY.setBackground(backgroundColor);
+			      LABEL_IZY.setForeground(labelColor);
 			      LABEL_IZY.setFont(small_font);
 			      LABEL_IZY.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IZY);
@@ -3540,8 +3748,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      JLabel LABEL_IZZ = new JLabel("Izz");
 			      LABEL_IZZ.setLocation(gap_size_x+(box_size_x + gap_size_x)*2, gap_size_y + (gap_size_y + box_size_y)*2 - 15);
 			      LABEL_IZZ.setSize(box_size_x, 20);
-			      LABEL_IZZ.setBackground(bc_c);
-			      LABEL_IZZ.setForeground(l_c);
+			      LABEL_IZZ.setBackground(backgroundColor);
+			      LABEL_IZZ.setForeground(labelColor);
 			      LABEL_IZZ.setFont(small_font);
 			      LABEL_IZZ.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IZZ);
@@ -3555,8 +3763,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					JPanel InitialAttitudePanel = new JPanel();
 					InitialAttitudePanel.setLayout(null);
 					InitialAttitudePanel.setLocation(350, 10);
-					InitialAttitudePanel.setBackground(bc_c);
-					InitialAttitudePanel.setForeground(l_c);
+					InitialAttitudePanel.setBackground(backgroundColor);
+					InitialAttitudePanel.setForeground(labelColor);
 					InitialAttitudePanel.setBorder(Moon_border);
 					InitialAttitudePanel.setSize(400, 400);
 					InertiaxPanel.add(InitialAttitudePanel);
@@ -3564,8 +3772,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Quarternions = new JLabel("Quarternion Representation");
 				      LABEL_Quarternions.setLocation(2, 2);
 				      LABEL_Quarternions.setSize(150, 20);
-				      LABEL_Quarternions.setBackground(bc_c);
-				      LABEL_Quarternions.setForeground(l_c);
+				      LABEL_Quarternions.setBackground(backgroundColor);
+				      LABEL_Quarternions.setForeground(labelColor);
 				      LABEL_Quarternions.setFont(small_font);
 				      LABEL_Quarternions.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Quarternions);
@@ -3573,8 +3781,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Quarternion1 = new JLabel("Quarternion e1");
 				      LABEL_Quarternion1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0 - 15+45);
 				      LABEL_Quarternion1.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Quarternion1.setBackground(bc_c);
-				      LABEL_Quarternion1.setForeground(l_c);
+				      LABEL_Quarternion1.setBackground(backgroundColor);
+				      LABEL_Quarternion1.setForeground(labelColor);
 				      LABEL_Quarternion1.setFont(small_font);
 				      LABEL_Quarternion1.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Quarternion1);
@@ -3612,8 +3820,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Quarternion2 = new JLabel("Quarternion e2");
 				      LABEL_Quarternion2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*1 - 15+45);
 				      LABEL_Quarternion2.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Quarternion2.setBackground(bc_c);
-				      LABEL_Quarternion2.setForeground(l_c);
+				      LABEL_Quarternion2.setBackground(backgroundColor);
+				      LABEL_Quarternion2.setForeground(labelColor);
 				      LABEL_Quarternion2.setFont(small_font);
 				      LABEL_Quarternion2.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Quarternion2);
@@ -3651,8 +3859,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Quarternion3 = new JLabel("Quarternion e3");
 				      LABEL_Quarternion3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*2 - 15+45);
 				      LABEL_Quarternion3.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Quarternion3.setBackground(bc_c);
-				      LABEL_Quarternion3.setForeground(l_c);
+				      LABEL_Quarternion3.setBackground(backgroundColor);
+				      LABEL_Quarternion3.setForeground(labelColor);
 				      LABEL_Quarternion3.setFont(small_font);
 				      LABEL_Quarternion3.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Quarternion3);
@@ -3690,8 +3898,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Quarternion4 = new JLabel("Quarternion e4");
 				      LABEL_Quarternion4.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*3 - 15+45);
 				      LABEL_Quarternion4.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Quarternion4.setBackground(bc_c);
-				      LABEL_Quarternion4.setForeground(l_c);
+				      LABEL_Quarternion4.setBackground(backgroundColor);
+				      LABEL_Quarternion4.setForeground(labelColor);
 				      LABEL_Quarternion4.setFont(small_font);
 				      LABEL_Quarternion4.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Quarternion4);
@@ -3730,8 +3938,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Euler = new JLabel("Euler Angle Representation");
 				      LABEL_Euler.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*4 +45);
 				      LABEL_Euler.setSize(150, 20);
-				      LABEL_Euler.setBackground(bc_c);
-				      LABEL_Euler.setForeground(l_c);
+				      LABEL_Euler.setBackground(backgroundColor);
+				      LABEL_Euler.setForeground(labelColor);
 				      LABEL_Euler.setFont(small_font);
 				      LABEL_Euler.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler);
@@ -3739,8 +3947,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Euler1 = new JLabel("Euler E1 - Roll [deg]");
 				      LABEL_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5 - 15+45);
 				      LABEL_Euler1.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Euler1.setBackground(bc_c);
-				      LABEL_Euler1.setForeground(l_c);
+				      LABEL_Euler1.setBackground(backgroundColor);
+				      LABEL_Euler1.setForeground(labelColor);
 				      LABEL_Euler1.setFont(small_font);
 				      LABEL_Euler1.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler1);
@@ -3854,8 +4062,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Euler2 = new JLabel("Euler E2 - Pitch [deg]");
 				      LABEL_Euler2.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*6 - 15+45);
 				      LABEL_Euler2.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Euler2.setBackground(bc_c);
-				      LABEL_Euler2.setForeground(l_c);
+				      LABEL_Euler2.setBackground(backgroundColor);
+				      LABEL_Euler2.setForeground(labelColor);
 				      LABEL_Euler2.setFont(small_font);
 				      LABEL_Euler2.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler2);
@@ -3897,8 +4105,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				      JLabel LABEL_Euler3 = new JLabel("Euler E3 - Yaw [deg]");
 				      LABEL_Euler3.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*7 - 15+45);
 				      LABEL_Euler3.setSize(box_size_InitialAttitude_x, 20);
-				      LABEL_Euler3.setBackground(bc_c);
-				      LABEL_Euler3.setForeground(l_c);
+				      LABEL_Euler3.setBackground(backgroundColor);
+				      LABEL_Euler3.setForeground(labelColor);
 				      LABEL_Euler3.setFont(small_font);
 				      LABEL_Euler3.setHorizontalAlignment(0);
 				      InitialAttitudePanel.add(LABEL_Euler3);
@@ -3939,11 +4147,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					JPanel SpaceShip3DPanel = new JPanel();
 					SpaceShip3DPanel.setLayout(new BorderLayout());
 					SpaceShip3DPanel.setLocation(765, 10);
-					//SpaceShip3DPanel.setBackground(bc_c);
-					//SpaceShip3DPanel.setForeground(l_c);
+					//SpaceShip3DPanel.setBackground(backgroundColor);
+					//SpaceShip3DPanel.setForeground(labelColor);
 					SpaceShip3DPanel.setSize(450, 400);
 					SpaceShip3DPanel.setBorder(Moon_border);
 					InertiaxPanel.add(SpaceShip3DPanel);
+					
 					
 			        final JFXPanel fxPanel = new JFXPanel();
 			        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
@@ -3961,7 +4170,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      Separator_Page2_2.setLocation(0, 0 );
 		      Separator_Page2_2.setSize(SidePanel_Width, 1);
 		      Separator_Page2_2.setBackground(Color.black);
-		      Separator_Page2_2.setForeground(l_c);
+		      Separator_Page2_2.setForeground(labelColor);
 		      PropulsionInputPanel.add(Separator_Page2_2);
 
 		        String path3 = "images/mercuryBlueprint.png";
@@ -3980,69 +4189,56 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      JLabel LABEL_SpaceCraftSettings = new JLabel("Spacecraft Settings");
 		      LABEL_SpaceCraftSettings.setLocation(0, uy_p41 + 10 * 0  );
 		      LABEL_SpaceCraftSettings.setSize(400, 20);
-		      LABEL_SpaceCraftSettings.setBackground(bc_c);
-		      LABEL_SpaceCraftSettings.setForeground(l_c);
+		      LABEL_SpaceCraftSettings.setBackground(backgroundColor);
+		      LABEL_SpaceCraftSettings.setForeground(labelColor);
 		      LABEL_SpaceCraftSettings.setFont(HeadlineFont);
 		      LABEL_SpaceCraftSettings.setHorizontalAlignment(0);
 		      PropulsionInputPanel.add(LABEL_SpaceCraftSettings);
 		      JLabel LABEL_Minit = new JLabel("Initial mass [kg]");
 		      LABEL_Minit.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
 		      LABEL_Minit.setSize(250, 20);
-		      LABEL_Minit.setBackground(bc_c);
-		      LABEL_Minit.setForeground(l_c);
+		      LABEL_Minit.setBackground(backgroundColor);
+		      LABEL_Minit.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_Minit);
 		      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
 		      LABEL_ME_ISP.setLocation(INPUT_width+5, uy_p41 + 25 * 3 );
 		      LABEL_ME_ISP.setSize(300, 20);
-		      LABEL_ME_ISP.setBackground(bc_c);
-		      LABEL_ME_ISP.setForeground(l_c);
+		      LABEL_ME_ISP.setBackground(backgroundColor);
+		      LABEL_ME_ISP.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_ISP);
 		      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
 		      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 4);
 		      LABEL_ME_PropMass.setSize(300, 20);
-		      LABEL_ME_PropMass.setBackground(bc_c);
-		      LABEL_ME_PropMass.setForeground(l_c);
+		      LABEL_ME_PropMass.setBackground(backgroundColor);
+		      LABEL_ME_PropMass.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_PropMass);
 		      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
 		      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 5 );
 		      LABEL_ME_Thrust_max.setSize(300, 20);
-		      LABEL_ME_Thrust_max.setBackground(bc_c);
-		      LABEL_ME_Thrust_max.setForeground(l_c);
+		      LABEL_ME_Thrust_max.setBackground(backgroundColor);
+		      LABEL_ME_Thrust_max.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_Thrust_max);
 		      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
 		      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
 		      LABEL_ME_Thrust_min.setSize(300, 20);
-		      LABEL_ME_Thrust_min.setBackground(bc_c);
-		      LABEL_ME_Thrust_min.setForeground(l_c);
+		      LABEL_ME_Thrust_min.setBackground(backgroundColor);
+		      LABEL_ME_Thrust_min.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_Thrust_min);
 		      
 		      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
 		      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
 		      LABEL_ME_ISP_Model.setSize(300, 20);
-		      LABEL_ME_ISP_Model.setBackground(bc_c);
-		      LABEL_ME_ISP_Model.setForeground(l_c);
+		      LABEL_ME_ISP_Model.setBackground(backgroundColor);
+		      LABEL_ME_ISP_Model.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_ISP_Model);
 		      
 		      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
 		      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
 		      LABEL_ME_ISP_min.setSize(300, 20);
-		      LABEL_ME_ISP_min.setBackground(bc_c);
-		      LABEL_ME_ISP_min.setForeground(l_c);
+		      LABEL_ME_ISP_min.setBackground(backgroundColor);
+		      LABEL_ME_ISP_min.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_ISP_min);
-		      
-		      JLabel LABEL_SurfaceArea = new JLabel("S/C Surface Area [m\u00b2]");
-		      LABEL_SurfaceArea.setLocation(INPUT_width+35, uy_p41 + 25 * 1 );
-		      LABEL_SurfaceArea.setSize(300, 20);
-		      LABEL_SurfaceArea.setBackground(bc_c);
-		      LABEL_SurfaceArea.setForeground(l_c);
-		      AerodynamicInputPanel.add(LABEL_SurfaceArea);
-		      
-		      JLabel LABEL_BallisticCoefficient = new JLabel("Ballistic Coefficient [kg/m\u00b2]");
-		      LABEL_BallisticCoefficient.setLocation(INPUT_width+35, uy_p41 + 25 * 2 );
-		      LABEL_BallisticCoefficient.setSize(300, 20);
-		      LABEL_BallisticCoefficient.setBackground(bc_c);
-		      LABEL_BallisticCoefficient.setForeground(l_c);
-		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
+		     
 			 
 		      
 		      INPUT_M0 = new JTextField(10);
@@ -4161,125 +4357,168 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		   	  
 		     });
 		     PropulsionInputPanel.add(INPUT_ISPMIN);
+		     //----------------------------------------------------------------------------------
+		     //						Aerodynamic Input
+		     //----------------------------------------------------------------------------------
 		     
-		     INPUT_SURFACEAREA = new JTextField(10);
-		     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 1 );;
-		     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
-		     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
-		     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
+		      JLabel LABEL_SurfaceArea = new JLabel("S/C Surface Area [m\u00b2]");
+		      LABEL_SurfaceArea.setLocation(INPUT_width+35, uy_p41 + 25 * 1 );
+		      LABEL_SurfaceArea.setSize(300, 20);
+		      LABEL_SurfaceArea.setBackground(backgroundColor);
+		      LABEL_SurfaceArea.setForeground(labelColor);
+		      AerodynamicInputPanel.add(LABEL_SurfaceArea);
+		      
+		      JLabel LABEL_BallisticCoefficient = new JLabel("Ballistic Coefficient [kg/m\u00b2]");
+		      LABEL_BallisticCoefficient.setLocation(INPUT_width+35, uy_p41 + 25 * 2 );
+		      LABEL_BallisticCoefficient.setSize(300, 20);
+		      LABEL_BallisticCoefficient.setBackground(backgroundColor);
+		      LABEL_BallisticCoefficient.setForeground(labelColor);
+		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
+		      
+		      JLabel LABEL_RB = new JLabel("Heat Shield Body Radius RB [m]");
+		      LABEL_RB.setLocation(INPUT_width+35, uy_p41 + 25 * 4 );
+		      LABEL_RB.setSize(300, 20);
+		      LABEL_RB.setBackground(backgroundColor);
+		      LABEL_RB.setForeground(labelColor);
+		      AerodynamicInputPanel.add(LABEL_RB);
+		      
+			     INPUT_SURFACEAREA = new JTextField(10);
+			     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
 
-				@Override
-				public void focusGained(FocusEvent arg0) { }
+			     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 1 );;
+			     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
+			     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
+			     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
 
-				@Override
-				public void focusLost(FocusEvent e) {
-					WRITE_SC();
-					EvaluateSurfaceAreaSetup() ;
-				}
-		   	  
-		     });
-		     AerodynamicInputPanel.add(INPUT_SURFACEAREA);
-		     
-		     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
-		     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 2 );
-		     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
-		     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
-		     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
+					@Override
+					public void focusGained(FocusEvent arg0) { }
 
-				@Override
-				public void focusGained(FocusEvent arg0) { }
-
-				@Override
-				public void focusLost(FocusEvent e) {
-					WRITE_SC();
-					EvaluateSurfaceAreaSetup() ;
-				}
-		   	  
-		     });
-		     AerodynamicInputPanel.add(INPUT_BALLISTICCOEFFICIENT);
-		     
-		      RB_SurfaceArea =new JRadioButton("");    
-		      RB_BallisticCoefficient =new JRadioButton("");    
-		     //r1.setBounds(75,50,100,30);    
-		      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
-		      RB_SurfaceArea.setSize(22,22);
-		      RB_SurfaceArea.setBackground(bc_c);
-		     //r2.setBounds(75,100,100,30); 
-		      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 2 );
-		      RB_BallisticCoefficient.setSize(22,22);
-		      RB_BallisticCoefficient.setBackground(bc_c);
-		     ButtonGroup bg=new ButtonGroup();    
-		     bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
-		     AerodynamicInputPanel.add(RB_SurfaceArea);
-		     AerodynamicInputPanel.add(RB_BallisticCoefficient);
-		     RB_SurfaceArea.addActionListener(new ActionListener() {
-
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					if(RB_SurfaceArea.isSelected()) {
-						double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-						double mass = Double.parseDouble(INPUT_M0.getText());
-			    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
-			    		INPUT_BALLISTICCOEFFICIENT.setText("");
-			    		
-			    		INPUT_SURFACEAREA.setEditable(true);
-			    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-			    		
-					} else if (RB_BallisticCoefficient.isSelected()) {
-						double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-						double mass = Double.parseDouble(INPUT_M0.getText());
-			    		INPUT_SURFACEAREA.setText("");
-					INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
-					
-			    		INPUT_SURFACEAREA.setEditable(false);
-			    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+					@Override
+					public void focusLost(FocusEvent e) {
+						WRITE_SC();
+						EvaluateSurfaceAreaSetup() ;
 					}
-					
-				}
-		    	 
-		     });
-		     RB_BallisticCoefficient.addActionListener(new ActionListener() {
+			   	  
+			     });
+			     AerodynamicInputPanel.add(INPUT_SURFACEAREA);
+			     
+			     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 2 );
+			     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
+			     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
+			     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
 
-				@Override
-				public void actionPerformed(ActionEvent arg0) {
-					// TODO Auto-generated method stub
-					if(RB_SurfaceArea.isSelected()) {
-						double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-						double mass = Double.parseDouble(INPUT_M0.getText());
-			    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
-			    		INPUT_BALLISTICCOEFFICIENT.setText("");
-			    		
-			    		INPUT_SURFACEAREA.setEditable(true);
-			    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-			    		
-					} else if (RB_BallisticCoefficient.isSelected()) {
-						double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-						double mass = Double.parseDouble(INPUT_M0.getText());
-			    		INPUT_SURFACEAREA.setText("");
-					INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
-					
-			    		INPUT_SURFACEAREA.setEditable(false);
-			    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
-			    		
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WRITE_SC();
+						EvaluateSurfaceAreaSetup() ;
 					}
-				}
-		    	 
-		     });
-		     
+			   	  
+			     });
+			     AerodynamicInputPanel.add(INPUT_BALLISTICCOEFFICIENT);
+			     
+			      RB_SurfaceArea =new JRadioButton("");    
+			      RB_BallisticCoefficient =new JRadioButton("");    
+			     //r1.setBounds(75,50,100,30);    
+			      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
+			      RB_SurfaceArea.setSize(22,22);
+			      RB_SurfaceArea.setBackground(backgroundColor);
+			     //r2.setBounds(75,100,100,30); 
+			      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 2 );
+			      RB_BallisticCoefficient.setSize(22,22);
+			      RB_BallisticCoefficient.setBackground(backgroundColor);
+			      
+
+				     ButtonGroup bg=new ButtonGroup();    
+				     bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
+				     AerodynamicInputPanel.add(RB_SurfaceArea);
+				     AerodynamicInputPanel.add(RB_BallisticCoefficient);
+				     RB_SurfaceArea.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							// TODO Auto-generated method stub
+							if(RB_SurfaceArea.isSelected()) {
+								double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
+								double mass = Double.parseDouble(INPUT_M0.getText());
+					    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
+					    		INPUT_BALLISTICCOEFFICIENT.setText("");
+					    		
+					    		INPUT_SURFACEAREA.setEditable(true);
+					    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+					    		
+							} else if (RB_BallisticCoefficient.isSelected()) {
+								double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
+								double mass = Double.parseDouble(INPUT_M0.getText());
+					    		INPUT_SURFACEAREA.setText("");
+							INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
+							
+					    		INPUT_SURFACEAREA.setEditable(false);
+					    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+							}
+							
+						}
+				    	 
+				     });
+				     RB_BallisticCoefficient.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							// TODO Auto-generated method stub
+							if(RB_SurfaceArea.isSelected()) {
+								double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
+								double mass = Double.parseDouble(INPUT_M0.getText());
+					    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
+					    		INPUT_BALLISTICCOEFFICIENT.setText("");
+					    		
+					    		INPUT_SURFACEAREA.setEditable(true);
+					    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
+					    		
+							} else if (RB_BallisticCoefficient.isSelected()) {
+								double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
+								double mass = Double.parseDouble(INPUT_M0.getText());
+					    		INPUT_SURFACEAREA.setText("");
+							INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
+							
+					    		INPUT_SURFACEAREA.setEditable(false);
+					    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
+					    		
+							}
+						}
+				    	 
+				     });
+				     
+				     INPUT_RB = new JTextField(10);
+				     INPUT_RB.setLocation(2, uy_p41 + 25 * 4 );;
+				     INPUT_RB.setSize(INPUT_width, 20);
+				     INPUT_RB.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RB.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+							WRITE_SC();
+						}
+				   	  
+				     });
+				     AerodynamicInputPanel.add(INPUT_RB);
+		      
 		        String path = "images/milleniumSchlieren2.png";
 		        File file = new File(path);
 		        try {
 		        BufferedImage image2 = ImageIO.read(file);
 		        JLabel label = new JLabel(new ImageIcon(image2));
 		        label.setSize(300,260);
-		        label.setLocation(5, uy_p41 + 25 * 4);
+		        label.setLocation(5, uy_p41 + 25 * 6);
 		        label.setBorder(Moon_border);
 		        AerodynamicInputPanel.add(label);
 		        } catch (Exception e) {
 		        	System.err.println("Error: SpaceShip Setup/Aerodynamik - could not load image");
 		        }
-		     
 
         //-----------------------------------------------------------------------------------------
         // Page 4.3
@@ -4287,8 +4526,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		JPanel SouthPanel = new JPanel();
 		SouthPanel.setLayout(null);
 		//mainPanelh1.setLocation(0, 0);
-		SouthPanel.setBackground(bc_c);
-		SouthPanel.setForeground(l_c);
+		SouthPanel.setBackground(backgroundColor);
+		SouthPanel.setForeground(labelColor);
 		SouthPanel.setPreferredSize(new Dimension(1200, 120));
 		PageX04_Map.add(SouthPanel, BorderLayout.SOUTH);
 	    
@@ -4298,14 +4537,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JLabel LABEL_PageMapLONG = new JLabel("Longitude [deg]");
         LABEL_PageMapLONG.setLocation(425, uy2 + 0 );
         LABEL_PageMapLONG.setSize(250, 20);
-        LABEL_PageMapLONG.setBackground(bc_c);
-        LABEL_PageMapLONG.setForeground(l_c);
+        LABEL_PageMapLONG.setBackground(backgroundColor);
+        LABEL_PageMapLONG.setForeground(labelColor);
         SouthPanel.add(LABEL_PageMapLONG);
         JLabel LABEL_PageMapLAT = new JLabel("Latitude [deg]");
         LABEL_PageMapLAT.setLocation(825, uy2 + 0 );
         LABEL_PageMapLAT.setSize(250, 20);
-        LABEL_PageMapLAT.setBackground(bc_c);
-        LABEL_PageMapLAT.setForeground(l_c);
+        LABEL_PageMapLAT.setBackground(backgroundColor);
+        LABEL_PageMapLAT.setForeground(labelColor);
         SouthPanel.add(LABEL_PageMapLAT);	
         
          INDICATOR_PageMap_LONG = new JLabel();
@@ -4322,7 +4561,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        PolarMapContainer = new JPanel(new GridBagLayout());
        PolarMapContainer.setLocation(0, 0);
        PolarMapContainer.setPreferredSize(new Dimension(extx_main, exty_main));
-       PolarMapContainer.setBackground(bc_c);
+       PolarMapContainer.setBackground(backgroundColor);
        PageX04_PolarMap.add(PolarMapContainer, BorderLayout.CENTER);
  	  //-----------------------------------------------------------------------------------------
  	  // 										Page: Raw Data
@@ -4341,20 +4580,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    }; 
 	    MODEL_RAWData.setColumnIdentifiers(Axis_Option_NR);
 	    TABLE_RAWData.setModel(MODEL_RAWData);
-	    TABLE_RAWData.setBackground(bc_c);
-	    TABLE_RAWData.setBackground(bc_c);
-	    TABLE_RAWData.setForeground(l_c);
+	    TABLE_RAWData.setBackground(backgroundColor);
+	    TABLE_RAWData.setBackground(backgroundColor);
+	    TABLE_RAWData.setForeground(labelColor);
 	    TABLE_RAWData.getTableHeader().setReorderingAllowed(false);
 	    TABLE_RAWData.setRowHeight(18);
 		TABLE_RAWData.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
 		((JTable) TABLE_RAWData).setFillsViewportHeight(true);
-		TABLE_RAWData.getTableHeader().setBackground(bc_c);
-		TABLE_RAWData.getTableHeader().setForeground(l_c);
+		TABLE_RAWData.getTableHeader().setBackground(backgroundColor);
+		TABLE_RAWData.getTableHeader().setForeground(labelColor);
 
 		    JScrollPane TABLE_RAWData_ScrollPane = new JScrollPane(TABLE_RAWData,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		    TABLE_RAWData_ScrollPane.getVerticalScrollBar().setBackground(bc_c);
-		    TABLE_RAWData_ScrollPane.getHorizontalScrollBar().setBackground(bc_c);
-		    TABLE_RAWData_ScrollPane.setBackground(bc_c);
+		    TABLE_RAWData_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
+		    TABLE_RAWData_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
+		    TABLE_RAWData_ScrollPane.setBackground(backgroundColor);
 		    PageX04_RawDATA.add(TABLE_RAWData_ScrollPane);
        
        
@@ -4406,9 +4645,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        // Page04_subtabPane.addTab("GroundClearance" , null, PageX04_GroundClearance, null);
         //Page04_subtabPane.addTab("Results" , null, PageX04_3, null);
         Page04_subtabPane.setFont(small_font);
+        Page04_subtabPane.setBackground(Color.black);
+        Page04_subtabPane.setForeground(Color.black);
         MainGUI.add(Page04_subtabPane);
         Page04_subtabPane.setSelectedIndex(0);
     		//CreateChart_A01();
+        // The following prevents long load up times when opening the GUI 
     		try {     long filesize = 	new File(RES_File).length()/1000000;
 			    	    if(filesize<10) {
 							SET_MAP(indx_target);
@@ -4640,8 +4882,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		Error_Indicator.setForeground(Color.red);
     	} else {
     		Error_Indicator.setText("Induced Error OFF");
-    		Error_Indicator.setBackground(bc_c);
-    		Error_Indicator.setForeground(l_c);
+    		Error_Indicator.setBackground(backgroundColor);
+    		Error_Indicator.setForeground(labelColor);
     	}
     	Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
     }
@@ -5022,6 +5264,44 @@ try {
   br4.close();
   fstream.close();
   } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
+  //------------------------------------------------------------------
+  // Read from AERO
+  try {
+      fstream = new FileInputStream(Aero_file);
+} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading aeroBasic.inp failed.");} 
+DataInputStream in55 = new DataInputStream(fstream);
+@SuppressWarnings("resource")
+BufferedReader br55 = new BufferedReader(new InputStreamReader(in55));
+k = 0;
+String strLine55;
+try {
+while ((strLine55 = br55.readLine()) != null )   {
+	String[] tokens = strLine55.split(" ");
+	if(tokens[0].isEmpty()==false) {
+	InitialState = Double.parseDouble(tokens[0]);
+	} else {
+		InitialState =0; 
+	}
+  if (k==0){
+	  int index = (int) InitialState; 
+		for(int j=0;j<DragModelSet.size();j++) {
+			if(j==index) {
+				DragModelSet.get(j).setSelected(true);
+			}
+		}
+	} else if (k==1){
+
+	//System.out.println(RM);
+	} else if (k==2){
+
+	}
+	k++;
+}
+in55.close();
+br55.close();
+fstream.close();
+} catch (NullPointerException eNPE) { System.out.println(eNPE);}  
+//--------------------------------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------------------------------
   // Integrator settings 
   //--------------------------------------------------------------------------------------------------------
@@ -5096,7 +5376,7 @@ while ((strLine3 = br6.readLine()) != null )   {
   			INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
   		}
 	} else if (k==2){
-
+		INPUT_RB.setText(""+(InitialState)); 
 	} else if (k==3){
 
 	} else if (k==4){
@@ -5766,7 +6046,44 @@ fstream.close();
 		        			r = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText()) ;
 		        			wr.write(r+System.getProperty( "line.separator" ));
         				}
+        			} else if (i ==2 ) {
+        				if(INPUT_RB.getText().isEmpty()) {
+		        			r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}else {
+		        			r = Double.parseDouble(INPUT_RB.getText()) ;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
         			} 
+            }
+            wr.close();
+      } catch (IOException eIO) {
+      System.out.println(eIO);
+      }
+    }
+    
+    public static void WRITE_AERO() {
+    try {
+            File fac = new File(Aero_file);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            FileWriter wr = new FileWriter(fac);
+            for (int i = 0; i<=15; i++)
+            {
+        			if (i == 0 ){
+						int k=0;
+						for(int j=0;j<DragModelSet.size();j++) {
+							if(DragModelSet.get(j).isSelected()) {
+								k=j;
+							}
+						}
+	        			   wr.write(k+System.getProperty( "line.separator" ));
+        			}
             }
             wr.close();
       } catch (IOException eIO) {
@@ -6192,7 +6509,7 @@ public static void EXPORT_Case() {
 		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[37])));
 		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[28])))); 
 		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[32])));
-		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrl_curve=0; double ctrl_fpa_init=0;int ctrl_TVC_curve=0;
+		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrlabelColorurve=0; double ctrl_fpa_init=0;int ctrl_TVC_curve=0;
 		           double ctrl_t_end=0; double ctrl_fpa_end =0;
 		           try {
 		           String[] sequ_tokens  	 = SEQUENCE_DATA.get(active_sequence).split(" ");
@@ -6201,7 +6518,7 @@ public static void EXPORT_Case() {
 		            ctrl_hinit 	 			 = Double.parseDouble(sequ_tokens[4]);
 		            ctrl_vel 	    	     = Double.parseDouble(sequ_tokens[5]);
 		            ctrl_alt 		 		 = Double.parseDouble(sequ_tokens[6]);
-		            ctrl_curve           	 = Integer.parseInt(sequ_tokens[7]);
+		            ctrlabelColorurve           	 = Integer.parseInt(sequ_tokens[7]);
 		            ctrl_TVC_curve		 	 = Integer.parseInt(sequ_tokens[8]);
 		            ctrl_fpa_init			 = Double.parseDouble(sequ_tokens[9]);
 		            ctrl_t_end				 = Double.parseDouble(sequ_tokens[10]);
@@ -6229,21 +6546,21 @@ public static void EXPORT_Case() {
 		           
 		           //--------------------------------------------------------
 		           if(active_sequ_type==3) { // Controlled Propulsive flight
-		    		    if  (ctrl_curve==0) {
+		    		    if  (ctrlabelColorurve==0) {
 		    		    		 xyseries10.add(x  , 0); 
-		   		        } else if (ctrl_curve==1) {
+		   		        } else if (ctrlabelColorurve==1) {
 		    		         xx =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
 		    		         //if(Double.isNaN(xx)) {xx=0;}
 		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
 		  		            	 //System.out.println(eSE);
 		  		            	 }
-		    		    } else if (ctrl_curve==2) {
+		    		    } else if (ctrlabelColorurve==2) {
 		    		    	 	xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
 		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
 		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
 		    		    	 			//System.out.println(eSE);
 		    		    	 			}
-		    		    } else if (ctrl_curve==3) {
+		    		    } else if (ctrlabelColorurve==3) {
 		    		    	 	xx =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
 		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
 		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
@@ -6285,7 +6602,8 @@ public static void EXPORT_Case() {
 	
 	public static void createTargetView3D() {
         final JFXPanel fxPanel = new JFXPanel();
-        SplitPane_Page1_Charts_vertical.add(fxPanel,JSplitPane.RIGHT);
+        //fxPanel.setSize(400,350);
+        SpaceShip3DControlPanel.add(fxPanel,BorderLayout.CENTER);
 
         Platform.runLater(new Runnable() {
             @Override
@@ -6299,13 +6617,13 @@ public static void EXPORT_Case() {
 	public static void refreshTargetView3D() {
 		//SplitPane_Page1_Charts_vertical.remo
         final JFXPanel fxPanel = new JFXPanel();
-        SplitPane_Page1_Charts_vertical.add(fxPanel,JSplitPane.RIGHT);
+        SpaceShip3DControlPanel.add(fxPanel,BorderLayout.CENTER);
         SplitPane_Page1_Charts_vertical.setDividerLocation(500);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
             	TargetView3D.TargetBodyGroup.getChildren().removeAll();
-            	TargetView3D.start(fxPanel,indx_target);
+            	TargetView3D.refreshTargetGroup(indx_target);
             }
        });
       
@@ -6334,19 +6652,19 @@ public static void EXPORT_Case() {
 		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
-	    renderer.setSeriesPaint( 0 , l_c );	
-	    CHART_P1_DashBoardOverviewChart_Altitude_Velocity.setBackgroundPaint(bc_c);
+	    renderer.setSeriesPaint( 0 , labelColor );	
+	    CHART_P1_DashBoardOverviewChart_Altitude_Velocity.setBackgroundPaint(backgroundColor);
 		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
 		plot.getDomainAxis().setLabelFont(font3);
 		plot.getRangeAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelPaint(l_c);
-		plot.getDomainAxis().setLabelPaint(l_c);
+		plot.getRangeAxis().setLabelPaint(labelColor);
+		plot.getDomainAxis().setLabelPaint(labelColor);
 		plot.setForegroundAlpha(0.8f);
-		plot.setBackgroundPaint(bc_c);
-		plot.setDomainGridlinePaint(l_c);
-		plot.setRangeGridlinePaint(l_c); 
-		CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getLegend().setBackgroundPaint(bc_c);
-		CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getLegend().setItemPaint(l_c);;
+		plot.setBackgroundPaint(backgroundColor);
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor); 
+		CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getLegend().setBackgroundPaint(backgroundColor);
+		CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getLegend().setItemPaint(labelColor);;
 		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
@@ -6366,7 +6684,7 @@ public static void EXPORT_Case() {
 		JPanel PlotPanel_X43 = new JPanel();
 		PlotPanel_X43.setLayout(new BorderLayout());
 		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
-		PlotPanel_X43.setBackground(bc_c);
+		PlotPanel_X43.setBackground(backgroundColor);
 	
 		ChartPanel_DashBoardOverviewChart_Altitude_Velocity = new ChartPanel(CHART_P1_DashBoardOverviewChart_Altitude_Velocity);
 		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMaximumDrawHeight(50000);
@@ -6427,23 +6745,23 @@ public static void EXPORT_Case() {
 		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Time_FPA.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
-	    renderer.setSeriesPaint( 0 , l_c );	
-	    CHART_P1_DashBoardOverviewChart_Time_FPA.setBackgroundPaint(bc_c);
+	    renderer.setSeriesPaint( 0 , labelColor );	
+	    CHART_P1_DashBoardOverviewChart_Time_FPA.setBackgroundPaint(backgroundColor);
 		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
 		plot.getDomainAxis().setLabelFont(font3);
 		plot.getRangeAxis().setLabelFont(font3);
-		plot.getRangeAxis().setAxisLinePaint(l_c);
-		plot.getRangeAxis().setLabelPaint(l_c);
-		plot.getDomainAxis().setLabelPaint(l_c);
-		plot.getDomainAxis().setAxisLinePaint(l_c);
+		plot.getRangeAxis().setAxisLinePaint(labelColor);
+		plot.getRangeAxis().setLabelPaint(labelColor);
+		plot.getDomainAxis().setLabelPaint(labelColor);
+		plot.getDomainAxis().setAxisLinePaint(labelColor);
 		plot.setForegroundAlpha(0.5f);
-		plot.setBackgroundPaint(bc_c);
-		plot.setDomainGridlinePaint(l_c);
-		plot.setRangeGridlinePaint(l_c); 
+		plot.setBackgroundPaint(backgroundColor);
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor); 
 		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		CHART_P1_DashBoardOverviewChart_Time_FPA.getLegend().setBackgroundPaint(bc_c);
-		CHART_P1_DashBoardOverviewChart_Time_FPA.getLegend().setItemPaint(l_c);
+		CHART_P1_DashBoardOverviewChart_Time_FPA.getLegend().setBackgroundPaint(backgroundColor);
+		CHART_P1_DashBoardOverviewChart_Time_FPA.getLegend().setItemPaint(labelColor);
 		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
 		//domainAxis.setInverted(true);
 	    double size = 2.0;
@@ -6458,7 +6776,7 @@ public static void EXPORT_Case() {
 		JPanel PlotPanel_X43 = new JPanel();
 		PlotPanel_X43.setLayout(new BorderLayout());
 		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
-		PlotPanel_X43.setBackground(bc_c);
+		PlotPanel_X43.setBackground(backgroundColor);
 	
 		ChartPanel_DashBoardOverviewChart_Time_FPA = new ChartPanel(CHART_P1_DashBoardOverviewChart_Time_FPA);
 		ChartPanel_DashBoardOverviewChart_Time_FPA.setMaximumDrawHeight(50000);
@@ -6497,7 +6815,7 @@ public static void EXPORT_Case() {
 	    ChartPanel_DashBoardOverviewChart_Time_FPA.addOverlay(crosshairOverlay);
 	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Time_FPA,BorderLayout.PAGE_START);
 	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
-	   SplitPane_Page1_Charts_vertical.add(ChartPanel_DashBoardOverviewChart_Time_FPA, JSplitPane.RIGHT);
+	   SpaceShip3DControlPanel.add(ChartPanel_DashBoardOverviewChart_Time_FPA, BorderLayout.PAGE_START);
 	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
 		//jPanel4.validate();	
 		CHART_P1_DashBoardOverviewChart_fd = false;
@@ -6514,19 +6832,19 @@ public static void EXPORT_Case() {
 		XYPlot plot = (XYPlot)Chart_MercatorMap4.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
-	    renderer.setSeriesPaint( 0 , l_c);	
-		Chart_MercatorMap4.setBackgroundPaint(bc_c);
+	    renderer.setSeriesPaint( 0 , labelColor);	
+		Chart_MercatorMap4.setBackgroundPaint(backgroundColor);
 		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
 		plot.getDomainAxis().setLabelFont(font3);
 		plot.getRangeAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelPaint(l_c);
-		plot.getDomainAxis().setLabelPaint(l_c);
+		plot.getRangeAxis().setLabelPaint(labelColor);
+		plot.getDomainAxis().setLabelPaint(labelColor);
 		plot.setForegroundAlpha(0.5f);
-		plot.setBackgroundPaint(bc_c);
-		plot.setDomainGridlinePaint(l_c);
-		plot.setRangeGridlinePaint(l_c); 
-		//Chart_MercatorMap4.getLegend().setBackgroundPaint(bc_c);
-		//Chart_MercatorMap4.getLegend().setItemPaint(l_c);
+		plot.setBackgroundPaint(backgroundColor);
+		plot.setDomainGridlinePaint(labelColor);
+		plot.setRangeGridlinePaint(labelColor); 
+		//Chart_MercatorMap4.getLegend().setBackgroundPaint(backgroundColor);
+		//Chart_MercatorMap4.getLegend().setItemPaint(labelColor);
 		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
@@ -6535,7 +6853,7 @@ public static void EXPORT_Case() {
 		JPanel PlotPanel_X44 = new JPanel();
 		PlotPanel_X44.setLayout(new BorderLayout());
 		//PlotPanel_X44.setPreferredSize(new Dimension(900, page1_plot_y));
-		PlotPanel_X44.setBackground(bc_c);
+		PlotPanel_X44.setBackground(backgroundColor);
 		
 		//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
 	    double size = 2.0;
@@ -6599,8 +6917,8 @@ public static void EXPORT_Case() {
 		JPanel SpaceShip3DPanel = new JPanel();
 		SpaceShip3DPanel.setLayout(new BorderLayout());
 		SpaceShip3DPanel.setLocation(765, 10);
-		//SpaceShip3DPanel.setBackground(bc_c);
-		//SpaceShip3DPanel.setForeground(l_c);
+		//SpaceShip3DPanel.setBackground(backgroundColor);
+		//SpaceShip3DPanel.setForeground(labelColor);
 		SpaceShip3DPanel.setSize(450, 400);
 		//SpaceShip3DPanel.setBorder(Moon_border);
 		
@@ -6769,7 +7087,7 @@ public static void EXPORT_Case() {
 		       rangeAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		       //rangeAxis2.setRange(-90, 90);
 		       ChartPanel CPXX4 = new ChartPanel(Chart_GroundClearance);
-		       CPXX4.setBackground(bc_c);
+		       CPXX4.setBackground(backgroundColor);
 		       //CPXX4.setDomainZoomable(false);
 		       //CPXX4.setRangeZoomable(false);
 		       CPXX4.setMaximumDrawHeight(50000);
@@ -6878,7 +7196,7 @@ public static void EXPORT_Case() {
 		       rangeAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		       rangeAxis2.setRange(-90, 90);
 		       ChartPanel CPXX4 = new ChartPanel(Chart_MercatorMap);
-		       CPXX4.setBackground(bc_c);
+		       CPXX4.setBackground(backgroundColor);
 		       CPXX4.setDomainZoomable(false);
 		       CPXX4.setRangeZoomable(false);
 		       CPXX4.setMaximumDrawHeight(50000);
@@ -6949,7 +7267,7 @@ public static void EXPORT_Case() {
        // change the auto tick unit selection to integer units only...
        
        ChartPanel CPXX4 = new ChartPanel(chart_PolarMap);
-       CPXX4.setBackground(bc_c);
+       CPXX4.setBackground(backgroundColor);
        CPXX4.setLayout(new BorderLayout());
        CPXX4.setDomainZoomable(false);
        CPXX4.setRangeZoomable(false);
@@ -7082,7 +7400,7 @@ public static void EXPORT_Case() {
 	   	MainGUI = new JPanel();
 	   	//MainGUI.setLayout(new BorderLayout());
 	   	MainGUI.setLayout(null);
-	   	MainGUI.setBackground(bc_c);	
+	   	MainGUI.setBackground(backgroundColor);	
    		int extx = 370;
    		int exty = 400;
 	  //----------------------------------------------------------------
@@ -7090,8 +7408,8 @@ public static void EXPORT_Case() {
         JLabel Title = new JLabel("Select Resolution: ");
         Title.setLocation(5, 2 );
         Title.setSize(250, 15);
-        Title.setBackground(bc_c);
-        Title.setForeground(l_c);
+        Title.setBackground(backgroundColor);
+        Title.setForeground(labelColor);
         MainGUI.add(Title);
         
 	  	  @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -7259,34 +7577,34 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 			JPanel TopPanel = new JPanel();
 			TopPanel.setLayout(new BorderLayout());
 			TopPanel.setPreferredSize(new Dimension(extx_main, yplot));
-			TopPanel.setBackground(bc_c);
+			TopPanel.setBackground(backgroundColor);
 			JPanel BottomPanel = new JPanel();
 			BottomPanel.setLayout(new BorderLayout());
 			BottomPanel.setPreferredSize(new Dimension(extx_main, yplot));
-			BottomPanel.setBackground(bc_c);
+			BottomPanel.setBackground(backgroundColor);
 	    	
 			JPanel PlotPanel_01 = new JPanel();
 			PlotPanel_01.setLayout(new BorderLayout());
 			//PlotPanel_01.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_01.setBackground(bc_c);
+			PlotPanel_01.setBackground(backgroundColor);
 			JPanel PlotPanel_02 = new JPanel();
 			PlotPanel_02.setLayout(new BorderLayout());
 			//PlotPanel_02.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_02.setBackground(bc_c);
+			PlotPanel_02.setBackground(backgroundColor);
 			JPanel PlotPanel_03 = new JPanel();
 			PlotPanel_03.setLayout(new BorderLayout());
 			//PlotPanel_03.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_03.setBackground(bc_c);
+			PlotPanel_03.setBackground(backgroundColor);
 			JPanel PlotPanel_04 = new JPanel();
 			PlotPanel_04.setLayout(new BorderLayout());
 			//PlotPanel_04.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_04.setBackground(bc_c);
+			PlotPanel_04.setBackground(backgroundColor);
 			
 			JPanel Midpanel = new JPanel();
 			Midpanel.setLayout(null);
 			//Midpanel.setPreferredSize(new Dimension(155, 300));
 			Midpanel.setSize(155,300);
-			Midpanel.setBackground(bc_c);
+			Midpanel.setBackground(backgroundColor);
 			BottomPanel.add(Midpanel, BorderLayout.CENTER);
 			
 		      JLabel p41_linp8 = new JLabel("X-Axis");
@@ -7294,16 +7612,16 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		      //p41_linp8.setPreferredSize(new Dimension(150, 20));
 		      p41_linp8.setHorizontalAlignment(0);
 		      p41_linp8.setSize(150,20);
-		      p41_linp8.setBackground(bc_c);
-		      p41_linp8.setForeground(l_c);
+		      p41_linp8.setBackground(backgroundColor);
+		      p41_linp8.setForeground(labelColor);
 		      Midpanel.add(p41_linp8);
 		      JLabel p41_linp9 = new JLabel("Y-Axis");
 		      p41_linp9.setLocation(5, 10 + 25 * 4 );
 		      //p41_linp9.setPreferredSize(new Dimension(150, 20));
 		      p41_linp9.setSize(150, 20);
 		      p41_linp9.setHorizontalAlignment(0);
-		      p41_linp9.setBackground(bc_c);
-		      p41_linp9.setForeground(l_c);
+		      p41_linp9.setBackground(backgroundColor);
+		      p41_linp9.setForeground(labelColor);
 		      Midpanel.add(p41_linp9);
 			  axis_chooser3 = new JComboBox<Object>(Axis_Option_NR);
 			  axis_chooser4 = new JComboBox<Object>(Axis_Option_NR);
@@ -7601,5 +7919,45 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 			return resultSet;
 		}
 		
+		public class BackgroundMenuBar extends JMenuBar {
+		    /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			Color bgColor=Color.WHITE;
+
+		    public void setColor(Color color) {
+		        bgColor=color;
+		    }
+
+		    @Override
+		    protected void paintComponent(Graphics g) {
+		        super.paintComponent(g);
+		        Graphics2D g2d = (Graphics2D) g;
+		        g2d.setColor(bgColor);
+		        g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+		    }
+		}
 		
+		public class BackgroundMenu extends JMenu {
+		    /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+			Color bgColor=Color.WHITE;
+
+		    public void setColor(Color color) {
+		        bgColor=color;
+		    }
+
+		    @Override
+		    protected void paintComponent(Graphics g) {
+		        super.paintComponent(g);
+		        Graphics2D g2d = (Graphics2D) g;
+		        g2d.setColor(bgColor);
+		        g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
+
+		    }
+		}
 }

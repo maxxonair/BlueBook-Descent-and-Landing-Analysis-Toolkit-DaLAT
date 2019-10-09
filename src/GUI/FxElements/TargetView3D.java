@@ -39,8 +39,8 @@ import javafx.scene.input.KeyEvent;
 
 public class TargetView3D extends Application{
 	
-	private static final double WIDTH  = 720;
-	private static final double HEIGHT = 800;
+	private static final double WIDTH  = 400;
+	private static final double HEIGHT = 350;
 	
 	private static double anchorCameraY;
 	private static double anchorCameraYSlider;
@@ -53,10 +53,10 @@ public class TargetView3D extends Application{
 	private static final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
 	
 	private static double mouseSensitivity =0.05;
-	private static double mouseWheelZoomSensitivity = 100;
+	private static double mouseWheelZoomSensitivity = 300;
 	private static double targetBodyRadius = 6000;
 	private static double targetBodyInitialDistance;
-	private static double targetBodyRotSpeed = 0.04;
+	public static double targetBodyRotSpeed = 0.08;
 	
 	private static String[] Target = {"earth.jpg",
 							          "moon.jpg",
@@ -71,7 +71,10 @@ public class TargetView3D extends Application{
 	public static SmartGroup Spacecraft = new SmartGroup();
 	//static AnimationTimer timer;
 	static boolean animationSwitch=true; 
+	static AnimationTimer timer ;
 	
+	
+
 	public static void start(JFXPanel fxpanel, int targetInd) {
     	TargetView3D.TargetBodyGroup.getChildren().clear();;
 		Sphere targetBody = prepareTargetBody(targetInd);
@@ -82,20 +85,26 @@ public class TargetView3D extends Application{
 		TargetBodyGroup.getChildren().add(Spacecraft);
 		//TargetBodyGroup.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());
-		
-	  slider = prepareSlider();
 
 		
 		Group root = new Group();
 		root.getChildren().add(prepareImageView());
 		root.getChildren().add(TargetBodyGroup);
-		root.getChildren().add(slider);
+		//root.getChildren().add(slider);
 		
 		Camera camera = new PerspectiveCamera();
 		camera.setNearClip(1);
-		camera.setFarClip(10000);
-		
+		camera.setFarClip(100000);
 
+		
+		PointLight sun = (PointLight) prepareSun();
+		//AmbientLight ambientLight = (AmbientLight) prepareAmbientLight();
+		
+		Group lightGroup = new Group();
+		lightGroup.getChildren().add(sun);
+		//lightGroup.getChildren().add(ambientLight);
+		root.getChildren().add(lightGroup);
+		
 		Scene scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
 		scene.setFill(Color.BLACK);
 		scene.setCamera(camera);
@@ -109,30 +118,17 @@ public class TargetView3D extends Application{
 				
 		fxpanel.setScene(scene);
 		
-		AnimationTimer timer = prepareAnimation(slider);
-		
-		scene.addEventHandler(KeyEvent.KEY_PRESSED, event -> {
-			switch (event.getCode()) {
-			case A:
-				rotatePlanet(false);
-				break;
-			case D:
-				rotatePlanet(true);
-				break;
-			case S:
-				if(animationSwitch) {
-					timer.stop();
-				} else {
-					timer.start();
-				}
-				animationSwitch = !animationSwitch;
-				break;
-			}
-		});
-
+	    timer = prepareAnimation();
 	}
 	
-	
+	public static void playPauseAnimation() {
+		if(animationSwitch) {
+			timer.stop();
+		} else {
+			timer.start();
+		}
+		animationSwitch = !animationSwitch;
+	}
 private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
 	//Rotate xRotate;
 	Rotate yRotate;
@@ -209,29 +205,15 @@ public static class SmartGroup extends Group {
 	}
 }
 
-
-private static Slider prepareSlider() {
-	Slider slider = new Slider();
-	slider.setMax(1.0);
-	slider.setMin(-0.5);
-	slider.setPrefWidth(300);
-	slider.setLayoutX(100);
-	slider.setLayoutY(350);
-	slider.setValue(targetBodyRotSpeed);
-	//slider.setShowTickLabels(false);
-	slider.setDisable(false);
-	slider.setStyle("-fx-base: black");
-	return slider;
-}
-
-private static AnimationTimer prepareAnimation(Slider slider) {
+private static AnimationTimer prepareAnimation() {
+	
 	AnimationTimer timer = new AnimationTimer() {
 
 		@Override
 		public void handle(long arg0) {
 		
-			targetBodyRotSpeed = slider.getValue();
-			TargetBodyGroup.rotateByY(TargetBodyGroup.getRotate()+targetBodyRotSpeed);
+			//targetBodyRotSpeed = slider.getValue();
+			TargetBodyGroup.rotateByY(TargetBodyGroup.getRotate()-targetBodyRotSpeed);
 			if(imageView.getTranslateX()<(backgroundImage.getWidth()*imageView.getScaleX()*2/5)){
 				imageView.setTranslateX(imageView.getTranslateX()+targetBodyRotSpeed*80);	
 			} else {
@@ -242,6 +224,16 @@ private static AnimationTimer prepareAnimation(Slider slider) {
 	};
 	timer.start();
 	return timer;
+}
+
+public static void refreshTargetGroup(int targetInd) {
+	TargetView3D.TargetBodyGroup.getChildren().clear();;
+	Sphere targetBody = prepareTargetBody(targetInd);
+	SmartGroup trajectorySet = prepareTrajectory();
+	 Spacecraft = prepareSpacecraft(0);
+	TargetBodyGroup.getChildren().add(targetBody);
+	TargetBodyGroup.getChildren().add(trajectorySet);
+	TargetBodyGroup.getChildren().add(Spacecraft);
 }
 
 private static void rotatePlanet(boolean direction) {

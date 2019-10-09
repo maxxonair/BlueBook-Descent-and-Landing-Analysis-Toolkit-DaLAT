@@ -64,7 +64,7 @@ public class SpaceShipView3DFrontPage {
 		camera.setFarClip(100);	
 		
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
-		scene.setFill(Color.WHITE);
+		scene.setFill(Color.color(0.15,0.15,0.15));
 		scene.setCamera(camera);
 		
 		model.translateXProperty().set(WIDTH/2);
@@ -192,13 +192,15 @@ public static void setRotationZ(double deltaRotZ) {
 
 private static SmartGroup loadModel(String fileString) {
     SmartGroup modelRoot = new SmartGroup();
-
+	PhongMaterial material = new PhongMaterial();
+    material.setDiffuseColor(Color.SILVER);
     ObjModelImporter importer = new ObjModelImporter();
    // importer.read(url);
     importer.read(fileString);
 
     for (MeshView view : importer.getImport()) {
         modelRoot.getChildren().add(view);
+        view.setMaterial(material);
     }
     double scale=3;
 modelRoot.setScaleX(scale);
@@ -257,7 +259,7 @@ public static class SmartGroup extends Group {
 private static Node prepareAmbientLight(){
 	
 	AmbientLight ambientLight = new AmbientLight();
-	ambientLight.setColor(Color.WHITE);
+	ambientLight.setColor(Color.GRAY);
 
 	return ambientLight;
 }

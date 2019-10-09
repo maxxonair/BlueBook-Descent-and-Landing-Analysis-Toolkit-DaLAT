@@ -26,6 +26,7 @@ public class ReadInput {
 	public static String INPUT_FILE                 = System.getProperty("user.dir") + "/INP/init.inp";
 	public static String PropulsionInputFile        = System.getProperty("user.dir") + "/INP/PROP/prop.inp"  ; 
     public static String SC_file 					= System.getProperty("user.dir") + "/INP/SC/sc.inp";
+    public static String Aero_file 					= System.getProperty("user.dir") + "/INP/AERO/aeroBasic.inp";
     public static String ERROR_File 					= System.getProperty("user.dir") + "/INP/ErrorFile.inp";
 	public static String EventHandler_File			= System.getProperty("user.dir") + "/INP/eventhandler.inp";
     public static String SEQUENCE_File   			= System.getProperty("user.dir") + "/INP/sequence_1.inp";
@@ -243,6 +244,78 @@ public static double[] readInput() {
     } catch(NullPointerException eNPE) { System.out.println(eNPE);}
     return inputOut;
 } 
+//---------------------------------------------------------------------------------------------------
+public static double[] readAeroFile() {
+	double[] result = new double[30];
+	   	 BufferedReader br = null;
+	try {
+		br = new BufferedReader(new FileReader(Aero_file));
+	} catch (FileNotFoundException e) {
+		System.err.println("ERROR: Read aeroBasic.inp failed. BufferedReader error.");
+		e.printStackTrace();
+	}
+	   	 String strLine;
+  try { 
+	  int k=0;
+		      try {
+				while ((strLine = br.readLine()) != null )   {
+				  	String[] tokens = strLine.split(" ");
+			  		if(tokens[0].isEmpty()) {
+			  			result[k] = 0;
+			  		} else {
+			  			result[k]= Double.parseDouble(tokens[0]);
+			  		}
+k++;
+				  }
+			} catch (NumberFormatException | IOException e) {
+				
+				e.printStackTrace();
+			}
+  }catch(NullPointerException eNPE) { System.out.println(eNPE);}
+  try {
+	br.close();
+} catch (IOException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+  return result; 
+}
+//---------------------------------------------------------------------------------------------------
+public static double[] readSCFile() {
+	double[] result = new double[30];
+	   	 BufferedReader br = null;
+	try {
+		br = new BufferedReader(new FileReader(SC_file));
+	} catch (FileNotFoundException e) {
+		System.err.println("ERROR: Read aeroBasic.inp failed. BufferedReader error.");
+		e.printStackTrace();
+	}
+	   	 String strLine;
+try { 
+	  int k=0;
+		      try {
+				while ((strLine = br.readLine()) != null )   {
+				  	String[] tokens = strLine.split(" ");
+			  		if(tokens[0].isEmpty()) {
+			  			result[k] = 0;
+			  		} else {
+			  			result[k]= Double.parseDouble(tokens[0]);
+			  		}
+k++;
+				  }
+			} catch (NumberFormatException | IOException e) {
+				
+				e.printStackTrace();
+			}
+}catch(NullPointerException eNPE) { System.out.println(eNPE);}
+try {
+	br.close();
+} catch (IOException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
+return result; 
+}
 //---------------------------------------------------------------------------------------------------
 public static double readSurfaceArea(double M0) {
 	double SurfaceArea = 0;

@@ -5,13 +5,14 @@ import Model.Aerodynamic.AerodynamicModel;
 import Model.Aerodynamic.AerodynamicSet;
 import Sequence.Sequence;
 import Simulator_main.CurrentDataSet;
+import Simulator_main.IntegratorData;
 import Toolbox.Mathbox;
 
 public class ForceModel {
 	
 	
 	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, 
-									 ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
+									 ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
 		  double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic frame [N]
 		  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame 		   [N]
 		  double[][] F_Thrust_B    = {{0},{0},{0}};						// Thrust Force in body fixed system     			   [N]
@@ -48,7 +49,7 @@ public class ForceModel {
     	// 									           Aerodynamic
     	//-------------------------------------------------------------------------------------------------------------------  
     	
-    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet, spaceShip, currentDataSet);
+    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet, spaceShip, currentDataSet, integratorData);
     	
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
     	

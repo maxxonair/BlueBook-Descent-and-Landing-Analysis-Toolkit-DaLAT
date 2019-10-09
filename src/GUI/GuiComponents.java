@@ -49,5 +49,22 @@ public class GuiComponents {
         
 		return slider;
 	}
+	
+	static JSlider getGuiSliderSpeed(Font font, int length, int low, int midval, int high, Color foregroundColor, Color backgroundColor) {
+        JSlider slider = new JSlider(JSlider.HORIZONTAL);
+        
+        slider.setSize(length,40);
+        slider.setMaximum(high);
+        slider.setMinimum(low);
+        slider.setMajorTickSpacing((high-low)/10);
+        slider.setPaintTicks(true);
+        slider.setBackground(Color.WHITE);
+        slider.setForeground(Color.BLACK);
+       // slider.setPaintLabels(true);
+ 
+        slider.setValue(8);
+        
+		return slider;
+	}
 
 }

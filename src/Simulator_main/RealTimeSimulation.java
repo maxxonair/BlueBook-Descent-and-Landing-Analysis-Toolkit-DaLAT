@@ -252,6 +252,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	        static CoordinateTransformation coordinateTransformation ;
 	        
 	        public static SpaceShip spaceShip = new SpaceShip();
+	        public static IntegratorData integratorData = new IntegratorData();
 	        public static AtmosphereSet atmosphereSet = new AtmosphereSet();
 	        public static ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
 	        public static GravitySet gravitySet = new GravitySet();
@@ -364,7 +365,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    	// 									    		 Force Model 
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-	    							 controlCommandSet, spaceShip, currentDataSet);
+	    							 controlCommandSet, spaceShip, currentDataSet, integratorData);
 	    	forceMomentumSet = masterSet.getForceMomentumSet();
 	    	gravitySet = masterSet.getGravitySet();
 	    	atmosphereSet = masterSet.getAtmosphereSet();
@@ -610,6 +611,7 @@ e2.printStackTrace();
 //- Initialise ground track computation
 
 spaceShip = spaceElement;
+RealTimeSimulation.integratorData = integratorData;
 coordinateTransformation =  new CoordinateTransformation();
 gravitySet = new GravitySet();
 forceMomentumSet = new ForceMomentumSet();

@@ -51,6 +51,7 @@ public class Launch_Simulation {
 	    	spaceShip.setMass(inputOut[6]);
 	    	spaceShip.setInitialQuarterions(ReadInput.readInitialAttitude());
 	    	spaceShip.getAeroElements().setSurfaceArea(ReadInput.readSurfaceArea(inputOut[6]));
+	    	spaceShip.getAeroElements().setHeatshieldRadius(ReadInput.readSCFile()[2]);
 	    	spaceShip.getPropulsion().setPrimaryISPMax(propRead[0]);
 	    	spaceShip.getPropulsion().setPrimaryPropellant(propRead[1]);
 	    	spaceShip.getPropulsion().setPrimaryThrustMax(propRead[2]);
@@ -79,6 +80,7 @@ public class Launch_Simulation {
 	    		integratorData.setMaxIntegTime(inputOut[7]);
 	    		integratorData.setRefElevation(inputOut[11]);
 	    		integratorData.setVelocityVectorCoordSystem((int) inputOut[13]);
+	    		integratorData.setAeroDragModel((int) ReadInput.readAeroFile()[0]); 
 	    		//integratorData.setDegreeOfFreedom((int) inputOut[14]);
 	    		integratorData.setDegreeOfFreedom(6);
 	    		//-----------------------------------------------------------------------------------------------------------------------------
