@@ -134,7 +134,6 @@ public class worldAnimation {
 		spaceShip.getPropulsion().setPrimaryPropellant(340);
 		spaceShip.setInertiaTensorMatrix(InertiaTensorMatrix);
 		spaceShip.getPropulsion().setPrimaryISPMax(311);
-		spaceShip.getPropulsion().setSecondaryMomentum(MRCS);
 		spaceShip.getPropulsion().setPrimaryThrustMax(45000);
 		spaceShip.setInitialQuarterions(quarternions);
 	    spacecraft = new Spacecraft(spaceShip,staticModel, startPostion,0,0,0,1);	

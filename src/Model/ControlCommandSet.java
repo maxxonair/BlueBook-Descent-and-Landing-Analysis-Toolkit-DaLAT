@@ -3,10 +3,34 @@ package Model;
 public class ControlCommandSet {
 
     private double primaryThrustThrottleCmd=0;				// Main engine throttle command [-]
+    private double TVC_alpha=0;
+    private double TVC_beta=0; 
 	private double MomentumRCS_X_cmd=0;
 	private double MomentumRCS_Y_cmd=0;
 	private double MomentumRCS_Z_cmd=0;
     
+	
+	
+
+	public double getTVC_alpha() {
+		return TVC_alpha;
+	}
+
+
+	public void setTVC_alpha(double tVC_alpha) {
+		TVC_alpha = tVC_alpha;
+	}
+
+
+	public double getTVC_beta() {
+		return TVC_beta;
+	}
+
+
+	public void setTVC_beta(double tVC_beta) {
+		TVC_beta = tVC_beta;
+	}
+
 
 	public double getPrimaryThrustThrottleCmd() {
 		return primaryThrustThrottleCmd;

@@ -126,9 +126,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 			public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0}};  // Inertia Tensor []
-			public static double[][] AngularMomentum_B = {{0},
-														  {0},
-														  {0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
 			
 			// Equation Elements for angular velocity equations: 
 			static double det_I = 0;
@@ -251,10 +248,11 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	phimin=phi;
     	tetamin=theta; 
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									    		 Force Model 
+    	// 									  !!  		 Force Model         !!
     	//-------------------------------------------------------------------------------------------------------------------
     	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-    							 controlCommandSet, spaceShip, currentDataSet, integratorData);
+    							 controlCommandSet, spaceShip, currentDataSet, integratorData, true);
+    	
     	forceMomentumSet = masterSet.getForceMomentumSet();
     	gravitySet = masterSet.getGravitySet();
     	atmosphereSet = masterSet.getAtmosphereSet();
@@ -324,7 +322,16 @@ public class Simulation implements FirstOrderDifferentialEquations {
     	
 	    }	    
 	    // System mass [kg]
-	    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ;   
+	    /*
+	    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) 
+	    			  - forceMomentumSet.getRCSThrustX()/(actuatorSet.getRCS_X_ISP()*g0)
+	    			  - forceMomentumSet.getRCSThrustY()/(actuatorSet.getRCS_X_ISP()*g0)
+	    			  - forceMomentumSet.getRCSThrustZ()/(actuatorSet.getRCS_X_ISP()*g0);   
+	    			  */
+	    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ;
+	    currentDataSet.setPropellantLevelIsPrimary(currentDataSet.getPropellantLevelIsPrimary()-forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) *currentDataSet.getValDt());
+	    currentDataSet.setPropellantLevelIsSecondary(currentDataSet.getPropellantLevelIsSecondary()-(forceMomentumSet.getRCSThrustX()/(actuatorSet.getRCS_X_ISP()*g0)+
+	    		forceMomentumSet.getRCSThrustY()/(actuatorSet.getRCS_Y_ISP()*g0)+forceMomentumSet.getRCSThrustZ()/(actuatorSet.getRCS_Z_ISP()*g0))*currentDataSet.getValDt());
     	//-------------------------------------------------------------------------------------------------------------------
     	// 						   Rotataional motion
     	//-------------------------------------------------------------------------------------------------------------------
@@ -402,9 +409,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    		}
 	    	    //----------------------------------------------------------------------------------------
 	    	    // System.out.println("model 1 running");
-	    	    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-	    	    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-	    	    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
+	    	    double Lb = forceMomentumSet.getM_total_NED()[0][0];
+	    	    double Mb = forceMomentumSet.getM_total_NED()[1][0];
+	    	    double Nb = forceMomentumSet.getM_total_NED()[2][0];
 	    	    
 	    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
 	    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
@@ -438,9 +445,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    	    
 	    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
 	    	    //----------------------------------------------------------------------------------------
-	    	    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-	    	    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-	    	    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
+	    	    double Lb = forceMomentumSet.getM_total_NED()[0][0];
+	    	    double Mb = forceMomentumSet.getM_total_NED()[1][0];
+	    	    double Nb = forceMomentumSet.getM_total_NED()[2][0];
 	    		
 				double Ixx = InertiaTensor[0][0];
 				double Iyy = InertiaTensor[1][1];
@@ -461,9 +468,6 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	    					* x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
 
 } 
-	AngularMomentum_B[0][0] = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-	AngularMomentum_B[1][0] = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-	AngularMomentum_B[2][0] = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;	
 	AngularRate[0][0] = x[11];
 	AngularRate[1][0] = x[12];
 	AngularRate[2][0] = x[13];
@@ -507,7 +511,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 //   - Initialise ground track computation
 
 	spaceShip = spaceElement;
-	System.out.println("RB: "+spaceShip.getAeroElements().getHeatshieldRadius());
+	currentDataSet.setPropellantLevelIsPrimary(spaceShip.getPropulsion().getPrimaryPropellant());
+	currentDataSet.setPropellantLevelIsSecondary(spaceShip.getPropulsion().getSecondaryPropellant());
 	Simulation.integratorData = integratorData;
 	spaceShip.getAeroElements().setHeatshieldRadius(1.5);
 	coordinateTransformation =  new CoordinateTransformation();
@@ -775,9 +780,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  AngularRate[0][0]+" "+
 	                    		  AngularRate[1][0]+" "+
 	                    		  AngularRate[2][0]+" "+
-	                    		  AngularMomentum_B[0][0]+" "+
-	                    		  AngularMomentum_B[1][0]+" "+
-	                    		  AngularMomentum_B[2][0]+" "+
+	                    		  forceMomentumSet.getM_total_NED()[0][0]+" "+
+	                    		  forceMomentumSet.getM_total_NED()[1][0]+" "+
+	                    		  forceMomentumSet.getM_total_NED()[2][0]+" "+
 	                    		  EulerAngle[0][0]+" "+
 	                    		  EulerAngle[1][0]+" "+
 	                    		  EulerAngle[2][0]+" "+

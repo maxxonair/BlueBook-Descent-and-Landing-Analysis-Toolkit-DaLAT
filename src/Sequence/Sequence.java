@@ -71,7 +71,7 @@ public class Sequence {
 			ControllerModel.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
 			ControllerModel.setCntr_t_init(currentDataSet.gettIS());
 			ControllerModel.setCntr_fpa_init(currentDataSet.getxIS()[4]);
-    		System.out.println("Write: Sequence result file ");
+    		//System.out.println("Write: Sequence result file ");
     		try {
             String resultpath="";
             	String dir = System.getProperty("user.dir");

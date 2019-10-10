@@ -15,9 +15,44 @@ public class Propulsion {
 	private double secondaryThrust_RCS;
 	private double secondaryThrust_AUX;
 	private double secondaryPropellant;
-	private double[][] secondaryMomentum;
+	
+	private double RCSMomentumX;
+	private double RCSMomentumY;
+	private double RCSMomentumZ;
 	
 	
+	
+	
+	public double getRCSMomentumX() {
+		return RCSMomentumX;
+	}
+
+
+	public void setRCSMomentumX(double rCSMomentumX) {
+		RCSMomentumX = rCSMomentumX;
+	}
+
+
+	public double getRCSMomentumY() {
+		return RCSMomentumY;
+	}
+
+
+	public void setRCSMomentumY(double rCSMomentumY) {
+		RCSMomentumY = rCSMomentumY;
+	}
+
+
+	public double getRCSMomentumZ() {
+		return RCSMomentumZ;
+	}
+
+
+	public void setRCSMomentumZ(double rCSMomentumZ) {
+		RCSMomentumZ = rCSMomentumZ;
+	}
+
+
 	public Propulsion() {
 
 	}
@@ -135,15 +170,6 @@ public class Propulsion {
 		this.secondaryPropellant = secondaryPropellant;
 	}
 
-
-	public double[][] getSecondaryMomentum() {
-		return secondaryMomentum;
-	}
-
-
-	public void setSecondaryMomentum(double[][] secondaryMomentumX) {
-		this.secondaryMomentum = secondaryMomentumX;
-	}
 
 	
 }

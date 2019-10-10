@@ -16,30 +16,29 @@ public class ActuatorSet {
 	private double RcsPropellant_is=0;
 	
     // TVC control angles: 
-    public static double TVC_alpha =0;					// TVC angle alpha [rad]
-    public static double TVC_beta  =0;					// TVC angle beta [rad]
+    public double TVC_alpha =0;					// TVC angle alpha [rad]
+    public double TVC_beta  =0;					// TVC angle beta [rad]
     
     public static double tvc_alpha_MAX = 15;
     public static double tvc_beta_MAX  = 15;
+     
     
-    
-    
-	public static double getTVC_alpha() {
+	public double getTVC_alpha() {
 		return TVC_alpha;
 	}
 
 
-	public static void setTVC_alpha(double tVC_alpha) {
+	public void setTVC_alpha(double tVC_alpha) {
 		TVC_alpha = tVC_alpha;
 	}
 
 
-	public static double getTVC_beta() {
+	public double getTVC_beta() {
 		return TVC_beta;
 	}
 
 
-	public static void setTVC_beta(double tVC_beta) {
+	public void setTVC_beta(double tVC_beta) {
 		TVC_beta = tVC_beta;
 	}
 

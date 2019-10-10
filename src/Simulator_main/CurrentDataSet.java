@@ -20,7 +20,24 @@ public class CurrentDataSet {
 	private  List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
 	private double mu;
 	private CoordinateTransformation coordinateTransformation = new CoordinateTransformation();
+	
+	private double propellantLevelIsPrimary = 0 ; 
+	private double propellantLevelIsSecondary = 0;
+	
+	
 
+	public double getPropellantLevelIsPrimary() {
+		return propellantLevelIsPrimary;
+	}
+	public void setPropellantLevelIsPrimary(double propellantLevelIsPrimary) {
+		this.propellantLevelIsPrimary = propellantLevelIsPrimary;
+	}
+	public double getPropellantLevelIsSecondary() {
+		return propellantLevelIsSecondary;
+	}
+	public void setPropellantLevelIsSecondary(double propellantLevelIsSecondary) {
+		this.propellantLevelIsSecondary = propellantLevelIsSecondary;
+	}
 	public CoordinateTransformation getCoordinateTransformation() {
 		return coordinateTransformation;
 	}

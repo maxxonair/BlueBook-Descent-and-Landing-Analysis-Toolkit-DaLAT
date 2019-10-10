@@ -12,14 +12,51 @@ public class ForceMomentumSet {
 	
 	  double[][] M_Aero_NED      = {{0},{0},{0}};
 	  double[][] M_Thrust_NED    = {{0},{0},{0}};
+	  double[][] M_total_NED     = {{0},{0},{0}};
 	
 	  double[][] M_Aero_A      = {{0},{0},{0}};
 	  double[][] M_Aero_B      = {{0},{0},{0}};
 	  double[][] M_Thrust_B    = {{0},{0},{0}};
 	  
 	  double thrustTotal =0;
+	  double RCSThrustX=0;
+	  double RCSThrustY=0;
+	  double RCSThrustZ=0;
+	  
 	  
 	 
+	public double getRCSThrustX() {
+		return RCSThrustX;
+	}
+
+	public void setRCSThrustX(double rCSThrustX) {
+		RCSThrustX = rCSThrustX;
+	}
+
+	public double getRCSThrustY() {
+		return RCSThrustY;
+	}
+
+	public void setRCSThrustY(double rCSThrustY) {
+		RCSThrustY = rCSThrustY;
+	}
+
+	public double getRCSThrustZ() {
+		return RCSThrustZ;
+	}
+
+	public void setRCSThrustZ(double rCSThrustZ) {
+		RCSThrustZ = rCSThrustZ;
+	}
+
+	public double[][] getM_total_NED() {
+		return M_total_NED;
+	}
+
+	public void setM_total_NED(double[][] m_total_NED) {
+		M_total_NED = m_total_NED;
+	}
+
 	public double getThrustTotal() {
 		return thrustTotal;
 	}

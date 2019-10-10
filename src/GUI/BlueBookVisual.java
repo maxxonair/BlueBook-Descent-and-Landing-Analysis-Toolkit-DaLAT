@@ -483,6 +483,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JSlider sliderEuler3;
     public static JPanel SpaceShip3DControlPanel ;
     public static TimerTask task_Update;
+    public static JTextField ConstantCD_INPUT;
+    
     
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
@@ -540,7 +542,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	public static int thirdWindowIndx = 1;
     	
     	
-    	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
+    	public static List<Component> AeroLeftBarAdditionalComponents = new ArrayList<Component>();
+     	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
 	//-----------------------------------------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JPanel createContentPane () throws IOException{
@@ -552,6 +555,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	//                Initialize paths from relative to absolute file paths
     	//---------------------------------------------------------------------------------------
     	 String dir = System.getProperty("user.dir");
+    	 
     	 Init_File = dir + Init_File ;
     	 RES_File  = dir + RES_File  ;
     	 CTR_001_File  = dir + CTR_001_File  ;
@@ -1657,9 +1661,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_YAxis.setForeground(labelColor);
       P1_SidePanel.add(LABEL_YAxis);
 	  axis_chooser = new JComboBox(Axis_Option_NR);
-	  axis_chooser.setBackground(backgroundColor);
+	 // axis_chooser.setBackground(backgroundColor);
+	  //axis_chooser.setForeground(labelColor);
+	  axis_chooser.setRenderer(new CustomRenderer());
 	  axis_chooser2 = new JComboBox(Axis_Option_NR);
-	  axis_chooser2.setBackground(backgroundColor);
+	  //axis_chooser2.setForeground(labelColor);
+	  //axis_chooser2.setBackground(backgroundColor);
+	  axis_chooser2.setRenderer(new CustomRenderer());
       axis_chooser2.setLocation(210, uy_p41 + 25 * 15);
       //axis_chooser2.setPreferredSize(new Dimension(150,25));
       axis_chooser2.setSize(180,25);
@@ -2023,10 +2031,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       
       
 	  JComboBox VelocityFrame_chooser = new JComboBox(Vel_Frame_options);
-	  VelocityFrame_chooser.setBackground(backgroundColor);
+	//  VelocityFrame_chooser.setBackground(backgroundColor);
 	  VelocityFrame_chooser.setLocation(2+INPUT_width+5, uy_p41 + 25 * 7);
 	  VelocityFrame_chooser.setSize(380-(2+INPUT_width+5),20);
 	  VelocityFrame_chooser.setSelectedIndex(1);
+	  VelocityFrame_chooser.setRenderer(new CustomRenderer());
 	  VelocityFrame_chooser.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
     		 
@@ -2262,9 +2271,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       IntegratorInputPanel.add(LABEL_IntegSetting);
       
 	  AscentDescent_SwitchChooser = new JComboBox(Thrust_switch);
-	  AscentDescent_SwitchChooser.setBackground(backgroundColor);
+	 // AscentDescent_SwitchChooser.setBackground(backgroundColor);
 	  AscentDescent_SwitchChooser.setLocation(2, uy_p41 + 26 * 1 );
 	  AscentDescent_SwitchChooser.setSize(250,25);
+	  AscentDescent_SwitchChooser.setRenderer(new CustomRenderer());
 	  AscentDescent_SwitchChooser.setSelectedIndex(0);
 	  AscentDescent_SwitchChooser.addActionListener(new ActionListener() { 
    	  public void actionPerformed(ActionEvent e) {
@@ -2320,9 +2330,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     IntegratorInputPanel.add(LABEL_TARGETBODY);
     
 	  Target_chooser = new JComboBox(Target_Options);
-	  Target_chooser.setBackground(backgroundColor);
+	 // Target_chooser.setBackground(backgroundColor);
 	  Target_chooser.setLocation(2, uy_p41 + 25 * 5 );
 	  Target_chooser.setSize(150,25);
+	  Target_chooser.setRenderer(new CustomRenderer());
 	  Target_chooser.setSelectedIndex(3);
 	  Target_chooser.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
@@ -2347,9 +2358,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  IntegratorInputPanel.add(Target_chooser);
 	  
 	  Integrator_chooser = new JComboBox(Integrator_Options);
-	  Integrator_chooser.setBackground(backgroundColor);
+	  //Integrator_chooser.setBackground(backgroundColor);
 	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 6 );
 	  Integrator_chooser.setSize(380,25);
+	  Integrator_chooser.setRenderer(new CustomRenderer());
 	  Integrator_chooser.setSelectedIndex(3);
 	  Integrator_chooser.addActionListener(new ActionListener() { 
     	  public void actionPerformed(ActionEvent e) {
@@ -3385,6 +3397,45 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					@Override
 					public void stateChanged(ChangeEvent arg0) {
 						WRITE_AERO();
+						//------------------------------------------------------------------------
+						int indx = getDragModelSetIndx();
+						for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
+							AerodynamicLeftPanel.remove(AeroLeftBarAdditionalComponents.get(i));
+						}
+						AerodynamicLeftPanel.revalidate();
+						AerodynamicLeftPanel.repaint();
+						if(indx==0) {	
+						      JLabel LABEL_CD = new JLabel("Set constant CD value [-]");
+						      LABEL_CD.setLocation(193, 5 + 25 * 1);
+						      LABEL_CD.setSize(300, 20);
+						      LABEL_CD.setBackground(backgroundColor);
+						      LABEL_CD.setForeground(labelColor);
+						      LABEL_CD.setFont(small_font);
+						      AeroLeftBarAdditionalComponents.add(LABEL_CD);
+						      AerodynamicLeftPanel.add(LABEL_CD);
+							
+					        ConstantCD_INPUT = new JTextField(""+readFromFile(Aero_file,1));
+					        ConstantCD_INPUT.setLocation(193, 5 + 25 * 2 );
+					        ConstantCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+					        ConstantCD_INPUT.setBorder(Moon_border);
+					        ConstantCD_INPUT.setSize(100, 20);
+					        ConstantCD_INPUT.setEditable(true);
+					        ConstantCD_INPUT.addFocusListener(new FocusListener() {
+
+								@Override
+								public void focusGained(FocusEvent arg0) { }
+
+								@Override
+								public void focusLost(FocusEvent e) {
+									WRITE_AERO();
+								}
+						   	  
+						     });
+					        AeroLeftBarAdditionalComponents.add(ConstantCD_INPUT);
+					       // RB_INPUT.setBackground(Color.lightGray);
+					        AerodynamicLeftPanel.add(ConstantCD_INPUT);       
+						}
+						//------------------------------------------------------------------------
 					}
 			    	  
 			      });
@@ -3405,6 +3456,45 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					@Override
 					public void stateChanged(ChangeEvent arg0) {
 							WRITE_AERO();
+							//------------------------------------------------------------------------
+							int indx = getDragModelSetIndx();
+							for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
+								AerodynamicLeftPanel.remove(AeroLeftBarAdditionalComponents.get(i));
+							}
+							AerodynamicLeftPanel.revalidate();
+							AerodynamicLeftPanel.repaint();
+							if(indx==1) {							
+							     INPUT_RB = new JTextField(10);
+							     double value = readFromFile(SC_file, 2);
+							     INPUT_RB.setText(""+value);
+							     INPUT_RB.setLocation(193, 5 + 25 * 3);;
+							     INPUT_RB.setSize(INPUT_width, 20);
+							     INPUT_RB.setHorizontalAlignment(JTextField.RIGHT);
+							     AeroLeftBarAdditionalComponents.add(INPUT_RB);
+							     INPUT_RB.addFocusListener(new FocusListener() {
+
+									@Override
+									public void focusGained(FocusEvent arg0) { }
+
+									@Override
+									public void focusLost(FocusEvent e) {
+										WRITE_SC();
+									}
+							   	  
+							     });
+							     AerodynamicLeftPanel.add(INPUT_RB);
+						        
+							      JLabel LABEL_RB = new JLabel("Heat Shield Body Radius RB [m]");
+							      LABEL_RB.setLocation(193, 5 + 25 * 2);
+							      LABEL_RB.setSize(300, 20);
+							      LABEL_RB.setFont(small_font);
+							      LABEL_RB.setBackground(backgroundColor);
+							      LABEL_RB.setForeground(labelColor);
+							      AeroLeftBarAdditionalComponents.add(LABEL_RB);
+						       // RB_INPUT.setBackground(Color.lightGray);
+						        AerodynamicLeftPanel.add(LABEL_RB);       
+							}
+							//------------------------------------------------------------------------
 					}
 			    	  
 			      });
@@ -3421,7 +3511,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        JTabbedPane TabPane_SCDefinition = (JTabbedPane) new JTabbedPane();
 		        TabPane_SCDefinition.setPreferredSize(new Dimension(extx_main, exty_main));
 		        TabPane_SCDefinition.setBackground(backgroundColor);
-		        TabPane_SCDefinition.setForeground(labelColor);
+		        TabPane_SCDefinition.setForeground(Color.BLACK);
 		//-------------------------------------------------------------------------------------------	    
 		        // Main panels for each page 
 				JPanel InertiaxPanel = new JPanel();
@@ -4375,12 +4465,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      LABEL_BallisticCoefficient.setForeground(labelColor);
 		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
 		      
-		      JLabel LABEL_RB = new JLabel("Heat Shield Body Radius RB [m]");
-		      LABEL_RB.setLocation(INPUT_width+35, uy_p41 + 25 * 4 );
-		      LABEL_RB.setSize(300, 20);
-		      LABEL_RB.setBackground(backgroundColor);
-		      LABEL_RB.setForeground(labelColor);
-		      AerodynamicInputPanel.add(LABEL_RB);
 		      
 			     INPUT_SURFACEAREA = new JTextField(10);
 			     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
@@ -4490,22 +4574,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				    	 
 				     });
 				     
-				     INPUT_RB = new JTextField(10);
-				     INPUT_RB.setLocation(2, uy_p41 + 25 * 4 );;
-				     INPUT_RB.setSize(INPUT_width, 20);
-				     INPUT_RB.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RB.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-							WRITE_SC();
-						}
-				   	  
-				     });
-				     AerodynamicInputPanel.add(INPUT_RB);
 		      
 		        String path = "images/milleniumSchlieren2.png";
 		        File file = new File(path);
@@ -5591,6 +5659,41 @@ fstream.close();
 	    					}
 						return animationSets;
    }
+    
+    public static double readFromFile(String file, int indx) {
+    	FileInputStream fstream = null;
+    	double result=0;
+    	  try {
+    	      fstream = new FileInputStream(file);
+    	} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading from file failed.");} 
+    	DataInputStream in55 = new DataInputStream(fstream);
+    	@SuppressWarnings("resource")
+    	BufferedReader br55 = new BufferedReader(new InputStreamReader(in55));
+    	int k = 0;
+    	double InitialState = 0;
+    	String strLine55;
+    	try {
+    	while ((strLine55 = br55.readLine()) != null )   {
+    		String[] tokens = strLine55.split(" ");
+    		if(tokens[0].isEmpty()==false) {
+    		 InitialState = Double.parseDouble(tokens[0]);
+    		} else {
+    			InitialState =0; 
+    		}
+    	 	if (k==indx){
+    		  result = InitialState;
+    		} 
+    		k++;
+    	}
+    	in55.close();
+    	br55.close();
+    	fstream.close();
+    	} catch (NullPointerException eNPE) { System.out.println(eNPE);} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}  
+    	return result;
+    }
 
     public static ArrayList<String> Read_SEQU(){
 	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
@@ -6076,13 +6179,16 @@ fstream.close();
             for (int i = 0; i<=15; i++)
             {
         			if (i == 0 ){
-						int k=0;
-						for(int j=0;j<DragModelSet.size();j++) {
-							if(DragModelSet.get(j).isSelected()) {
-								k=j;
-							}
-						}
-	        			   wr.write(k+System.getProperty( "line.separator" ));
+        					int indx = getDragModelSetIndx();
+	        			   wr.write(indx+System.getProperty( "line.separator" ));
+        			} else if ( i == 1 ) {
+        				double CD = 1.4;
+        				try {
+        			    CD = Double.parseDouble(ConstantCD_INPUT.getText());
+        				wr.write(CD+System.getProperty( "line.separator" ));
+        				} catch(NullPointerException e) {
+            				wr.write(CD+System.getProperty( "line.separator" ));
+        				}
         			}
             }
             wr.close();
@@ -6219,6 +6325,16 @@ fstream.close();
             } catch (IOException eIO) {
             	System.out.println(eIO);
             }
+    }
+    
+    public static int getDragModelSetIndx() {
+		int k=0;
+		for(int j=0;j<DragModelSet.size();j++) {
+			if(DragModelSet.get(j).isSelected()) {
+				k=j;
+			}
+		}
+		return k;
     }
     
     public static void EvaluateSurfaceAreaSetup() {
@@ -7959,5 +8075,23 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		        g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
 
 		    }
+		}
+		
+		public static class CustomRenderer extends DefaultListCellRenderer {
+
+			/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+			        int index, boolean isSelected, boolean cellHasFocus) {
+			    super.getListCellRendererComponent(list, value, index, isSelected,
+			            cellHasFocus);
+			    setBackground(backgroundColor);
+			    setForeground(labelColor);     
+			    return this;
+			}  
 		}
 }

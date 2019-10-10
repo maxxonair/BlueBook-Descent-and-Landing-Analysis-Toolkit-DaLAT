@@ -15,13 +15,19 @@ public class ActuatorModel {
 		actuatorSet.setPrimaryPropellant_is(primaryPropellant);
 		// Set ISP
 		if(spaceShip.getPropulsion().isPrimaryThrottleModel()) {actuatorSet.setPrimaryISP_is(ThrottleMODEL_get_ISP(spaceShip, 
-    			Sequence.getControlCommandSet().getPrimaryThrustThrottleCmd()));} else {
+				controlCommandSet.getPrimaryThrustThrottleCmd()));} else {
     				actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
     			}
 		// Set Thrust 
 		if(primaryPropellant>0) {
 		actuatorSet.setPrimaryThrust_is(controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax());
 		}
+		actuatorSet.setTVC_alpha(controlCommandSet.getTVC_alpha());
+		actuatorSet.setTVC_beta(controlCommandSet.getTVC_beta());
+		
+		actuatorSet.setMomentumRCS_X_is(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
+		actuatorSet.setMomentumRCS_Y_is(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
+		actuatorSet.setMomentumRCS_Z_is(controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
 		return actuatorSet;
 	}
 

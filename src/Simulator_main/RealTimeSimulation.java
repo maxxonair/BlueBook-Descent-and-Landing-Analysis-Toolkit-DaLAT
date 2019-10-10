@@ -217,6 +217,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 			static double EE_R_y  = 0;
 			static double EE_R_z  = 0;
 			
+			public static double tankContent=0;
 			//__________________________
 			
 	        public static double elevationangle; 
@@ -365,13 +366,13 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    	// 									    		 Force Model 
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-	    							 controlCommandSet, spaceShip, currentDataSet, integratorData);
+	    							 controlCommandSet, spaceShip, currentDataSet, integratorData, false);
 	    	forceMomentumSet = masterSet.getForceMomentumSet();
 	    	gravitySet = masterSet.getGravitySet();
 	    	atmosphereSet = masterSet.getAtmosphereSet();
 	    	aerodynamicSet = masterSet.getAerodynamicSet();
 	    	actuatorSet = masterSet.getActuatorSet();
-	    	controlCommandSet = masterSet.getControlCommandSet();
+	    //	controlCommandSet = masterSet.getControlCommandSet();
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	// 									     Equations of Motion
 	    	//-------------------------------------------------------------------------------------------------------------------
@@ -436,6 +437,8 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    }	    
 		    // System mass [kg]
 		    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ;   
+		  //  tankContent -= forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) * currentDataSet.getValDt();
+		   // System.out.println("Tank content:"+tankContent);
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	// 						   Rotataional motion
 	    	//-------------------------------------------------------------------------------------------------------------------
@@ -472,10 +475,9 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 			    	    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
 		    		} else {
 			    		double[][] ElementMatrix = {{  -q_vector[1][0] , -q_vector[2][0]  , -q_vector[3][0]  }, 
-			    				         			{   q_vector[0][0] , -q_vector[3][0] ,   q_vector[2][0]  },
-			    				         			{   q_vector[3][0],   q_vector[0][0]  , -q_vector[1][0]  },
+			    				         			{   q_vector[0][0] , -q_vector[3][0]  ,  q_vector[2][0]  },
+			    				         			{   q_vector[3][0] ,  q_vector[0][0]  , -q_vector[1][0]  },
 			    				         			{  -q_vector[2][0] ,  q_vector[1][0]  ,  q_vector[0][0]  }};
-			    		
 			    		
 			    		double[][] PQR = {{x[11]},
 			    						  {x[12]},
@@ -513,9 +515,9 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    		}
 		    	    //----------------------------------------------------------------------------------------
 		    	    // System.out.println("model 1 running");
-		    	    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-		    	    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-		    	    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
+		    	    double Lb = forceMomentumSet.getM_total_NED()[0][0];
+		    	    double Mb = forceMomentumSet.getM_total_NED()[1][0];
+		    	    double Nb = forceMomentumSet.getM_total_NED()[2][0];
 		    	    
 		    	    dxdt[11] = EE_P_pp * x[11]*x[11] + EE_P_pq * x[11]*x[12] + EE_P_pr * x[11]*x[13] + EE_P_qq *x[12]*x[12] + EE_P_qr * x[12]*x[13] + EE_P_rr * x[13]*x[13] + EE_P_x*Lb + EE_P_y*Mb + EE_P_z*Nb;
 		    	    dxdt[12] = EE_Q_pp * x[11]*x[11] + EE_Q_pq * x[11]*x[12] + EE_Q_pr * x[11]*x[13] + EE_Q_qq *x[12]*x[12] + EE_Q_qr * x[12]*x[13] + EE_Q_rr * x[13]*x[13] + EE_Q_x*Lb + EE_Q_y*Mb + EE_Q_z*Nb;
@@ -549,9 +551,9 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    	    
 		    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
 		    	    //----------------------------------------------------------------------------------------
-		    	    double Lb = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-		    	    double Mb = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-		    	    double Nb = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;
+		    	    double Lb = forceMomentumSet.getM_total_NED()[0][0];
+		    	    double Mb = forceMomentumSet.getM_total_NED()[1][0];
+		    	    double Nb = forceMomentumSet.getM_total_NED()[2][0];
 		    		
 					double Ixx = InertiaTensor[0][0];
 					double Iyy = InertiaTensor[1][1];
@@ -572,9 +574,9 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 		    					* x[11]) * x[12]) / (Ixx * Izz - Ixz*Ixz); 
 
 	} 
-		AngularMomentum_B[0][0] = forceMomentumSet.getM_Aero_B()[0][0] + forceMomentumSet.getM_Thrust_B()[0][0] ;
-		AngularMomentum_B[1][0] = forceMomentumSet.getM_Aero_B()[1][0] + forceMomentumSet.getM_Thrust_B()[1][0] ;
-		AngularMomentum_B[2][0] = forceMomentumSet.getM_Aero_B()[2][0] + forceMomentumSet.getM_Thrust_B()[2][0] ;	
+		AngularMomentum_B[0][0] = forceMomentumSet.getM_total_NED()[0][0];
+		AngularMomentum_B[1][0] = forceMomentumSet.getM_total_NED()[1][0] ;
+		AngularMomentum_B[2][0] = forceMomentumSet.getM_total_NED()[2][0];	
 		AngularRate[0][0] = x[11];
 		AngularRate[1][0] = x[12];
 		AngularRate[2][0] = x[13];
@@ -590,7 +592,8 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	*/    
 	//********************************************************************************************************************************** 
 	    public static RealTimeResultSet launchIntegrator( IntegratorData integratorData, 
-	    										 			  SpaceShip spaceElement ){
+	    										 			  SpaceShip spaceShip ,
+	    										 			  ControlCommandSet controlCommandSet){
 //----------------------------------------------------------------------------------------------
 //				Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -610,7 +613,10 @@ e2.printStackTrace();
 //- Read propulsion setting:	Propulsion/Controller INIT
 //- Initialise ground track computation
 
-spaceShip = spaceElement;
+RealTimeSimulation.spaceShip = spaceShip;
+tankContent = spaceShip.getPropulsion().getPrimaryPropellant();
+RealTimeSimulation.controlCommandSet = controlCommandSet;
+
 RealTimeSimulation.integratorData = integratorData;
 coordinateTransformation =  new CoordinateTransformation();
 gravitySet = new GravitySet();
@@ -676,7 +682,7 @@ if(is_6DOF) { dimension =  14; // 6 DOF model
 double[] y = new double[dimension]; // Result vector
 if(is_6DOF) {
  // double[] y = new double[13]; // Result vector
-	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
+	V_NED_ECEF_spherical[0]= integratorData.getInitVelocity();
 	V_NED_ECEF_spherical[1]= integratorData.getInitFpa();
 	V_NED_ECEF_spherical[2]= integratorData.getInitAzimuth();
 // Position 

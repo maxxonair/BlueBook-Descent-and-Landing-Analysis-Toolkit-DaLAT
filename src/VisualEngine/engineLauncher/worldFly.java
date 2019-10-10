@@ -73,9 +73,7 @@ public class worldFly {
     static double[][] InertiaTensorMatrix   =         {{   27364    ,    0       ,   0},
 													   {      0     ,    27314    ,   0},
 													   {      0     ,    0        ,   26114}};
-    private static double[][] MRCS = {{1900},
-			 						  {1900},
-			 						  {1900}};
+
     
 	private static double[][] quarternions = {	{-0.2164396},
 												{0},
@@ -174,8 +172,10 @@ public class worldFly {
 		spaceShip.getPropulsion().setPrimaryPropellant(340);
 		spaceShip.setInertiaTensorMatrix(InertiaTensorMatrix);
 		spaceShip.getPropulsion().setPrimaryISPMax(311);
-		spaceShip.getPropulsion().setSecondaryMomentum(MRCS);
 		spaceShip.getPropulsion().setPrimaryThrustMax(40000);
+		spaceShip.getPropulsion().setRCSMomentumX(1900);
+		spaceShip.getPropulsion().setRCSMomentumY(1900);
+		spaceShip.getPropulsion().setRCSMomentumZ(1900);
 		spaceShip.setInitialQuarterions(quarternions);
 	    spacecraft = new Spacecraft(spaceShip,staticModel, startPostion,0,0,0,1);	
 		Spacecraft.setQuarternions(quarternions);

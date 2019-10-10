@@ -14,9 +14,7 @@ public class RealTimeTester {
     static double[][] InertiaTensorMatrix   =         {{   8000    ,    0       ,   0},
 			{      0    ,    8000    ,   0},
 			{      0    ,    0       ,   8000}};
-    private static double[][] MRCS = {{500},
-			 						  {500},
-			 						  {500}};
+
 	public static void main(String[] args) {
 		TexturedModel staticModel = null;	
 		Vector3f startPostion = new Vector3f(0,150,0);
@@ -26,13 +24,13 @@ public class RealTimeTester {
 		spaceShip.setInertiaTensorMatrix(InertiaTensorMatrix);
 		spaceShip.getPropulsion().setPrimaryISPMax(330);
 		spaceShip.getPropulsion().setPrimaryThrustMax(30000);
-		spaceShip.getPropulsion().setSecondaryMomentum(MRCS);
 		Spacecraft spacecraft = new Spacecraft(spaceShip, staticModel, startPostion,0,45,0,1);	
 		int k=0;
 		while(k<1000) {
+		@SuppressWarnings("static-access")
 		RealTimeResultSet realTimeResultSet = spacecraft.getRealTimeResultSet(0.1f);
-		//System.out.println(realTimeResultSet.getAltitude());
-		//System.out.println(realTimeResultSet.getVelocity());
+		System.out.println(realTimeResultSet.getAltitude());
+		System.out.println(realTimeResultSet.getVelocity());
 		//System.out.println(realTimeResultSet.getFpa());
 		//System.out.println(realTimeResultSet.getAzi());
 		//System.out.println(realTimeResultSet.getPQR()[0][0]);
