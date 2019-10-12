@@ -622,13 +622,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	  		// S/C Mass        
 	  		        y[6] = spaceShip.getMass();
 	  				// Attitude and Rotational Motion
-	  				y[7]  = q_vector[0][0];
-	  				y[8]  = q_vector[1][0];
-	  				y[9]  = q_vector[2][0];
-	  				y[10] = q_vector[3][0];
-	  				y[11] = AngularRate[0][0];
-	  				y[12] = AngularRate[1][0];
-	  				y[13] = AngularRate[2][0];
+	  				y[7]  = spaceShip.getInitialQuarterions()[0][0];
+	  				y[8]  = spaceShip.getInitialQuarterions()[1][0];
+	  				y[9]  = spaceShip.getInitialQuarterions()[2][0];
+	  				y[10] = spaceShip.getInitialQuarterions()[3][0];
+	  				y[11] = integratorData.getInitRotationalRateX();
+	  				y[12] = integratorData.getInitRotationalRateY();
+	  				y[13] = integratorData.getInitRotationalRateZ();
 	  				
   				
   			} else { // 3DOF case

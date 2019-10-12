@@ -21,6 +21,11 @@ public class IntegratorData {
 	private double initFpa;
 	private double initAzimuth;
 	
+	private double initRotationalRateX;
+	private double initRotationalRateY;
+	private double initRotationalRateZ;
+	
+	
 	private double maxIntegTime;
 	private double integTimeStep;
 	
@@ -42,6 +47,36 @@ public class IntegratorData {
 	
 	public double[] getIntegInput() {
 		return IntegInput;
+	}
+
+
+	public double getInitRotationalRateX() {
+		return initRotationalRateX;
+	}
+
+
+	public void setInitRotationalRateX(double initRotationalRateX) {
+		this.initRotationalRateX = initRotationalRateX;
+	}
+
+
+	public double getInitRotationalRateY() {
+		return initRotationalRateY;
+	}
+
+
+	public void setInitRotationalRateY(double initRotationalRateY) {
+		this.initRotationalRateY = initRotationalRateY;
+	}
+
+
+	public double getInitRotationalRateZ() {
+		return initRotationalRateZ;
+	}
+
+
+	public void setInitRotationalRateZ(double initRotationalRateZ) {
+		this.initRotationalRateZ = initRotationalRateZ;
 	}
 
 

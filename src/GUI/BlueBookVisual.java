@@ -416,7 +416,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     static int extx_main = 1350;
     static int exty_main = 800; 
     public static boolean chartA3_fd=true;  
-	static boolean Chart_MercatorMap4_fd = true;
+	static boolean Chart_DashBoardFlexibleChart_fd = true;
 	static boolean CHART_P1_DashBoardOverviewChart_fd = true;
     public static JTextArea textArea = new JTextArea();
     public static JFrame frame_CreateLocalElevationFile;
@@ -444,7 +444,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	public static JFreeChart CHART_P1_DashBoardOverviewChart_Altitude_Velocity;
 	public static JFreeChart CHART_P1_DashBoardOverviewChart_Time_FPA;
 	public static JFreeChart chart_PolarMap;	  
-	public static JFreeChart Chart_MercatorMap4;	
+	public static JFreeChart Chart_DashBoardFlexibleChart;	
 	public static ChartPanel ChartPanel_DashBoardOverviewChart_Altitude_Velocity; 
 	public static ChartPanel ChartPanel_DashBoardOverviewChart_Time_FPA; 
 	public static ChartPanel ChartPanel_DashBoardFlexibleChart;
@@ -2175,7 +2175,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		@Override
 		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
-			//WRITE_INIT();
+			WRITE_INIT();
 		}
     	  
       });
@@ -2193,7 +2193,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		@Override
 		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
-			//WRITE_INIT();
+			WRITE_INIT();
 		}
     	  
       });
@@ -2211,7 +2211,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		@Override
 		public void focusLost(FocusEvent e) {
 			// TODO Auto-generated method stub
-			//WRITE_INIT();
+			WRITE_INIT();
 		}
     	  
       });
@@ -3465,7 +3465,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 							AerodynamicLeftPanel.repaint();
 							if(indx==1) {							
 							     INPUT_RB = new JTextField(10);
-							     double value = readFromFile(SC_file, 2);
+							     double value = readFromFile(Aero_file, 2);
 							     INPUT_RB.setText(""+value);
 							     INPUT_RB.setLocation(193, 5 + 25 * 3);;
 							     INPUT_RB.setSize(INPUT_width, 20);
@@ -3478,7 +3478,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 
 									@Override
 									public void focusLost(FocusEvent e) {
-										WRITE_SC();
+										WRITE_AERO();
 									}
 							   	  
 							     });
@@ -5280,6 +5280,12 @@ try {
 			    	}else if(Integ_indx==6){
 			    		SELECT_6DOF.setSelected(true);
 			    	}
+		    } else if (k==15) {
+		    	INPUT_AngularRate_X.setText(decf.format(InitialState));
+		    } else if (k==16) {
+		    	INPUT_AngularRate_Y.setText(decf.format(InitialState));
+		    } else if (k==17) {
+		    	INPUT_AngularRate_Z.setText(decf.format(InitialState));
 		    }
         	k++;
         }
@@ -5358,10 +5364,10 @@ while ((strLine55 = br55.readLine()) != null )   {
 			}
 		}
 	} else if (k==1){
-
+		ConstantCD_INPUT.setText(""+InitialState);
 	//System.out.println(RM);
 	} else if (k==2){
-
+		INPUT_RB.setText(""+(InitialState)); 
 	}
 	k++;
 }
@@ -5444,7 +5450,7 @@ while ((strLine3 = br6.readLine()) != null )   {
   			INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
   		}
 	} else if (k==2){
-		INPUT_RB.setText(""+(InitialState)); 
+		
 	} else if (k==3){
 
 	} else if (k==4){
@@ -6016,7 +6022,7 @@ fstream.close();
             double r = 0;
             int rr=0;
             FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=15; i++)
+            for (int i = 0; i<=30; i++)
             {
         		if (i == 0 ){
         			r = Double.parseDouble(INPUT_LONG_Rs.getText()) ;
@@ -6061,6 +6067,15 @@ fstream.close();
 	                wr.write(VelocityCoordinateSystem+System.getProperty( "line.separator" ));	
 		        } else if (i == 14) {
 	                wr.write(DOF_System+System.getProperty( "line.separator" ));	
+		        } else if (i == 15) {
+		        	double rate = Double.parseDouble(INPUT_AngularRate_X.getText());
+		        	wr.write(rate+System.getProperty( "line.separator" ));	
+		        } else if (i == 16) {
+		        	double rate = Double.parseDouble(INPUT_AngularRate_Y.getText());
+		        	wr.write(rate+System.getProperty( "line.separator" ));	
+		        } else if (i == 17) {
+		        	double rate = Double.parseDouble(INPUT_AngularRate_Z.getText());
+		        	wr.write(rate+System.getProperty( "line.separator" ));	
 		        }
 		            }               
             wr.close();
@@ -6149,14 +6164,6 @@ fstream.close();
 		        			r = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText()) ;
 		        			wr.write(r+System.getProperty( "line.separator" ));
         				}
-        			} else if (i ==2 ) {
-        				if(INPUT_RB.getText().isEmpty()) {
-		        			r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}else {
-		        			r = Double.parseDouble(INPUT_RB.getText()) ;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
         			} 
             }
             wr.close();
@@ -6188,6 +6195,19 @@ fstream.close();
         				wr.write(CD+System.getProperty( "line.separator" ));
         				} catch(NullPointerException e) {
             				wr.write(CD+System.getProperty( "line.separator" ));
+            			}
+        			} else if ( i == 2 ) {
+        				try {
+        				if(INPUT_RB.getText().isEmpty()) {
+		        			double r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}else {
+		        			double r = Double.parseDouble(INPUT_RB.getText()) ;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
+        				} catch (NullPointerException e) {
+		        			double r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
         				}
         			}
             }
@@ -6834,13 +6854,10 @@ public static void EXPORT_Case() {
 	            double max = xAxis.getUpperBound();
 	            double min = xAxis.getLowerBound();
 	            int indx = (int) ( (1- x/(max-min))*resultSet.size());
-		            if(indx>0 && indx<resultSet.size()) {
-		            TargetView3D.prepareSpacecraft(indx);
 		            		if(thirdWindowIndx==0) {
 			            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getTime());
 			            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getFpa()*rad2deg);
 						}
-		            }
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
 	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
 	            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(y);
@@ -6944,12 +6961,12 @@ public static void EXPORT_Case() {
 			
 		}
 	    //-----------------------------------------------------------------------------------
-	    Chart_MercatorMap4 = ChartFactory.createScatterPlot("", "", "", ResultSet_FlexibleChart, PlotOrientation.VERTICAL, false, false, false); 
-		XYPlot plot = (XYPlot)Chart_MercatorMap4.getXYPlot(); 
+	    Chart_DashBoardFlexibleChart = ChartFactory.createScatterPlot("", "", "", ResultSet_FlexibleChart, PlotOrientation.VERTICAL, false, false, false); 
+		XYPlot plot = (XYPlot)Chart_DashBoardFlexibleChart.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
 	    renderer.setSeriesPaint( 0 , labelColor);	
-		Chart_MercatorMap4.setBackgroundPaint(backgroundColor);
+		Chart_DashBoardFlexibleChart.setBackgroundPaint(backgroundColor);
 		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
 		plot.getDomainAxis().setLabelFont(font3);
 		plot.getRangeAxis().setLabelFont(font3);
@@ -6959,8 +6976,8 @@ public static void EXPORT_Case() {
 		plot.setBackgroundPaint(backgroundColor);
 		plot.setDomainGridlinePaint(labelColor);
 		plot.setRangeGridlinePaint(labelColor); 
-		//Chart_MercatorMap4.getLegend().setBackgroundPaint(backgroundColor);
-		//Chart_MercatorMap4.getLegend().setItemPaint(labelColor);
+		//Chart_DashBoardFlexibleChart.getLegend().setBackgroundPaint(backgroundColor);
+		//Chart_DashBoardFlexibleChart.getLegend().setItemPaint(labelColor);
 		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
 		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
 		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
@@ -6978,7 +6995,7 @@ public static void EXPORT_Case() {
 		renderer.setSeriesShape(0, dot);
 
 	
-		ChartPanel_DashBoardFlexibleChart = new ChartPanel(Chart_MercatorMap4);
+		ChartPanel_DashBoardFlexibleChart = new ChartPanel(Chart_DashBoardFlexibleChart);
 		ChartPanel_DashBoardFlexibleChart.setMaximumDrawHeight(50000);
 		ChartPanel_DashBoardFlexibleChart.setMaximumDrawWidth(50000);
 		ChartPanel_DashBoardFlexibleChart.setMinimumDrawHeight(0);
@@ -7017,14 +7034,14 @@ public static void EXPORT_Case() {
 	    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
 	   SplitPane_Page1_Charts_vertical2.add(ChartPanel_DashBoardFlexibleChart, JSplitPane.LEFT);
 		//jPanel4.validate();	
-		Chart_MercatorMap4_fd = false;
+		Chart_DashBoardFlexibleChart_fd = false;
 	}
 	public static void Update_DashboardFlexibleChart(){
 	    	ResultSet_FlexibleChart.removeAllSeries();
 	    	try {
 	    	ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(axis_chooser.getSelectedIndex(),axis_chooser2.getSelectedIndex());
-	    	Chart_MercatorMap4.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
-	    	Chart_MercatorMap4.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
+	    	Chart_DashBoardFlexibleChart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
+	    	Chart_DashBoardFlexibleChart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
 	    	}
 	}

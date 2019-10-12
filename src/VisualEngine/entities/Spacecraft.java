@@ -130,9 +130,9 @@ public class Spacecraft extends Entity {
 		//---------------------------------------------------------------------------------------
 		//			 		Rotation 
 		//---------------------------------------------------------------------------------------
-		super.increaseRotation((float) Math.toDegrees(-Spacecraft.getPQR()[2][0])*DisplayManager.getFrameTimeSeconds(), 
-							   (float) Math.toDegrees(Spacecraft.getPQR()[0][0])*DisplayManager.getFrameTimeSeconds(), 
-							   (float) Math.toDegrees(Spacecraft.getPQR()[1][0])*DisplayManager.getFrameTimeSeconds() );
+		super.increaseRotation((float) Math.toDegrees(-Spacecraft.getPQR()[0][0])*DisplayManager.getFrameTimeSeconds(), 
+							   (float) Math.toDegrees( Spacecraft.getPQR()[2][0])*DisplayManager.getFrameTimeSeconds(), 
+							   (float) Math.toDegrees( Spacecraft.getPQR()[1][0])*DisplayManager.getFrameTimeSeconds() );  // Yaw axis
 
 		Spacecraft.currentSpeed = realTimeResultSet.getVelocity();
 		//Spacecraft.setAzimuth(realTimeResultSet.getAzi());
@@ -170,23 +170,23 @@ public class Spacecraft extends Entity {
 		//----------------------------------------------------
 		//				RCS - Rotation
 		//----------------------------------------------------
-		if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {
-		     controlCommandSet.setMomentumRCS_Z_cmd(0);
+		if(Keyboard.isKeyDown(Keyboard.KEY_Q)) {				// Yaw 
+		     controlCommandSet.setMomentumRCS_Z_cmd(-1);
 		}
 		if(Keyboard.isKeyDown(Keyboard.KEY_E)) {
 			controlCommandSet.setMomentumRCS_Z_cmd(1);
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {
-		     controlCommandSet.setMomentumRCS_Y_cmd(-1);
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
-			controlCommandSet.setMomentumRCS_Y_cmd(1);
-		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {
+		if(Keyboard.isKeyDown(Keyboard.KEY_W)) {				// Pitch 
 		     controlCommandSet.setMomentumRCS_X_cmd(-1);
 		}
-		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+		if(Keyboard.isKeyDown(Keyboard.KEY_S)) {
 			controlCommandSet.setMomentumRCS_X_cmd(1);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_A)) {				// Roll 
+		     controlCommandSet.setMomentumRCS_Y_cmd(-1);
+		}
+		if(Keyboard.isKeyDown(Keyboard.KEY_D)) {
+			controlCommandSet.setMomentumRCS_Y_cmd(1);
 		}
 		//---------------------------------------------
 		// 			Environment Inputs

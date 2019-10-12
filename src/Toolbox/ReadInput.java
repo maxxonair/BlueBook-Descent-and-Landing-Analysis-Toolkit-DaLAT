@@ -205,7 +205,7 @@ double[] readINP = new double[10];
 //---------------------------------------------------------------------------------------------------
 public static double[] readInput() {
 	double InitialState = 0;
-	double[] inputOut =new double[20];	
+	double[] inputOut =new double[30];	
     FileInputStream fstream = null;
     try{
     	fstream = new FileInputStream(INPUT_FILE);

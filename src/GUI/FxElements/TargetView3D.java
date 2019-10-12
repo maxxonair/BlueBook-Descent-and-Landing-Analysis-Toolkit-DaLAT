@@ -2,10 +2,18 @@ package GUI.FxElements;
 
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.geom.Rectangle2D;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.jfree.chart.ChartMouseEvent;
+import org.jfree.chart.ChartMouseListener;
+import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.ValueAxis;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.ui.RectangleEdge;
 
 import GUI.BlueBookVisual;
 import Simulator_main.RealTimeResultSet;
@@ -119,6 +127,37 @@ public class TargetView3D extends Application{
 		fxpanel.setScene(scene);
 		
 	    timer = prepareAnimation();
+	    
+		BlueBookVisual.ChartPanel_DashBoardFlexibleChart.addChartMouseListener(new ChartMouseListener() {
+	        @Override
+	        public void chartMouseClicked(ChartMouseEvent event) {
+	            // ignore
+	        }
+	
+	        @Override
+	        public void chartMouseMoved(ChartMouseEvent event) {
+		        	if(BlueBookVisual.axis_chooser.getSelectedIndex()==0) {
+		            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
+		            JFreeChart chart = event.getChart();
+		            XYPlot plot = (XYPlot) chart.getPlot();
+		            ValueAxis xAxis = plot.getDomainAxis();
+		            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
+		                    RectangleEdge.BOTTOM);
+	
+		            double max = xAxis.getUpperBound();
+		            double min = xAxis.getLowerBound();
+		            int indx = (int) ( (x/(max-min))*BlueBookVisual.getResultSet().size());
+			            if(indx>0 && indx<BlueBookVisual.getResultSet().size()) {
+			                Platform.runLater(new Runnable() {
+			                    @Override
+			                    public void run() {
+			                    	 TargetView3D.prepareSpacecraft(indx);
+			                    }
+			                });
+			            }
+		        	}
+	        }
+	});
 	}
 	
 	public static void playPauseAnimation() {
