@@ -8,9 +8,21 @@ public class ControlCommandSet {
 	private double MomentumRCS_X_cmd=0;
 	private double MomentumRCS_Y_cmd=0;
 	private double MomentumRCS_Z_cmd=0;
+	
+	private int SequenceID = 0;
     
 	
 	
+
+	public int getSequenceID() {
+		return SequenceID;
+	}
+
+
+	public void setSequenceID(int sequenceID) {
+		SequenceID = sequenceID;
+	}
+
 
 	public double getTVC_alpha() {
 		return TVC_alpha;

@@ -24,6 +24,7 @@ public class Sequence {
 		//-------------------------------------------------------------------------------------------------------------
 		//		 WriteOut conditions at sequence to sequence hand-over: 
 		//-------------------------------------------------------------------------------------------------------------
+		controlCommandSet.setSequenceID(activeSequence);
     	if(activeSequence<currentDataSet.getSEQUENCE_DATA_main().size()-1) {
 			int trigger_type = currentDataSet.getSEQUENCE_DATA_main().get(activeSequence).get_trigger_end_type();
 			double trigger_value =currentDataSet.getSEQUENCE_DATA_main().get(activeSequence).get_trigger_end_value();

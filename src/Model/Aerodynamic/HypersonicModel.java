@@ -21,7 +21,7 @@ public class HypersonicModel {
     	atmosphereSet.setStaticPressure(1000);
     	atmosphereSet.setStaticTemperature(140);;
     	atmosphereSet.setGasConstant(197);
-    	aerodynamicSet.setAngleOfAttack(20*deg2rad);
+    	aerodynamicSet.setAerodynamicAngleOfAttack(20*deg2rad);
     	aerodynamicSet.setAngleOfSideslip(0*deg2rad);
     	SpaceShip spaceShip = new SpaceShip();
     	spaceShip.getAeroElements().setHeatshieldRadius(2.3);
@@ -52,7 +52,7 @@ public class HypersonicModel {
 	double qinf  = atmosphereSet.getDynamicPressure();  		// Freestream dynamic pressure
 	double[][] rCG = {{-0.1},{0},{-0.5}};          					// Center of gravity
 	//daoa=20;                   					// Angle of Attack [deg]                  				// Angle of side slip [deg]/Do not use Cd when dbeta  
-	double raoa=aerodynamicSet.getAngleOfAttack();           				// Angle of Attack [rad]
+	double raoa=aerodynamicSet.getAerodynamicAngleOfAttack();           				// Angle of Attack [rad]
 	double rbeta=aerodynamicSet.getAngleOfSideslip();        				 // Angle of side slip [rad]
 	double[][] Vinf= {{Math.sin(raoa)}, {-Math.cos(raoa)*Math.sin(rbeta)}, {Math.cos(raoa)*Math.cos(rbeta)}};     
 	       Vinf=Mathbox.Multiply_Scalar_Matrix(-Vinfp, Vinf); 

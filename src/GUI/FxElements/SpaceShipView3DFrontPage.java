@@ -348,7 +348,7 @@ public static Group createGrid(float size, float delta) {
     meshViewXZ.getTransforms().add(new Rotate(90, Rotate.X_AXIS));
     
 	PhongMaterial material = new PhongMaterial();
-    material.setDiffuseColor(Color.BLUE);
+    material.setDiffuseColor(Color.BLACK);
     meshViewXZ.setMaterial(material);
 
     PolygonMeshView meshViewYZ = new PolygonMeshView(plane);
@@ -366,6 +366,7 @@ public static Group createGrid(float size, float delta) {
     meshViewXZ2.setCullFace(CullFace.NONE);
     meshViewXZ2.getTransforms().add(new Translate(size / 1000f, size / 1000f, 0));
     meshViewXZ2.getTransforms().add(new Rotate(90, Rotate.X_AXIS));
+    meshViewXZ2.setMaterial(material);
 
     PolygonMeshView meshViewYZ2 = new PolygonMeshView(plane2);
     meshViewYZ2.setDrawMode(DrawMode.LINE);
@@ -374,7 +375,7 @@ public static Group createGrid(float size, float delta) {
     meshViewYZ2.getTransforms().add(new Rotate(90, Rotate.Y_AXIS));
 
    // return new Group(meshViewXY, meshViewXY2, meshViewXZ, meshViewXZ2 /*, meshViewYZ, meshViewYZ2 */);
-    return new Group( meshViewXZ, meshViewXZ2 /*, meshViewYZ, meshViewYZ2 */);
+    return new Group( meshViewXZ/*, meshViewXZ2 , meshViewYZ, meshViewYZ2 */);
 }
 
 private static PolygonMesh createQuadrilateralMesh(float width, float height, int subDivX, int subDivY) {

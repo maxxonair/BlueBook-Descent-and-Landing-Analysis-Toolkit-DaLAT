@@ -5,8 +5,8 @@ public class AerodynamicSet {
     public   double DragCoefficientContinuumFlow = 0; 	    // Drag coefficient in contiuum flow;
     public   double CdC=0; 									// Continuum Flow Drag Coefficient [-]
     public   double SurfaceArea =0;
-    public   double BankAngle =0;
-    public   double AngleOfAttack=0;
+    public   double AerodynamicBankAngle =0;
+    public   double AerodynamicAngleOfAttack=0;
     public   double AngleOfSideslip=0; 
 	public   double DragForce = 0;
 	public   double SideForce = 0;
@@ -14,8 +14,15 @@ public class AerodynamicSet {
     public   double DragCoefficient=0;
     public   double C_SF=0;
     public   double LiftCoefficient=0;
+    public   double SideForceCoefficient=0;
     
     
+	public double getSideForceCoefficient() {
+		return SideForceCoefficient;
+	}
+	public void setSideForceCoefficient(double sideForceCoefficient) {
+		SideForceCoefficient = sideForceCoefficient;
+	}
 	public   double getDragForce() {
 		return DragForce;
 	}
@@ -58,17 +65,18 @@ public class AerodynamicSet {
 	public   void setSurfaceArea(double surfaceArea) {
 		SurfaceArea = surfaceArea;
 	}
-	public   double getBankAngle() {
-		return BankAngle;
+
+	public double getAerodynamicBankAngle() {
+		return AerodynamicBankAngle;
 	}
-	public   void setBankAngle(double bankAngle) {
-		BankAngle = bankAngle;
+	public void setAerodynamicBankAngle(double aerodynamicBankAngle) {
+		AerodynamicBankAngle = aerodynamicBankAngle;
 	}
-	public   double getAngleOfAttack() {
-		return AngleOfAttack;
+	public double getAerodynamicAngleOfAttack() {
+		return AerodynamicAngleOfAttack;
 	}
-	public   void setAngleOfAttack(double angleOfAttack) {
-		AngleOfAttack = angleOfAttack;
+	public void setAerodynamicAngleOfAttack(double aerodynamicAngleOfAttack) {
+		AerodynamicAngleOfAttack = aerodynamicAngleOfAttack;
 	}
 	public   double getAngleOfSideslip() {
 		return AngleOfSideslip;

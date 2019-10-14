@@ -1,6 +1,5 @@
 package Simulator_main; 
 
-//import static java.lang.Math.PI;
 import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 import static java.lang.Math.tan;
@@ -176,12 +175,9 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	        public static double Thrust_Elevation=0;
 	        public static double Thrust_Deviation_mo = 0; 
 	        public static double Thrust_Deviation_dot =0;
-	        public static double TE_save =0;
-	        
+	        public static double TE_save =0;	        
 	       
 	        public static boolean engine_loss_indicator=false;
-	       // public static double[] xIS ;
-	       // public static double tIS;
 	        
 	        public static SpaceShip spaceShip = new SpaceShip();
 	        public static IntegratorData integratorData = new IntegratorData();
@@ -693,78 +689,77 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                CTRL_TM_Error=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_ERROR();
 	                CTRL_TVC_Error=ControllerModel.getFlight_CTRL_PitchCntrl().get(Sequence.getActiveSequence()).get_CTRL_ERROR();  
 	                }
-	                CTRL_Time=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_TIME();
+	                CTRL_Time=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(controlCommandSet.getSequenceID()).get_CTRL_TIME();
 	                if( t > twrite ) {
 	                	twrite = twrite + integratorData.getIntegTimeStep(); 
 	                    steps.add(t + " " + 
-	                    		  y[0] + " " + 
-	                    		  y[1] + " " + 
-	                    		  (y[2]-rm-ref_ELEVATION) + " " + 
-	                    		  (y[2]-rm)+ " " + 
-	                    		  y[2] + " " + 
+	                    		  r_ECEF_spherical[0] + " " + 
+	                    		  r_ECEF_spherical[1] + " " + 
+	                    		  (r_ECEF_spherical[2]-rm-ref_ELEVATION) + " " + 
+	                    		  (r_ECEF_spherical[2]-rm)+ " " + 
+	                    		  r_ECEF_spherical[2] + " " + 
 	                    		  V_NED_ECEF_spherical[0]+ " " + 
 	                    		  V_NED_ECEF_spherical[1] + " " + 
 	                    		  V_NED_ECEF_spherical[2] + " " + 
 	                    		  atmosphereSet.getDensity() + " " + 
+	                    		  atmosphereSet.getStaticTemperature()+ " " +
+	                    		  atmosphereSet.getMach()+ " " +
+	                    		  atmosphereSet.getGamma()+ " " +
+	                    		  atmosphereSet.getGasConstant()+ " " +
+	                    		  atmosphereSet.getStaticPressure()+ " " +
+	                    		  atmosphereSet.getDynamicPressure()+ " " +
+	                    		  aerodynamicSet.getFlowzone()+ " " +
+	                    		  aerodynamicSet.getDragCoefficient()+ " " +
+	                    		  aerodynamicSet.getLiftCoefficient()+ " " +
+	                    		  aerodynamicSet.getSideForceCoefficient()+" "+
 	                    		  aerodynamicSet.getDragForce() + " " +
 	                    		  aerodynamicSet.getLiftForce() + " " +
 	                    		  aerodynamicSet.getSideForce() + " " +
-	                    		  GravityModel.getGravity2D(currentDataSet)[0] + " " +
-	                    		  GravityModel.getGravity2D(currentDataSet)[1] + " " +
-	                    		  g_total + " " +
-	                    		  atmosphereSet.getStaticTemperature()+ " " +
-	                    		  atmosphereSet.getMach()+ " " +
-	                    		  atmosphereSet.getPressureCoefficient()+ " " +
-	                    		  atmosphereSet.getGasConstant()+ " " +
-	                    		  atmosphereSet.getStaticPressure()+ " " +
-	                    		  aerodynamicSet.getDragCoefficient()+ " " +
-	                    		  aerodynamicSet.getLiftCoefficient()+ " " +
-	                    		  aerodynamicSet.getBankAngle()+ " " +
-	                    		  aerodynamicSet.getFlowzone()+ " " +
-	                    		  atmosphereSet.getDynamicPressure()+ " " +
-	                    		  aerodynamicSet.getDragCoefficientContinuumFlow()+ " " +
-	                    		  aerodynamicSet.getCdC()+ " " +
+	                    		  aerodynamicSet.getAerodynamicAngleOfAttack()+" "+
+	                    		  aerodynamicSet.getAerodynamicBankAngle()+ " " +
+	                    		  gravitySet.getG_NED()[0][0]+" "+
+	                    		  gravitySet.getG_NED()[1][0]+" "+
+	                    		  gravitySet.getG_NED()[2][0]+" "+
+	                    		  Math.sqrt(gravitySet.getG_NED()[0][0]*gravitySet.getG_NED()[0][0] + gravitySet.getG_NED()[1][0]*gravitySet.getG_NED()[1][0] + gravitySet.getG_NED()[2][0]*gravitySet.getG_NED()[2][0])+" "+
+	                    		  (acc_deltav)+" "+
 	                    		  y[6]+ " " +
 	                    		  ymo[3]/9.81+ " " +
 	                    		  E_total+ " " + 
-	                    		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
-	                    		  (spaceShip.getPropulsion().getPrimaryPropellant()-(actuatorSet.getPrimaryPropellant_is()))/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
-	                    		  (forceMomentumSet.getThrustTotal())+" "+
-	                    		  (forceMomentumSet.getThrustTotal()/y[6])+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.cos(V_NED_ECEF_spherical[1]))+" "+
 	                    		  (V_NED_ECEF_spherical[0]*Math.sin(V_NED_ECEF_spherical[1]))+" "+
-	                    		  (acc_deltav)+" "+
-	                    		  Sequence.getActiveSequence()+" "+
 	                    		  (groundtrack/1000)+" "+
+	                    		  controlCommandSet.getSequenceID()+" "+
+	                    		  CTRL_Time+" "+
+	                    		  0+" "+
+	                    		  0+" "+
+	                    		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
+	                    		  (forceMomentumSet.getThrustTotal())+" "+
+	                    		  (forceMomentumSet.getThrustTotal()/y[6])+" "+
+	                    		  (actuatorSet.getPrimaryPropellant_is())/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
+	                    		  actuatorSet.getPrimaryISP_is()+" "+
+	                    		  controlCommandSet.getMomentumRCS_X_cmd()+" "+
+	                    		  controlCommandSet.getMomentumRCS_Y_cmd()+" "+
+	                    		  controlCommandSet.getMomentumRCS_Z_cmd()+" "+
+	                    		  actuatorSet.getMomentumRCS_X_is()+" "+
+	                    		  actuatorSet.getMomentumRCS_Y_is()+" "+
+	                    		  actuatorSet.getMomentumRCS_Z_is()+" "+
+	                    		  actuatorSet.getRcsPropellant_is()/spaceShip.getPropulsion().getSecondaryPropellant()*100+" "+
 	                    		  CTRL_TM_Error+" "+
 	                    		  CTRL_TVC_Error+" "+
-	                    		  CTRL_Time+" "+
 	                    		  (PI-y[4]-Thrust_Deviation)+" "+
-	                    		  Thrust_Deviation+" "+
+	                    		  Thrust_Deviation_dot*rad2deg+" "+
 	                    		  forceMomentumSet.getF_Thrust_B()[0][0]+" "+
 	                    		  forceMomentumSet.getF_Thrust_B()[1][0]+" "+
 	                    		  forceMomentumSet.getF_Thrust_B()[2][0]+" "+
 	                    		  vel_inertFrame+" "+
 	                    		  fpa_inertFrame+" "+
 	                    		  azimuth_inertFrame+" "+
-	                    		  fpa_dot*rad2deg+" "+
-	                    		  Thrust_Deviation_dot*rad2deg+" "+
 	                    		  ((boolean) engine_loss_indicator ? 1 : 0)+" "+
-	                    		  V_NED_ECEF_cartesian[0]+ " " + 
-	                    		  V_NED_ECEF_cartesian[1] + " " + 
-	                    		  V_NED_ECEF_cartesian[2] + " " + 
-	                    		  q_vector[0][0]+" "+
-	                    		  q_vector[1][0]+" "+
-	                    		  q_vector[2][0]+" "+
-	                    		  q_vector[3][0]+" "+
-	                    		  actuatorSet.getPrimaryISP_is()+" "+
+	                    		  
+
 	                    		  forceMomentumSet.getF_total_NED()[0][0]+" "+
 	                    		  forceMomentumSet.getF_total_NED()[1][0]+" "+
 	                    		  forceMomentumSet.getF_total_NED()[2][0]+" "+
-	                    		  gravitySet.getG_NED()[0][0]+" "+
-	                    		  gravitySet.getG_NED()[1][0]+" "+
-	                    		  gravitySet.getG_NED()[2][0]+" "+
-	                    		  Math.sqrt(gravitySet.getG_NED()[0][0]*gravitySet.getG_NED()[0][0] + gravitySet.getG_NED()[1][0]*gravitySet.getG_NED()[1][0] + gravitySet.getG_NED()[2][0]*gravitySet.getG_NED()[2][0])+" "+
 	                    		  forceMomentumSet.getF_Aero_A()[0][0]+" "+
 	                    		  forceMomentumSet.getF_Aero_A()[1][0]+" "+
 	                    		  forceMomentumSet.getF_Aero_A()[2][0]+" "+
@@ -777,6 +772,13 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  r_ECEF_cartesian[0]+" "+
 	                    		  r_ECEF_cartesian[1]+" "+
 	                    		  r_ECEF_cartesian[2]+" "+
+	                    		  V_NED_ECEF_cartesian[0]+ " " + 
+	                    		  V_NED_ECEF_cartesian[1] + " " + 
+	                    		  V_NED_ECEF_cartesian[2] + " " + 
+	                    		  q_vector[0][0]+" "+
+	                    		  q_vector[1][0]+" "+
+	                    		  q_vector[2][0]+" "+
+	                    		  q_vector[3][0]+" "+
 	                    		  AngularRate[0][0]+" "+
 	                    		  AngularRate[1][0]+" "+
 	                    		  AngularRate[2][0]+" "+
@@ -785,8 +787,8 @@ public class Simulation implements FirstOrderDifferentialEquations {
 	                    		  forceMomentumSet.getM_total_NED()[2][0]+" "+
 	                    		  EulerAngle[0][0]+" "+
 	                    		  EulerAngle[1][0]+" "+
-	                    		  EulerAngle[2][0]+" "+
-	                    		  aerodynamicSet.getAngleOfAttack()+" "
+	                    		  EulerAngle[2][0]+" "
+
 	                    		  );
 	                }
 	              

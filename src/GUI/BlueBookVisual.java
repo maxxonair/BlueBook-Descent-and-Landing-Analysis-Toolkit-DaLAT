@@ -202,6 +202,7 @@ public class BlueBookVisual implements  ActionListener {
    	
     static DecimalFormat decf 		  = new DecimalFormat("#.#");
     static DecimalFormat decQuarternion =  new DecimalFormat("#.########");
+    static DecimalFormat decAngularRate =  new DecimalFormat("##.####");
     static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
     static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
     static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
@@ -240,69 +241,66 @@ public class BlueBookVisual implements  ActionListener {
     										  "Altitude ref. Landing [m]", 
     										  "Altidue ref. mean [m]",
     										  "Radius [m]",
-    										  "Velocity NED/ECEF [m/s]", 
-    										  "Flight Path angle NED/ECEF [deg]", 
-    										  "Local Azimuth NED/ECEF [deg]", 
+    										  "Velocity (ref. ECEF) [m/s]", 
+    										  "Flight Path inclination angle [deg]", 
+    										  "Flight Path azimuth angle [deg]", 
     										  "Density [kg/m3]", 
-    										  "Drag Force [N]", 
-    										  "Lift Force [N]",
-    										  "Side Force [N]", 
-    										  "Gravitational Acc. -radial [m/s]", 
-    										  "Gravitational acc. -north/south [m/s]",
-    										  "Gravitational acc. - average [m/s]", 
     										  "Static temperature [K]", 
     										  "Mach [-]",
     										  "Heat capacity ratio", 
     										  "Gas constant", 
-    										  "Static pressure [Pa]", 
-    										  "Cd [-]", 
-    										  "Cl [-]", 
-    										  "Bank angle [deg]", 
-    										  "Flowzone [-]",
+    										  "Static pressure [Pa]",
     										  "Dynamic Pressure [Pa]",
-    										  "Parachute Cd [-]",
-    										  "Cdm [-]",
+    										  "Flowzone [-]",
+    										  "Aerodynamic Drag Coefficient Cd [-]", 
+    										  "Aerodynamic Lift Coefficient Cl [-]",
+    										  "Aerodynamic Sideslip Coefficient Cy [-]",
+    										  "Aerodynamic Drag Force [N]", 
+    										  "Aerodynamic Lift Force [N]",
+    										  "Aerodynamic Side Force [N]", 
+    										  "Aerodynamic angle of attack [deg]", 
+    										  "Aerodynamic bank angle [deg]", 
+    										  "Gx NED [m/s2]",
+    										  "Gy NED [m/s2]",
+    										  "Gz NED [m/s2]",
+    										  "G total [m/s2]", 
+    										  "Accumulated Delta-v [m/s]",
     										  "SC Mass [kg]",
     										  "Normalized Deceleartion [-]",
     										  "Total Engergy [J]",
-    										  "Thrust CMD [%]",
-    										  "Tank filling level [%]",
-    										  "Thrust Force [N]", 
-    										  "Thrust to mass [N/kg]",
     										  "Velocity horizontal [m/s]",
     										  "Velocity vertical [m/s]",
-    										  "Accumulated Delta-v [m/s]",
-    										  "Active Sequence ID [-]",
     										  "Groundtrack [km]",
+    										  "Active Sequence ID [-]",
+    										  "CNTRL Time [s]",    										  
+    										  "Parachute Cd [-]",
+    										  "Cdm [-]",
+    										  "Primary Thrust CMD [%]",
+    										  "Primary Thrust Force [N]", 
+    										  "Primary Thrust to mass [N/kg]",
+    										  "Primary Tank filling level [%]",
+    										  "Primary ISP [s]",
+    										  "RCS Momentum X CMD [-]",
+    										  "RCS Momentum Y CMD [-]",
+    										  "RCS Momentum Z CMD [-]",
+    										  "RCS Momentum X [Nm]",
+    										  "RCS Momentum Y [Nm]",
+    										  "RCS Momentum Z [Nm]",
+    										  "RCS tank filling level [%]",
     										  "TM CNTRL Error [m/s]",
     										  "TVC CNTRL Error [deg]",
-    										  "CNTRL Time [s]",
     										  "Thrust Elevation [deg]",
-    										  "Thrust Deviation [deg]",
+    										  "Thrust Elevation Angel Rate [deg/s]",
     										  "Thrust Force x B [N]",
     										  "Thrust Force y B [N]",
     										  "Thrust Force z B [N]",
     										  "Vel NED/ECI [m/s]",
     										  "FPA NED/ECI [m/s",
-    										  "AZ  NED/ECI [m/s]",
-    										  "FPA_dot ",
-    										  "Thrust Elevation Angel Change [deg/s]",
+    										  "AZI  NED/ECI [m/s]",
     										  "Engine Loss Indicator [true/false]", 
-    										  "Velocity u NED/ECEF [m/s]",
-    										  "Velocity v NED/ECEF [m/s]",
-    										  "Velocity w NED/ECEF [m/s]",
-    										  "Quaternion q1",
-    										  "Quaternion q2",
-    										  "Quaternion q3",
-    										  "Quaternion q4",
-    										  "Main engine ISP [s]",
     										  "Fx NED [N]",
     										  "Fy NED [N]",
     										  "Fz NED [N]",
-    										  "Gx NED [m/s2]",
-    										  "Gy NED [m/s2]",
-    										  "Gz NED [m/s2]",
-    										  "G total [m/s2]",
     										  "Force Aero x NED [N]",
     										  "Force Aero y NED [N]",
     										  "Force Aero z NED [N]",
@@ -315,6 +313,13 @@ public class BlueBookVisual implements  ActionListener {
     										  "Position x ECEF [m]",
     										  "Position y ECEF [m]",
     										  "Position z ECEF [m]",
+    										  "Velocity u NED/ECEF [m/s]",
+    										  "Velocity v NED/ECEF [m/s]",
+    										  "Velocity w NED/ECEF [m/s]",
+    										  "Quaternion q1",
+    										  "Quaternion q2",
+    										  "Quaternion q3",
+    										  "Quaternion q4",
     										  "Angular Rate x B2NED [deg/s]",
     										  "Angular Rate y B2NED [deg/s]",
     										  "Angular Rate z B2NED [deg/s]",
@@ -323,8 +328,7 @@ public class BlueBookVisual implements  ActionListener {
     										  "Angular Momentum z B [Nm]",
     										  "X Roll Angle - Euler Phi [deg]",
     										  "Y Pitch Angle - Euler Theta [deg]",
-    										  "Z Yaw Angle - Euler Psi [deg]",
-    										  "Angle of Attack [deg]"
+    										  "Z Yaw Angle - Euler Psi [deg]"
     										  };
     
     public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF",
@@ -482,6 +486,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JSlider sliderEuler2;
     public static JSlider sliderEuler3;
     public static JPanel SpaceShip3DControlPanel ;
+    public static List<Object> SpaceShip3DControlPanelContent = new ArrayList<Object>();
     public static TimerTask task_Update;
     public static JTextField ConstantCD_INPUT;
     
@@ -737,7 +742,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         menu_BlueBook.addSeparator();
         JMenuItem menuItem_Exit = new JMenuItem("Exit                  "); 
-        menuItem_Exit.setForeground(labelColor);
+        menuItem_Exit.setForeground(Color.BLACK);
         menuItem_Exit.setFont(small_font);
         menuItem_Exit.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -755,7 +760,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_SIM.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_SIM);
         JMenuItem menuItem_SimSettings = new JMenuItem("Run Simulation                 "); 
-        menuItem_SimSettings.setForeground(labelColor);
+        menuItem_SimSettings.setForeground(Color.BLACK);
         menuItem_SimSettings.setFont(small_font);
         menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_R, ActionEvent.ALT_MASK));
@@ -782,7 +787,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       				} 
                     } });
         JMenuItem menuItem_Update = new JMenuItem("Update Data                 "); 
-        menuItem_Update.setForeground(labelColor);
+        menuItem_Update.setForeground(Color.BLACK);
         menuItem_Update.setFont(small_font);
         menuItem_Update.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_U, ActionEvent.ALT_MASK));
@@ -924,7 +929,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     } });
         
         JMenuItem menuItem_RealTime = new JMenuItem("Open Real Time Simulation Demo     "); 
-        menuItem_RealTime.setForeground(labelColor);
+        menuItem_RealTime.setForeground(Color.BLACK);
         menuItem_RealTime.setFont(small_font);
         menuItem_RealTime.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -1281,6 +1286,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        	
 	    SpaceShip3DControlPanel = new JPanel();
 		SpaceShip3DControlPanel.setLayout(new BorderLayout());
+		SpaceShip3DControlPanel.setBackground(backgroundColor);
+		SpaceShip3DControlPanel.setForeground(labelColor);
 		//SpaceShip3DControlPanel.setSize(450, 400);
 		SplitPane_Page1_Charts_vertical.add(SpaceShip3DControlPanel, JSplitPane.RIGHT);
 		
@@ -1587,18 +1594,34 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         	  public void actionPerformed(ActionEvent e) {
         		  System.out.println("Action: RUN SIMULATION");
 				try {
-					String line;
-					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
-					InputStream in = proc.getInputStream();
-					InputStream err = proc.getErrorStream();
-					System.out.println(in);
-					System.out.println(err);
-					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-					  while ((line = input.readLine()) != null) {
-					    System.out.println(line);
-					  }
+			        Platform.runLater(new Runnable() {
+			            @Override
+			            public void run() {
+							String line;
+			            		Process proc = null;
+							try {
+								proc = Runtime.getRuntime().exec("java -jar SIM.jar");
+							} catch (IOException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+						InputStream in = proc.getInputStream(); 
+						InputStream err = proc.getErrorStream();
+						System.out.println(in);
+						System.out.println(err);
+						 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+						  try {
+							while ((line = input.readLine()) != null) {
+							    System.out.println(line);
+							  }
+						} catch (IOException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+			            }
+			        });
 					  //UPDATE_Page01();
-				} catch ( IOException e1) {
+				} catch ( Exception e1) {
 					// TODO Auto-generated catch block
 					e1.printStackTrace();
 					System.out.println("Error:  " + e1);
@@ -2524,6 +2547,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       SELECT_VelocityCartesian.setLocation(5, uy_p41 + 25 * 15);
       SELECT_VelocityCartesian.setSize(220,20);
       SELECT_VelocityCartesian.setBackground(backgroundColor);
+      SELECT_VelocityCartesian.setForeground(labelColor);
       SELECT_VelocityCartesian.setFont(small_font);
      ButtonGroup bg_velocity=new ButtonGroup();    
      bg_velocity.add(SELECT_VelocitySpherical);
@@ -2575,6 +2599,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
      SELECT_6DOF.setLocation(5, uy_p41 + 25 * 18);
      SELECT_6DOF.setSize(220,20);
      SELECT_6DOF.setBackground(backgroundColor);
+     SELECT_6DOF.setForeground(labelColor);
      SELECT_6DOF.setFont(small_font);
     ButtonGroup bg_dof=new ButtonGroup();    
     bg_dof.add(SELECT_3DOF);
@@ -2651,13 +2676,15 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    }; 
 	
 	    MODEL_EventHandler.setColumnIdentifiers(COLUMS_EventHandler);
+	    
 	    TABLE_EventHandler.setModel(MODEL_EventHandler);
-	    TABLE_EventHandler.setBackground(backgroundColor);
 	    int tablewidth_EventHandler = 385;
 	    int tableheight_EventHandler = 230;
 	  // ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
 	    TABLE_EventHandler.setBackground(backgroundColor);
 	    TABLE_EventHandler.setForeground(labelColor);
+	    TABLE_EventHandler.getTableHeader().setBackground(backgroundColor);
+	    TABLE_EventHandler.getTableHeader().setForeground(labelColor);
 	    TABLE_EventHandler.setSize(tablewidth_EventHandler, tableheight_EventHandler);
 	    TABLE_EventHandler.getTableHeader().setReorderingAllowed(false);
 	    TABLE_EventHandler.setRowHeight(35);
@@ -2687,7 +2714,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    TABLE_EventHandler_ScrollPane.setBackground(backgroundColor);
 	    TABLE_EventHandler_ScrollPane.setSize(tablewidth_EventHandler,tableheight_EventHandler);
 	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 24 );
-	    TABLE_EventHandler_ScrollPane.setOpaque(false);
+	    //TABLE_EventHandler_ScrollPane.setOpaque(false);
 	    IntegratorInputPanel.add(TABLE_EventHandler_ScrollPane);
 	    
     	ROW_EventHandler[0] = ""+EventHandler_Type[0];
@@ -2699,7 +2726,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 23);
         BUTTON_AddEventHandler.setSize(65,20);
         BUTTON_AddEventHandler.setEnabled(true);
-        BUTTON_AddEventHandler.setForeground(labelColor);
+        BUTTON_AddEventHandler.setForeground(Color.BLACK);
         BUTTON_AddEventHandler.setBackground(backgroundColor);
         BUTTON_AddEventHandler.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
@@ -2714,7 +2741,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 23);
         BUTTON_DeleteEventHandler.setSize(75,20);
         BUTTON_DeleteEventHandler.setEnabled(true);
-        BUTTON_DeleteEventHandler.setForeground(labelColor);
+        BUTTON_DeleteEventHandler.setForeground(Color.BLACK);
         BUTTON_DeleteEventHandler.setBackground(backgroundColor);
         BUTTON_DeleteEventHandler.addActionListener(new ActionListener() { 
         	  public void actionPerformed(ActionEvent e) { 
@@ -5281,11 +5308,11 @@ try {
 			    		SELECT_6DOF.setSelected(true);
 			    	}
 		    } else if (k==15) {
-		    	INPUT_AngularRate_X.setText(decf.format(InitialState));
+		    	INPUT_AngularRate_X.setText(decAngularRate.format(InitialState));
 		    } else if (k==16) {
-		    	INPUT_AngularRate_Y.setText(decf.format(InitialState));
+		    	INPUT_AngularRate_Y.setText(decAngularRate.format(InitialState));
 		    } else if (k==17) {
-		    	INPUT_AngularRate_Z.setText(decf.format(InitialState));
+		    	INPUT_AngularRate_Z.setText(decAngularRate.format(InitialState));
 		    }
         	k++;
         }
@@ -5487,13 +5514,13 @@ fstream.close();
 							    MODEL_RAWData.addRow(tokens);
 							    
 						     	RealTimeResultSet resultElement = new RealTimeResultSet();
-							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[78])},
-			 							   						{Double.parseDouble((String) tokens[79])},
-			 							   						{Double.parseDouble((String) tokens[80])}};
+							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[75])},
+			 							   						{Double.parseDouble((String) tokens[76])},
+			 							   						{Double.parseDouble((String) tokens[77])}};
 							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Float.parseFloat((String) tokens[87]));
-							    resultElement.setEulerY(Float.parseFloat((String) tokens[88]));
-							    resultElement.setEulerZ(Float.parseFloat((String) tokens[89]));
+							    resultElement.setEulerX(Float.parseFloat((String) tokens[91]));
+							    resultElement.setEulerY(Float.parseFloat((String) tokens[92]));
+							    resultElement.setEulerZ(Float.parseFloat((String) tokens[93]));
 							    resultElement.setVelocity(Float.parseFloat((String) tokens[6]) );
 							    resultElement.setTime(Float.parseFloat((String) tokens[0]));
 							    resultElement.setFpa(Float.parseFloat((String) tokens[7]));
@@ -6739,8 +6766,11 @@ public static void EXPORT_Case() {
 	public static void createTargetView3D() {
         final JFXPanel fxPanel = new JFXPanel();
         //fxPanel.setSize(400,350);
+  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
+  		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
+  	    }
         SpaceShip3DControlPanel.add(fxPanel,BorderLayout.CENTER);
-
+        SpaceShip3DControlPanelContent.add(fxPanel);
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -6752,8 +6782,8 @@ public static void EXPORT_Case() {
 	
 	public static void refreshTargetView3D() {
 		//SplitPane_Page1_Charts_vertical.remo
-        final JFXPanel fxPanel = new JFXPanel();
-        SpaceShip3DControlPanel.add(fxPanel,BorderLayout.CENTER);
+       // final JFXPanel fxPanel = new JFXPanel();
+       // SpaceShip3DControlPanel.add(fxPanel,BorderLayout.CENTER);
         SplitPane_Page1_Charts_vertical.setDividerLocation(500);
         Platform.runLater(new Runnable() {
             @Override
@@ -6832,8 +6862,11 @@ public static void EXPORT_Case() {
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
 	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
 	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelVisible(true);
-	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelBackgroundPaint(labelColor);
+	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.RED, new BasicStroke(0f));
 	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelVisible(true);
+	     
+	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelBackgroundPaint(labelColor);
 	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Altitude_Velocity);
 	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Altitude_Velocity);
 		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.addChartMouseListener(new ChartMouseListener() {
@@ -6921,8 +6954,10 @@ public static void EXPORT_Case() {
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
 	    xCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(0, Color.GRAY, new BasicStroke(0f));
 	    xCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
+	    xCrosshair_DashBoardOverviewChart_Time_FPA.setLabelBackgroundPaint(labelColor);
 	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(0, Color.GRAY, new BasicStroke(0f));
 	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
+	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelBackgroundPaint(labelColor);
 	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Time_FPA);
 	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
 		ChartPanel_DashBoardOverviewChart_Time_FPA.addChartMouseListener(new ChartMouseListener() {
@@ -6948,7 +6983,11 @@ public static void EXPORT_Case() {
 	    ChartPanel_DashBoardOverviewChart_Time_FPA.addOverlay(crosshairOverlay);
 	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Time_FPA,BorderLayout.PAGE_START);
 	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
+ 	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
+ 		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
+ 	    }
 	   SpaceShip3DControlPanel.add(ChartPanel_DashBoardOverviewChart_Time_FPA, BorderLayout.PAGE_START);
+	   SpaceShip3DControlPanelContent.add(ChartPanel_DashBoardOverviewChart_Time_FPA);
 	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
 		//jPanel4.validate();	
 		CHART_P1_DashBoardOverviewChart_fd = false;
@@ -7022,10 +7061,13 @@ public static void EXPORT_Case() {
 	        }
 	});
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+	    xCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.RED, new BasicStroke(0f));
 	    xCH_DashboardFlexibleChart.setLabelVisible(true);
+	    xCH_DashboardFlexibleChart.setLabelPaint(labelColor);
+	    xCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
 	    yCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
 	    yCH_DashboardFlexibleChart.setLabelVisible(true);
+	    yCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
 	    crosshairOverlay.addDomainCrosshair(xCH_DashboardFlexibleChart);
 	    crosshairOverlay.addRangeCrosshair(yCH_DashboardFlexibleChart);
 	    ChartPanel_DashBoardFlexibleChart.addOverlay(crosshairOverlay);
