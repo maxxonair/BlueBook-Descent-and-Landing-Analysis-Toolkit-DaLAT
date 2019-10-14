@@ -860,7 +860,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuBar.add(menu_PostProcessing);
         
         JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Custom Data Plot               "); 
-        menuItem_CreateLocalElevation.setForeground(labelColor);
+        menuItem_CreateLocalElevation.setForeground(Color.BLACK);
         menuItem_CreateLocalElevation.setFont(small_font);
         menuItem_CreateLocalElevation.setAccelerator(KeyStroke.getKeyStroke(
                 KeyEvent.VK_S, ActionEvent.ALT_MASK));
@@ -872,7 +872,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                		    public void run() {
                		    		// Create new window here 
                		    try {
-               		    			CreateCustomChart.main();
+               		    	String[] args = {""};
+               		    			CreateCustomChart.main(args);
 							} catch (IOException e) {
 								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
 								e.printStackTrace();
@@ -1044,7 +1045,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menu_Window.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_Window);
         
-        JMenu menu_ThirdWindow = new JMenu("Set third window content");
+        JMenu menu_ThirdWindow = new JMenu("Set window 2 content");
         //menu_ThirdWindow.setForeground(labelColor);
         //menu_ThirdWindow.setBackground(backgroundColor);
         menu_ThirdWindow.setFont(small_font);
@@ -1079,6 +1080,31 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 							createTargetView3D();
 						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
 						thirdWindowIndx=1;
+                    	       
+                     } });
+         thirdWindow.add(menuItem);
+         menu_ThirdWindow.add(menuItem);
+         
+         menuItem = new JRadioButtonMenuItem("PostProcessing Area");
+        // menuItem.setForeground(labelColor);
+         menuItem.setFont(small_font);
+         menuItem.setSelected(true);
+         menuItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+
+							try {
+								JPanel Content = CreateCustomChart.createContentPane();
+							  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
+							   		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
+							   	    }
+							         SpaceShip3DControlPanel.add(Content,BorderLayout.CENTER);
+							         SpaceShip3DControlPanelContent.add(Content);
+							} catch (IOException e1) {
+								// TODO Auto-generated catch block
+								e1.printStackTrace();
+							}
+						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
+						thirdWindowIndx=2;
                     	       
                      } });
          thirdWindow.add(menuItem);
@@ -2713,6 +2739,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    TABLE_EventHandler_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
 	    TABLE_EventHandler_ScrollPane.setBackground(backgroundColor);
 	    TABLE_EventHandler_ScrollPane.setSize(tablewidth_EventHandler,tableheight_EventHandler);
+	    TABLE_EventHandler_ScrollPane.getViewport().setBackground(backgroundColor);
 	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 24 );
 	    //TABLE_EventHandler_ScrollPane.setOpaque(false);
 	    IntegratorInputPanel.add(TABLE_EventHandler_ScrollPane);
@@ -8094,6 +8121,15 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 			return resultSet;
 		}
 		
+		
+		public static Color getLabelColor() {
+			return labelColor;
+		}
+		public static Color getBackgroundColor() {
+			return backgroundColor;
+		}
+
+
 		public class BackgroundMenuBar extends JMenuBar {
 		    /**
 			 * 
@@ -8153,4 +8189,9 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 			    return this;
 			}  
 		}
+
+		public static String[] getAxis_Option_NR() {
+			return Axis_Option_NR;
+		}
+		
 }
