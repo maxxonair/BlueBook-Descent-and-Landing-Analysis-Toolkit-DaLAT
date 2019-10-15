@@ -23,7 +23,17 @@ This project is divided in three core modules:
 
 2) The GUI module (GUI): The GUI BlueBook_DaLAT.jar allows to perform pre- and postprocessing and visualise results. 
 
-3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations with user inputs. The VE is currently in development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
+![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage.png)
+
+![Github GUI2](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage2.png)
+
+The images show a quick preview of the user interface dashboard. The chart area on the right hand side is adjustable. The user can select from a variety of 2D charts and 3D content. Currently there are two 3D windows implemented. The first image shows the target body view in the upper right corner. This window also shows the computed trajectory and the respective position of the spacecraft on the trajectory that corresponds to the selected position on the graph in the lower left corner (Note this only works if time is selected as the x-value). The second 3D content (in the lower right corner) shows the attitude of the spacecraft with respect to the local North-East-Down system.
+
+The GUI is designed to simplify pre- and postprocessing work and allow to set up simulations from low to high levels of complexity in a streamlined manner and interpret the results quickly. 
+
+3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations (using the SIM module) with user inputs (pilot in the loop). The VE is currently in early development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
+
+![Github VisualEngine](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/VisualEngine.png)
 
 Note: 
 
@@ -33,6 +43,6 @@ To run the VisualEngine the program has to be compiled on the respective operati
 To set up the project in Eclipse the natives for the LWJGL jars have to be set accordingly. 
 Choose the project >> Properties >> Java Build Path >> select lwjgl.jar files >> double click natives > set path to Project/lib/natives/(select OS)
 
-Currently natives for macOS and Windows are part of the project. For additional ones see:
+Currently natives for macOS, Windows, Linux and solaris are part of the project (in the lib folder). For additional ones visit:
 http://legacy.lwjgl.org/download.php.html
 
