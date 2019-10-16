@@ -1,7 +1,8 @@
 package Model;
 
 import FlightElement.SpaceShip;
-import Sequence.Sequence;
+import Model.DataSets.ActuatorSet;
+import Model.DataSets.ControlCommandSet;
 import Simulator_main.CurrentDataSet;
 
 public class ActuatorModel {
@@ -24,10 +25,19 @@ public class ActuatorModel {
 		}
 		actuatorSet.setTVC_alpha(controlCommandSet.getTVC_alpha());
 		actuatorSet.setTVC_beta(controlCommandSet.getTVC_beta());
-		
+		if(!Double.isNaN(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX())) {
 		actuatorSet.setMomentumRCS_X_is(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
-		actuatorSet.setMomentumRCS_Y_is(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
-		actuatorSet.setMomentumRCS_Z_is(controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
+		} else {
+			actuatorSet.setMomentumRCS_X_is(0);	
+			System.out.println("ERROR: Roll control failed - reset RCS X");
+		}
+		if(!Double.isNaN(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY())) {
+		actuatorSet.setMomentumRCS_Y_is(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY());
+		} else {
+		actuatorSet.setMomentumRCS_Y_is(0);
+		System.out.println("ERROR: Pitch control failed - reset RCS Y");
+		}
+		actuatorSet.setMomentumRCS_Z_is(controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumZ());
 		return actuatorSet;
 	}
 

@@ -4,7 +4,9 @@ import static java.lang.Math.cos;
 import static java.lang.Math.sin;
 
 import FlightElement.SpaceShip;
-import Model.AtmosphereSet;
+import Model.DataSets.AerodynamicSet;
+import Model.DataSets.AtmosphereSet;
+import Model.DataSets.HypersonicSet;
 import Simulator_main.CurrentDataSet;
 import Simulator_main.IntegratorData;
 

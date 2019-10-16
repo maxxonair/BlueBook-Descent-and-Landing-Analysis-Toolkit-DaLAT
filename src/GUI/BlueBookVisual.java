@@ -331,9 +331,7 @@ public class BlueBookVisual implements  ActionListener {
     										  "Z Yaw Angle - Euler Psi [deg]"
     										  };
     
-    public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF",
-    										 "Ascent Module - 3 DoF",
-    										 "Ascent Module - 6 DoF"
+    public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF"
     };
     public static String[] LocalElevation_Resolution = { "4", 
 			  											 "16" , 
@@ -389,9 +387,10 @@ public static String[] SequenceENDType = {"Time [s]",
 public static String[] SequenceType = {"Coasting (No Thrust/ FC OFF)",
 									   "Continous Thrust (FC OFF)",
 									   "Controlled Thrust (FC ON)",
-									   "Constrained Thrust (FC OFF)",
-									   "Reference Angle Control (FC ON)",
-									   "Full TVC Reference Trajectory Control (FC ON)"
+									   "Controlled Pitch (FC ON) Thrust Full",
+									   "Controlled Bank (FC ON) Thrust Full",
+									   "",
+									   ""
 };
 public static String[] SequenceFC    = { ""};
 public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",

@@ -24,8 +24,16 @@ public class CurrentDataSet {
 	private double propellantLevelIsPrimary = 0 ; 
 	private double propellantLevelIsSecondary = 0;
 	
+	public  double[][] EulerAngle      = {{0},{0},{0}};
+	
 	
 
+	public  double[][] getEulerAngle() {
+		return EulerAngle;
+	}
+	public  void setEulerAngle(double[][] eulerAngle) {
+		EulerAngle = eulerAngle;
+	}
 	public double getPropellantLevelIsPrimary() {
 		return propellantLevelIsPrimary;
 	}

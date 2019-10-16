@@ -4,22 +4,26 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 
+import Controller.PID_01;
 import FlightElement.SpaceShip;
-import Model.ControlCommandSet;
 import Model.ControllerModel;
+import Model.DataSets.ControlCommandSet;
+import Model.DataSets.ErrorSet;
 import Simulator_main.CurrentDataSet;
 
 public class Sequence {
 	
-    public static double TTM_max = 5.0;
+
     public static boolean const_isFirst =true; 
     public static double const_tzer0=0;
     private static int activeSequence=0;
     public static boolean isFirstSequence=true;
     private static boolean Sequence_RES_closed=false;
     private static ControlCommandSet controlCommandSet = new ControlCommandSet();
+    private static double pitchMinusOne=0;
+    private static double rollMinusOne=0;
     
-	public static ControlCommandSet getControlCommandSet(CurrentDataSet currentDataSet, SpaceShip spaceShip) {
+	public static ControlCommandSet getControlCommandSet(CurrentDataSet currentDataSet, SpaceShip spaceShip, ErrorSet errorSet) {
 		ControlCommandSet controlCommandSet = new ControlCommandSet();
 		//-------------------------------------------------------------------------------------------------------------
 		//		 WriteOut conditions at sequence to sequence hand-over: 
@@ -29,10 +33,10 @@ public class Sequence {
 			int trigger_type = currentDataSet.getSEQUENCE_DATA_main().get(activeSequence).get_trigger_end_type();
 			double trigger_value =currentDataSet.getSEQUENCE_DATA_main().get(activeSequence).get_trigger_end_value();
 			if(isFirstSequence) {
-				ControllerModel.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
-				ControllerModel.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
-				ControllerModel.setCntr_t_init(currentDataSet.gettIS());
-				ControllerModel.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
+				controlCommandSet.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
+				controlCommandSet.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
+				controlCommandSet.setCntr_t_init(currentDataSet.gettIS());
+				controlCommandSet.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
 				SequenceWriteOut_addRow(activeSequence,currentDataSet.getSEQUENCE_DATA_main());
 				isFirstSequence=false; 
 			}
@@ -40,27 +44,27 @@ public class Sequence {
 				//System.out.println(Flight_CTRL_ThrustMagnitude.get(activeSequence).get_CTRL_TIME());
 					if(ControllerModel.getFlight_CTRL_ThrustMagnitude().get(activeSequence).get_CTRL_TIME()>trigger_value) {
 						activeSequence++;
-						ControllerModel.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
-						ControllerModel.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
-						ControllerModel.setCntr_t_init(currentDataSet.gettIS());
-						ControllerModel.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
+						controlCommandSet.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
+						controlCommandSet.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
+						controlCommandSet.setCntr_t_init(currentDataSet.gettIS());
+						controlCommandSet.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
 						SequenceWriteOut_addRow(activeSequence,currentDataSet.getSEQUENCE_DATA_main());
 					}
 			} else if (trigger_type==1) {
 					if( (currentDataSet.getxIS()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation())<trigger_value) {
 						activeSequence++;
-						ControllerModel.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
-						ControllerModel.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
-						ControllerModel.setCntr_t_init(currentDataSet.gettIS());
-						ControllerModel.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
+						controlCommandSet.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
+						controlCommandSet.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
+						controlCommandSet.setCntr_t_init(currentDataSet.gettIS());
+						controlCommandSet.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
 						SequenceWriteOut_addRow(activeSequence,currentDataSet.getSEQUENCE_DATA_main());}
 			} else if (trigger_type==2) {
 					if( currentDataSet.getV_NED_ECEF_spherical()[0]<trigger_value) {
 						activeSequence++;
-						ControllerModel.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
-						ControllerModel.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
-						ControllerModel.setCntr_t_init(currentDataSet.gettIS());
-						ControllerModel.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
+						controlCommandSet.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
+						controlCommandSet.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
+						controlCommandSet.setCntr_t_init(currentDataSet.gettIS());
+						controlCommandSet.setCntr_fpa_init(currentDataSet.getV_NED_ECEF_spherical()[1]);
 						SequenceWriteOut_addRow(activeSequence,currentDataSet.getSEQUENCE_DATA_main());}
      		}
     	}
@@ -68,10 +72,10 @@ public class Sequence {
     	//                   Last Sequence reached -> write SEQU.res
     	//-------------------------------------------------------------------------------------------------------------
     	if(activeSequence ==  (currentDataSet.getSEQUENCE_DATA_main().size()-1) && Sequence_RES_closed==false){
-			ControllerModel.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
-			ControllerModel.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
-			ControllerModel.setCntr_t_init(currentDataSet.gettIS());
-			ControllerModel.setCntr_fpa_init(currentDataSet.getxIS()[4]);
+    		controlCommandSet.setCntr_v_init(currentDataSet.getV_NED_ECEF_spherical()[0]);
+    		controlCommandSet.setCntr_h_init(currentDataSet.getR_ECEF_spherical()[2]-currentDataSet.getRM()-currentDataSet.getLocalElevation());
+    		controlCommandSet.setCntr_t_init(currentDataSet.gettIS());
+    		controlCommandSet.setCntr_fpa_init(currentDataSet.getxIS()[4]);
     		//System.out.println("Write: Sequence result file ");
     		try {
             String resultpath="";
@@ -87,15 +91,27 @@ public class Sequence {
     	}
     	//System.out.println("Altitude "+decf.format((x[2]-rm))+" | " + activeSequence);
     	int sequence_type_TM = currentDataSet.getSEQUENCE_DATA_main().get(activeSequence).get_sequence_type();
-//System.out.println(sequence_type_TM);
-    ControllerModel.getFlight_CTRL_ThrustMagnitude().get(activeSequence).Update_Flight_CTRL(true, currentDataSet.getxIS(), currentDataSet.gettIS(), spaceShip.getMass(), spaceShip.getPropulsion().getPrimaryPropellant(), 
-    		ControllerModel.getCntr_v_init(), ControllerModel.getCntr_h_init(), currentDataSet.gettIS(), currentDataSet.gettIS(), spaceShip.getPropulsion().getPrimaryThrustMax(), spaceShip.getPropulsion().getPrimaryThrustMin(), 
+//--------------------------------------------------------------------------------------------------------------- 
+// 						update flight controllers
+//--------------------------------------------------------------------------------------------------------------- 
+    ControllerModel.getFlight_CTRL_ThrustMagnitude().get(activeSequence).Update_Flight_CTRL(true, currentDataSet.getxIS(), 
+    		currentDataSet.gettIS(), spaceShip.getMass(), spaceShip.getPropulsion().getPrimaryPropellant(), 
+    		controlCommandSet.getCntr_v_init(), controlCommandSet.getCntr_h_init(), currentDataSet.gettIS(), currentDataSet.gettIS(), 
+    		spaceShip.getPropulsion().getPrimaryThrustMax(), spaceShip.getPropulsion().getPrimaryThrustMin(), 
     		sequence_type_TM, currentDataSet.getValDt());
-    	//Flight_CTRL_PitchCntrl.get(activeSequence).Update_Flight_CTRL(true, x, t, cntr_t_init, cntr_fpa_init, SEQUENCE_DATA_main.get(activeSequence).get_TVC_ctrl_target_curve(), val_dt);	    	
-    	if(sequence_type_TM==3) {
-    		
+    
+    ControllerModel.getFlight_CTRL_PitchCntrl().get(activeSequence).Update_Flight_CTRL(true, currentDataSet,controlCommandSet.getCntr_v_init(), 
+    		controlCommandSet.getCntr_h_init(), 0,  pitchMinusOne,  controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax(),  
+    		errorSet.isPrimaryPropulsionTotalLoss());
+    
+    ControllerModel.getFlight_CTRL_RollCntrl().get(activeSequence).Update_Flight_CTRL(true, currentDataSet,controlCommandSet.getCntr_v_init(), 
+    		controlCommandSet.getCntr_h_init(), 0,  pitchMinusOne,  controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax(),  
+    		errorSet.isPrimaryPropulsionTotalLoss());
+    
+//--------------------------------------------------------------------------------------------------------------- 	
+    	if(sequence_type_TM==3) {		
 		    	//-------------------------------------------------------------------------------------------------------------	
-		    	//                          Flight Controller ON - Controlled Fight Sequence
+		    	//             Flight Controller ON - Controlled Fight Sequence THRUST Control
 		    	//-------------------------------------------------------------------------------------------------------------
 		    	controlCommandSet.setPrimaryThrustThrottleCmd(ControllerModel.getFlight_CTRL_ThrustMagnitude().get(activeSequence).get_ctrl_throttle_cmd());
 		    	
@@ -121,26 +137,40 @@ public class Sequence {
 	    		controlCommandSet.setPrimaryThrustThrottleCmd(0); 
 	    		
 	    		
-    	} else if (sequence_type_TM==4) { // Constrained continuous thrust 
+    	} else if (sequence_type_TM==4) { // Pitch Control
 		    	//-------------------------------------------------------------------------------------------------------------	
-		    	//            Open Slot
+		    	//            Flight Controller ON - PITCH control 
 		    	//-------------------------------------------------------------------------------------------------------------
-    		
-	    		//controlCommandSet.setPrimaryThrustThrottleCmd(actuatorSet.getPrimaryThrust_is()/spaceShip.getPropulsion().getPrimaryThrustMax()); 
-   
-    	
+    			pitchMinusOne = ControllerModel.getFlight_CTRL_PitchCntrl().get(activeSequence).get_maintain_horizontal_Pitch_cmd();    
+    			controlCommandSet.setMomentumRCS_Y_cmd(pitchMinusOne);
+    		    //	System.out.println(pitchMinusOne);
+    
     	} else if (sequence_type_TM==5) {
 		    	//-------------------------------------------------------------------------------------------------------------	
-		    	//            Open Slot
+		    	//           Flight Controller ON - Roll control
 		    	//-------------------------------------------------------------------------------------------------------------
-		   
-
-			//controlCommandSet.setPrimaryThrustThrottleCmd(actuatorSet.getPrimaryThrust_is()/spaceShip.getPropulsion().getPrimaryThrustMax());	
-   
+			/*
+    			double  CTRL_ERROR = currentDataSet.getEulerAngle()[0][0];
+			System.out.println(CTRL_ERROR+"|"+currentDataSet.getValDt());
+			double commandOut = PID_01.PID_001(CTRL_ERROR,currentDataSet.getValDt(), 0.1, 0.0001, 0.5, 1, -1);
+			System.out.println(commandOut);
+			if(!Double.isNaN(commandOut)) {
+				controlCommandSet.setMomentumRCS_X_cmd(-commandOut);	
+			} else {
+				controlCommandSet.setMomentumRCS_X_cmd(0);
+			}
+			*/
+    			double commandOut = ControllerModel.getFlight_CTRL_RollCntrl().get(activeSequence).get_maintain_horizontal_Bank_cmd();
+			//System.out.println(commandOut);
+    			if(!Double.isNaN(commandOut)) {
+				controlCommandSet.setMomentumRCS_X_cmd(-commandOut);	
+			} else {
+				controlCommandSet.setMomentumRCS_X_cmd(0);
+			}
     	
     	} else { 
     		
-    		System.out.println("ERROR: Sequence type out of range");
+    		System.out.println("ERROR: Sequence type out of range: "+sequence_type_TM);
     		}
 	return controlCommandSet;
 	}
@@ -149,26 +179,18 @@ public class Sequence {
 		ControllerModel.getCTRL_steps().add(SEQUENCE_DATA_main.get(activeSequence).get_sequence_ID()+ " " + 
 			   SEQUENCE_DATA_main.get(activeSequence).get_sequence_type()+" "+
 		       SEQUENCE_DATA_main.get(activeSequence).get_sequence_controller_ID()+ " "+
-		       ControllerModel.getCntr_v_init()+" "+
-		       ControllerModel.getCntr_h_init()+" "+
-		       ControllerModel.getFlight_CTRL_ThrustMagnitude().get(activeSequence).get_ctrl_vel()+" "+
-		       ControllerModel.getFlight_CTRL_ThrustMagnitude().get(activeSequence).get_ctrl_alt()+" "+
+		       controlCommandSet.getCntr_v_init()+" "+
+		       controlCommandSet.getCntr_h_init()+" "+
+		       controlCommandSet.getCtrl_vel()+" "+
+		       controlCommandSet.getCtrl_alt()+" "+
 		       SEQUENCE_DATA_main.get(activeSequence).get_ctrl_target_curve()+" "+
 		       SEQUENCE_DATA_main.get(activeSequence).get_TVC_ctrl_target_curve()  +" "+
-		       ControllerModel.getCntr_fpa_init()+" "+
+		       controlCommandSet.getCntr_fpa_init()+" "+
 		       SEQUENCE_DATA_main.get(activeSequence).get_TVC_ctrl_target_time()+" "+
 		       SEQUENCE_DATA_main.get(activeSequence).get_TVC_ctrl_target_fpa()+" "
 	  );
     }
     
-
-	public static double getTTM_max() {
-		return TTM_max;
-	}
-
-	public static void setTTM_max(double tTM_max) {
-		TTM_max = tTM_max;
-	}
 
 	public static boolean isConst_isFirst() {
 		return const_isFirst;

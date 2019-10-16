@@ -16,18 +16,19 @@ import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
-import Model.AtmosphereSet;
-import Model.ControlCommandSet;
 import Model.ControllerModel;
 import Model.ForceModel;
-import Model.ForceMomentumSet;
 import Model.GravityModel;
-import Model.ActuatorSet;
 import Model.AtmosphereModel;
-import Model.GravitySet;
-import Model.MasterSet;
 import Model.atm_dataset;
-import Model.Aerodynamic.AerodynamicSet;
+import Model.DataSets.ActuatorSet;
+import Model.DataSets.AerodynamicSet;
+import Model.DataSets.AtmosphereSet;
+import Model.DataSets.ControlCommandSet;
+import Model.DataSets.ErrorSet;
+import Model.DataSets.ForceMomentumSet;
+import Model.DataSets.GravitySet;
+import Model.DataSets.MasterSet;
 import Sequence.Sequence;
 import Sequence.SequenceElement;
 import Toolbox.Mathbox;
@@ -261,6 +262,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	        public static ControlCommandSet controlCommandSet = new ControlCommandSet();
 	        public static ActuatorSet actuatorSet = new ActuatorSet();
 	        public static CurrentDataSet currentDataSet = new CurrentDataSet();
+	        public static ErrorSet errorSet = new ErrorSet();
 	        public static MasterSet masterSet = new MasterSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
@@ -366,7 +368,7 @@ public class RealTimeSimulation implements FirstOrderDifferentialEquations {
 	    	// 									    		 Force Model 
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-	    							 controlCommandSet, spaceShip, currentDataSet, integratorData, false);
+	    							 controlCommandSet, spaceShip, currentDataSet, integratorData, errorSet, false);
 	    	forceMomentumSet = masterSet.getForceMomentumSet();
 	    	gravitySet = masterSet.getGravitySet();
 	    	atmosphereSet = masterSet.getAtmosphereSet();
@@ -632,8 +634,8 @@ InertiaTensor = spaceShip.getInertiaTensorMatrix();
 
 q_vector      = spaceShip.getInitialQuarterions();
 
-ControllerModel.setCntr_h_init(integratorData.getInitRadius()-rm);
-ControllerModel.setCntr_v_init(integratorData.getInitVelocity());
+controlCommandSet.setCntr_h_init(integratorData.getInitRadius()-rm);
+controlCommandSet.setCntr_v_init(integratorData.getInitVelocity());
 
 actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
  M0 			  = spaceShip.getMass()  ; 
@@ -732,7 +734,7 @@ currentDataSet.settIS(0);
 currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
 currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
 currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
-ControllerModel.initializeFlightController(spaceShip, currentDataSet);		
+ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);		
 //----------------------------------------------------------------------------------------------
   			RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	        StepHandler WriteOut = new StepHandler() {

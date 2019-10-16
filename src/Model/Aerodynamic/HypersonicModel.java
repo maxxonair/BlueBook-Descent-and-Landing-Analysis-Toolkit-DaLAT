@@ -1,7 +1,9 @@
 package Model.Aerodynamic;
 
 import FlightElement.SpaceShip;
-import Model.AtmosphereSet;
+import Model.DataSets.AerodynamicSet;
+import Model.DataSets.AtmosphereSet;
+import Model.DataSets.HypersonicSet;
 import Toolbox.Mathbox;
 
 public class HypersonicModel {

@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import Simulator_main.CurrentDataSet;
 import Toolbox.Mathbox;
 
 public class Flight_CTRL_PitchCntrl{
@@ -47,7 +48,7 @@ public class Flight_CTRL_PitchCntrl{
 	private double elevation; 				// Lodacl elevation [m] 
 	private double global_time; 			// Global ascent time [s]
 		
-	private double tvc_cmd;					// thrust vector angle cmd			[rad] 
+	private double pitchCMD;					// thrust vector angle cmd			[rad] 
 	
 	private double  tzero; 					// Sequence Time 						[s]
 	private boolean tswitch =true;          // Time switch to start controller time [s]
@@ -63,7 +64,8 @@ public class Flight_CTRL_PitchCntrl{
 	public static String ControllerReferenceFile = "/INP/TVC_reference.csv";
 	//-----------------------------------------------------------------------------
 	public Flight_CTRL_PitchCntrl(int ctrl_ID, boolean ctrl_on, double ctr_init_x, double ctr_init_y, double ctr_end_x, double ctr_end_y, double rm, double elevation) {
-		this.ctrl_ID	  = ctrl_ID;
+
+		this.ctrl_ID	      = ctrl_ID;
 		this.ctrl_on 	  = ctrl_on;
 		this.ctr_init_x   = ctr_init_x;
 		this.ctr_init_y   = ctr_init_y;
@@ -71,6 +73,7 @@ public class Flight_CTRL_PitchCntrl{
 		this.ctr_end_y    = ctr_end_y; 
 		this.rm			  = rm; 
 		this.elevation    = elevation; 
+
 		if (ctrl_ID==0) {
 			this.ctrl_on=false;
 		} else {
@@ -83,6 +86,7 @@ public class Flight_CTRL_PitchCntrl{
 		 this.D_GAIN  = readINP[3];
 		 this.cmd_min = readINP[4];
 		 this.cmd_max = readINP[5];
+
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			System.out.println(e);
@@ -187,19 +191,19 @@ public class Flight_CTRL_PitchCntrl{
      		     CTRL_ERROR = y_is - y_ideal ;
      		    // Select Controller and compute output command: 
      		     if (ctrl_type==0){
-     		    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
+     		    	 pitchCMD = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
      		     } else if (ctrl_type==1){
-     		    	 tvc_cmd = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
+     		    	 pitchCMD = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
      		     }
      		    // Check if controller provides usable values: 
-     		   if(Double.isNaN(tvc_cmd)) {System.out.println("Controller Error: Returned NaN.-> Controller OFF"); tvc_cmd=0;}
+     		   if(Double.isNaN(pitchCMD)) {System.out.println("Controller Error: Returned NaN.-> Controller OFF"); pitchCMD=0;}
      		//   if(1400<alt && alt<1500) {System.out.println(alt+" | "+target_velocity + " | "+ CTRL_ERROR + " | "+ throttle_cmd);}
 
      		   }
         	} else {
-        		tvc_cmd = 0; // Controller off 
+        		pitchCMD = 0; // Controller off 
         	}
-    		return (-tvc_cmd);
+    		return (-pitchCMD);
     	}
 	public double get_Pitchover_cmd() {
 		if(ctrl_on) {
@@ -208,26 +212,28 @@ public class Flight_CTRL_PitchCntrl{
 			if(engine_lost&&turn_rate_rad<0) {turn_rate_rad=turn_rate_rad*2;}
 			if(turn_rate_rad<0) {
 				if(tvc_switch){tvcwas = tvc_was;tvc_switch=false;}} else {tvcwas=0;}
-				if(engine_lost) {tvc_cmd=4.5*deg2rad;} else {tvc_cmd= tvcwas + turn_rate_rad*CTRL_TIME;}
+				if(engine_lost) {pitchCMD=4.5*deg2rad;} else {pitchCMD= tvcwas + turn_rate_rad*CTRL_TIME;}
 			double fpa_is = y_is*rad2deg;
 			if(fpa_is>180) {
-				tvc_cmd = -5*deg2rad; 
+				pitchCMD = -5*deg2rad; 
 			}
 		}
-		return tvc_cmd; 
+		return pitchCMD; 
 	}
 	
-	public double get_maintain_horizontal_TVC_cmd() {
+	public double get_maintain_horizontal_Pitch_cmd() {
 		double fpa_is = y_is*rad2deg;
-	     CTRL_ERROR = 180 - fpa_is ;
+	     CTRL_ERROR =  fpa_is ;
 	     
 	     //if(Math.abs(Math.abs(fpa_is)-180)>0.5){
 	     if (ctrl_type==0){
-	    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
+	    	 pitchCMD = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min);
+	    	 //System.out.println(CTRL_ERROR+" | "+ctrl_dt+" | "+ cmd_max+" | "+cmd_min +" | "+pitchCMD);
 	     } else if (ctrl_type==1){
-	    	 tvc_cmd = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
+	    	 pitchCMD = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
 	     }
-		return tvc_cmd; 
+	     //System.out.println(pitchCMD);
+		return pitchCMD; 
 	}
 	
 	public double get_FULL_reference_TVC_cmd() {
@@ -262,11 +268,11 @@ public class Flight_CTRL_PitchCntrl{
 		//-------------------------------------------------------------------------------------------------
 	     CTRL_ERROR = fpa_ideal_rad - fpa_is_rad ;
 	     if (ctrl_type==0){
-	    	 tvc_cmd = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
+	    	 pitchCMD = PID_01.PID_001(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN, cmd_max, cmd_min)*deg2rad;
 	     } else if (ctrl_type==1){
-	    	 tvc_cmd = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
+	    	 pitchCMD = PID_01.PID_002(CTRL_ERROR,ctrl_dt, P_GAIN, I_GAIN, D_GAIN);
 	     }
-		return tvc_cmd; 
+		return pitchCMD; 
 	}
 
 	public int get_ctrl_curve() {
@@ -281,20 +287,23 @@ public class Flight_CTRL_PitchCntrl{
 	public double get_CTRL_TIME() {
 		return CTRL_TIME; 
 	}
-	public void Update_Flight_CTRL(boolean ctrl_on, double[] x, double t, double ctr_init_x, double ctr_init_y, int ctrl_curve, double ctrl_dt, double tvc_was, double CTRL_Thrust, boolean engine_loss_detected) {
+	public void Update_Flight_CTRL(boolean ctrl_on, CurrentDataSet currentDataSet, double ctr_init_x, double ctr_init_y, int ctrl_curve, double tvc_was, double CTRL_Thrust, boolean engine_loss_detected) {
 		this.ctrl_on 	  = ctrl_on;
 		if(this.ctrl_ID==0) {this.ctrl_on=false;} // overwrite : controller off with no FC set
-		this.y_is 		  = x[4];
-		this.altitude_is  = x[2]-rm-elevation;
+		this.y_is 		  = currentDataSet.getEulerAngle()[1][0];
+		this.altitude_is  = currentDataSet.getxIS()[2]-rm-elevation;
         this.ctr_init_x   = ctr_init_x;
         this.ctr_init_y   = ctr_init_y;
 		this.ctrl_curve   = ctrl_curve; 
-		this.ctrl_dt	  = ctrl_dt; 
+		this.ctrl_dt	      = currentDataSet.getValDt(); 
 		this.tvc_was      = tvc_was; 
-		this.global_time  = t; 
-		if(t!=-1&&tswitch) {tzero=t;tswitch=false;}
-		CTRL_TIME = t-tzero; 
+		this.global_time  = currentDataSet.gettIS(); 
+		
+		if(tswitch) {this.tzero=global_time;tswitch=false;}
+		this.CTRL_TIME = global_time-tzero; 
+		
 		this.x_is 		  = CTRL_TIME;
+		
 		if(this.CTRL_Thrust>CTRL_Thrust&&engine_loss_detected==false) {engine_lost=true; t_engine_lost=global_time;	} 
 		else if(engine_loss_detected) {engine_lost=true;}
 		this.CTRL_Thrust=CTRL_Thrust;
@@ -326,4 +335,10 @@ public class Flight_CTRL_PitchCntrl{
 	public double get_t_engine_lost() {
 		return t_engine_lost; 
 	}
+
+	public double getPitchCMD() {
+		return pitchCMD;
+	}
+
+	
 }

@@ -34,7 +34,8 @@ public class PID_01{
 		D_CMD = D_GAIN*(ERROR-ERROR_Tminus)/deltat;} else {
 		D_CMD = 0;
 		}
-		ACT_CMD=P_CMD + I_CMD + D_CMD;
+		ACT_CMD = P_CMD + I_CMD + D_CMD;
+
 		if (ACT_CMD>cmd_max)       {
 			ACT_CMD=cmd_max;				// Upper limit
 		} else if(ACT_CMD<cmd_min) {

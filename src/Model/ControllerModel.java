@@ -4,44 +4,46 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Controller.Flight_CTRL_PitchCntrl;
+import Controller.Flight_CTRL_RollCntrl;
 import Controller.Flight_CTRL_ThrustMagnitude;
 import FlightElement.SpaceShip;
+import Model.DataSets.ControlCommandSet;
 import Simulator_main.CurrentDataSet;
 
 public class ControllerModel {
 	
-    private static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
-    private static double ctrl_alt = 0 ; 			// Active Flight Controller target altitude [m]
-    private static  double cntr_h_init=0;
-    private static double cntr_v_init=0;
-    private static double cntr_t_init=0;
-    private static double cntr_fpa_init=0;
     private static List<Flight_CTRL_ThrustMagnitude> Flight_CTRL_ThrustMagnitude = new ArrayList<Flight_CTRL_ThrustMagnitude>(); 
     private static List<Flight_CTRL_PitchCntrl> Flight_CTRL_PitchCntrl 			 = new ArrayList<Flight_CTRL_PitchCntrl>(); 
+    private static List<Flight_CTRL_RollCntrl> Flight_CTRL_RollCntrl 			 = new ArrayList<Flight_CTRL_RollCntrl>(); 
     private static ArrayList<String> CTRL_steps 								 = new ArrayList<String>();
     public static double cmd_min = 0;
     private static int ctrl_curve;
     
     
-	public static void initializeFlightController(SpaceShip spaceShip, CurrentDataSet currentDataSet) {
+	public static void initializeFlightController(SpaceShip spaceShip, CurrentDataSet currentDataSet, ControlCommandSet controlCommandSet) {
 		for(int i=0;i<currentDataSet.getSEQUENCE_DATA_main().size();i++) {
 			int ctrl_ID = currentDataSet.getSEQUENCE_DATA_main().get(i).get_sequence_controller_ID()-1;
-			 ctrl_vel = currentDataSet.getSEQUENCE_DATA_main().get(i).get_ctrl_target_vel();
-			 ctrl_alt = currentDataSet.getSEQUENCE_DATA_main().get(i).get_ctrl_target_alt();
-			 double ctrl_fpa = currentDataSet.getSEQUENCE_DATA_main().get(i).get_TVC_ctrl_target_fpa();
+			 controlCommandSet.setCtrl_vel(currentDataSet.getSEQUENCE_DATA_main().get(i).get_ctrl_target_vel());
+			 controlCommandSet.setCtrl_alt(currentDataSet.getSEQUENCE_DATA_main().get(i).get_ctrl_target_alt());
+			 double ctrl_fpa  = currentDataSet.getSEQUENCE_DATA_main().get(i).get_TVC_ctrl_target_fpa();
 			 double ctrl_tend = currentDataSet.getSEQUENCE_DATA_main().get(i).get_TVC_ctrl_target_time();
-			 int TVC_ctrl_ID = currentDataSet.getSEQUENCE_DATA_main().get(i).get_sequence_TVCController_ID()-1;
+			 int TVC_ctrl_ID  = currentDataSet.getSEQUENCE_DATA_main().get(i).get_sequence_TVCController_ID();
 			// -> Create new Flight controller 
 			 Flight_CTRL_ThrustMagnitude NewFlightController_ThrustMagnitude = new Flight_CTRL_ThrustMagnitude(ctrl_ID, 
-					 true, currentDataSet.getxIS(), 0,  spaceShip.getPropulsion().getPrimaryPropellant(),  cntr_v_init,  cntr_h_init,  -1,   ctrl_vel, ctrl_alt,  
+					 true, currentDataSet.getxIS(), 0,  spaceShip.getPropulsion().getPrimaryPropellant(),  controlCommandSet.getCntr_v_init(),  
+					 controlCommandSet.getCntr_h_init(),  -1,   controlCommandSet.getCtrl_vel(), controlCommandSet.getCtrl_alt(),  
 					 spaceShip.getPropulsion().getPrimaryThrustMax(),  
 					 spaceShip.getPropulsion().getPrimaryThrustMin(),  0,  0,  ctrl_curve,  
 					 currentDataSet.getValDt(),0,0,0,0,0, currentDataSet.getRM(), currentDataSet.getLocalElevation());
 			UPDATE_FlightController_ThrustMagnitude(NewFlightController_ThrustMagnitude);
-			
+
 			Flight_CTRL_PitchCntrl NewFlightController_PitchCntrl = new Flight_CTRL_PitchCntrl( TVC_ctrl_ID, 
 					true, -1, 0, ctrl_tend, ctrl_fpa, currentDataSet.getRM() , currentDataSet.getLocalElevation());
 			UPDATE_FlightController_PitchControl(NewFlightController_PitchCntrl);
+			
+			Flight_CTRL_RollCntrl NewFlightController_RollCntrl = new Flight_CTRL_RollCntrl( TVC_ctrl_ID, 
+					true, -1, 0, ctrl_tend, ctrl_fpa, currentDataSet.getRM() , currentDataSet.getLocalElevation());
+			UPDATE_FlightController_RollControl(NewFlightController_RollCntrl);
 		}	
 	}
 	
@@ -53,55 +55,19 @@ public class ControllerModel {
 		   if (Flight_CTRL_PitchCntrl.size()==0){ Flight_CTRL_PitchCntrl.add(NewElement); 
 		   } else {Flight_CTRL_PitchCntrl.add(NewElement); } 
 	   }
+	public static void UPDATE_FlightController_RollControl(Flight_CTRL_RollCntrl NewElement){	   
+		   if (Flight_CTRL_RollCntrl.size()==0){ Flight_CTRL_RollCntrl.add(NewElement); 
+		   } else {Flight_CTRL_RollCntrl.add(NewElement); } 
+	   }
 
-public static double getCtrl_vel() {
-	return ctrl_vel;
-}
 
-public static void setCtrl_vel(double ctrl_vel) {
-	ControllerModel.ctrl_vel = ctrl_vel;
-}
+public static List<Flight_CTRL_RollCntrl> getFlight_CTRL_RollCntrl() {
+		return Flight_CTRL_RollCntrl;
+	}
 
-public static double getCtrl_alt() {
-	return ctrl_alt;
-}
-
-public static void setCtrl_alt(double ctrl_alt) {
-	ControllerModel.ctrl_alt = ctrl_alt;
-}
-
-public static double getCntr_h_init() {
-	return cntr_h_init;
-}
-
-public static void setCntr_h_init(double cntr_h_init) {
-	ControllerModel.cntr_h_init = cntr_h_init;
-}
-
-public static double getCntr_v_init() {
-	return cntr_v_init;
-}
-
-public static void setCntr_v_init(double cntr_v_init) {
-	ControllerModel.cntr_v_init = cntr_v_init;
-}
-
-public static double getCntr_t_init() {
-	return cntr_t_init;
-}
-
-public static void setCntr_t_init(double cntr_t_init) {
-	ControllerModel.cntr_t_init = cntr_t_init;
-}
-
-public static double getCntr_fpa_init() {
-	return cntr_fpa_init;
-}
-
-public static void setCntr_fpa_init(double cntr_fpa_init) {
-	ControllerModel.cntr_fpa_init = cntr_fpa_init;
-}
-
+	public static void setFlight_CTRL_RollCntrl(List<Flight_CTRL_RollCntrl> flight_CTRL_RollCntrl) {
+		Flight_CTRL_RollCntrl = flight_CTRL_RollCntrl;
+	}
 
 public static List<Flight_CTRL_ThrustMagnitude> getFlight_CTRL_ThrustMagnitude() {
 	return Flight_CTRL_ThrustMagnitude;

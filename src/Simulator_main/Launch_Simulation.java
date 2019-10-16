@@ -6,7 +6,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import FlightElement.SpaceShip;
-import Simulator_main.Simulation;
+import Simulator_main.SimulationCore;
 import Toolbox.ReadInput;
 
 public class Launch_Simulation {
@@ -39,7 +39,7 @@ public class Launch_Simulation {
 	//-----------------------------------------------------------------------------------------------------------------------------
 	//												Compile Integrator inputs from files:
 	//-----------------------------------------------------------------------------------------------------------------------------
-	    	double rm = Simulation.DATA_MAIN[(int) inputOut[9]][0];
+	    	double rm = SimulationCore.DATA_MAIN[(int) inputOut[9]][0];
 	    	List<StopCondition> STOP_Handler = ReadInput.readEventHandler( rm, inputOut[11]) ;
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//--------------------------------------------------------------------------------------
@@ -56,6 +56,8 @@ public class Launch_Simulation {
 	    	spaceShip.getPropulsion().setPrimaryPropellant(propRead[1]);
 	    	spaceShip.getPropulsion().setPrimaryThrustMax(propRead[2]);
 	    	spaceShip.getPropulsion().setPrimaryThrustMin(propRead[3]);
+	    	spaceShip.getPropulsion().setRCSMomentumX(50);
+	    	spaceShip.getPropulsion().setRCSMomentumY(50);
 	    	if((int) propRead[4]==1) {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
 	    		spaceShip.getPropulsion().setPrimaryISPMin(propRead[5]);
@@ -90,7 +92,7 @@ public class Launch_Simulation {
 	    		//												6 Degree of Freedom - Universal module
 	    		//-----------------------------------------------------------------------------------------------------------------------------
 	    		System.out.println("Simulator set and running");
-	    		Simulation.launchIntegrator(
+	    		SimulationCore.launchIntegrator(
 	    												    integratorData,
 	    												    ReadInput.readSequence(),	   // Sequence data set	LIST			     [-]
 														ReadInput.readErrorFile(),	   // Error file to model partial system failres [-] 

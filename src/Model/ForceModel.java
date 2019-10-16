@@ -2,7 +2,14 @@ package Model;
 
 import FlightElement.SpaceShip;
 import Model.Aerodynamic.AerodynamicModel;
-import Model.Aerodynamic.AerodynamicSet;
+import Model.DataSets.ActuatorSet;
+import Model.DataSets.AerodynamicSet;
+import Model.DataSets.AtmosphereSet;
+import Model.DataSets.ControlCommandSet;
+import Model.DataSets.ErrorSet;
+import Model.DataSets.ForceMomentumSet;
+import Model.DataSets.GravitySet;
+import Model.DataSets.MasterSet;
 import Sequence.Sequence;
 import Simulator_main.CurrentDataSet;
 import Simulator_main.IntegratorData;
@@ -12,7 +19,8 @@ public class ForceModel {
 		
 	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, 
 										  AerodynamicSet aerodynamicSet, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, 
-										  SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, boolean isAutoPilot) {
+										  SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, 
+										  ErrorSet errorSet, boolean isAutoPilot) {
 		  double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic frame [N]
 		  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame 		   [N]
 		  double[][] F_Thrust_B    = {{0},{0},{0}};						// Thrust Force in body fixed system     			   [N]
@@ -64,7 +72,7 @@ public class ForceModel {
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
 	if(isAutoPilot) {
-			controlCommandSet = Sequence.getControlCommandSet(currentDataSet, spaceShip);
+			controlCommandSet = Sequence.getControlCommandSet(currentDataSet, spaceShip, errorSet);
 	}
     actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet);
     
@@ -82,6 +90,7 @@ public class ForceModel {
 	   	M_Thrust_B[2][0] = actuatorSet.getMomentumRCS_Z_is();
 	   	
 	   	M_total_B = M_Thrust_B;
+	   	//System.out.println(actuatorSet.getMomentumRCS_Y_is());
 	   	
 	   	forceMomentumSet.setF_Thrust_B(F_Thrust_B);
 	   	forceMomentumSet.setM_Thrust_B(M_Thrust_B);
