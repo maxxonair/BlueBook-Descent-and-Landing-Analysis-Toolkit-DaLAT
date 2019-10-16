@@ -274,7 +274,7 @@ public class BlueBookVisual implements  ActionListener {
     										  "Active Sequence ID [-]",
     										  "CNTRL Time [s]",    										  
     										  "Parachute Cd [-]",
-    										  "Cdm [-]",
+    										  "Drag Force Parachute [N]",
     										  "Primary Thrust CMD [%]",
     										  "Primary Thrust Force [N]", 
     										  "Primary Thrust to mass [N/kg]",
@@ -385,12 +385,12 @@ public static String[] SequenceENDType = {"Time [s]",
 										  "FPA ref. Horizon [deg]"
 };
 public static String[] SequenceType = {"Coasting (No Thrust/ FC OFF)",
-									   "Continous Thrust (FC OFF)",
+									   "Constant Thrust (FC OFF)",
 									   "Controlled Thrust (FC ON)",
-									   "Controlled Pitch (FC ON) Thrust Full",
-									   "Controlled Bank (FC ON) Thrust Full",
-									   "",
-									   ""
+									   "Controlled Pitch (FC ON) RCS Y",
+									   "Controlled Bank (FC ON) RCS X",
+									   "Parachute Deployment",
+									   "Parachute Eject"
 };
 public static String[] SequenceFC    = { ""};
 public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
@@ -6685,9 +6685,9 @@ public static void EXPORT_Case() {
 		           double t = Double.parseDouble(tokens[0]);
 		           double fpa = Double.parseDouble(tokens[7])*rad2deg;
 		           
-		           double t_sequence = Double.parseDouble(tokens[41]);
+		           double t_sequence = Double.parseDouble(tokens[42]);
 		           
-		           int active_sequence = Integer.parseInt(tokens[38]);
+		           int active_sequence = Integer.parseInt(tokens[36]);
 		           double xx=0;
 		           double fpa_cmd = 0;
 		           if(AscentDescent_SwitchChooser.getSelectedIndex()==0) {
@@ -6695,9 +6695,9 @@ public static void EXPORT_Case() {
 		           } else {
 		           INDICATOR_VTOUCHDOWN.setText("-");   
 		           }
-		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[37])));
-		           INDICATOR_PROPPERC.setText(""+(decf.format(M0-Double.parseDouble(tokens[28])))); 
-		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[32])));
+		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[29])));
+		           INDICATOR_PROPPERC.setText("0"); 
+		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[43])));
 		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrlabelColorurve=0; double ctrl_fpa_init=0;int ctrl_TVC_curve=0;
 		           double ctrl_t_end=0; double ctrl_fpa_end =0;
 		           try {
@@ -6705,13 +6705,13 @@ public static void EXPORT_Case() {
 		            active_sequ_type  	 	 = Integer.parseInt(sequ_tokens[1]);
 		            ctrl_vinit 	 			 = Double.parseDouble(sequ_tokens[3]);
 		            ctrl_hinit 	 			 = Double.parseDouble(sequ_tokens[4]);
-		            ctrl_vel 	    	     = Double.parseDouble(sequ_tokens[5]);
+		            ctrl_vel 	    	         = Double.parseDouble(sequ_tokens[5]);
 		            ctrl_alt 		 		 = Double.parseDouble(sequ_tokens[6]);
-		            ctrlabelColorurve           	 = Integer.parseInt(sequ_tokens[7]);
+		            ctrlabelColorurve        = Integer.parseInt(sequ_tokens[7]);
 		            ctrl_TVC_curve		 	 = Integer.parseInt(sequ_tokens[8]);
 		            ctrl_fpa_init			 = Double.parseDouble(sequ_tokens[9]);
 		            ctrl_t_end				 = Double.parseDouble(sequ_tokens[10]);
-		            ctrl_fpa_end			 = Double.parseDouble(sequ_tokens[11]);
+		            ctrl_fpa_end			     = Double.parseDouble(sequ_tokens[11]);
 		            
 		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
 		        	   //System.out.println(eIOBE);
@@ -6783,7 +6783,7 @@ public static void EXPORT_Case() {
 	            	  //System.out.println(eNPE);
 	            	  System.out.println("Dashboard chart, Nullpointerexception");
 					}catch(IllegalArgumentException eIAE) {
-						System.out.println("Dashboard chart, illegal argument error");
+						System.out.println("Dashboard chart, illegal argument error. Check output column of sequence index variable.");
 						}
 					
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;

@@ -56,8 +56,11 @@ public class Launch_Simulation {
 	    	spaceShip.getPropulsion().setPrimaryPropellant(propRead[1]);
 	    	spaceShip.getPropulsion().setPrimaryThrustMax(propRead[2]);
 	    	spaceShip.getPropulsion().setPrimaryThrustMin(propRead[3]);
+	    	
 	    	spaceShip.getPropulsion().setRCSMomentumX(50);
 	    	spaceShip.getPropulsion().setRCSMomentumY(50);
+	    	spaceShip.getAeroElements().setParachuteSurfaceArea(110);
+	    	
 	    	if((int) propRead[4]==1) {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
 	    		spaceShip.getPropulsion().setPrimaryISPMin(propRead[5]);

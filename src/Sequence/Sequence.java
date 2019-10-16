@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.PrintWriter;
 import java.util.List;
 
-import Controller.PID_01;
 import FlightElement.SpaceShip;
 import Model.ControllerModel;
 import Model.DataSets.ControlCommandSet;
@@ -21,7 +20,7 @@ public class Sequence {
     private static boolean Sequence_RES_closed=false;
     private static ControlCommandSet controlCommandSet = new ControlCommandSet();
     private static double pitchMinusOne=0;
-    private static double rollMinusOne=0;
+  //  private static double rollMinusOne=0;
     
 	public static ControlCommandSet getControlCommandSet(CurrentDataSet currentDataSet, SpaceShip spaceShip, ErrorSet errorSet) {
 		ControlCommandSet controlCommandSet = new ControlCommandSet();
@@ -168,7 +167,19 @@ public class Sequence {
 				controlCommandSet.setMomentumRCS_X_cmd(0);
 			}
     	
-    	} else { 
+    	} else if ( sequence_type_TM==6){
+	    	//-------------------------------------------------------------------------------------------------------------	
+	    	//          		 Parachute Deployment
+	    	//-------------------------------------------------------------------------------------------------------------
+    		controlCommandSet.setParachuteDeployed(true);
+    		//System.out.println("parachute deployed");
+    	} else if ( sequence_type_TM==7){
+	    	//-------------------------------------------------------------------------------------------------------------	
+	    	//          		 Parachute Ejection
+	    	//-------------------------------------------------------------------------------------------------------------
+    		controlCommandSet.setParachuteEjectCMD(true);
+    		//System.out.println("parachute ejected");
+    	} else {
     		
     		System.out.println("ERROR: Sequence type out of range: "+sequence_type_TM);
     		}

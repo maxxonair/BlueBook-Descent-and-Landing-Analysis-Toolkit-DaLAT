@@ -17,7 +17,35 @@ public class ControlCommandSet {
     private  double cntr_v_init=0;
     private  double cntr_t_init=0;
     private  double cntr_fpa_init=0;
+    
+    private boolean ParachuteDeployedCMD=false; 
+    private boolean ParachuteEjectCMD=false;
 	
+    
+	public boolean isParachuteEjectCMD() {
+		return ParachuteEjectCMD;
+	}
+
+
+	public void setParachuteEjectCMD(boolean parachuteEjectCMD) {
+		ParachuteEjectCMD = parachuteEjectCMD;
+	}
+
+
+	public void setParachuteDeployedCMD(boolean parachuteDeployedCMD) {
+		ParachuteDeployedCMD = parachuteDeployedCMD;
+	}
+
+
+	public boolean isParachuteDeployedCMD() {
+		return ParachuteDeployedCMD;
+	}
+
+
+	public void setParachuteDeployed(boolean parachuteDeployed) {
+		ParachuteDeployedCMD = parachuteDeployed;
+	}
+
 
 	public double getCtrl_vel() {
 		return ctrl_vel;

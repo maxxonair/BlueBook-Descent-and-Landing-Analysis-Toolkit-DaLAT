@@ -16,7 +16,24 @@ public class AerodynamicSet {
     public   double LiftCoefficient=0;
     public   double SideForceCoefficient=0;
     
+    public double DragCoefficientParachute=0;
+    public double DragForceParachute=0;
     
+    
+    
+    
+	public double getDragCoefficientParachute() {
+		return DragCoefficientParachute;
+	}
+	public void setDragCoefficientParachute(double dragCoefficientParachute) {
+		DragCoefficientParachute = dragCoefficientParachute;
+	}
+	public double getDragForceParachute() {
+		return DragForceParachute;
+	}
+	public void setDragForceParachute(double dragForceParachute) {
+		DragForceParachute = dragForceParachute;
+	}
 	public double getSideForceCoefficient() {
 		return SideForceCoefficient;
 	}

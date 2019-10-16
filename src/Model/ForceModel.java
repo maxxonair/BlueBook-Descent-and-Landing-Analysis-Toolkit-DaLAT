@@ -59,11 +59,12 @@ public class ForceModel {
     	// 									           Aerodynamic
     	//-------------------------------------------------------------------------------------------------------------------  
     	
-    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet, spaceShip, currentDataSet, integratorData);
+    	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet, spaceShip, currentDataSet, integratorData, 
+    														actuatorSet);
     	
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
-    	
-	   	F_Aero_A[0][0] = -  aerodynamicSet.getDragForce()  ;
+
+	   	F_Aero_A[0][0] = -  aerodynamicSet.getDragForce() - aerodynamicSet.getDragForceParachute() ;
 	   	F_Aero_A[1][0] =    aerodynamicSet.getSideForce()  ;
 	   	F_Aero_A[2][0] = -  aerodynamicSet.getLiftForce()  ;
 	   	

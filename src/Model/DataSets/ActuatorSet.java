@@ -21,8 +21,31 @@ public class ActuatorSet {
     
     public static double tvc_alpha_MAX = 15;
     public static double tvc_beta_MAX  = 15;
-     
     
+    private boolean ParachuteDeployed=false;
+    private boolean ParachuteEject=false;
+        
+    
+	public boolean isParachuteEject() {
+		return ParachuteEject;
+	}
+
+
+	public void setParachuteEject(boolean parachuteEject) {
+		ParachuteEject = parachuteEject;
+	}
+
+
+	public boolean isParachuteDeployed() {
+		return ParachuteDeployed;
+	}
+
+
+	public void setParachuteDeployed(boolean parachuteDeployed) {
+		ParachuteDeployed = parachuteDeployed;
+	}
+
+
 	public double getTVC_alpha() {
 		return TVC_alpha;
 	}

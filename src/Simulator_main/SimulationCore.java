@@ -733,8 +733,8 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 	                    		  (groundtrack/1000)+" "+
 	                    		  controlCommandSet.getSequenceID()+" "+
 	                    		  CTRL_Time+" "+
-	                    		  0+" "+
-	                    		  0+" "+
+	                    		  aerodynamicSet.getDragCoefficientParachute()+" "+
+	                    		  aerodynamicSet.getDragForceParachute()+" "+
 	                    		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
 	                    		  (forceMomentumSet.getThrustTotal())+" "+
 	                    		  (forceMomentumSet.getThrustTotal()/y[6])+" "+

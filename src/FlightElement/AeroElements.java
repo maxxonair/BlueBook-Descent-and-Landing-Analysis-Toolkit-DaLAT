@@ -2,8 +2,11 @@ package FlightElement;
 
 public class AeroElements {
 	
-	private double SurfaceArea;
-	private double heatshieldRadius;
+	private double SurfaceArea;				// Space Ship effective Surface area
+	private double heatshieldRadius;			// Heat shield radius (capsule design)
+	
+	
+	private double ParachuteSurfaceArea;
 	
 	
 
@@ -12,6 +15,18 @@ public class AeroElements {
 	}
 	
 	
+
+	public double getParachuteSurfaceArea() {
+		return ParachuteSurfaceArea;
+	}
+
+
+
+	public void setParachuteSurfaceArea(double parachuteSurfaceArea) {
+		ParachuteSurfaceArea = parachuteSurfaceArea;
+	}
+
+
 
 	public double getHeatshieldRadius() {
 		return heatshieldRadius;
