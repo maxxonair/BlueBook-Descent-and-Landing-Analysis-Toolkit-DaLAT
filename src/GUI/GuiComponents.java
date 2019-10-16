@@ -1,11 +1,24 @@
 package GUI;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Font;
+import java.awt.event.FocusEvent;
+import java.awt.event.FocusListener;
 import java.util.Hashtable;
+import java.util.List;
 
+import javax.swing.BorderFactory;
+import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JRadioButton;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
+
+import org.jfree.ui.HorizontalAlignment;
 
 
 
@@ -66,5 +79,35 @@ public class GuiComponents {
         
 		return slider;
 	}
+	
+	
+	static JPanel getdynamicList(JPanel targetPanel, String title, String[] bulletPointTitles ,
+								 List<JRadioButton> contentList) {
+		
+	      JLabel labelTitle = new JLabel(title);
+	      labelTitle.setLocation(3, 5 + 25 * 0  );
+	      labelTitle.setSize(190, 20);
+	      labelTitle.setBackground(BlueBookVisual.getBackgroundColor());
+	      labelTitle.setForeground(BlueBookVisual.getLabelColor());
+	      labelTitle.setFont(BlueBookVisual.getSmall_font());
+	      //labelTitle.setHorizontalAlignment(HorizontalAlignment.LEFT);
+	      targetPanel.add(labelTitle);
+ 
+	      ButtonGroup buttonGroup = new ButtonGroup();  
+		  for(int i=0;i<bulletPointTitles.length;i++) {
+			      JRadioButton bulletPoint = new JRadioButton(bulletPointTitles[i]);
+			      bulletPoint.setLocation(3, 30 + 25 * i );
+			      bulletPoint.setSize(190, 20);
+			      bulletPoint.setBackground(BlueBookVisual.getBackgroundColor());
+			      bulletPoint.setForeground(BlueBookVisual.getLabelColor());
+			      bulletPoint.setFont(BlueBookVisual.getSmall_font());
 
-}
+			      contentList.add(bulletPoint);
+			      targetPanel.add(bulletPoint);
+			      buttonGroup.add(bulletPoint);
+		  }
+		
+		return targetPanel;
+	}
+
+}	

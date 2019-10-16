@@ -4,6 +4,7 @@ import FlightElement.SpaceShip;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.HypersonicSet;
+import Simulator_main.CurrentDataSet;
 import Toolbox.Mathbox;
 
 public class HypersonicModel {
@@ -27,16 +28,19 @@ public class HypersonicModel {
     	aerodynamicSet.setAngleOfSideslip(0*deg2rad);
     	SpaceShip spaceShip = new SpaceShip();
     	spaceShip.getAeroElements().setHeatshieldRadius(2.3);
-    	HypersonicSet hypersonicSet = hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip);
+    	CurrentDataSet currentDataSet = new CurrentDataSet();
+    	currentDataSet.settIS(0);
+    	HypersonicSet hypersonicSet = hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip, currentDataSet);
     	System.out.println(hypersonicSet.getCL());
     	System.out.println(hypersonicSet.getCY());
     	System.out.println(hypersonicSet.getCD());
     	System.out.println(hypersonicSet.getLD());
     }
     
-	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip) {
+	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
 	int file=2;
 	int NewtonT=1;
+	System.out.println("Hypersonic model active | time: "+currentDataSet.gettIS()+" [s]");
 	HypersonicSet hypersonicSet = new HypersonicSet();
 	//--------------------------------------------------------------------------
 	//                          NewAero Code of 3D 

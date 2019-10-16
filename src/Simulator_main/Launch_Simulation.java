@@ -44,26 +44,25 @@ public class Launch_Simulation {
 	    	System.out.println("READ: "+STOP_Handler.size()+" EventHandler found.");
 	    	//--------------------------------------------------------------------------------------
 	    	System.out.println("READ: Create SpaceShip");
-	    	double[] propRead;
-	    	propRead = ReadInput.readPropulsionInput();
 	    	SpaceShip spaceShip = new SpaceShip();
 	    	spaceShip.setInertiaTensorMatrix(ReadInput.readInertia());
 	    	spaceShip.setMass(inputOut[6]);
 	    	spaceShip.setInitialQuarterions(ReadInput.readInitialAttitude());
 	    	spaceShip.getAeroElements().setSurfaceArea(ReadInput.readSurfaceArea(inputOut[6]));
 	    	spaceShip.getAeroElements().setHeatshieldRadius(ReadInput.readAeroFile()[2]);
-	    	spaceShip.getPropulsion().setPrimaryISPMax(propRead[0]);
-	    	spaceShip.getPropulsion().setPrimaryPropellant(propRead[1]);
-	    	spaceShip.getPropulsion().setPrimaryThrustMax(propRead[2]);
-	    	spaceShip.getPropulsion().setPrimaryThrustMin(propRead[3]);
+	    	spaceShip.getPropulsion().setPrimaryISPMax(ReadInput.readPropulsionInput()[0]);
+	    	spaceShip.getPropulsion().setPrimaryPropellant(ReadInput.readPropulsionInput()[1]);
+	    	spaceShip.getPropulsion().setPrimaryThrustMax(ReadInput.readPropulsionInput()[2]);
+	    	spaceShip.getPropulsion().setPrimaryThrustMin(ReadInput.readPropulsionInput()[3]);
 	    	
-	    	spaceShip.getPropulsion().setRCSMomentumX(50);
-	    	spaceShip.getPropulsion().setRCSMomentumY(50);
-	    	spaceShip.getAeroElements().setParachuteSurfaceArea(110);
+	    	spaceShip.getPropulsion().setRCSMomentumX(ReadInput.readPropulsionInput()[6]);
+	    	spaceShip.getPropulsion().setRCSMomentumY(ReadInput.readPropulsionInput()[7]);
+	    	spaceShip.getPropulsion().setRCSMomentumZ(ReadInput.readPropulsionInput()[8]);
+	    	spaceShip.getAeroElements().setParachuteSurfaceArea(ReadInput.readSCFile()[2]);
 	    	
-	    	if((int) propRead[4]==1) {
+	    	if((int) ReadInput.readPropulsionInput()[4]==1) {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
-	    		spaceShip.getPropulsion().setPrimaryISPMin(propRead[5]);
+	    		spaceShip.getPropulsion().setPrimaryISPMin(ReadInput.readPropulsionInput()[5]);
 	    	} else {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(false);
 	    	}
@@ -89,6 +88,8 @@ public class Launch_Simulation {
 	    		integratorData.setInitRotationalRateY(inputOut[16]);
 	    		integratorData.setInitRotationalRateZ(inputOut[17]);
 	    		integratorData.setAeroDragModel((int) ReadInput.readAeroFile()[0]); 
+	    		integratorData.setAeroParachuteModel((int) ReadInput.readAeroFile()[3]);
+	    		integratorData.setConstParachuteCd((double) ReadInput.readAeroFile()[4]);
 	    		//integratorData.setDegreeOfFreedom((int) inputOut[14]);
 	    		integratorData.setDegreeOfFreedom(6);
 	    		//-----------------------------------------------------------------------------------------------------------------------------

@@ -41,7 +41,29 @@ public class IntegratorData {
 	int IntegratorType;
 	
 	int AeroDragModel;
+	int AeroParachuteModel;
+	double ConstParachuteCd;
 	
+
+	public int getAeroParachuteModel() {
+		return AeroParachuteModel;
+	}
+
+
+	public void setAeroParachuteModel(int aeroParachuteModel) {
+		AeroParachuteModel = aeroParachuteModel;
+	}
+
+
+	public double getConstParachuteCd() {
+		return ConstParachuteCd;
+	}
+
+
+	public void setConstParachuteCd(double constParachuteCd) {
+		ConstParachuteCd = constParachuteCd;
+	}
+
 
 	FirstOrderIntegrator Integrator;
 	

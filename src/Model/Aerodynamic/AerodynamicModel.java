@@ -19,7 +19,7 @@ public class AerodynamicModel {
 	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet) {
 		double Lt = 1.6311e-9;
 		AerodynamicSet aerodynamicSet = new AerodynamicSet();
-		aerodynamicSet.setCdC(get_CdC(atmosphereSet,  aerodynamicSet,  spaceShip, integratorData));                           							// Continuum flow drag coefficient [-]
+		aerodynamicSet.setCdC(get_CdC(atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet));                           							// Continuum flow drag coefficient [-]
 		aerodynamicSet.setDragCoefficient(calcDrag(atmosphereSet, currentDataSet, aerodynamicSet, spaceShip, integratorData)); 		    	// Lift coefficient                [-]
 		aerodynamicSet.setFlowzone(calcFlowzone(currentDataSet.getV_NED_ECEF_spherical()[0], 
 				currentDataSet.getR_ECEF_spherical()[2], atmosphereSet.getStaticPressure(), atmosphereSet.getStaticTemperature(), Lt)); 
@@ -29,9 +29,9 @@ public class AerodynamicModel {
 		aerodynamicSet.setSideForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getC_SF() * sin( aerodynamicSet.getAerodynamicBankAngle() )); 	                  // Aerodynamic side Force 		   [N]
 		//----------------------------------------------------------------------------------------------
 		if(actuatorSet.isParachuteDeployed() && !actuatorSet.isParachuteEject()) {
+			//System.out.println(integratorData.getAeroParachuteModel()+"|"+integratorData.getConstParachuteCd());
 
-			boolean islinearParachuteDragModel=true;
-			if(islinearParachuteDragModel) {
+		  if(integratorData.getAeroParachuteModel()==1) {
 				double CdP = 0 ;
 				if(atmosphereSet.getMach()<1) {
 					CdP = 0.7;
@@ -41,14 +41,14 @@ public class AerodynamicModel {
 					if(CdP<0.2) {
 						CdP=0.2;
 					}
-					System.out.println(Ma+"|"+CdP);
+					//System.out.println(Ma+"|"+CdP);
 				}
 				aerodynamicSet.setDragCoefficientParachute(CdP);
 				// Linear model derived from data provided by: 
 				// I. Clarke, Supersonic Inflatable Aerodynamic Decelerators For Use On Future Robotic Missions to Mars 
-			} else {
-				aerodynamicSet.setDragCoefficientParachute(0.6);
-			}
+			} else if (integratorData.getAeroParachuteModel()==0) {
+				aerodynamicSet.setDragCoefficientParachute(integratorData.getConstParachuteCd());
+			} 
 			
 			aerodynamicSet.setDragForceParachute(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getParachuteSurfaceArea() * aerodynamicSet.getDragCoefficientParachute());
 		} else {
@@ -69,7 +69,7 @@ public class AerodynamicModel {
 	{
 	double CD = 0;
 		if(atmosphereSet.getDensity()!=0) {
-				double CDC=get_CdC( atmosphereSet,  aerodynamicSet,  spaceShip, integratorData);
+				double CDC=get_CdC( atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet);
 				//System.out.println(currentDataSet.gettIS()+"|"+CDC);
 				//double Lt = read_data(file_cship,2);
 				double Kn = kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * PI * sigma * sigma * atmosphereSet.getStaticPressure() * currentDataSet.getLt() );
@@ -108,13 +108,13 @@ public class AerodynamicModel {
 	return flowzone;
 	}
 
-	public static double get_CdC(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData){
+	public static double get_CdC(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData, CurrentDataSet currentDataSet){
 		double CdC = 1.55 ; 
 		
 		if(integratorData.getAeroDragModel()==0) {
 			 CdC = 1.55 ; 
 		} else if (integratorData.getAeroDragModel()==1) {
-		    	HypersonicSet hypersonicSet = HypersonicModel.hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip);
+		    	HypersonicSet hypersonicSet = HypersonicModel.hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip, currentDataSet);
 		    	CdC = hypersonicSet.getCD();
 		}
 		

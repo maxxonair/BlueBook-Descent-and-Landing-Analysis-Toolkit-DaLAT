@@ -465,6 +465,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static XYSeriesCollection result11_A3_3 = new XYSeriesCollection();
     public static XYSeriesCollection result11_A3_4 = new XYSeriesCollection();
     public static JCheckBox INPUT_ISPMODEL; 
+    public static JTextField INPUT_RCSX, INPUT_RCSY, INPUT_RCSZ;
     public static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG, INDICATOR_LAT,INDICATOR_LONG,INDICATOR_ALT,INDICATOR_VEL,INDICATOR_FPA,INDICATOR_AZI,INDICATOR_M0,INDICATOR_INTEGTIME, INDICATOR_TARGET;
     public static JTextField INPUT_LONG_Is,INPUT_LAT_Is,INPUT_ALT_Is,INPUT_VEL_Is,INPUT_FPA_Is,INPUT_AZI_Is;   // Input vector inertial Frame / spherical coordinates -> Is
     public static JTextField INPUT_LONG_Rs,INPUT_LAT_Rs,INPUT_ALT_Rs,INPUT_VEL_Rs,INPUT_FPA_Rs,INPUT_AZI_Rs;   // Input vector rotating Frame / spherical coordinates -> Rs
@@ -488,6 +489,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static List<Object> SpaceShip3DControlPanelContent = new ArrayList<Object>();
     public static TimerTask task_Update;
     public static JTextField ConstantCD_INPUT;
+    public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
     
     
     static DefaultTableModel MODEL_RAWData;
@@ -547,6 +549,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	
     	
     	public static List<Component> AeroLeftBarAdditionalComponents = new ArrayList<Component>();
+    	public static List<Component> AeroParachuteBarAdditionalComponents = new ArrayList<Component>();
+    	public static List<JRadioButton> ParachuteBulletPoints = new ArrayList<JRadioButton>();
      	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
 	//-----------------------------------------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -3410,6 +3414,29 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    AerodynamicLeftPanel.setSize(400, 600);
 			    AerodynamicLeftPanel.setLayout(null); 
 			    
+				JPanel AerodynamicDragPanel = new JPanel();
+				AerodynamicDragPanel.setLocation(0, 0);
+				AerodynamicDragPanel.setBackground(backgroundColor);
+				AerodynamicDragPanel.setForeground(labelColor);
+				AerodynamicDragPanel.setSize(400, 150);
+				AerodynamicDragPanel.setLayout(null); 
+				AerodynamicLeftPanel.add(AerodynamicDragPanel);
+				
+			    JPanel AerodynamicParachutePanel = new JPanel();
+				AerodynamicParachutePanel.setLocation(0, (int) AerodynamicDragPanel.getSize().getHeight());
+				AerodynamicParachutePanel.setBackground(backgroundColor);
+				AerodynamicParachutePanel.setForeground(labelColor);
+				AerodynamicParachutePanel.setSize(190, 300);
+				AerodynamicParachutePanel.setLayout(null); 
+				AerodynamicLeftPanel.add(AerodynamicParachutePanel);
+				
+			    JPanel AerodynamicParachuteOptionPanel = new JPanel();
+			    AerodynamicParachuteOptionPanel.setLocation(190, (int) AerodynamicDragPanel.getSize().getHeight());
+			    AerodynamicParachuteOptionPanel.setBackground(backgroundColor);
+			    AerodynamicParachuteOptionPanel.setForeground(labelColor);
+			    AerodynamicParachuteOptionPanel.setSize(210, 300);
+			    AerodynamicParachuteOptionPanel.setLayout(null); 
+				AerodynamicLeftPanel.add(AerodynamicParachuteOptionPanel);
 
 			      
 			      JPanel AerodynamicInputPanel = new JPanel();
@@ -3435,7 +3462,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      LABELdragModel.setForeground(labelColor);
 			      LABELdragModel.setFont(small_font);
 			      LABELdragModel.setHorizontalAlignment(0);
-			      AerodynamicLeftPanel.add(LABELdragModel);
+			      AerodynamicDragPanel.add(LABELdragModel);
 			      
 			      ButtonGroup dragModelGroup = new ButtonGroup();  
 				     
@@ -3453,10 +3480,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						//------------------------------------------------------------------------
 						int indx = getDragModelSetIndx();
 						for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
-							AerodynamicLeftPanel.remove(AeroLeftBarAdditionalComponents.get(i));
+							AerodynamicDragPanel.remove(AeroLeftBarAdditionalComponents.get(i));
 						}
-						AerodynamicLeftPanel.revalidate();
-						AerodynamicLeftPanel.repaint();
+						AerodynamicDragPanel.revalidate();
+						AerodynamicDragPanel.repaint();
 						if(indx==0) {	
 						      JLabel LABEL_CD = new JLabel("Set constant CD value [-]");
 						      LABEL_CD.setLocation(193, 5 + 25 * 1);
@@ -3465,7 +3492,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						      LABEL_CD.setForeground(labelColor);
 						      LABEL_CD.setFont(small_font);
 						      AeroLeftBarAdditionalComponents.add(LABEL_CD);
-						      AerodynamicLeftPanel.add(LABEL_CD);
+						      AerodynamicDragPanel.add(LABEL_CD);
 							
 					        ConstantCD_INPUT = new JTextField(""+readFromFile(Aero_file,1));
 					        ConstantCD_INPUT.setLocation(193, 5 + 25 * 2 );
@@ -3486,7 +3513,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						     });
 					        AeroLeftBarAdditionalComponents.add(ConstantCD_INPUT);
 					       // RB_INPUT.setBackground(Color.lightGray);
-					        AerodynamicLeftPanel.add(ConstantCD_INPUT);       
+					        AerodynamicDragPanel.add(ConstantCD_INPUT);       
 						}
 						//------------------------------------------------------------------------
 					}
@@ -3495,7 +3522,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      //aeroButton.setSelected(true);
 			      DragModelSet.add(aeroButton);
 			      //aeroButton.setHorizontalAlignment(0);
-			      AerodynamicLeftPanel.add(aeroButton);
+			      AerodynamicDragPanel.add(aeroButton);
 			      dragModelGroup.add(aeroButton);
 			       aeroButton = new JRadioButton("Hypersonic Panel Model");
 			      aeroButton.setLocation(3, 5 + 25 * 2  );
@@ -3512,10 +3539,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 							//------------------------------------------------------------------------
 							int indx = getDragModelSetIndx();
 							for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
-								AerodynamicLeftPanel.remove(AeroLeftBarAdditionalComponents.get(i));
+								AerodynamicDragPanel.remove(AeroLeftBarAdditionalComponents.get(i));
 							}
-							AerodynamicLeftPanel.revalidate();
-							AerodynamicLeftPanel.repaint();
+							AerodynamicDragPanel.revalidate();
+							AerodynamicDragPanel.repaint();
 							if(indx==1) {							
 							     INPUT_RB = new JTextField(10);
 							     double value = readFromFile(Aero_file, 2);
@@ -3535,7 +3562,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 									}
 							   	  
 							     });
-							     AerodynamicLeftPanel.add(INPUT_RB);
+							     AerodynamicDragPanel.add(INPUT_RB);
 						        
 							      JLabel LABEL_RB = new JLabel("Heat Shield Body Radius RB [m]");
 							      LABEL_RB.setLocation(193, 5 + 25 * 2);
@@ -3545,17 +3572,89 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 							      LABEL_RB.setForeground(labelColor);
 							      AeroLeftBarAdditionalComponents.add(LABEL_RB);
 						       // RB_INPUT.setBackground(Color.lightGray);
-						        AerodynamicLeftPanel.add(LABEL_RB);       
+							      AerodynamicDragPanel.add(LABEL_RB);       
 							}
 							//------------------------------------------------------------------------
 					}
 			    	  
 			      });
 			     // aeroButton.setHorizontalAlignment(0);
-			      AerodynamicLeftPanel.add(aeroButton);
+			      AerodynamicDragPanel.add(aeroButton);
 			      dragModelGroup.add(aeroButton);
 
 			      // System.out.println(dragModelGroup.getSelection().);
+			      String[] titles = {"Constant Drag Coefficient", "Mach model"};
+			      AerodynamicParachutePanel = GuiComponents.getdynamicList(AerodynamicParachutePanel, 
+			    		  "Set Parachute drag model" , titles, ParachuteBulletPoints);
+			      
+			      ParachuteBulletPoints.get(0).addChangeListener(new ChangeListener() {
+
+						@Override
+						public void stateChanged(ChangeEvent arg0) {
+							WRITE_AERO();
+							for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
+								AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
+							}
+							AerodynamicParachuteOptionPanel.revalidate();
+							AerodynamicParachuteOptionPanel.repaint();
+
+							      JLabel LABEL = new JLabel("Set constant CD value [-]");
+							      LABEL.setLocation(3, 30 + 25 * 0);
+							      LABEL.setSize(210, 20);
+							      LABEL.setBackground(backgroundColor);
+							      LABEL.setForeground(labelColor);
+							      LABEL.setFont(small_font);
+							      AeroParachuteBarAdditionalComponents.add(LABEL);
+							      AerodynamicParachuteOptionPanel.add(LABEL);
+							      
+							        ConstantParachuteCD_INPUT = new JTextField(""+readFromFile(Aero_file,4));
+							        ConstantParachuteCD_INPUT.setLocation(3, 5 + 25 * 2 );
+							        ConstantParachuteCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+							        ConstantParachuteCD_INPUT.setBorder(Moon_border);
+							        ConstantParachuteCD_INPUT.setSize(100, 20);
+							        ConstantParachuteCD_INPUT.setEditable(true);
+							        ConstantParachuteCD_INPUT.addFocusListener(new FocusListener() {
+
+										@Override
+										public void focusGained(FocusEvent arg0) { }
+
+										@Override
+										public void focusLost(FocusEvent e) {
+											WRITE_AERO();
+										}
+								   	  
+								     });
+							        AeroParachuteBarAdditionalComponents.add(ConstantParachuteCD_INPUT);
+							        AerodynamicParachuteOptionPanel.add(ConstantParachuteCD_INPUT); 
+							
+						}
+				    	  
+				      });
+			      ParachuteBulletPoints.get(1).addChangeListener(new ChangeListener() {
+
+						@Override
+						public void stateChanged(ChangeEvent arg0) {
+							WRITE_AERO();
+							for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
+								AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
+							}
+							AerodynamicParachuteOptionPanel.revalidate();
+							AerodynamicParachuteOptionPanel.repaint();
+
+							      JLabel LABEL = new JLabel("Select 1D model [-]");
+							      LABEL.setLocation(3, 30 + 25 * 1);
+							      LABEL.setSize(300, 20);
+							      LABEL.setBackground(backgroundColor);
+							      LABEL.setForeground(labelColor);
+							      LABEL.setFont(small_font);
+							      AeroParachuteBarAdditionalComponents.add(LABEL);
+							      AerodynamicParachuteOptionPanel.add(LABEL);
+							
+						}
+				    	  
+				      });
+			      
+			      ParachuteBulletPoints.get(1).setSelected(true);
 		//-----------------------------------------------------------------------------------------
 	    // ---->>>>>                       TAB: Spacecraft Definition
 		//-----------------------------------------------------------------------------------------			    
@@ -3576,9 +3675,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    		
 			      JPanel PropulsionInputPanel = new JPanel();
 			      PropulsionInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-			      PropulsionInputPanel.setSize(SidePanel_Width, 750);
+			      PropulsionInputPanel.setSize(SidePanel_Width, 350);
 			      PropulsionInputPanel.setBackground(backgroundColor);
-			      PropulsionInputPanel.setForeground(Color.white);
+			      PropulsionInputPanel.setForeground(labelColor);
 			      PropulsionInputPanel.setLayout(null);
 			
 				
@@ -4118,7 +4217,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 							INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
 							INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
 							INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
-
+							WriteInitialAttitude();
 							INPUT_Euler1.setText(""+sliderEuler1.getValue());
 						}
 				    	   
@@ -4140,7 +4239,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 									INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
 									INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
 									INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
-									
+									WriteInitialAttitude();
 									INPUT_Euler2.setText(""+sliderEuler2.getValue());
 								}
 						    	   
@@ -4162,7 +4261,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 									INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
 									INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
 									INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
-									
+									WriteInitialAttitude();
 									INPUT_Euler3.setText(""+sliderEuler3.getValue());
 								}
 						    	   
@@ -4329,6 +4428,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        	System.err.println("Error: SpaceShip Setup/Basic Setup - could not load image");
 		        }
 			  // Space intended for advanced integrator settings 
+	
+				
 		      JLabel LABEL_SpaceCraftSettings = new JLabel("Spacecraft Settings");
 		      LABEL_SpaceCraftSettings.setLocation(0, uy_p41 + 10 * 0  );
 		      LABEL_SpaceCraftSettings.setSize(400, 20);
@@ -4500,6 +4601,98 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		   	  
 		     });
 		     PropulsionInputPanel.add(INPUT_ISPMIN);
+		     
+		        
+				JPanel RCSPanel = new JPanel();
+				RCSPanel.setLocation(3, 300);
+				RCSPanel.setBackground(backgroundColor);
+				RCSPanel.setSize(400, 350);
+				RCSPanel.setLayout(null);
+				PropulsionInputPanel.add(RCSPanel);
+				
+		      JLabel LABEL_RCSSettings = new JLabel("Rection Control System Settings");
+		      LABEL_RCSSettings.setLocation(0, uy_p41 + 10 * 0  );
+		      LABEL_RCSSettings.setSize(400, 20);
+		      LABEL_RCSSettings.setBackground(backgroundColor);
+		      LABEL_RCSSettings.setForeground(labelColor);
+		      LABEL_RCSSettings.setFont(HeadlineFont);
+		      LABEL_RCSSettings.setHorizontalAlignment(0);
+		      RCSPanel.add(LABEL_RCSSettings);
+		      
+		      JLabel LABEL_RcsX = new JLabel("Momentum RCS X axis [Nm]");
+		      LABEL_RcsX.setLocation(INPUT_width+1, uy_p41 + 25 * 2 );
+		      LABEL_RcsX.setSize(250, 20);
+		      LABEL_RcsX.setBackground(backgroundColor);
+		      LABEL_RcsX.setForeground(labelColor);
+		      RCSPanel.add(LABEL_RcsX);
+		      
+		      JLabel LABEL_RcsY = new JLabel("Momentum RCS Y axis [Nm]");
+		      LABEL_RcsY.setLocation(INPUT_width+1, uy_p41 + 25 * 3 );
+		      LABEL_RcsY.setSize(250, 20);
+		      LABEL_RcsY.setBackground(backgroundColor);
+		      LABEL_RcsY.setForeground(labelColor);
+		      RCSPanel.add(LABEL_RcsY);
+		      
+		      JLabel LABEL_RcsZ = new JLabel("Momentum RCS Z axis [Nm]");
+		      LABEL_RcsZ.setLocation(INPUT_width+1, uy_p41 + 25 * 4 );
+		      LABEL_RcsZ.setSize(250, 20);
+		      LABEL_RcsZ.setBackground(backgroundColor);
+		      LABEL_RcsZ.setForeground(labelColor);
+		      RCSPanel.add(LABEL_RcsZ);
+		      
+			     INPUT_RCSX = new JTextField(10);
+			     INPUT_RCSX.setLocation(2, uy_p41 + 25 * 2 );;
+			     INPUT_RCSX.setSize(INPUT_width, 20);
+			     INPUT_RCSX.setHorizontalAlignment(JTextField.RIGHT);
+			     INPUT_RCSX.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+					//	WRITE_INIT();
+						WRITE_PROP();
+					}
+			   	  
+			     });
+			     RCSPanel.add(INPUT_RCSX);
+			     
+			     INPUT_RCSY = new JTextField(10);
+			     INPUT_RCSY.setLocation(2, uy_p41 + 25 * 3 );;
+			     INPUT_RCSY.setSize(INPUT_width, 20);
+			     INPUT_RCSY.setHorizontalAlignment(JTextField.RIGHT);
+			     INPUT_RCSY.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+					//	WRITE_INIT();
+						WRITE_PROP();
+					}
+			   	  
+			     });
+			     RCSPanel.add(INPUT_RCSY);
+			     
+			     INPUT_RCSZ = new JTextField(10);
+			     INPUT_RCSZ.setLocation(2, uy_p41 + 25 * 4 );;
+			     INPUT_RCSZ.setSize(INPUT_width, 20);
+			     INPUT_RCSZ.setHorizontalAlignment(JTextField.RIGHT);
+			     INPUT_RCSZ.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+					//	WRITE_INIT();
+						WRITE_PROP();
+					}
+			   	  
+			     });
+			     RCSPanel.add(INPUT_RCSZ);
 		     //----------------------------------------------------------------------------------
 		     //						Aerodynamic Input
 		     //----------------------------------------------------------------------------------
@@ -4518,7 +4711,25 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      LABEL_BallisticCoefficient.setForeground(labelColor);
 		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
 		      
-		      
+			     double value = Math.sqrt(4/PI*readFromFile(SC_file, 2));
+			     //System.out.println(readFromFile(Aero_file, 2)+" | "+value); 
+			     INPUT_ParachuteDiameter = new JTextField(""+decAngularRate.format(value));
+			     INPUT_ParachuteDiameter.setLocation(2, uy_p41 + 25 * 4);
+			     INPUT_ParachuteDiameter.setSize(INPUT_width, 20);
+			     INPUT_ParachuteDiameter.setHorizontalAlignment(JTextField.RIGHT);
+			     INPUT_ParachuteDiameter.addFocusListener(new FocusListener() {
+
+					@Override
+					public void focusGained(FocusEvent arg0) { }
+
+					@Override
+					public void focusLost(FocusEvent e) {
+						WRITE_SC();
+					}
+			   	  
+			     });
+			     AerodynamicInputPanel.add(INPUT_ParachuteDiameter);
+			     
 			     INPUT_SURFACEAREA = new JTextField(10);
 			     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
 
@@ -4626,20 +4837,29 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 						}
 				    	 
 				     });
-				     
+				     				     
+				      JLabel LABEL_Parachute= new JLabel("Parachute Diameter [m]");
+				      LABEL_Parachute.setLocation(INPUT_width+35, uy_p41 + 25 * 4 );
+				      LABEL_Parachute.setSize(250, 20);
+				      LABEL_Parachute.setBackground(backgroundColor);
+				      LABEL_Parachute.setForeground(labelColor);
+				      AerodynamicInputPanel.add(LABEL_Parachute);
+				      
+
 		      
 		        String path = "images/milleniumSchlieren2.png";
 		        File file = new File(path);
 		        try {
 		        BufferedImage image2 = ImageIO.read(file);
 		        JLabel label = new JLabel(new ImageIcon(image2));
-		        label.setSize(300,260);
+		        label.setSize(300,290);
 		        label.setLocation(5, uy_p41 + 25 * 6);
 		        label.setBorder(Moon_border);
 		        AerodynamicInputPanel.add(label);
 		        } catch (Exception e) {
 		        	System.err.println("Error: SpaceShip Setup/Aerodynamik - could not load image");
 		        }
+
 
         //-----------------------------------------------------------------------------------------
         // Page 4.3
@@ -5381,9 +5601,11 @@ try {
   	} else if (k==5){
   		INPUT_ISPMIN.setText(df_X4.format(InitialState)); 
   	} else if (k==6){
-
+  		INPUT_RCSX.setText(df_X4.format(InitialState)); 
   	} else if (k==7){
-
+  		INPUT_RCSY.setText(df_X4.format(InitialState));
+  	} else if (k==8) {
+  		INPUT_RCSZ.setText(df_X4.format(InitialState));
   	}
   	k++;
   }
@@ -5409,7 +5631,7 @@ while ((strLine55 = br55.readLine()) != null )   {
 	} else {
 		InitialState =0; 
 	}
-  if (k==0){
+    if (k==0){
 	  int index = (int) InitialState; 
 		for(int j=0;j<DragModelSet.size();j++) {
 			if(j==index) {
@@ -5421,6 +5643,8 @@ while ((strLine55 = br55.readLine()) != null )   {
 	//System.out.println(RM);
 	} else if (k==2){
 		INPUT_RB.setText(""+(InitialState)); 
+	} else if (k==5) {
+		
 	}
 	k++;
 }
@@ -5734,14 +5958,16 @@ fstream.close();
     	try {
     	while ((strLine55 = br55.readLine()) != null )   {
     		String[] tokens = strLine55.split(" ");
-    		if(tokens[0].isEmpty()==false) {
+    		if(!tokens[0].isEmpty()) {
     		 InitialState = Double.parseDouble(tokens[0]);
     		} else {
     			InitialState =0; 
+    			//System.out.println("isempty  "+indx+"|"+k);
     		}
     	 	if (k==indx){
     		  result = InitialState;
     		} 
+    	 	//System.out.println(k+"|"+indx);
     		k++;
     	}
     	in55.close();
@@ -6217,7 +6443,21 @@ fstream.close();
 		        			r = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText()) ;
 		        			wr.write(r+System.getProperty( "line.separator" ));
         				}
-        			} 
+        			} else if (i==2) {
+        				try {
+        				if(INPUT_ParachuteDiameter.getText().isEmpty()) {
+		        			 r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}else {
+		        			double d = Double.parseDouble(INPUT_ParachuteDiameter.getText()) ;
+		        			double area = PI/4*d*d;
+		        			wr.write(area+System.getProperty( "line.separator" ));
+        				}
+        				} catch (NullPointerException e) {
+		        			 r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
+        			}
             }
             wr.close();
       } catch (IOException eIO) {
@@ -6262,6 +6502,25 @@ fstream.close();
 		        			double r = 0;
 		        			wr.write(r+System.getProperty( "line.separator" ));
         				}
+        			} else if(i == 3 ) {
+    					int indx = getParachuteModelSetIndx();
+
+	        			   wr.write(indx+System.getProperty( "line.separator" ));
+        			} else if(i == 4 ) {
+        				try {
+        				if(ConstantParachuteCD_INPUT.getText().isEmpty()) {
+		        			double r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}else {
+		        			double r = Double.parseDouble(ConstantParachuteCD_INPUT.getText()) ;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
+        				} catch (NullPointerException e) {
+		        			double r = 0;
+		        			wr.write(r+System.getProperty( "line.separator" ));
+        				}
+        			} else if (i==5) {
+
         			}
             }
             wr.close();
@@ -6392,7 +6651,16 @@ fstream.close();
         				} catch (java.lang.NumberFormatException eNFE) {
         					wr.write(""+System.getProperty( "line.separator" ));	
         				}
-            		} 
+            		} else if( i == 6 ) {
+            			r = Double.parseDouble(INPUT_RCSX.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 7 ) {
+            			r = Double.parseDouble(INPUT_RCSY.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 8 ) {
+            			r = Double.parseDouble(INPUT_RCSZ.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		}
 		            }               
             wr.close();
             } catch (IOException eIO) {
@@ -6409,7 +6677,16 @@ fstream.close();
 		}
 		return k;
     }
-    
+
+    public static int getParachuteModelSetIndx() {
+		int k=0;
+		for(int j=0;j<ParachuteBulletPoints.size();j++) {
+			if(ParachuteBulletPoints.get(j).isSelected()) {
+				k=j;
+			}
+		}
+		return k;
+    }
     public static void EvaluateSurfaceAreaSetup() {
 	    	if(INPUT_SURFACEAREA.getText().equals("0")) {	    		
 	    		INPUT_SURFACEAREA.setText("");
@@ -8192,5 +8469,10 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		public static String[] getAxis_Option_NR() {
 			return Axis_Option_NR;
 		}
+		public static Font getSmall_font() {
+			return small_font;
+		}
+		
+		
 		
 }
