@@ -84,9 +84,9 @@ public class Launch_Simulation {
 	    		integratorData.setMaxIntegTime(inputOut[7]);
 	    		integratorData.setRefElevation(inputOut[11]);
 	    		integratorData.setVelocityVectorCoordSystem((int) inputOut[13]);
-	    		integratorData.setInitRotationalRateX(inputOut[15]);
-	    		integratorData.setInitRotationalRateY(inputOut[16]);
-	    		integratorData.setInitRotationalRateZ(inputOut[17]);
+	    		integratorData.setInitRotationalRateX(inputOut[15]*deg2rad);
+	    		integratorData.setInitRotationalRateY(inputOut[16]*deg2rad);
+	    		integratorData.setInitRotationalRateZ(inputOut[17]*deg2rad);
 	    		integratorData.setAeroDragModel((int) ReadInput.readAeroFile()[0]); 
 	    		integratorData.setAeroParachuteModel((int) ReadInput.readAeroFile()[3]);
 	    		integratorData.setConstParachuteCd((double) ReadInput.readAeroFile()[4]);

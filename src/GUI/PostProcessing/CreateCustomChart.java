@@ -323,16 +323,16 @@ public class CreateCustomChart {
 				public void actionPerformed(ActionEvent e)
 		       {
 					UpdateChart();
-	        		  System.out.println(modelContentSelect.getRowCount());
+	        		  //System.out.println(modelContentSelect.getRowCount());
 	        	    	for(int i=0;i<modelContentSelect.getRowCount();i++) {
 	        	    		modelContentSelect.setValueAt(""+i,i, 0);
 	    		    		String select = (String) modelContentSelect.getValueAt(i, 2);
-	    		    		System.out.println(select);
+	    		    		//System.out.println(select);
 	    		    		int indxIs = 0 ;
 	    		    		for(int k=0;k<contentList.length;k++) {
 	    		    			if(colorNames[k].equals(select)) {indxIs=k;break;}
 	    		    		}
-	    		    		System.out.println(indxIs);
+	    		    		//System.out.println(indxIs);
 	        	    		renderer.setSeriesPaint( i , colorList[indxIs]);
 	        	    		}
 		       }

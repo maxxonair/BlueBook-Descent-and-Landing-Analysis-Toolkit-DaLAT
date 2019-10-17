@@ -610,6 +610,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
           		  UPDATE_Page01(true);
           		  if(thirdWindowIndx==1) {
           		refreshTargetView3D();
+          		  } else if(thirdWindowIndx==2) {
+          			  CreateCustomChart.UpdateChart();
           		  }
             		refreshSpaceCraftView();
     		    }
