@@ -10,7 +10,7 @@ import java.util.List;
 
 import FlightElement.SpaceShip;
 import Model.DataSets.AtmosphereSet;
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 import Toolbox.Mathbox;
 
 

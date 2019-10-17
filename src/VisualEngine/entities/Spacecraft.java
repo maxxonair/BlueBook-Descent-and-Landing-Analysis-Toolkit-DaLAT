@@ -7,9 +7,10 @@ import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
 import Model.DataSets.ControlCommandSet;
-import Simulator_main.IntegratorData;
-import Simulator_main.RealTimeResultSet;
-import Simulator_main.RealTimeSimulation;
+import Simulator_main.RealTimeSimulationCore;
+import Simulator_main.DataSets.IntegratorData;
+import Simulator_main.DataSets.RealTimeContainer;
+import Simulator_main.DataSets.RealTimeResultSet;
 import Toolbox.ReadInput;
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.models.TexturedModel;
@@ -63,7 +64,7 @@ public class Spacecraft extends Entity {
 	public Spacecraft(SpaceShip spaceShip, TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
 			Spacecraft.spaceShip = spaceShip;
-			Spacecraft.quarternions = spaceShip.getInitialQuarterions();
+			Spacecraft.quarternions = integratorData.getInitialQuarterions();
 			Spacecraft.SCMass = (float) spaceShip.getMass();
 			Spacecraft.SCPropMass = (float) spaceShip.getPropulsion().getPrimaryPropellant();
 			Spacecraft.SCMainThrust = (float) spaceShip.getPropulsion().getPrimaryThrustMax();
@@ -134,7 +135,7 @@ public class Spacecraft extends Entity {
 							   (float) Math.toDegrees( Spacecraft.getPQR()[2][0])*DisplayManager.getFrameTimeSeconds(), 
 							   (float) Math.toDegrees( Spacecraft.getPQR()[1][0])*DisplayManager.getFrameTimeSeconds() );  // Yaw axis
 
-		Spacecraft.currentSpeed = realTimeResultSet.getVelocity();
+		Spacecraft.currentSpeed = (float) realTimeResultSet.getVelocity();
 		//Spacecraft.setAzimuth(realTimeResultSet.getAzi());
 		}
 	}	
@@ -196,7 +197,7 @@ public class Spacecraft extends Entity {
 			//Spacecraft.setRotX(-25);
 			currentVerticalSpeed=-5;
 			currentHorizontalSpeed=60;
-			Spacecraft.setQuarternions(spaceShip.getInitialQuarterions());
+			Spacecraft.setQuarternions(integratorData.getInitialQuarterions());
 		}
 	}
 
@@ -273,14 +274,16 @@ public class Spacecraft extends Entity {
 	    integratorData.setIntegratorType(INTEGRATOR);
 	    integratorData.setAeroDragModel(0);
 	    integratorData.setInitRadius(1737400+Spacecraft.getPosition().y);
-		spaceShip.setInitialQuarterions(Spacecraft.getQuarternions());
-		spaceShip.setAngularRate(Spacecraft.getPQR());
+	    integratorData.setInitialQuarterions(Spacecraft.getQuarternions());
+	    integratorData.setAngularRate(Spacecraft.getPQR());
 		//System.out.println(controlCommandSet.getPrimaryThrustThrottleCmd());
-		realTimeResultSet = RealTimeSimulation.launchIntegrator(integratorData, spaceShip, controlCommandSet);
-		Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
+	    RealTimeContainer realTimeContainer = new RealTimeContainer();
+	    realTimeContainer = RealTimeSimulationCore.launchIntegrator(integratorData, spaceShip, controlCommandSet);
+		realTimeResultSet = realTimeContainer.getRealTimeResultSet();
+	    Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
 		Spacecraft.setPQR(realTimeResultSet.getPQR());
 		Spacecraft.setQuarternions(realTimeResultSet.getQuarternions());
-		Spacecraft.setSCMass(realTimeResultSet.getSCMass());
+		Spacecraft.setSCMass((float) realTimeResultSet.getSCMass());
 		Spacecraft.setAzimuth((float) realTimeResultSet.getAzi());
 		Spacecraft.setThrust_NED(realTimeResultSet.getThrust_NED());
 		//System.out.println(realTimeResultSet.getSCMass());

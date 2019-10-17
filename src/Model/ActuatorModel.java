@@ -3,7 +3,7 @@ package Model;
 import FlightElement.SpaceShip;
 import Model.DataSets.ActuatorSet;
 import Model.DataSets.ControlCommandSet;
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 
 public class ActuatorModel {
 	

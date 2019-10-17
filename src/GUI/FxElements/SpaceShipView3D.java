@@ -52,12 +52,21 @@ public class SpaceShipView3D extends Application{
 		root.getChildren().add(model);
 		root.getChildren().add(coordinateSystem);
 		
+		final Group grid = SpaceShipView3DFrontPage.createGrid(2000, 100);
+		
+		Group environment = new Group();
+		//environment.getChildren().add(axes);
+		environment.getChildren().add(grid);
+		environment.translateYProperty().set(HEIGHT);
+		root.getChildren().add(environment);
+		
 		Camera camera = new PerspectiveCamera();
 		camera.setNearClip(.001);
 		camera.setFarClip(100);	
 		
 		Scene scene = new Scene(root, WIDTH, HEIGHT);
-		scene.setFill(Color.WHITE);
+		//scene.setFill(Color.WHITE);
+		scene.setFill(Color.color(0.15,0.15,0.15));
 		scene.setCamera(camera);
 		
 		model.translateXProperty().set(WIDTH/2);

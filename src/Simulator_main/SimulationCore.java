@@ -34,6 +34,8 @@ import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
 import Sequence.Sequence;
 import Sequence.SequenceElement;
+import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.IntegratorData;
 import Toolbox.Mathbox;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
@@ -513,7 +515,7 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 	currentDataSet.setPropellantLevelIsPrimary(spaceShip.getPropulsion().getPrimaryPropellant());
 	currentDataSet.setPropellantLevelIsSecondary(spaceShip.getPropulsion().getSecondaryPropellant());
 	SimulationCore.integratorData = integratorData;
-	spaceShip.getAeroElements().setHeatshieldRadius(1.5);
+	//spaceShip.getAeroElements().setHeatshieldRadius(1.5);
 	coordinateTransformation =  new CoordinateTransformation();
 	gravitySet = new GravitySet();
 	forceMomentumSet = new ForceMomentumSet();
@@ -533,7 +535,7 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 		System.out.println("READ: 6 Degree of Freedom Model selected.");
 		InertiaTensor = spaceShip.getInertiaTensorMatrix();
 		System.out.println("READ: Inertial Tensor set.");
-		q_vector      = spaceShip.getInitialQuarterions();
+		q_vector      = integratorData.getInitialQuarterions();
 		System.out.println("READ: Initial Attitude set.");
 	}
 
@@ -621,10 +623,10 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 	  		// S/C Mass        
 	  		        y[6] = spaceShip.getMass();
 	  				// Attitude and Rotational Motion
-	  				y[7]  = spaceShip.getInitialQuarterions()[0][0];
-	  				y[8]  = spaceShip.getInitialQuarterions()[1][0];
-	  				y[9]  = spaceShip.getInitialQuarterions()[2][0];
-	  				y[10] = spaceShip.getInitialQuarterions()[3][0];
+	  				y[7]  = integratorData.getInitialQuarterions()[0][0];
+	  				y[8]  = integratorData.getInitialQuarterions()[1][0];
+	  				y[9]  = integratorData.getInitialQuarterions()[2][0];
+	  				y[10] = integratorData.getInitialQuarterions()[3][0];
 	  				y[11] = integratorData.getInitRotationalRateX();
 	  				y[12] = integratorData.getInitRotationalRateY();
 	  				y[13] = integratorData.getInitRotationalRateZ();

@@ -3,7 +3,7 @@ package Model;
 import static java.lang.Math.*;
 
 import Model.DataSets.GravitySet;
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 import Toolbox.Mathbox;
 
 

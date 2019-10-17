@@ -11,8 +11,8 @@ import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
 import Sequence.Sequence;
-import Simulator_main.CurrentDataSet;
-import Simulator_main.IntegratorData;
+import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.IntegratorData;
 import Toolbox.Mathbox;
 
 public class ForceModel {

@@ -6,7 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 import Toolbox.Mathbox;
 
 public class Flight_CTRL_PitchCntrl{

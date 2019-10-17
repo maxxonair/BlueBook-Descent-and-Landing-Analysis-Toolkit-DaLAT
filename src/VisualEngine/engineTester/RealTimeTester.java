@@ -4,7 +4,7 @@ package VisualEngine.engineTester;
 import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
-import Simulator_main.RealTimeResultSet;
+import Simulator_main.DataSets.RealTimeResultSet;
 import VisualEngine.entities.Spacecraft;
 import VisualEngine.models.TexturedModel;
 

@@ -8,7 +8,7 @@ import Controller.Flight_CTRL_RollCntrl;
 import Controller.Flight_CTRL_ThrustMagnitude;
 import FlightElement.SpaceShip;
 import Model.DataSets.ControlCommandSet;
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 
 public class ControllerModel {
 	

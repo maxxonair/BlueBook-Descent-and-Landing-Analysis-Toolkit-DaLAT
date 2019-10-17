@@ -16,7 +16,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.ui.RectangleEdge;
 
 import GUI.BlueBookVisual;
-import Simulator_main.RealTimeResultSet;
+import Simulator_main.DataSets.RealTimeResultSet;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;

@@ -176,7 +176,6 @@ public class worldFly {
 		spaceShip.getPropulsion().setRCSMomentumX(1900);
 		spaceShip.getPropulsion().setRCSMomentumY(1900);
 		spaceShip.getPropulsion().setRCSMomentumZ(1900);
-		spaceShip.setInitialQuarterions(quarternions);
 	    spacecraft = new Spacecraft(spaceShip,staticModel, startPostion,0,0,0,1);	
 		Spacecraft.setQuarternions(quarternions);
 		//----------------------------------------------------------------

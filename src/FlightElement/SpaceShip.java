@@ -8,41 +8,15 @@ public class SpaceShip {
 												{      0    ,    0    ,   0},
 												{      0    ,    0    ,   0}};
 	
-	private double[][] initialQuarterions = {	{1},
-													{0},
-													{0},
-													{0}}; 
-	
-	private double[][] angularRate = {	{1},
-			{0},
-			{0}}; 
 	
 	Propulsion propulsion = new Propulsion();
 	AeroElements aeroElements = new AeroElements();
 	
 	
-	public double[][] getAngularRate() {
-		return angularRate;
-	}
-
-
-	public void setAngularRate(double[][] angularRate) {
-		this.angularRate = angularRate;
-	}
 
 
 	public SpaceShip() {
 		super();
-	}
-
-
-	public double[][] getInitialQuarterions() {
-		return initialQuarterions;
-	}
-
-
-	public void setInitialQuarterions(double[][] initialQuarterions) {
-		this.initialQuarterions = initialQuarterions;
 	}
 
 

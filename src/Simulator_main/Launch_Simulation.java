@@ -7,6 +7,7 @@ import java.util.List;
 
 import FlightElement.SpaceShip;
 import Simulator_main.SimulationCore;
+import Simulator_main.DataSets.IntegratorData;
 import Toolbox.ReadInput;
 
 public class Launch_Simulation {
@@ -47,7 +48,6 @@ public class Launch_Simulation {
 	    	SpaceShip spaceShip = new SpaceShip();
 	    	spaceShip.setInertiaTensorMatrix(ReadInput.readInertia());
 	    	spaceShip.setMass(inputOut[6]);
-	    	spaceShip.setInitialQuarterions(ReadInput.readInitialAttitude());
 	    	spaceShip.getAeroElements().setSurfaceArea(ReadInput.readSurfaceArea(inputOut[6]));
 	    	spaceShip.getAeroElements().setHeatshieldRadius(ReadInput.readAeroFile()[2]);
 	    	spaceShip.getPropulsion().setPrimaryISPMax(ReadInput.readPropulsionInput()[0]);
@@ -87,6 +87,7 @@ public class Launch_Simulation {
 	    		integratorData.setInitRotationalRateX(inputOut[15]*deg2rad);
 	    		integratorData.setInitRotationalRateY(inputOut[16]*deg2rad);
 	    		integratorData.setInitRotationalRateZ(inputOut[17]*deg2rad);
+	    		integratorData.setInitialQuarterions(ReadInput.readInitialAttitude());
 	    		integratorData.setAeroDragModel((int) ReadInput.readAeroFile()[0]); 
 	    		integratorData.setAeroParachuteModel((int) ReadInput.readAeroFile()[3]);
 	    		integratorData.setConstParachuteCd((double) ReadInput.readAeroFile()[4]);

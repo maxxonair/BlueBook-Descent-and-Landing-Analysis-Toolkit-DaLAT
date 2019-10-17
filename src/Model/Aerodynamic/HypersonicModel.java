@@ -4,7 +4,7 @@ import FlightElement.SpaceShip;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.HypersonicSet;
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 import Toolbox.Mathbox;
 
 public class HypersonicModel {

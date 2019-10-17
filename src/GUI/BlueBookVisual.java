@@ -102,7 +102,7 @@ import javax.swing.*;
 
 import Model.atm_dataset;
 import Sequence.SequenceElement;
-import Simulator_main.RealTimeResultSet;
+import Simulator_main.DataSets.RealTimeResultSet;
 import GUI.FxElements.SpaceShipView3D;
 import GUI.FxElements.SpaceShipView3DFrontPage;
 import GUI.FxElements.TargetView3D;
@@ -5770,12 +5770,12 @@ fstream.close();
 			 							   						{Double.parseDouble((String) tokens[76])},
 			 							   						{Double.parseDouble((String) tokens[77])}};
 							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Float.parseFloat((String) tokens[91]));
-							    resultElement.setEulerY(Float.parseFloat((String) tokens[92]));
-							    resultElement.setEulerZ(Float.parseFloat((String) tokens[93]));
-							    resultElement.setVelocity(Float.parseFloat((String) tokens[6]) );
-							    resultElement.setTime(Float.parseFloat((String) tokens[0]));
-							    resultElement.setFpa(Float.parseFloat((String) tokens[7]));
+							    resultElement.setEulerX(Double.parseDouble((String) tokens[91]));
+							    resultElement.setEulerY(Double.parseDouble((String) tokens[92]));
+							    resultElement.setEulerZ(Double.parseDouble((String) tokens[93]));
+							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
+							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
+							    resultElement.setFpa(Double.parseDouble((String) tokens[7]));
 							    resultSet.add(resultElement);
 							  
 							  }
@@ -7193,9 +7193,13 @@ public static void EXPORT_Case() {
 	            double min = xAxis.getLowerBound();
 	            int indx = (int) ( (1- x/(max-min))*resultSet.size());
 		            		if(thirdWindowIndx==0) {
+		            			try {
 			            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getTime());
 			            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getFpa()*rad2deg);
-						}
+		            			} catch (IndexOutOfBoundsException e) {
+		            				System.err.println("Error: DashBoardOverviewChart_Time_FPA Index out of bounds");
+		            			}
+		            			}
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
 	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
 	            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(y);

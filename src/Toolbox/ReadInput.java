@@ -393,7 +393,7 @@ double[] readINP = new double[10];
     in.close();
     br.close();
     
-    System.out.println("READ: Propulsion setup successful.");
+   // System.out.println("READ: Propulsion setup successful.");
     } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Propulsion setup read failed.");}
     return readINP;
 }

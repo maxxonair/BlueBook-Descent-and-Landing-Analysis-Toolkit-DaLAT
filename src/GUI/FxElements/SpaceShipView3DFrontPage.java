@@ -143,6 +143,7 @@ public class SpaceShipView3DFrontPage {
 			                    public void run() {
 	
 			                    	double getRotx = Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerX());
+			                    	//System.out.println(BlueBookVisual.getResultSet().get(indx).getEulerX());
 			                    	double getRoty = Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerY());
 			                    	double getRotz = Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerZ());
 			        				try {

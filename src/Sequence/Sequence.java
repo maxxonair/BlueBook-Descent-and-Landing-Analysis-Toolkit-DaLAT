@@ -8,7 +8,7 @@ import FlightElement.SpaceShip;
 import Model.ControllerModel;
 import Model.DataSets.ControlCommandSet;
 import Model.DataSets.ErrorSet;
-import Simulator_main.CurrentDataSet;
+import Simulator_main.DataSets.CurrentDataSet;
 
 public class Sequence {
 	
