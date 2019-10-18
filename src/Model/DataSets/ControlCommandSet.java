@@ -20,8 +20,19 @@ public class ControlCommandSet {
     
     private boolean ParachuteDeployedCMD=false; 
     private boolean ParachuteEjectCMD=false;
-	
     
+    private int activeSequence;
+    
+    
+	public int getActiveSequence() {
+		return activeSequence;
+	}
+
+
+	public void setActiveSequence(int activeSequence) {
+		this.activeSequence = activeSequence;
+	}
+
 	public boolean isParachuteEjectCMD() {
 		return ParachuteEjectCMD;
 	}

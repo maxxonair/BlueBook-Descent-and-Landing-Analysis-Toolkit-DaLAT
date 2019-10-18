@@ -5764,7 +5764,6 @@ fstream.close();
 							while ((strLine = br.readLine()) != null )   {
 								Object[] tokens = strLine.split(" ");
 							    MODEL_RAWData.addRow(tokens);
-							    
 						     	RealTimeResultSet resultElement = new RealTimeResultSet();
 							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[75])},
 			 							   						{Double.parseDouble((String) tokens[76])},

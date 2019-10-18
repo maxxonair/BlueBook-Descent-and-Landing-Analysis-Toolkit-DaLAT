@@ -7,9 +7,10 @@ import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
-import Controller.PID_01;
 import FlightElement.SpaceShip;
+import Model.SensorModel;
 import Model.DataSets.ActuatorSet;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
@@ -17,8 +18,9 @@ import Model.DataSets.ControlCommandSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
+import Model.DataSets.SensorSet;
 import Sequence.MasterController;
-import Sequence.Sequence;
+import Sequence.SequenceContent;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
@@ -31,6 +33,8 @@ public class LaunchRealTimeSimulation {
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
 	
     static DecimalFormat df_X4 = new DecimalFormat("#.###");
+    
+    static SensorSet sensorSet = new SensorSet();
 	
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -52,10 +56,35 @@ public class LaunchRealTimeSimulation {
     	//  2 Mars
     	//  3 Venus
     	//-----------------------------------------
+    	//------------------------------------------------------------------------------------------
+    	//					Compile Integrator inputs from files:
+    	//------------------------------------------------------------------------------------------
+    	
+    	List<SequenceContent> SequenceSet = new ArrayList<SequenceContent>();
+    	for(int i=0;i<SequenceSet.size();i++) {
+    	SequenceSet.remove(i);
+    	}
+    	SequenceContent sequenceContent = new SequenceContent();
+   // 	sequenceContent.addRollControl();
+    	sequenceContent.setTriggerEnd(2, 400);
+    	SequenceSet.add(sequenceContent);
+    	SequenceContent sequenceContent2 = new SequenceContent();
+  // 	sequenceContent2.addYawControl();
+    	sequenceContent2.addParachuteDeployment();
+    	sequenceContent2.setTriggerEnd(3, 1500);
+    	SequenceSet.add(sequenceContent2);
+    	SequenceContent sequenceContent3 = new SequenceContent();
+    	sequenceContent3.addParachuteSeparation();
+    	SequenceSet.add(sequenceContent3);
+    	SequenceContent sequenceContent4 = new SequenceContent();
+    	SequenceSet.add(sequenceContent4);
+    	
+    //	System.out.println(SequenceSet.size());
+    	//------------------------------------------------------------------------------------------
 	double[] inputOut = ReadInput.readInput();
-	//-----------------------------------------------------------------------------------------------------------------------------
-	//												Compile Integrator inputs from files:
-	//-----------------------------------------------------------------------------------------------------------------------------
+	//------------------------------------------------------------------------------------------
+	//					Compile Integrator inputs from files:
+	//------------------------------------------------------------------------------------------
 	    	double rm = SimulationCore.DATA_MAIN[(int) inputOut[9]][0];
 	    	//--------------------------------------------------------------------------------------
 	    	System.out.println("READ: Create SpaceShip");
@@ -79,7 +108,7 @@ public class LaunchRealTimeSimulation {
 	    	} else {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(false);
 	    	}
-	    	//--------------------------------------------------------------------------------------
+	    	//-------------------------------------------------------------------------------------
 	    	System.out.println("READ: Create IntegratorData");
 			double[] IntegINP = ReadInput.readIntegratorInput((int) inputOut[8]);
 	    	IntegratorData integratorData = new IntegratorData();
@@ -93,8 +122,8 @@ public class LaunchRealTimeSimulation {
     		
     		
     		
-    		IntegINP[0]=tIncrement;
-	    		integratorData.setIntegInput(IntegINP);				// ! Must be called before .setIntegratorType !
+    		    IntegINP[0]=tIncrement;
+	    		integratorData.setIntegInput(IntegINP);	// !!! Must be called BEFORE .setIntegratorType !!!
 	    		integratorData.setIntegratorType(1);
 	    		integratorData.setTargetBody((int) inputOut[9]);
 	    		
@@ -133,19 +162,23 @@ public class LaunchRealTimeSimulation {
     			RealTimeContainer realTimeContainer = new RealTimeContainer();		
     			
 		        long startTime   = System.nanoTime();	
-	    		for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
+	for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
+		    		
 	    		//---------------------------------------------------------------------------------------
 	    		//				  6 Degree of Freedom - Universal RealTime module
 	    		//---------------------------------------------------------------------------------------
 	    			if (tIS==0) {
 			    		System.out.println("Simulator set and running");
+			    		
 			    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
 			    												    integratorData, 
 																spaceShip,				 
 																controlCommandSet
 			    				);
 	    			} else {
-	    				
+	    	    		//---------------------------------------------------------------------------------------
+	    	    		//				  Update integration input for the new time step
+	    	    		//---------------------------------------------------------------------------------------
 		    			realTimeResultSet = realTimeContainer.getRealTimeResultSet();
 		    				
 		    	    		integratorData.setInitLongitude(realTimeResultSet.getLongitude());
@@ -164,33 +197,51 @@ public class LaunchRealTimeSimulation {
 		    	    		spaceShip.setMass(realTimeResultSet.getSCMass());
 		    	    		
 		    	    		integratorData.setGlobalTime(tIS);
-		    	    		
-		    	    		controlCommandSet = MasterController.getControlCommandSet( controlCommandSet, realTimeContainer,  
-		    	    				spaceShip,  integratorData );
-		    	    		
+		    	   //---------------------------------------------------------------------------------------
+		    	   //				  Get Master Controller Commands
+		    	   //---------------------------------------------------------------------------------------  		
+		    	    		controlCommandSet = MasterController.createMasterCommand(controlCommandSet, 
+		    	    				realTimeContainer, spaceShip, sensorSet, SequenceSet, Frequency);
+		    	   //---------------------------------------------------------------------------------------
+		    	   //				  Start incremental integration
+		    	   //---------------------------------------------------------------------------------------		
 		    	    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
 								integratorData, 
 								spaceShip,				 
 								controlCommandSet
-		    																			);
-			    			//steps = addStep(steps, realTimeResultSet, integratorData, spaceShip);	
+		    																			);	
 	    			}
-	    			//System.out.println(tIS+"|"+realTimeResultSet.getVelocity()+"|"+realTimeResultSet.getRadius()+"|"+realTimeResultSet.getAltitude());
-	    			//System.out.println(realTimeResultSet.getMasterSet().getGravitySet().getG_NED()[2][0]);
-	    			//System.out.println(realTimeResultSet.getMasterSet().getForceMomentumSet().getF_total_NED()[0][0]);
-	    			//System.out.println(realTimeResultSet.getTime());
-	    			//System.out.println(realTimeContainer.getRealTimeSet().size());
-  
-	    			steps = addStep(steps, realTimeContainer.getRealTimeResultSet(), integratorData, spaceShip);
-	    			if(realTimeResultSet.getAltitude()<0) {
-	    				break;
-	    			}
+	  	      //---------------------------------------------------------------------------------------
+	    	      //				       Create Sensor Data
+	    	      //---------------------------------------------------------------------------------------
+	    		  sensorSet.setMasterSet(realTimeContainer.getRealTimeSet().get(realTimeContainer.getRealTimeSet().size() - 1));
+	    		  sensorSet.setRealTimeResultSet(realTimeResultSet);
+	    		  sensorSet.setGlobalTime(tIS);
+	    		    	   SensorModel.addVelocitySensorUncertainty(sensorSet,  4);
+	    		    			//SensorModel.addAltitudeSensorUncertainty(sensorSet,  5);
+			  //---------------------------------------------------------------------------------------
+			  //				  Add incremental integration result to write out file 
+			  //---------------------------------------------------------------------------------------	
+	    			steps = addStep(steps, realTimeContainer.getRealTimeResultSet(), integratorData, 
+	    					        spaceShip);
+	  	      //---------------------------------------------------------------------------------------
+	  		  //				  Implement Stop Handler here: 
+	  	      //---------------------------------------------------------------------------------------	
+		    			if(realTimeResultSet.getAltitude()<0) {
+		    				break;
+		    			}
+	    		
 	    		}
+		  	//---------------------------------------------------------------------------------------
+		  	//				  Generate total time to integrate the problem
+		  	//---------------------------------------------------------------------------------------	
 				long endTime   = System.nanoTime();
 				long totalTime = endTime - startTime;
-				double  totalTime_sec = (double) (totalTime * 1E-9);
-		       // System.out.println("INTEGRATION SUCCESSFUL. ");   
+				double  totalTime_sec = (double) (totalTime * 1E-9);  
 		        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
+		  	//---------------------------------------------------------------------------------------
+		    //				  Create Result File
+		  	//---------------------------------------------------------------------------------------	
 	    		createWriteOut(steps);
 }
     
@@ -206,8 +257,7 @@ private static void createWriteOut(ArrayList<String> steps) {
             for(String step: steps) {
                 writer.println(step);
             }
-            System.out.println("Write: Result file. ");
-            if(!Sequence.isSequence_RES_closed()) {System.out.println("Warning: Sequence end not reached - SEQU.res not built");}
+            System.out.println("WRITE: Result file. ");         
             writer.close();
         } catch(Exception e) {System.out.println("ERROR: Writing result file failed");System.out.println(e);};
 }
@@ -256,10 +306,10 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
   		  realTimeResultSet.getNormalizedDeceleration()+ " " +
   		  0+ " " + 
   		  0+" "+
-  		  0+" "+
-  		  0+" "+
-  		  controlCommandSet.getSequenceID()+" "+
-  		  0+" "+
+  		  sensorSet.getRealTimeResultSet().getAltitude()+" "+
+  		  sensorSet.getRealTimeResultSet().getVelocity()+" "+
+  		  controlCommandSet.getActiveSequence()+" "+
+  		  sensorSet.getControllerTime()+" "+
   		  aerodynamicSet.getDragCoefficientParachute()+" "+
 		  aerodynamicSet.getDragForceParachute()+" "+
 		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
@@ -297,9 +347,9 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
 		  forceMomentumSet.getF_Gravity_NED()[0][0]+" "+
 		  forceMomentumSet.getF_Gravity_NED()[1][0]+" "+
 		  forceMomentumSet.getF_Gravity_NED()[2][0]+" "+
-  		  realTimeResultSet.getCartesianPosECEF()[0]+" "+
-  		  realTimeResultSet.getCartesianPosECEF()[1]+" "+
-  		  realTimeResultSet.getCartesianPosECEF()[2]+" "+
+  		  realTimeResultSet.getCartesianPosECEF()[0][0]+" "+
+  		  realTimeResultSet.getCartesianPosECEF()[1][0]+" "+
+  		  realTimeResultSet.getCartesianPosECEF()[2][0]+" "+
   		  0+ " " + 
   		  0 + " " + 
   		  0 + " " + 
@@ -315,7 +365,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
 		  forceMomentumSet.getM_total_NED()[2][0]+" "+
   		realTimeResultSet.getEulerX()+" "+
   		realTimeResultSet.getEulerY()+" "+
-  		realTimeResultSet.getEulerZ()+" "
+  		realTimeResultSet.getEulerZ()+"  "
   		  );
 	return steps;	
 }
