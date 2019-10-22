@@ -24,6 +24,8 @@ public class ActuatorModel {
 		// Set Thrust 
 		if(primaryPropellant>0) {
 		actuatorSet.setPrimaryThrust_is(controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax());
+		} else {
+			actuatorSet.setPrimaryThrust_is(0);
 		}
 		
 		
@@ -33,7 +35,7 @@ public class ActuatorModel {
 		
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX())) {
 		actuatorSet.setMomentumRCS_X_is(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
-		actuatorSet.setRCS_X_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS());
+		actuatorSet.setRCS_X_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_X());
 		} else {
 			actuatorSet.setMomentumRCS_X_is(0);	
 			actuatorSet.setRCS_X_ISP(0);	
@@ -41,14 +43,14 @@ public class ActuatorModel {
 		}
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY())) {
 		actuatorSet.setMomentumRCS_Y_is(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY());
-		actuatorSet.setRCS_Y_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS());
+		actuatorSet.setRCS_Y_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_Y());
 		} else {
 		actuatorSet.setMomentumRCS_Y_is(0);
 		actuatorSet.setRCS_Y_ISP(0);
 		System.out.println("ERROR: Pitch control failed - reset RCS Y");
 		}
 		actuatorSet.setMomentumRCS_Z_is(controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumZ());
-		actuatorSet.setRCS_Z_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS());
+		actuatorSet.setRCS_Z_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_Z());
 		
 		
 		if(controlCommandSet.isParachuteDeployedCMD()) {

@@ -115,8 +115,6 @@ import VisualEngine.animation.AnimationSet;
 import VisualEngine.engineLauncher.worldGenerator;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
-import Controller.LandingCurve;
-import Controller.PitchCurve;
 
 import com.apple.eawt.Application;
 
@@ -264,7 +262,37 @@ public class BlueBookVisual implements  ActionListener {
     										  "Gy NED [m/s2]",
     										  "Gz NED [m/s2]",
     										  "G total [m/s2]", 
-    										  "Accumulated Delta-v [m/s]",
+    										  "Fx NED [N]",
+    										  "Fy NED [N]",
+    										  "Fz NED [N]",
+    										  "Force Aero x NED [N]",
+    										  "Force Aero y NED [N]",
+    										  "Force Aero z NED [N]",
+    										  "Force Thrust x NED [N]",
+    										  "Force Thrust y NED [N]",
+    										  "Force Thrust z NED [N]",
+    										  "Force Gravity x NED [N]",
+    										  "Force Gravity y NED [N]",
+    										  "Force Gravity z NED [N]",
+    										  "Position x ECEF [m]",
+    										  "Position y ECEF [m]",
+    										  "Position z ECEF [m]",
+    										  "Velocity u NED/ECEF [m/s]",
+    										  "Velocity v NED/ECEF [m/s]",
+    										  "Velocity w NED/ECEF [m/s]",
+    										  "Quaternion q1",
+    										  "Quaternion q2",
+    										  "Quaternion q3",
+    										  "Quaternion q4",
+    										  "Angular Rate x B2NED [deg/s]",
+    										  "Angular Rate y B2NED [deg/s]",
+    										  "Angular Rate z B2NED [deg/s]",
+    										  "Angular Momentum x B [Nm]",
+    										  "Angular Momentum y B [Nm]",
+    										  "Angular Momentum z B [Nm]",
+    										  "X Roll Angle - Euler Phi [deg]",
+    										  "Y Pitch Angle - Euler Theta [deg]",
+    										  "Z Yaw Angle - Euler Psi [deg]",
     										  "SC Mass [kg]",
     										  "Normalized Deceleartion [-]",
     										  "Total Engergy [J]",
@@ -297,38 +325,14 @@ public class BlueBookVisual implements  ActionListener {
     										  "Vel NED/ECI [m/s]",
     										  "FPA NED/ECI [m/s",
     										  "AZI  NED/ECI [m/s]",
-    										  "Engine Loss Indicator [true/false]", 
-    										  "Fx NED [N]",
-    										  "Fy NED [N]",
-    										  "Fz NED [N]",
-    										  "Force Aero x NED [N]",
-    										  "Force Aero y NED [N]",
-    										  "Force Aero z NED [N]",
-    										  "Force Thrust x NED [N]",
-    										  "Force Thrust y NED [N]",
-    										  "Force Thrust z NED [N]",
-    										  "Force Gravity x NED [N]",
-    										  "Force Gravity y NED [N]",
-    										  "Force Gravity z NED [N]",
-    										  "Position x ECEF [m]",
-    										  "Position y ECEF [m]",
-    										  "Position z ECEF [m]",
-    										  "Velocity u NED/ECEF [m/s]",
-    										  "Velocity v NED/ECEF [m/s]",
-    										  "Velocity w NED/ECEF [m/s]",
-    										  "Quaternion q1",
-    										  "Quaternion q2",
-    										  "Quaternion q3",
-    										  "Quaternion q4",
-    										  "Angular Rate x B2NED [deg/s]",
-    										  "Angular Rate y B2NED [deg/s]",
-    										  "Angular Rate z B2NED [deg/s]",
-    										  "Angular Momentum x B [Nm]",
-    										  "Angular Momentum y B [Nm]",
-    										  "Angular Momentum z B [Nm]",
-    										  "X Roll Angle - Euler Phi [deg]",
-    										  "Y Pitch Angle - Euler Theta [deg]",
-    										  "Z Yaw Angle - Euler Psi [deg]"
+    										  "Engine Loss Indicator [true/false]",
+    										  "Used Propellant Primary [kg]",
+    										  "Used Propellant Secondary [kg]",
+    										  "DeltV RCS X [m/s]",
+    										  "DeltV RCS Y [m/s]",
+    										  "DeltV RCS Z [m/s]",
+    										  "DeltV RCS   [m/s]",
+    										  "DeltaV Primary [m/s]"
     										  };
     
     public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF"
@@ -491,7 +495,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JTextField ConstantCD_INPUT;
     public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
     public static JPanel SequenceLeftPanel;
-    
+    public static JTextField INPUT_RCSXTHRUST, INPUT_RCSYTHRUST, INPUT_RCSZTHRUST, INPUT_RCSTANK, INPUT_RCSXISP, INPUT_RCSYISP,INPUT_RCSZISP;
     
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
@@ -1832,7 +1836,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		TabPane_SimulationSetup.setForeground(Color.black);
 		
 		
-      int INPUT_width = 120;
+      int INPUT_width = 110;
       int SidePanel_Width = 380; 
       JPanel PANEL_LEFT_InputSection = new JPanel();
       PANEL_LEFT_InputSection.setLayout(null);
@@ -2492,9 +2496,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_01.setBackground(backgroundColor);
       LABEL_IntegratorSetting_01.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_01);
-      INPUT_IntegratorSetting_01 = new JTextField(10);
+      INPUT_IntegratorSetting_01 = new JTextField(10){
+		    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			@Override public void setBorder(Border border) {
+		        // No!
+		    }
+		};
       INPUT_IntegratorSetting_01.setLocation(2, uy_p41 + 25 * 8 );
       INPUT_IntegratorSetting_01.setSize(60, 20);
+      INPUT_IntegratorSetting_01.setBackground(backgroundColor);
+      INPUT_IntegratorSetting_01.setForeground(labelColor);
       INPUT_IntegratorSetting_01.setHorizontalAlignment(JTextField.LEFT);
       INPUT_IntegratorSetting_01.addFocusListener(new FocusListener() {
 
@@ -2515,9 +2530,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_02.setBackground(backgroundColor);
       LABEL_IntegratorSetting_02.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_02);
-      INPUT_IntegratorSetting_02 = new JTextField(10);
+      INPUT_IntegratorSetting_02 = new JTextField(10){
+		    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			@Override public void setBorder(Border border) {
+		        // No!
+		    }
+		};
       INPUT_IntegratorSetting_02.setLocation(2, uy_p41 + 25 * 9 );
       INPUT_IntegratorSetting_02.setSize(60, 20);
+      INPUT_IntegratorSetting_02.setBackground(backgroundColor);
+      INPUT_IntegratorSetting_02.setForeground(labelColor);
       INPUT_IntegratorSetting_02.setHorizontalAlignment(JTextField.LEFT);
       INPUT_IntegratorSetting_02.addFocusListener(new FocusListener() {
 
@@ -2538,9 +2564,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_03.setBackground(backgroundColor);
       LABEL_IntegratorSetting_03.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_03);
-      INPUT_IntegratorSetting_03 = new JTextField(10);
+      INPUT_IntegratorSetting_03 = new JTextField(10){
+		    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			@Override public void setBorder(Border border) {
+		        // No!
+		    }
+		};
       INPUT_IntegratorSetting_03.setLocation(2, uy_p41 + 25 * 10 );
       INPUT_IntegratorSetting_03.setSize(60, 20);
+      INPUT_IntegratorSetting_03.setBackground(backgroundColor);
+      INPUT_IntegratorSetting_03.setForeground(labelColor);
       INPUT_IntegratorSetting_03.setHorizontalAlignment(JTextField.LEFT);
       INPUT_IntegratorSetting_03.addFocusListener(new FocusListener() {
 
@@ -2561,9 +2598,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_04.setBackground(backgroundColor);
       LABEL_IntegratorSetting_04.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_04);
-      INPUT_IntegratorSetting_04 = new JTextField(10);
+      INPUT_IntegratorSetting_04 = new JTextField(10){
+		    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			@Override public void setBorder(Border border) {
+		        // No!
+		    }
+		};
       INPUT_IntegratorSetting_04.setLocation(2, uy_p41 + 25 * 11 );
       INPUT_IntegratorSetting_04.setSize(60, 20);
+      INPUT_IntegratorSetting_04.setBackground(backgroundColor);
+      INPUT_IntegratorSetting_04.setForeground(labelColor);
       INPUT_IntegratorSetting_04.setHorizontalAlignment(JTextField.LEFT);
       INPUT_IntegratorSetting_04.addFocusListener(new FocusListener() {
 
@@ -2584,9 +2632,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegratorSetting_05.setBackground(backgroundColor);
       LABEL_IntegratorSetting_05.setForeground(labelColor);
       IntegratorInputPanel.add(LABEL_IntegratorSetting_05);
-      INPUT_IntegratorSetting_05 = new JTextField(10);
+      INPUT_IntegratorSetting_05 = new JTextField(10){
+		    /**
+		 * 
+		 */
+		private static final long serialVersionUID = 1L;
+
+			@Override public void setBorder(Border border) {
+		        // No!
+		    }
+		};
       INPUT_IntegratorSetting_05.setLocation(2, uy_p41 + 25 * 12 );
       INPUT_IntegratorSetting_05.setSize(60, 20);
+      INPUT_IntegratorSetting_05.setBackground(backgroundColor);
+      INPUT_IntegratorSetting_05.setForeground(labelColor);
       INPUT_IntegratorSetting_05.setHorizontalAlignment(JTextField.LEFT);
       INPUT_IntegratorSetting_05.addFocusListener(new FocusListener() {
 
@@ -4528,40 +4587,53 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      LABEL_Minit.setBackground(backgroundColor);
 		      LABEL_Minit.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_Minit);
+		      
+		      
+		      
+		      JLabel LABEL_PrimarySettings = new JLabel("Primary Propulsion System Settings");
+		      LABEL_PrimarySettings.setLocation(0, uy_p41 + 25 * 3 );
+		      LABEL_PrimarySettings.setSize(400, 20);
+		      LABEL_PrimarySettings.setBackground(backgroundColor);
+		      LABEL_PrimarySettings.setForeground(labelColor);
+		      LABEL_PrimarySettings.setFont(HeadlineFont);
+		      LABEL_PrimarySettings.setHorizontalAlignment(0);
+		      PropulsionInputPanel.add(LABEL_PrimarySettings);
+		      
+		      
 		      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
-		      LABEL_ME_ISP.setLocation(INPUT_width+5, uy_p41 + 25 * 3 );
+		      LABEL_ME_ISP.setLocation(INPUT_width+5, uy_p41 + 25 * 4 );
 		      LABEL_ME_ISP.setSize(300, 20);
 		      LABEL_ME_ISP.setBackground(backgroundColor);
 		      LABEL_ME_ISP.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_ISP);
 		      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
-		      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 4);
+		      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 5);
 		      LABEL_ME_PropMass.setSize(300, 20);
 		      LABEL_ME_PropMass.setBackground(backgroundColor);
 		      LABEL_ME_PropMass.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_PropMass);
 		      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
-		      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 5 );
+		      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
 		      LABEL_ME_Thrust_max.setSize(300, 20);
 		      LABEL_ME_Thrust_max.setBackground(backgroundColor);
 		      LABEL_ME_Thrust_max.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_Thrust_max);
 		      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
-		      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
+		      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
 		      LABEL_ME_Thrust_min.setSize(300, 20);
 		      LABEL_ME_Thrust_min.setBackground(backgroundColor);
 		      LABEL_ME_Thrust_min.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_Thrust_min);
 		      
 		      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
-		      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
+		      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
 		      LABEL_ME_ISP_Model.setSize(300, 20);
 		      LABEL_ME_ISP_Model.setBackground(backgroundColor);
 		      LABEL_ME_ISP_Model.setForeground(labelColor);
 		      PropulsionInputPanel.add(LABEL_ME_ISP_Model);
 		      
 		      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
-		      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
+		      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 9 );
 		      LABEL_ME_ISP_min.setSize(300, 20);
 		      LABEL_ME_ISP_min.setBackground(backgroundColor);
 		      LABEL_ME_ISP_min.setForeground(labelColor);
@@ -4569,9 +4641,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		     
 			 
 		      
-		      INPUT_M0 = new JTextField(10);
+		      INPUT_M0 = new JTextField(10){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
 		      INPUT_M0.setLocation(2, uy_p41 + 25 * 1 );
-		      INPUT_M0.setSize(INPUT_width, 20);
+		      INPUT_M0.setSize(INPUT_width-20, 20);
+		      INPUT_M0.setBackground(backgroundColor);
+		      INPUT_M0.setForeground(labelColor);
 		      INPUT_M0.setHorizontalAlignment(JTextField.RIGHT);
 		      INPUT_M0.addFocusListener(new FocusListener() {
 
@@ -4586,9 +4669,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    	  
 		      });
 		      PropulsionInputPanel.add(INPUT_M0);
-		      INPUT_ISP = new JTextField(10);
-		      INPUT_ISP.setLocation(2, uy_p41 + 25 * 3 );
-		      INPUT_ISP.setSize(INPUT_width, 20);
+		      INPUT_ISP = new JTextField(10){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
+		      INPUT_ISP.setLocation(2, uy_p41 + 25 * 4 );
+		      INPUT_ISP.setSize(INPUT_width-20, 20);
+		      INPUT_ISP.setBackground(backgroundColor);
+		      INPUT_ISP.setForeground(labelColor);
 		      INPUT_ISP.setHorizontalAlignment(JTextField.RIGHT);
 		      INPUT_ISP.addFocusListener(new FocusListener() {
 
@@ -4603,9 +4697,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    	  
 		      });
 		      PropulsionInputPanel.add(INPUT_ISP);
-		     INPUT_PROPMASS = new JTextField(10);
-		     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 4);
-		     INPUT_PROPMASS.setSize(INPUT_width, 20);
+		     INPUT_PROPMASS = new JTextField(10){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
+		     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 5);
+		     INPUT_PROPMASS.setSize(INPUT_width-20, 20);
+		     INPUT_PROPMASS.setBackground(backgroundColor);
+		     INPUT_PROPMASS.setForeground(labelColor);
 		     INPUT_PROPMASS.setHorizontalAlignment(JTextField.RIGHT);
 		     INPUT_PROPMASS.addFocusListener(new FocusListener() {
 
@@ -4620,9 +4725,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		   	  
 		     });
 		     PropulsionInputPanel.add(INPUT_PROPMASS);        
-		     INPUT_THRUSTMAX = new JTextField(10);
-		     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 5 );
-		     INPUT_THRUSTMAX.setSize(INPUT_width, 20);
+		     INPUT_THRUSTMAX = new JTextField(10){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
+		     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 6 );
+		     INPUT_THRUSTMAX.setSize(INPUT_width-20, 20);
+		     INPUT_THRUSTMAX.setBackground(backgroundColor);
+		     INPUT_THRUSTMAX.setForeground(labelColor);
 		     INPUT_THRUSTMAX.setHorizontalAlignment(JTextField.RIGHT);
 		     INPUT_THRUSTMAX.addFocusListener(new FocusListener() {
 
@@ -4637,9 +4753,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		   	  
 		     });
 		     PropulsionInputPanel.add(INPUT_THRUSTMAX);
-		     INPUT_THRUSTMIN = new JTextField(10);
-		     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 6 );;
-		     INPUT_THRUSTMIN.setSize(INPUT_width, 20);
+		     INPUT_THRUSTMIN = new JTextField(10){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
+		     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 7 );;
+		     INPUT_THRUSTMIN.setSize(INPUT_width-20, 20);
+		     INPUT_THRUSTMIN.setBackground(backgroundColor);
+		     INPUT_THRUSTMIN.setForeground(labelColor);
 		     INPUT_THRUSTMIN.setHorizontalAlignment(JTextField.RIGHT);
 		     INPUT_THRUSTMIN.addFocusListener(new FocusListener() {
 
@@ -4655,10 +4782,21 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		     });
 		     PropulsionInputPanel.add(INPUT_THRUSTMIN);
 		     
-		     INPUT_ISPMODEL = new JCheckBox();
-		     INPUT_ISPMODEL.setLocation(INPUT_width+5-20, uy_p41 + 25 * 7+2);
+		     INPUT_ISPMODEL = new JCheckBox(){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
+		     INPUT_ISPMODEL.setLocation(INPUT_width+5-20, uy_p41 + 25 * 8+2);
 		     INPUT_ISPMODEL.setSize(15, 15);
 		     INPUT_ISPMODEL.setSelected(true);
+		     INPUT_ISPMODEL.setBackground(backgroundColor);
+		     INPUT_ISPMODEL.setForeground(labelColor);
 		     INPUT_ISPMODEL.addItemListener(new ItemListener() {
 		       	 public void itemStateChanged(ItemEvent e) {
 		       		WRITE_PROP();
@@ -4668,9 +4806,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		     PropulsionInputPanel.add(INPUT_ISPMODEL);
 		     
 		     
-		     INPUT_ISPMIN = new JTextField(10);
-		     INPUT_ISPMIN.setLocation(2, uy_p41 + 25 * 8 );;
-		     INPUT_ISPMIN.setSize(INPUT_width, 20);
+		     INPUT_ISPMIN = new JTextField(10){
+				    /**
+					 * 
+					 */
+					private static final long serialVersionUID = 1L;
+
+						@Override public void setBorder(Border border) {
+					        // No!
+					    }
+					};
+		     INPUT_ISPMIN.setLocation(2, uy_p41 + 25 * 9 );;
+		     INPUT_ISPMIN.setSize(INPUT_width-20, 20);
+		     INPUT_ISPMIN.setBackground(backgroundColor);
+		     INPUT_ISPMIN.setForeground(labelColor);
 		     INPUT_ISPMIN.setHorizontalAlignment(JTextField.RIGHT);
 		     INPUT_ISPMIN.addFocusListener(new FocusListener() {
 
@@ -4694,7 +4843,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				RCSPanel.setLayout(null);
 				PropulsionInputPanel.add(RCSPanel);
 				
-		      JLabel LABEL_RCSSettings = new JLabel("Rection Control System Settings");
+		      JLabel LABEL_RCSSettings = new JLabel("Reaction Control System Settings");
 		      LABEL_RCSSettings.setLocation(0, uy_p41 + 10 * 0  );
 		      LABEL_RCSSettings.setSize(400, 20);
 		      LABEL_RCSSettings.setBackground(backgroundColor);
@@ -4724,9 +4873,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      LABEL_RcsZ.setForeground(labelColor);
 		      RCSPanel.add(LABEL_RcsZ);
 		      
-			     INPUT_RCSX = new JTextField(10);
+			     INPUT_RCSX = new JTextField(10){
+					    /**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+							@Override public void setBorder(Border border) {
+						        // No!
+						    }
+						};
 			     INPUT_RCSX.setLocation(2, uy_p41 + 25 * 2 );;
-			     INPUT_RCSX.setSize(INPUT_width, 20);
+			     INPUT_RCSX.setSize(INPUT_width-20, 20);
+			     INPUT_RCSX.setBackground(backgroundColor);
+			     INPUT_RCSX.setForeground(labelColor);
 			     INPUT_RCSX.setHorizontalAlignment(JTextField.RIGHT);
 			     INPUT_RCSX.addFocusListener(new FocusListener() {
 
@@ -4742,9 +4902,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			     });
 			     RCSPanel.add(INPUT_RCSX);
 			     
-			     INPUT_RCSY = new JTextField(10);
+			     INPUT_RCSY = new JTextField(10){
+					    /**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+							@Override public void setBorder(Border border) {
+						        // No!
+						    }
+						};
 			     INPUT_RCSY.setLocation(2, uy_p41 + 25 * 3 );;
-			     INPUT_RCSY.setSize(INPUT_width, 20);
+			     INPUT_RCSY.setSize(INPUT_width-20, 20);
+			     INPUT_RCSY.setBackground(backgroundColor);
+			     INPUT_RCSY.setForeground(labelColor);
 			     INPUT_RCSY.setHorizontalAlignment(JTextField.RIGHT);
 			     INPUT_RCSY.addFocusListener(new FocusListener() {
 
@@ -4760,9 +4931,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			     });
 			     RCSPanel.add(INPUT_RCSY);
 			     
-			     INPUT_RCSZ = new JTextField(10);
+			     INPUT_RCSZ = new JTextField(10){
+					    /**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+							@Override public void setBorder(Border border) {
+						        // No!
+						    }
+						};
 			     INPUT_RCSZ.setLocation(2, uy_p41 + 25 * 4 );;
-			     INPUT_RCSZ.setSize(INPUT_width, 20);
+			     INPUT_RCSZ.setSize(INPUT_width-20, 20);
+			     INPUT_RCSZ.setBackground(backgroundColor);
+			     INPUT_RCSZ.setForeground(labelColor);
 			     INPUT_RCSZ.setHorizontalAlignment(JTextField.RIGHT);
 			     INPUT_RCSZ.addFocusListener(new FocusListener() {
 
@@ -4777,6 +4959,259 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			   	  
 			     });
 			     RCSPanel.add(INPUT_RCSZ);
+			     
+			     
+			      JLabel LABEL_RcsXThrust = new JLabel("RCS X Thrust [N]");
+			      LABEL_RcsXThrust.setLocation(INPUT_width+1, uy_p41 + 25 * 6 );
+			      LABEL_RcsXThrust.setSize(250, 20);
+			      LABEL_RcsXThrust.setBackground(backgroundColor);
+			      LABEL_RcsXThrust.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsXThrust);
+			      
+			      JLabel LABEL_RcsYThrust = new JLabel("RCS Y Thrust [N]");
+			      LABEL_RcsYThrust.setLocation(INPUT_width+1, uy_p41 + 25 * 7 );
+			      LABEL_RcsYThrust.setSize(250, 20);
+			      LABEL_RcsYThrust.setBackground(backgroundColor);
+			      LABEL_RcsYThrust.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsYThrust);
+			      
+			      JLabel LABEL_RcsZThrust = new JLabel("RCS Z Thrust [N]");
+			      LABEL_RcsZThrust.setLocation(INPUT_width+1, uy_p41 + 25 * 8 );
+			      LABEL_RcsZThrust.setSize(250, 20);
+			      LABEL_RcsZThrust.setBackground(backgroundColor);
+			      LABEL_RcsZThrust.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsZThrust);
+			      
+			      JLabel LABEL_RcsTank = new JLabel("Secondary Propulsion Tank [kg]");
+			      LABEL_RcsTank.setLocation(INPUT_width+1, uy_p41 + 25 * 10 );
+			      LABEL_RcsTank.setSize(250, 20);
+			      LABEL_RcsTank.setBackground(backgroundColor);
+			      LABEL_RcsTank.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsTank);
+			      
+			      JLabel LABEL_RcsXISP= new JLabel("RCS ISP X axis Thruster [s]");
+			      LABEL_RcsXISP.setLocation(INPUT_width+1, uy_p41 + 25 * 11 );
+			      LABEL_RcsXISP.setSize(250, 20);
+			      LABEL_RcsXISP.setBackground(backgroundColor);
+			      LABEL_RcsXISP.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsXISP);
+			      
+			      JLabel LABEL_RcsYISP= new JLabel("RCS ISP Y axis Thruster [s]");
+			      LABEL_RcsYISP.setLocation(INPUT_width+1, uy_p41 + 25 * 12 );
+			      LABEL_RcsYISP.setSize(250, 20);
+			      LABEL_RcsYISP.setBackground(backgroundColor);
+			      LABEL_RcsYISP.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsYISP);
+			      
+			      JLabel LABEL_RcsZISP= new JLabel("RCS ISP Z axis Thruster [s]");
+			      LABEL_RcsZISP.setLocation(INPUT_width+1, uy_p41 + 25 * 13 );
+			      LABEL_RcsZISP.setSize(250, 20);
+			      LABEL_RcsZISP.setBackground(backgroundColor);
+			      LABEL_RcsZISP.setForeground(labelColor);
+			      RCSPanel.add(LABEL_RcsZISP);
+			      
+				     INPUT_RCSXTHRUST = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSXTHRUST.setLocation(2, uy_p41 + 25 * 6 );;
+				     INPUT_RCSXTHRUST.setSize(INPUT_width-20, 20);
+				     INPUT_RCSXTHRUST.setBackground(backgroundColor);
+				     INPUT_RCSXTHRUST.setForeground(labelColor);
+				     INPUT_RCSXTHRUST.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSXTHRUST.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSXTHRUST);
+				     
+				     INPUT_RCSYTHRUST = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSYTHRUST.setLocation(2, uy_p41 + 25 * 7 );;
+				     INPUT_RCSYTHRUST.setSize(INPUT_width-20, 20);
+				     INPUT_RCSYTHRUST.setBackground(backgroundColor);
+				     INPUT_RCSYTHRUST.setForeground(labelColor);
+				     INPUT_RCSYTHRUST.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSYTHRUST.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSYTHRUST);
+				     
+				     INPUT_RCSZTHRUST = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSZTHRUST.setLocation(2, uy_p41 + 25 * 8 );;
+				     INPUT_RCSZTHRUST.setSize(INPUT_width-20, 20);
+				     INPUT_RCSZTHRUST.setBackground(backgroundColor);
+				     INPUT_RCSZTHRUST.setForeground(labelColor);
+				     INPUT_RCSZTHRUST.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSZTHRUST.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSZTHRUST);
+				     
+				     INPUT_RCSTANK = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSTANK.setLocation(2, uy_p41 + 25 * 10 );;
+				     INPUT_RCSTANK.setSize(INPUT_width-20, 20);
+				     INPUT_RCSTANK.setBackground(backgroundColor);
+				     INPUT_RCSTANK.setForeground(labelColor);
+				     INPUT_RCSTANK.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSTANK.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSTANK);
+				     
+				     INPUT_RCSXISP = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSXISP.setLocation(2, uy_p41 + 25 * 11 );
+				     INPUT_RCSXISP.setSize(INPUT_width-20, 20);
+				     INPUT_RCSXISP.setBackground(backgroundColor);
+				     INPUT_RCSXISP.setForeground(labelColor);
+				     INPUT_RCSXISP.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSXISP.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSXISP);
+				     
+				     INPUT_RCSYISP = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSYISP.setLocation(2, uy_p41 + 25 * 12 );
+				     INPUT_RCSYISP.setSize(INPUT_width-20, 20);
+				     INPUT_RCSYISP.setBackground(backgroundColor);
+				     INPUT_RCSYISP.setForeground(labelColor);
+				     INPUT_RCSYISP.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSYISP.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSYISP);
+				     
+				     INPUT_RCSZISP = new JTextField(10){
+						    /**
+							 * 
+							 */
+							private static final long serialVersionUID = 1L;
+
+								@Override public void setBorder(Border border) {
+							        // No!
+							    }
+							};
+				     INPUT_RCSZISP.setLocation(2, uy_p41 + 25 * 13 );;
+				     INPUT_RCSZISP.setSize(INPUT_width-20, 20);
+				     INPUT_RCSZISP.setBackground(backgroundColor);
+				     INPUT_RCSZISP.setForeground(labelColor);
+				     INPUT_RCSZISP.setHorizontalAlignment(JTextField.RIGHT);
+				     INPUT_RCSZISP.addFocusListener(new FocusListener() {
+
+						@Override
+						public void focusGained(FocusEvent arg0) { }
+
+						@Override
+						public void focusLost(FocusEvent e) {
+						//	WRITE_INIT();
+							WRITE_PROP();
+						}
+				   	  
+				     });
+				     RCSPanel.add(INPUT_RCSZISP);
 		     //----------------------------------------------------------------------------------
 		     //						Aerodynamic Input
 		     //----------------------------------------------------------------------------------
@@ -4797,9 +5232,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      
 			     double value = Math.sqrt(4/PI*readFromFile(SC_file, 2));
 			     //System.out.println(readFromFile(Aero_file, 2)+" | "+value); 
-			     INPUT_ParachuteDiameter = new JTextField(""+decAngularRate.format(value));
+			     INPUT_ParachuteDiameter = new JTextField(""+decAngularRate.format(value)){
+					    /**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+							@Override public void setBorder(Border border) {
+						        // No!
+						    }
+						};
 			     INPUT_ParachuteDiameter.setLocation(2, uy_p41 + 25 * 4);
 			     INPUT_ParachuteDiameter.setSize(INPUT_width, 20);
+			     INPUT_ParachuteDiameter.setBackground(backgroundColor);
+			     INPUT_ParachuteDiameter.setForeground(labelColor);
 			     INPUT_ParachuteDiameter.setHorizontalAlignment(JTextField.RIGHT);
 			     INPUT_ParachuteDiameter.addFocusListener(new FocusListener() {
 
@@ -4814,11 +5260,31 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			     });
 			     AerodynamicInputPanel.add(INPUT_ParachuteDiameter);
 			     
-			     INPUT_SURFACEAREA = new JTextField(10);
-			     INPUT_BALLISTICCOEFFICIENT = new JTextField(10);
+			     INPUT_SURFACEAREA = new JTextField(10){
+					    /**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+							@Override public void setBorder(Border border) {
+						        // No!
+						    }
+						};
+			     INPUT_BALLISTICCOEFFICIENT = new JTextField(10){
+					    /**
+						 * 
+						 */
+						private static final long serialVersionUID = 1L;
+
+							@Override public void setBorder(Border border) {
+						        // No!
+						    }
+						};
 
 			     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 1 );;
 			     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
+			     INPUT_SURFACEAREA.setBackground(backgroundColor);
+			     INPUT_SURFACEAREA.setForeground(labelColor);
 			     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
 			     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
 
@@ -4836,6 +5302,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			     
 			     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 2 );
 			     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
+			     INPUT_BALLISTICCOEFFICIENT.setBackground(backgroundColor);
+			     INPUT_BALLISTICCOEFFICIENT.setForeground(labelColor);
 			     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
 			     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
 
@@ -4856,6 +5324,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			     //r1.setBounds(75,50,100,30);    
 			      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
 			      RB_SurfaceArea.setSize(22,22);
+			      RB_SurfaceArea.setForeground(labelColor);
 			      RB_SurfaceArea.setBackground(backgroundColor);
 			     //r2.setBounds(75,100,100,30); 
 			      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 2 );
@@ -5690,6 +6159,20 @@ try {
   		INPUT_RCSY.setText(df_X4.format(InitialState));
   	} else if (k==8) {
   		INPUT_RCSZ.setText(df_X4.format(InitialState));
+  	} else if (k==9) {
+  		INPUT_RCSXTHRUST.setText(df_X4.format(InitialState));
+  	} else if (k==10) {
+  		INPUT_RCSYTHRUST.setText(df_X4.format(InitialState));
+  	} else if (k==11) {
+  		INPUT_RCSZTHRUST.setText(df_X4.format(InitialState));
+  	} else if(k==12) {
+  		INPUT_RCSTANK.setText(df_X4.format(InitialState));
+  	} else if(k==13) {
+  		INPUT_RCSXISP.setText(df_X4.format(InitialState));
+  	} else if(k==14) {
+  		INPUT_RCSYISP.setText(df_X4.format(InitialState));
+  	} else if(k==15) {
+  		INPUT_RCSZISP.setText(df_X4.format(InitialState));
   	}
   	k++;
   }
@@ -5847,13 +6330,13 @@ fstream.close();
 								Object[] tokens = strLine.split(" ");
 							    MODEL_RAWData.addRow(tokens);
 						     	RealTimeResultSet resultElement = new RealTimeResultSet();
-							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[75])},
-			 							   						{Double.parseDouble((String) tokens[76])},
-			 							   						{Double.parseDouble((String) tokens[77])}};
+							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[41])},
+			 							   						{Double.parseDouble((String) tokens[42])},
+			 							   						{Double.parseDouble((String) tokens[43])}};
 							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Double.parseDouble((String) tokens[91]));
-							    resultElement.setEulerY(Double.parseDouble((String) tokens[92]));
-							    resultElement.setEulerZ(Double.parseDouble((String) tokens[93]));
+							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
+							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
+							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
 							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
 							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
 							    resultElement.setFpa(Double.parseDouble((String) tokens[7]));
@@ -6703,7 +7186,7 @@ fstream.close();
             //System.out.println("------------------------------------");
             double r = 0;
             FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=12; i++)
+            for (int i = 0; i<=30; i++)
             {
         			if (i == 0 ){
             			r = Double.parseDouble(INPUT_ISP.getText()) ;
@@ -6742,6 +7225,27 @@ fstream.close();
             			wr.write(r+System.getProperty( "line.separator" ));
             		} else if( i == 8 ) {
             			r = Double.parseDouble(INPUT_RCSZ.getText()) ;
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 9 ) {
+            			r = Double.parseDouble(INPUT_RCSXTHRUST.getText());
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 10 ) {
+            			r = Double.parseDouble(INPUT_RCSYTHRUST.getText());
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 11 ) {
+            			r = Double.parseDouble(INPUT_RCSZTHRUST.getText());
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 12 ) {
+            			r = Double.parseDouble(INPUT_RCSTANK.getText());
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 13 ) {
+            			r = Double.parseDouble(INPUT_RCSXISP.getText());
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 14 ) {
+            			r = Double.parseDouble(INPUT_RCSYISP.getText());
+            			wr.write(r+System.getProperty( "line.separator" ));
+            		} else if( i == 15 ) {
+            			r = Double.parseDouble(INPUT_RCSZISP.getText());
             			wr.write(r+System.getProperty( "line.separator" ));
             		}
 		            }               
@@ -7020,23 +7524,17 @@ public static void EXPORT_Case() {
 	return result; 
 	}
 	
-	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{
-		ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
-		SEQUENCE_DATA = Read_SEQU();
-		
-	   	XYSeries xyseries10 = new XYSeries("Target Trajectory", false, false); 
+	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{		
 	   	XYSeries xyseries11 = new XYSeries("Trajectory", false, false); 
 	   	
 	   	XYSeries xyseries_FPA_is = new XYSeries("Flight Path Angle", false, false);
-	   	XYSeries xyseries_FPA_cmd = new XYSeries("Flight Path Angle IDEAL", false, false);
 	   	
 	    FileInputStream fstream = null;
 		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	              DataInputStream in = new DataInputStream(fstream);
 	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	              String strLine;
-	              
-	              try {
+
 	              while ((strLine = br.readLine()) != null )   {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[6]);
@@ -7044,88 +7542,18 @@ public static void EXPORT_Case() {
 		           
 		           double t = Double.parseDouble(tokens[0]);
 		           double fpa = Double.parseDouble(tokens[7])*rad2deg;
-		           
-		           double t_sequence = Double.parseDouble(tokens[42]);
-		           
-		           int active_sequence = Integer.parseInt(tokens[36]);
-		           double xx=0;
-		           double fpa_cmd = 0;
-		           if(AscentDescent_SwitchChooser.getSelectedIndex()==0) {
-		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
-		           } else {
-		           INDICATOR_VTOUCHDOWN.setText("-");   
-		           }
-		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[29])));
-		           INDICATOR_PROPPERC.setText("0"); 
-		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[43])));
-		           int active_sequ_type =0; double ctrl_vinit=0; double ctrl_hinit=0; double ctrl_vel=0; double ctrl_alt=0;int ctrlabelColorurve=0; double ctrl_fpa_init=0;int ctrl_TVC_curve=0;
-		           double ctrl_t_end=0; double ctrl_fpa_end =0;
+
 		           try {
-		           String[] sequ_tokens  	 = SEQUENCE_DATA.get(active_sequence).split(" ");
-		            active_sequ_type  	 	 = Integer.parseInt(sequ_tokens[1]);
-		            ctrl_vinit 	 			 = Double.parseDouble(sequ_tokens[3]);
-		            ctrl_hinit 	 			 = Double.parseDouble(sequ_tokens[4]);
-		            ctrl_vel 	    	         = Double.parseDouble(sequ_tokens[5]);
-		            ctrl_alt 		 		 = Double.parseDouble(sequ_tokens[6]);
-		            ctrlabelColorurve        = Integer.parseInt(sequ_tokens[7]);
-		            ctrl_TVC_curve		 	 = Integer.parseInt(sequ_tokens[8]);
-		            ctrl_fpa_init			 = Double.parseDouble(sequ_tokens[9]);
-		            ctrl_t_end				 = Double.parseDouble(sequ_tokens[10]);
-		            ctrl_fpa_end			     = Double.parseDouble(sequ_tokens[11]);
-		            
-		           } catch (java.lang.IndexOutOfBoundsException eIOBE){
-		        	   //System.out.println(eIOBE);
-		        	   }
-		           
-		    		    if  (ctrl_TVC_curve==0) {
-		    		    	xyseries_FPA_cmd.add(t  , 0); 
-		   		        } else if (ctrl_TVC_curve==1) {
-		   		        	fpa_cmd =    PitchCurve.SquareRootPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
-		   		        	if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
-		  		             try { xyseries_FPA_cmd.add(t  , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {
-		  		            	// System.out.println(eSE);
-		  		            	 }
-		    		    } else if (ctrl_TVC_curve==2) {
-		    		    		fpa_cmd =   PitchCurve.LinearPitchCurve( 0,  ctrl_fpa_init, ctrl_t_end, ctrl_fpa_end, t_sequence);
-		    		    		if(Double.isNaN(fpa_cmd)) {fpa_cmd=0;}
-		    		    	 		try { xyseries_FPA_cmd.add(t , fpa_cmd*deg2rad); } catch(org.jfree.data.general.SeriesException eSE) {
-		    		    	 			//System.out.println(eSE);
-		    		    	 			}
-		    		    } 
-		           
-		           //--------------------------------------------------------
-		           if(active_sequ_type==3) { // Controlled Propulsive flight
-		    		    if  (ctrlabelColorurve==0) {
-		    		    		 xyseries10.add(x  , 0); 
-		   		        } else if (ctrlabelColorurve==1) {
-		    		         xx =    LandingCurve.ParabolicLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
-		    		         //if(Double.isNaN(xx)) {xx=0;}
-		  		             try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
-		  		            	 //System.out.println(eSE);
-		  		            	 }
-		    		    } else if (ctrlabelColorurve==2) {
-		    		    	 	xx =   LandingCurve.SquarerootLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
-		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
-		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
-		    		    	 			//System.out.println(eSE);
-		    		    	 			}
-		    		    } else if (ctrlabelColorurve==3) {
-		    		    	 	xx =   LandingCurve.LinearLandingCurve(ctrl_vinit, ctrl_hinit, ctrl_vel, ctrl_alt, y);
-		    		    	 	//if(Double.isNaN(xx)) {xx=0;}
-		    		    	 		try { xyseries10.add(xx  , y); } catch(org.jfree.data.general.SeriesException eSE) {
-		    		    	 			//System.out.println(eSE);
-		    		    	 			}
-		    		    } 
-		           } else {try {xyseries10.add(x  , 0);  } catch(org.jfree.data.general.SeriesException eSE) {
-		        	   //System.out.println(eSE);
-		        	   }}
-		           
+		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
+		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[99])));
+		           INDICATOR_PROPPERC.setText("0"); 
+		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[93])));
+		           } catch (NumberFormatException e) {
+		        	   System.err.println("Error: Emtpy String detected - Indicator Dashboard");
+		           }
 		           try {xyseries11.add(x  , y);} catch(org.jfree.data.general.SeriesException eSE) {
-		        	   //System.out.println(eSE);
 		        	   }
-		           //double noise = Noise.PerlinNoise.noise1((float) t);
 		           try {xyseries_FPA_is.add(t,fpa);} catch(org.jfree.data.general.SeriesException eSE) {
-		        	   //System.out.println(eSE);
 		        	   }
 		        	   
 		           }
@@ -7133,19 +7561,10 @@ public static void EXPORT_Case() {
 	       fstream.close();
 	       in.close();
 	       br.close();
-		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries11); 
-		   // CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries10);
-		    
+	       
+		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries11);    
 		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
-		   // CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_cmd);
-		    
-	              } catch (NullPointerException  eNPE) { 
-	            	  //System.out.println(eNPE);
-	            	  System.out.println("Dashboard chart, Nullpointerexception");
-					}catch(IllegalArgumentException eIAE) {
-						System.out.println("Dashboard chart, illegal argument error. Check output column of sequence index variable.");
-						}
-					
+
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }
 	

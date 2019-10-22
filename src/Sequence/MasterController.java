@@ -18,6 +18,14 @@ double sequence=0;
 			RealTimeContainer realTimeContainer, SpaceShip spaceShip, SensorSet sensorSet, 
 			List<SequenceContent> SequenceSet, double CtrlFrequency ) {
 			//------------------------------------------------------------------------------------------------------------
+			// 					Set active elements default values:
+			//------------------------------------------------------------------------------------------------------------		
+			controlCommandSet.setMomentumRCS_X_cmd(0);
+			controlCommandSet.setMomentumRCS_Y_cmd(0);
+			controlCommandSet.setMomentumRCS_Z_cmd(0);
+			
+			controlCommandSet.setPrimaryThrustThrottleCmd(0);
+			//------------------------------------------------------------------------------------------------------------
 			// 				Get Controller Response for active Sequence
 			//------------------------------------------------------------------------------------------------------------
 			for(int ctrIndx=0;ctrIndx<SequenceSet.get(controlCommandSet.getActiveSequence()).getControllerSets().size();ctrIndx++) {

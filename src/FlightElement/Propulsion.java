@@ -10,9 +10,13 @@ public class Propulsion {
 	private double primaryPropellant;
 	private boolean isPrimaryThrottleModel;
 	
-	private double secondaryISP_RCS;
+	private double secondaryISP_RCS_X;
+	private double secondaryISP_RCS_Y;
+	private double secondaryISP_RCS_Z;
 	private double secondaryISP_AUX;
-	private double secondaryThrust_RCS;
+	private double secondaryThrust_RCS_X;
+	private double secondaryThrust_RCS_Y;
+	private double secondaryThrust_RCS_Z;
 	private double secondaryThrust_AUX;
 	private double secondaryPropellant;
 	
@@ -143,14 +147,33 @@ public class Propulsion {
 		this.isPrimaryThrottleModel = isPrimaryThrottleModel;
 	}
 
-
-	public double getSecondaryISP_RCS() {
-		return secondaryISP_RCS;
+	public double getSecondaryISP_RCS_X() {
+		return secondaryISP_RCS_X;
 	}
 
 
-	public void setSecondaryISP_RCS(double secondaryISP_RCS) {
-		this.secondaryISP_RCS = secondaryISP_RCS;
+	public void setSecondaryISP_RCS_X(double secondaryISP_RCS_X) {
+		this.secondaryISP_RCS_X = secondaryISP_RCS_X;
+	}
+
+
+	public double getSecondaryISP_RCS_Y() {
+		return secondaryISP_RCS_Y;
+	}
+
+
+	public void setSecondaryISP_RCS_Y(double secondaryISP_RCS_Y) {
+		this.secondaryISP_RCS_Y = secondaryISP_RCS_Y;
+	}
+
+
+	public double getSecondaryISP_RCS_Z() {
+		return secondaryISP_RCS_Z;
+	}
+
+
+	public void setSecondaryISP_RCS_Z(double secondaryISP_RCS_Z) {
+		this.secondaryISP_RCS_Z = secondaryISP_RCS_Z;
 	}
 
 
@@ -164,13 +187,34 @@ public class Propulsion {
 	}
 
 
-	public double getSecondaryThrust_RCS() {
-		return secondaryThrust_RCS;
+
+	public double getSecondaryThrust_RCS_X() {
+		return secondaryThrust_RCS_X;
 	}
 
 
-	public void setSecondaryThrust_RCS(double secondaryThrust_RCS) {
-		this.secondaryThrust_RCS = secondaryThrust_RCS;
+	public void setSecondaryThrust_RCS_X(double secondaryThrust_RCS_X) {
+		this.secondaryThrust_RCS_X = secondaryThrust_RCS_X;
+	}
+
+
+	public double getSecondaryThrust_RCS_Y() {
+		return secondaryThrust_RCS_Y;
+	}
+
+
+	public void setSecondaryThrust_RCS_Y(double secondaryThrust_RCS_Y) {
+		this.secondaryThrust_RCS_Y = secondaryThrust_RCS_Y;
+	}
+
+
+	public double getSecondaryThrust_RCS_Z() {
+		return secondaryThrust_RCS_Z;
+	}
+
+
+	public void setSecondaryThrust_RCS_Z(double secondaryThrust_RCS_Z) {
+		this.secondaryThrust_RCS_Z = secondaryThrust_RCS_Z;
 	}
 
 

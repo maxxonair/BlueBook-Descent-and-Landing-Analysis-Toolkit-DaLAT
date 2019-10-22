@@ -75,6 +75,8 @@ public class GUISequenceElement {
 		      			      BlueBookVisual.getSequenceList().add(GUISequenceElement.getSequenceElement(BlueBookVisual.getSequenceList().size()));
 		      			      BlueBookVisual.getSequenceList().get(BlueBookVisual.getSequenceList().size()-1).setLocation(50*BlueBookVisual.getSequenceList().size(), height);
 		    			      BlueBookVisual.SequenceLeftPanel.add(BlueBookVisual.getSequenceList().get(BlueBookVisual.getSequenceList().size()-1));
+		    			      BlueBookVisual.SequenceLeftPanel.revalidate();
+		    			      BlueBookVisual.SequenceLeftPanel.repaint();
 		                    }
 		                    });
 	        	}} );
@@ -93,6 +95,8 @@ public class GUISequenceElement {
 		                    @Override
 		                    public void run() {
 		                    	BlueBookVisual.SequenceLeftPanel.remove(BlueBookVisual.getSequenceList().get(ThissequenceID));
+			    			      BlueBookVisual.SequenceLeftPanel.revalidate();
+			    			      BlueBookVisual.SequenceLeftPanel.repaint();
 		                    }
 		                    });
 	        	}} );

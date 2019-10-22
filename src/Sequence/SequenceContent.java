@@ -27,6 +27,20 @@ public class SequenceContent {
 	public SequenceContent() {
 		
 	}
+	
+	public void deleteAllContent() {
+		for(int i=controllerSets.size()-1;i>=0;i--) {
+			controllerSets.remove(i);
+		}
+		for(int i=EventSets.size()-1;i>=0;i--) {
+			EventSets.remove(i);
+		}
+		triggerEnd=false;
+		triggerValue=0;
+		triggerType=0;
+		tswitch=true;
+		tzero=0;
+	}
 		
 	public void addRollControl() {
 		FlightController_RollControl flightController_RollControl = new FlightController_RollControl();

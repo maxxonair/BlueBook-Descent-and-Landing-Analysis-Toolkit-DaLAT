@@ -368,7 +368,7 @@ k++;
 }
 //---------------------------------------------------------------------------------------------------
 public static double[] readPropulsionInput() throws IOException{
-double[] readINP = new double[10];
+double[] readINP = new double[30];
 	double InitialState = 0;
     FileInputStream fstream = null;
     try{

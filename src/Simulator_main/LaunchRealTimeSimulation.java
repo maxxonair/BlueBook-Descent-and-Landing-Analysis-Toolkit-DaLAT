@@ -67,20 +67,24 @@ public class LaunchRealTimeSimulation {
     	SequenceContent sequenceContent = new SequenceContent();
     	sequenceContent.addRollControl();
     	//sequenceContent.addPrimaryThrustControl();
-   // 	sequenceContent.addYawControl();
+    //sequenceContent.addYawControl();
     	sequenceContent.setTriggerEnd(2, 400);
     	SequenceSet.add(sequenceContent);
-    	SequenceContent sequenceContent2 = new SequenceContent();
-  // 	sequenceContent2.addYawControl();
+     	SequenceContent sequenceContent2 = new SequenceContent();
+    //sequenceContent2.addYawControl();
     	//sequenceContent2.addPrimaryThrustControl();
     	sequenceContent2.addParachuteDeployment();
     	sequenceContent2.setTriggerEnd(3, 1500);
     	SequenceSet.add(sequenceContent2);
     	SequenceContent sequenceContent3 = new SequenceContent();
     	sequenceContent3.addParachuteSeparation();
+    	sequenceContent3.addPrimaryThrustControl();
+    	sequenceContent3.setTriggerEnd(3, 100);
     	SequenceSet.add(sequenceContent3);
     	SequenceContent sequenceContent4 = new SequenceContent();
     	SequenceSet.add(sequenceContent4);
+    	SequenceContent sequenceContent5 = new SequenceContent();
+    	SequenceSet.add(sequenceContent5);
     	
     //	System.out.println(SequenceSet.size());
     	//------------------------------------------------------------------------------------------
@@ -103,9 +107,15 @@ public class LaunchRealTimeSimulation {
 	    	spaceShip.getPropulsion().setRCSMomentumX(ReadInput.readPropulsionInput()[6]);
 	    	spaceShip.getPropulsion().setRCSMomentumY(ReadInput.readPropulsionInput()[7]);
 	    	spaceShip.getPropulsion().setRCSMomentumZ(ReadInput.readPropulsionInput()[8]);
+	    	spaceShip.getPropulsion().setSecondaryPropellant(ReadInput.readPropulsionInput()[12]);
+	    	spaceShip.getPropulsion().setSecondaryISP_RCS_X(ReadInput.readPropulsionInput()[13]);
+	    	spaceShip.getPropulsion().setSecondaryISP_RCS_Y(ReadInput.readPropulsionInput()[14]);
+	    	spaceShip.getPropulsion().setSecondaryISP_RCS_Z(ReadInput.readPropulsionInput()[15]);
+	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_X(ReadInput.readPropulsionInput()[9]);
+	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_Y(ReadInput.readPropulsionInput()[10]);
+	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_Z(ReadInput.readPropulsionInput()[11]);
+	    	
 	    	spaceShip.getAeroElements().setParachuteSurfaceArea(ReadInput.readSCFile()[2]);
-	    	spaceShip.getPropulsion().setSecondaryISP_RCS(280);
-	    	spaceShip.getPropulsion().setSecondaryThrust_RCS(200);
 	    	
 	    	if((int) ReadInput.readPropulsionInput()[4]==1) {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
@@ -167,7 +177,7 @@ public class LaunchRealTimeSimulation {
     			RealTimeContainer realTimeContainer = new RealTimeContainer();		
     			
 		        long startTime   = System.nanoTime();	
-		        System.out.println(spaceShip.getPropulsion().getPrimaryThrustMax());
+		       // System.out.println(spaceShip.getPropulsion().getPrimaryThrustMax());
 for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    		
 	    		//---------------------------------------------------------------------------------------
@@ -224,6 +234,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		  sensorSet.setGlobalTime(tIS);
 	    		    	   SensorModel.addVelocitySensorUncertainty(sensorSet,  4);
 	    		    			//SensorModel.addAltitudeSensorUncertainty(sensorSet,  5);
+	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------	
@@ -286,7 +297,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
     			realTimeResultSet.getRadius() + " " + 
     			realTimeResultSet.getVelocity()+ " " + 
     			realTimeResultSet.getFpa() + " " + 
-    			realTimeResultSet.getAzi() + " " + 
+    			realTimeResultSet.getAzi() + " " +     			
       		  atmosphereSet.getDensity() + " " + 
       		  atmosphereSet.getStaticTemperature()+ " " +
       		  atmosphereSet.getMach()+ " " +
@@ -302,18 +313,48 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
       		  aerodynamicSet.getLiftForce() + " " +
       		  aerodynamicSet.getSideForce() + " " +
       		  aerodynamicSet.getAerodynamicAngleOfAttack()+" "+
-      		  aerodynamicSet.getAerodynamicBankAngle()+ " " +
+      		  aerodynamicSet.getAerodynamicBankAngle()+ " " +     		
       		  gravitySet.getG_NED()[0][0]+" "+
       		  gravitySet.getG_NED()[1][0]+" "+
       		  gravitySet.getG_NED()[2][0]+" "+
-      		  Math.sqrt(gravitySet.getG_NED()[0][0]*gravitySet.getG_NED()[0][0] + gravitySet.getG_NED()[1][0]*gravitySet.getG_NED()[1][0] + gravitySet.getG_NED()[2][0]*gravitySet.getG_NED()[2][0])+" "+
-  		  0+" "+
+      		  Math.sqrt(gravitySet.getG_NED()[0][0]*gravitySet.getG_NED()[0][0] + gravitySet.getG_NED()[1][0]*gravitySet.getG_NED()[1][0] + gravitySet.getG_NED()[2][0]*gravitySet.getG_NED()[2][0])+" "+     		  
+      		  forceMomentumSet.getF_total_NED()[0][0]+" "+
+    		  forceMomentumSet.getF_total_NED()[1][0]+" "+
+    		  forceMomentumSet.getF_total_NED()[2][0]+" "+
+    		  forceMomentumSet.getF_Aero_A()[0][0]+" "+
+    		  forceMomentumSet.getF_Aero_A()[1][0]+" "+
+    		  forceMomentumSet.getF_Aero_A()[2][0]+" "+
+    		  forceMomentumSet.getF_Thrust_NED()[0][0]+" "+
+    		  forceMomentumSet.getF_Thrust_NED()[1][0]+" "+
+    		  forceMomentumSet.getF_Thrust_NED()[2][0]+" "+
+    		  forceMomentumSet.getF_Gravity_NED()[0][0]+" "+
+    		  forceMomentumSet.getF_Gravity_NED()[1][0]+" "+
+    		  forceMomentumSet.getF_Gravity_NED()[2][0]+" "+
+      		  realTimeResultSet.getCartesianPosECEF()[0][0]+" "+
+      		  realTimeResultSet.getCartesianPosECEF()[1][0]+" "+
+      		  realTimeResultSet.getCartesianPosECEF()[2][0]+" "+
+      		  0 + " " + 
+      		  0 + " " + 
+      		  0 + " " +       	 	  
+  		  realTimeResultSet.getQuarternions()[0][0]+" "+
+  		  realTimeResultSet.getQuarternions()[1][0]+" "+
+  		  realTimeResultSet.getQuarternions()[2][0]+" "+
+  		  realTimeResultSet.getQuarternions()[3][0]+" "+
+  		  realTimeResultSet.getPQR()[0][0]+" "+
+  		  realTimeResultSet.getPQR()[1][0]+" "+
+  		  realTimeResultSet.getPQR()[2][0]+" "+
+		  forceMomentumSet.getM_total_NED()[0][0]+" "+
+		  forceMomentumSet.getM_total_NED()[1][0]+" "+
+		  forceMomentumSet.getM_total_NED()[2][0]+" "+
+  	      realTimeResultSet.getEulerX()+" "+
+  		  realTimeResultSet.getEulerY()+" "+
+  	      realTimeResultSet.getEulerZ()+" "+
   		  realTimeResultSet.getSpaceShip().getMass()+ " " +
   		  realTimeResultSet.getNormalizedDeceleration()+ " " +
   		  0+ " " + 
-  		  0+" "+
-  		  sensorSet.getRealTimeResultSet().getAltitude()+" "+
-  		  sensorSet.getRealTimeResultSet().getVelocity()+" "+
+  		  realTimeResultSet.getVelocity()*Math.cos(realTimeResultSet.getFpa())+" "+
+  		  realTimeResultSet.getVelocity()*Math.sin(realTimeResultSet.getFpa())+" "+
+  		  0+" "+ 	  
   		  controlCommandSet.getActiveSequence()+" "+
   		  sensorSet.getControllerTime()+" "+
   		  aerodynamicSet.getDragCoefficientParachute()+" "+
@@ -321,7 +362,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
 		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
 		  (forceMomentumSet.getThrustTotal())+" "+
 		  (forceMomentumSet.getThrustTotal()/realTimeResultSet.getSCMass())+" "+
-		  (actuatorSet.getPrimaryPropellant_is())/realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
+		  realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel()/realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
 		  actuatorSet.getPrimaryISP_is()+" "+
 		  controlCommandSet.getMomentumRCS_X_cmd()+" "+
 		  controlCommandSet.getMomentumRCS_Y_cmd()+" "+
@@ -329,7 +370,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
 		  actuatorSet.getMomentumRCS_X_is()+" "+
 		  actuatorSet.getMomentumRCS_Y_is()+" "+
 		  actuatorSet.getMomentumRCS_Z_is()+" "+
-		  actuatorSet.getRcsPropellant_is()/realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
+		  realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel()/realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
   		  0+" "+
   		  0+" "+
   		  0+" "+
@@ -341,37 +382,13 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
   		  0+" "+
   		  0+" "+
   		  0+" "+
-  		  forceMomentumSet.getF_total_NED()[0][0]+" "+
-		  forceMomentumSet.getF_total_NED()[1][0]+" "+
-		  forceMomentumSet.getF_total_NED()[2][0]+" "+
-		  forceMomentumSet.getF_Aero_A()[0][0]+" "+
-		  forceMomentumSet.getF_Aero_A()[1][0]+" "+
-		  forceMomentumSet.getF_Aero_A()[2][0]+" "+
-		  forceMomentumSet.getF_Thrust_NED()[0][0]+" "+
-		  forceMomentumSet.getF_Thrust_NED()[1][0]+" "+
-		  forceMomentumSet.getF_Thrust_NED()[2][0]+" "+
-		  forceMomentumSet.getF_Gravity_NED()[0][0]+" "+
-		  forceMomentumSet.getF_Gravity_NED()[1][0]+" "+
-		  forceMomentumSet.getF_Gravity_NED()[2][0]+" "+
-  		  realTimeResultSet.getCartesianPosECEF()[0][0]+" "+
-  		  realTimeResultSet.getCartesianPosECEF()[1][0]+" "+
-  		  realTimeResultSet.getCartesianPosECEF()[2][0]+" "+
-  		  0+ " " + 
-  		  0 + " " + 
-  		  realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel() + " " + 
-  		realTimeResultSet.getQuarternions()[0][0]+" "+
-  		realTimeResultSet.getQuarternions()[1][0]+" "+
-  		realTimeResultSet.getQuarternions()[2][0]+" "+
-  		realTimeResultSet.getQuarternions()[3][0]+" "+
-  		realTimeResultSet.getPQR()[0][0]+" "+
-  		realTimeResultSet.getPQR()[1][0]+" "+
-  		realTimeResultSet.getPQR()[2][0]+" "+
-		  forceMomentumSet.getM_total_NED()[0][0]+" "+
-		  forceMomentumSet.getM_total_NED()[1][0]+" "+
-		  forceMomentumSet.getM_total_NED()[2][0]+" "+
-  		realTimeResultSet.getEulerX()+" "+
-  		realTimeResultSet.getEulerY()+" "+
-  		realTimeResultSet.getEulerZ()+"  "
+  		  (realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()-realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel())+" "+
+  		  (realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()-realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel())+" "+
+  		  0+" "+
+  		  0+" "+
+  		  0+" "+
+  		  0+" "+
+  		  0+" "
   		  );
 	return steps;	
 }
