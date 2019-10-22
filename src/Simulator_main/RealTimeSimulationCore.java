@@ -78,8 +78,6 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    //	                                             Simulator public variables
 		//
 		//----------------------------------------------------------------------------------------------------------------------------
-		    public static double tminus=0;
-		    public static double tis=0;
 		    public static double mminus=0;
 		    public static double vminus=0;
 		    public static double val_dt=0;
@@ -98,44 +96,23 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 			public static double rm    = 0;    	    // Planets average radius                   [m]
 			public static double omega = 0 ;        // Planets rotational rate                  [rad/sec]
 			public static double g0 = 9.81;         // For normalized ISP 			
-			public static double gn = 0;
-			public static double gr = 0;
-			public static double DragForce = 0;
-			public static double SideForce = 0;
-			public static double LiftForce = 0;
 		    public static double Cd=0;
-		    public static double C_SF=0;
-		    public static double Cl=0;
-		    public static double qinf=0;
-		    public static double SurfaceArea =0;
  					// Drag coefficient in contiuum flow; 
 		    public static int TARGET=0;						// Target body index
 		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
 		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
 		    public static double M0=0; 
-		    public static double Tx=0;
-		    public static double Ty=0;
-		    public static double Tz=0;
 		    public static double Thrust_max=0; 
 		    public static double Thrust_min=0;
-		    public static double cntr_h_init=0;
-		    public static double cntr_v_init=0;
-		    public static double cntr_t_init=0;
 		    public static double cntr_fpa_init=0;
 		    public static int ctrl_curve;
 	        private static List<atm_dataset> ATM_DATA 									 = new ArrayList<atm_dataset>(); 
 	        static boolean PROPread = false; 
 	        public static int active_sequence = 0 ; 
-	        public static double ctrl_vel =0;			// Active Flight Controller target velocity [m/s]
-	        public static double ctrl_alt = 0 ; 			// Active Flight Controller target altitude [m]
-	        public static double v_touchdown=0; 			// Global touchdown velocity constraint [m/s]
-	        public static boolean isFirstSequence=true;
-	        public static boolean Sequence_RES_closed=false;
 	        public static double groundtrack = 0; 
 	        public static double phimin=0;
 	        public static double tetamin=0;
 	      	public static double fpa_dot =0;
-	      	public static double integ_t =0;
 	      	public static double Thrust_is=0;
 	      	
 	        public static double Xfo = 0 ;
@@ -270,7 +247,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	        public static MasterSet masterSet = new MasterSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
-	    		return 14; // 6 DOF model 
+	    		return 16; // 6 DOF model 
 	    }
 	    
 		public static double getRm() {
@@ -442,7 +419,22 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    	
 		    }	    
 		    // System mass [kg]
-		    dxdt[6] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ;   
+		    dxdt[6]  = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) 
+		    			   - forceMomentumSet.getRCSThrustX()/(actuatorSet.getRCS_X_ISP()*g0) 
+		    			   - forceMomentumSet.getRCSThrustY()/(actuatorSet.getRCS_Y_ISP()*g0)
+		    			   - forceMomentumSet.getRCSThrustZ()/(actuatorSet.getRCS_Z_ISP()*g0); 
+		    dxdt[14] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ; 
+		    dxdt[15] = - forceMomentumSet.getRCSThrustX()/(actuatorSet.getRCS_X_ISP()*g0) 
+		    			   - forceMomentumSet.getRCSThrustY()/(actuatorSet.getRCS_Y_ISP()*g0)
+		    		       - forceMomentumSet.getRCSThrustZ()/(actuatorSet.getRCS_Z_ISP()*g0); 
+		    spaceShip.setMass(x[6]);
+		    spaceShip.getPropulsion().setPrimaryPropellantFillingLevel(x[14]);
+		    spaceShip.getPropulsion().setSecondaryPropellantFillingLevel(x[15]);
+
+		    //System.out.println(x[14]);
+		   // System.out.println(actuatorSet.getPrimaryThrust_is());
+		  // System.out.println(forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0)*currentDataSet.getValDt());
+		  //  System.out.println(spaceShip.getPropulsion().getPrimaryPropellantFillingLevel());
 		  //  tankContent -= forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) * currentDataSet.getValDt();
 		   // System.out.println("Tank content:"+tankContent);
 	    	//-------------------------------------------------------------------------------------------------------------------
@@ -647,7 +639,6 @@ actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
  M0 			  = spaceShip.getMass()  ; 
  mminus	  	  = M0  ;
  vminus		  = integratorData.getInitVelocity()  ;
- v_touchdown	  = 0   ;
 
 phimin=integratorData.getInitLongitude();
 tetamin=integratorData.getInitLatitude();
@@ -683,7 +674,7 @@ for (int i = 0;i<ATM_DATA.size();i++){
 }
 //----------------------------------------------------------------------------------------------
 // 						Result vector setup - DO NOT TOUCH
-int dimension = 14;
+int dimension = 16;
 
 double[] y = new double[dimension]; // Result vector
 
@@ -720,7 +711,7 @@ double[] y = new double[dimension]; // Result vector
 		        //System.out.println(x3+"|"+x4+"|"+x5+"|"+V_NED_ECEF_cartesian[0]+"|"+V_NED_ECEF_cartesian[1]+"|"+V_NED_ECEF_cartesian[2]+"|"+V_NED_ECEF_spherical[0]+"|"+V_NED_ECEF_spherical[1]+"|"+V_NED_ECEF_spherical[2]+"|");
 	        }
 // S/C Mass        
-  y[6] = spaceShip.getMass();
+    y[6] = spaceShip.getMass();
 	// Attitude and Rotational Motion
 	y[7]  = integratorData.getInitialQuarterions()[0][0];
 	y[8]  = integratorData.getInitialQuarterions()[1][0];
@@ -730,15 +721,15 @@ double[] y = new double[dimension]; // Result vector
 	y[12] = integratorData.getInitRotationalRateY();
 	y[13] = integratorData.getInitRotationalRateZ();
 	
-// S/C Mass        
-y[6] = spaceShip.getMass();
+	y[14] = spaceShip.getPropulsion().getPrimaryPropellantFillingLevel();
+	y[15] = spaceShip.getPropulsion().getSecondaryPropellantFillingLevel();
 
 currentDataSet.setxIS(y);
 currentDataSet.settIS(0);
 currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
 currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
 currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
-ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);	
+//ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);	
 List<MasterSet> realTimeSet = new ArrayList<MasterSet>();
 RealTimeContainer realTimeContainer = new RealTimeContainer();
 //----------------------------------------------------------------------------------------------
@@ -751,8 +742,8 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	            
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
 	                double   t = interpolator.getCurrentTime();
-	                if(switcher) {tis=t;switcher=false;}else {tminus=t;switcher=true;};if(tis!=tminus) {val_dt=Math.abs(tis-tminus);}else{val_dt=0.01;};
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
+	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
 	                
 	                realTimeSet.add(masterSet);
 	                
@@ -779,6 +770,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
 	                	
 	                	realTimeResultSet.setMasterSet(masterSet);
+	                	realTimeResultSet.setSpaceShip(RealTimeSimulationCore.spaceShip);
 	                	
 	                	realTimeContainer.setRealTimeResultSet(realTimeResultSet);
 	                	realTimeContainer.setRealTimeSet(realTimeSet);

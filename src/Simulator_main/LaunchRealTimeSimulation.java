@@ -65,11 +65,14 @@ public class LaunchRealTimeSimulation {
     	SequenceSet.remove(i);
     	}
     	SequenceContent sequenceContent = new SequenceContent();
-   // 	sequenceContent.addRollControl();
+    	sequenceContent.addRollControl();
+    	//sequenceContent.addPrimaryThrustControl();
+   // 	sequenceContent.addYawControl();
     	sequenceContent.setTriggerEnd(2, 400);
     	SequenceSet.add(sequenceContent);
     	SequenceContent sequenceContent2 = new SequenceContent();
   // 	sequenceContent2.addYawControl();
+    	//sequenceContent2.addPrimaryThrustControl();
     	sequenceContent2.addParachuteDeployment();
     	sequenceContent2.setTriggerEnd(3, 1500);
     	SequenceSet.add(sequenceContent2);
@@ -101,6 +104,8 @@ public class LaunchRealTimeSimulation {
 	    	spaceShip.getPropulsion().setRCSMomentumY(ReadInput.readPropulsionInput()[7]);
 	    	spaceShip.getPropulsion().setRCSMomentumZ(ReadInput.readPropulsionInput()[8]);
 	    	spaceShip.getAeroElements().setParachuteSurfaceArea(ReadInput.readSCFile()[2]);
+	    	spaceShip.getPropulsion().setSecondaryISP_RCS(280);
+	    	spaceShip.getPropulsion().setSecondaryThrust_RCS(200);
 	    	
 	    	if((int) ReadInput.readPropulsionInput()[4]==1) {
 	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
@@ -117,7 +122,7 @@ public class LaunchRealTimeSimulation {
 	    	
 	    	
     		double tGlobal = 1000;//inputOut[7];
-    		double Frequency = 1;
+    		double Frequency = 5;
     		double tIncrement = 1/Frequency; 
     		
     		
@@ -162,7 +167,8 @@ public class LaunchRealTimeSimulation {
     			RealTimeContainer realTimeContainer = new RealTimeContainer();		
     			
 		        long startTime   = System.nanoTime();	
-	for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
+		        System.out.println(spaceShip.getPropulsion().getPrimaryThrustMax());
+for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    		
 	    		//---------------------------------------------------------------------------------------
 	    		//				  6 Degree of Freedom - Universal RealTime module
@@ -193,21 +199,20 @@ public class LaunchRealTimeSimulation {
 		    	    		integratorData.setInitRotationalRateX(realTimeResultSet.getPQR()[0][0]);
 		    	    		integratorData.setInitRotationalRateY(realTimeResultSet.getPQR()[1][0]);
 		    	    		integratorData.setInitRotationalRateZ(realTimeResultSet.getPQR()[2][0]);
-	
-		    	    		spaceShip.setMass(realTimeResultSet.getSCMass());
+
 		    	    		
 		    	    		integratorData.setGlobalTime(tIS);
 		    	   //---------------------------------------------------------------------------------------
 		    	   //				  Get Master Controller Commands
 		    	   //---------------------------------------------------------------------------------------  		
 		    	    		controlCommandSet = MasterController.createMasterCommand(controlCommandSet, 
-		    	    				realTimeContainer, spaceShip, sensorSet, SequenceSet, Frequency);
+		    	    	realTimeContainer, realTimeResultSet.getSpaceShip(), sensorSet, SequenceSet, Frequency);
 		    	   //---------------------------------------------------------------------------------------
 		    	   //				  Start incremental integration
 		    	   //---------------------------------------------------------------------------------------		
 		    	    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
 								integratorData, 
-								spaceShip,				 
+								realTimeResultSet.getSpaceShip(),				 
 								controlCommandSet
 		    																			);	
 	    			}
@@ -222,12 +227,13 @@ public class LaunchRealTimeSimulation {
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------	
-	    			steps = addStep(steps, realTimeContainer.getRealTimeResultSet(), integratorData, 
-	    					        spaceShip);
+	    			steps = addStep(steps, realTimeContainer.getRealTimeResultSet(), integratorData);
 	  	      //---------------------------------------------------------------------------------------
 	  		  //				  Implement Stop Handler here: 
 	  	      //---------------------------------------------------------------------------------------	
 		    			if(realTimeResultSet.getAltitude()<0) {
+		    				break;
+		    			} else if (tIS>500) {
 		    				break;
 		    			}
 	    		
@@ -257,13 +263,13 @@ private static void createWriteOut(ArrayList<String> steps) {
             for(String step: steps) {
                 writer.println(step);
             }
-            System.out.println("WRITE: Result file. ");         
+            System.out.println("WRITE: Result file. Done.");         
             writer.close();
         } catch(Exception e) {System.out.println("ERROR: Writing result file failed");System.out.println(e);};
 }
 
 private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResultSet realTimeResultSet, 
-										 IntegratorData integratorData, SpaceShip spaceShip) {
+										 IntegratorData integratorData) {
 	MasterSet masterSet = realTimeResultSet.getMasterSet(); 
 	AtmosphereSet atmosphereSet = masterSet.getAtmosphereSet();
 	AerodynamicSet aerodynamicSet = masterSet.getAerodynamicSet();
@@ -302,7 +308,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
       		  gravitySet.getG_NED()[2][0]+" "+
       		  Math.sqrt(gravitySet.getG_NED()[0][0]*gravitySet.getG_NED()[0][0] + gravitySet.getG_NED()[1][0]*gravitySet.getG_NED()[1][0] + gravitySet.getG_NED()[2][0]*gravitySet.getG_NED()[2][0])+" "+
   		  0+" "+
-  		  realTimeResultSet.getSCMass()+ " " +
+  		  realTimeResultSet.getSpaceShip().getMass()+ " " +
   		  realTimeResultSet.getNormalizedDeceleration()+ " " +
   		  0+ " " + 
   		  0+" "+
@@ -315,7 +321,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
 		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
 		  (forceMomentumSet.getThrustTotal())+" "+
 		  (forceMomentumSet.getThrustTotal()/realTimeResultSet.getSCMass())+" "+
-		  (actuatorSet.getPrimaryPropellant_is())/spaceShip.getPropulsion().getPrimaryPropellant()*100+" "+ 
+		  (actuatorSet.getPrimaryPropellant_is())/realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
 		  actuatorSet.getPrimaryISP_is()+" "+
 		  controlCommandSet.getMomentumRCS_X_cmd()+" "+
 		  controlCommandSet.getMomentumRCS_Y_cmd()+" "+
@@ -323,7 +329,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
 		  actuatorSet.getMomentumRCS_X_is()+" "+
 		  actuatorSet.getMomentumRCS_Y_is()+" "+
 		  actuatorSet.getMomentumRCS_Z_is()+" "+
-		  actuatorSet.getRcsPropellant_is()/spaceShip.getPropulsion().getSecondaryPropellant()*100+" "+
+		  actuatorSet.getRcsPropellant_is()/realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
   		  0+" "+
   		  0+" "+
   		  0+" "+
@@ -352,7 +358,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
   		  realTimeResultSet.getCartesianPosECEF()[2][0]+" "+
   		  0+ " " + 
   		  0 + " " + 
-  		  0 + " " + 
+  		  realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel() + " " + 
   		realTimeResultSet.getQuarternions()[0][0]+" "+
   		realTimeResultSet.getQuarternions()[1][0]+" "+
   		realTimeResultSet.getQuarternions()[2][0]+" "+

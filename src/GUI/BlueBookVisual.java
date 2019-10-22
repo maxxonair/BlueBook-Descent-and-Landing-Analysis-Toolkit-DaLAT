@@ -189,13 +189,13 @@ public class BlueBookVisual implements  ActionListener {
     //											Styles, Fonts, Colors
     //-----------------------------------------------------------------------------------------------------------------------------------------
     public static int gg = 235;
-    //public static Color labelColor = new Color(0,0,0);    					// Label Color
+    //public static Color labelColor = new Color(0,0,0);    					    // Label Color
     public static Color labelColor = new Color(220,220,220);    					// Label Color
    	//public static Color backgroundColor = new Color(255,255,255);				// Background Color
-   	public static Color backgroundColor = new Color(41,41,41);				// Background Color
-   	public static Color w_c = new Color(gg,gg,gg);					// Box background color
-   //	public static Color t_c = new Color(255,255,255);				// Table background color
-   	public static Color t_c = new Color(61,61,61);				// Table background color
+   	public static Color backgroundColor = new Color(41,41,41);				    // Background Color
+   	public static Color w_c = new Color(gg,gg,gg);					            // Box background color
+   //	public static Color t_c = new Color(255,255,255);				        // Table background color
+   	public static Color t_c = new Color(61,61,61);				                // Table background color
    	
    	
    	public static Color light_gray = new Color(230,230,230);
@@ -490,6 +490,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static TimerTask task_Update;
     public static JTextField ConstantCD_INPUT;
     public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
+    public static JPanel SequenceLeftPanel;
     
     
     static DefaultTableModel MODEL_RAWData;
@@ -552,6 +553,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	public static List<Component> AeroParachuteBarAdditionalComponents = new ArrayList<Component>();
     	public static List<JRadioButton> ParachuteBulletPoints = new ArrayList<JRadioButton>();
      	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
+     	public static List<JPanel> sequenceList = new ArrayList<JPanel>();
 	//-----------------------------------------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JPanel createContentPane () throws IOException{
@@ -800,6 +802,33 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         menuItem_Update.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
                 	   UPDATE_Page01(true);
+                    } });
+        menuItem_SimSettings = new JMenuItem("Run RealTime Module              "); 
+        menuItem_SimSettings.setForeground(Color.BLACK);
+        menuItem_SimSettings.setFont(small_font);
+        menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_R, ActionEvent.ALT_MASK));
+        menu_SIM.add(menuItem_SimSettings);
+        menuItem_SimSettings.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+             		  System.out.println("Action: RUN SIMULATION");
+      				try {
+      					String line;
+      					Process proc = Runtime.getRuntime().exec("java -jar SIM2.jar");
+      					InputStream in = proc.getInputStream();
+      					InputStream err = proc.getErrorStream();
+      					System.out.println(in);
+      					System.out.println(err);
+      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+      					  while ((line = input.readLine()) != null) {
+      					    System.out.println(line);
+      					  }
+      					  //UPDATE_Page01();
+      				} catch ( IOException e1) {
+      					// TODO Auto-generated catch block
+      					e1.printStackTrace();
+      					System.out.println("Error:  " + e1);
+      				} 
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PreProcessing = new JMenu("PreProcessing");
@@ -1766,6 +1795,20 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	      BasicAndControllerPanel.setBackground(backgroundColor);
 	      BasicAndControllerPanel.setForeground(Color.white);
 	      BasicAndControllerPanel.setLayout(new BorderLayout());
+	      
+			JPanel SequenceSetupPanel = new JPanel();
+			SequenceSetupPanel.setLocation(0, 0);
+			SequenceSetupPanel.setBackground(backgroundColor);
+			SequenceSetupPanel.setForeground(labelColor);
+			SequenceSetupPanel.setPreferredSize(new Dimension(1350, 1350));
+			SequenceSetupPanel.setLayout(new BorderLayout());
+			
+			JPanel NoiseSetupPanel = new JPanel();
+			NoiseSetupPanel.setLocation(0, 0);
+			NoiseSetupPanel.setBackground(backgroundColor);
+			NoiseSetupPanel.setForeground(labelColor);
+			NoiseSetupPanel.setPreferredSize(new Dimension(1350, 1350));
+			NoiseSetupPanel.setLayout(new BorderLayout());
 			
 		
 	     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
@@ -1780,10 +1823,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	      }
 	      
 	     	TabPane_SimulationSetup.addTab("Basic and Controller Setup" , icon_setup2, BasicAndControllerPanel, null);
-	     	TabPane_SimulationSetup.addTab("Aerodynamic" , icon_aerodynamic, AerodynamicSetupPanel, null);
+	     	TabPane_SimulationSetup.addTab("Sequence Setup" , icon_setup2, SequenceSetupPanel, null);
+	     	TabPane_SimulationSetup.addTab("Aerodynamic Setup" , icon_aerodynamic, AerodynamicSetupPanel, null);
+	     	TabPane_SimulationSetup.addTab("Noise Model Setup" , null, NoiseSetupPanel, null);
 	     	PageX04_SimSetup.add(TabPane_SimulationSetup);
 		TabPane_SimulationSetup.setSelectedIndex(0);
 		TabPane_SimulationSetup.setFont(small_font);
+		TabPane_SimulationSetup.setForeground(Color.black);
 		
 		
       int INPUT_width = 120;
@@ -3396,7 +3442,43 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			    TABLE_ERROR_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
 			    TABLE_ERROR_ScrollPane.setBackground(backgroundColor);
 			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
+				//-----------------------------------------------------------------------------------------
+			    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
+				//-----------------------------------------------------------------------------------------		    
 			    
+			    
+				JPanel SequenceRightPanel = new JPanel();
+				SequenceRightPanel.setLocation(0, 0);
+				SequenceRightPanel.setBackground(backgroundColor);
+				SequenceRightPanel.setForeground(labelColor);
+				SequenceRightPanel.setSize(400, 600);
+				SequenceRightPanel.setLayout(null); 
+
+			   
+			    SequenceLeftPanel = new JPanel();
+				SequenceLeftPanel.setLocation(0, 0);
+				SequenceLeftPanel.setBackground(backgroundColor);
+				SequenceLeftPanel.setForeground(labelColor);
+				SequenceLeftPanel.setSize(400, 900);
+				SequenceLeftPanel.setLayout(null); 
+			    	
+			  
+			      JScrollPane ScrollPaneSequenceInput = new JScrollPane(SequenceLeftPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			      ScrollPaneSequenceInput.setPreferredSize(new Dimension(405, exty_main));
+			      ScrollPaneSequenceInput.getVerticalScrollBar().setUnitIncrement(16);
+			      SequenceSetupPanel.add(ScrollPaneSequenceInput, BorderLayout.CENTER);
+			      JScrollPane ScrollPaneSequenceInput2 = new JScrollPane(SequenceRightPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+			      ScrollPaneSequenceInput2.setPreferredSize(new Dimension(405, exty_main));
+			      ScrollPaneSequenceInput2.getVerticalScrollBar().setUnitIncrement(16);
+			     // SequenceSetupPanel.add(ScrollPaneSequenceInput2, BorderLayout.CENTER);
+			      
+
+			      sequenceList.add(GUISequenceElement.getSequenceElement(sequenceList.size()));
+			      sequenceList.get(0).setLocation(0, 0);
+			      SequenceLeftPanel.add(sequenceList.get(0));
+			      sequenceList.add(GUISequenceElement.getSequenceElement(sequenceList.size()));
+			      sequenceList.get(1).setLocation(50*1, sequenceList.get(0).getHeight());
+			      SequenceLeftPanel.add(sequenceList.get(1));
 				//-----------------------------------------------------------------------------------------
 			    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
 				//-----------------------------------------------------------------------------------------		    
@@ -8476,6 +8558,9 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		}
 		public static Font getSmall_font() {
 			return small_font;
+		}
+		public static List<JPanel> getSequenceList() {
+			return sequenceList;
 		}
 		
 		

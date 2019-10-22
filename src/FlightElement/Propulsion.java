@@ -20,9 +20,31 @@ public class Propulsion {
 	private double RCSMomentumY;
 	private double RCSMomentumZ;
 	
+	private double primaryPropellantFillingLevel;
+	private double secondaryPropellantFillingLevel; 
 	
 	
 	
+	public double getPrimaryPropellantFillingLevel() {
+		return primaryPropellantFillingLevel;
+	}
+
+
+	public void setPrimaryPropellantFillingLevel(double primaryPropellantFillingLevel) {
+		this.primaryPropellantFillingLevel = primaryPropellantFillingLevel;
+	}
+
+
+	public double getSecondaryPropellantFillingLevel() {
+		return secondaryPropellantFillingLevel;
+	}
+
+
+	public void setSecondaryPropellantFillingLevel(double secondaryPropellantFillingLevel) {
+		this.secondaryPropellantFillingLevel = secondaryPropellantFillingLevel;
+	}
+
+
 	public double getRCSMomentumX() {
 		return RCSMomentumX;
 	}
@@ -105,6 +127,7 @@ public class Propulsion {
 
 	public void setPrimaryPropellant(double primaryPropellant) {
 		this.primaryPropellant = primaryPropellant;
+		this.primaryPropellantFillingLevel = primaryPropellant;
 	}
 
 
@@ -168,6 +191,7 @@ public class Propulsion {
 
 	public void setSecondaryPropellant(double secondaryPropellant) {
 		this.secondaryPropellant = secondaryPropellant;
+		this.secondaryPropellantFillingLevel = secondaryPropellant;
 	}
 
 

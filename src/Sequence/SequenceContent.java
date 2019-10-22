@@ -6,6 +6,7 @@ import java.util.List;
 import Controller.FlightController;
 import Controller.FlightController_RollControl;
 import Controller.FlightController_YawControl;
+import Controller.FligthController_PrimaryThrust;
 import Controller.Events.ParachuteDeployment;
 import Controller.Events.ParachuteSeparation;
 import Model.DataSets.SensorSet;
@@ -39,6 +40,11 @@ public class SequenceContent {
 	public void addYawControl() {
 		FlightController_YawControl flightController_YawControl = new FlightController_YawControl();
 		controllerSets.add(flightController_YawControl);
+	}
+	
+	public void addPrimaryThrustControl() {
+		FligthController_PrimaryThrust fligthController_PrimaryThrust = new FligthController_PrimaryThrust();
+		controllerSets.add(fligthController_PrimaryThrust);
 	}
 	
 	public void addParachuteDeployment() {

@@ -92,6 +92,21 @@ public class ForceModel {
 	   	
 	   	M_total_B = M_Thrust_B;
 	   	//System.out.println(actuatorSet.getMomentumRCS_Y_is());
+	   	if(Math.abs(M_total_B[0][0])>0) {
+	   		forceMomentumSet.setRCSThrustX(spaceShip.getPropulsion().getSecondaryThrust_RCS()*Math.abs(controlCommandSet.getMomentumRCS_X_cmd()));
+	   	} else {
+	   		forceMomentumSet.setRCSThrustX(0);
+	   	}
+	   	if(Math.abs(M_total_B[1][0])>0) {
+	   		forceMomentumSet.setRCSThrustY(spaceShip.getPropulsion().getSecondaryThrust_RCS()*Math.abs(controlCommandSet.getMomentumRCS_Y_cmd()));
+	   	} else {
+	   		forceMomentumSet.setRCSThrustY(0);
+	   	}
+	   	if(Math.abs(M_total_B[2][0])>0) {
+	   		forceMomentumSet.setRCSThrustZ(spaceShip.getPropulsion().getSecondaryThrust_RCS()*Math.abs(controlCommandSet.getMomentumRCS_Z_cmd()));
+	   	} else {
+	   		forceMomentumSet.setRCSThrustZ(0);
+	   	}
 	   	
 	   	forceMomentumSet.setF_Thrust_B(F_Thrust_B);
 	   	forceMomentumSet.setM_Thrust_B(M_Thrust_B);
