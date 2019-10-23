@@ -27,8 +27,43 @@ public class Propulsion {
 	private double primaryPropellantFillingLevel;
 	private double secondaryPropellantFillingLevel; 
 	
+	private double accumulatedDeltaVPrimary=0;
+	private double accumulatedDeltaVSecondary=0;
+	
+	private double massFlowPrimary=0;
 	
 	
+	
+	public double getMassFlowPrimary() {
+		return massFlowPrimary;
+	}
+
+
+	public void setMassFlowPrimary(double massFlowPrimary) {
+		this.massFlowPrimary = massFlowPrimary;
+	}
+
+
+	public double getAccumulatedDeltaVPrimary() {
+		return accumulatedDeltaVPrimary;
+	}
+
+
+	public void setAccumulatedDeltaVPrimary(double accumulatedDeltaVPrimary) {
+		this.accumulatedDeltaVPrimary = accumulatedDeltaVPrimary;
+	}
+
+
+	public double getAccumulatedDeltaVSecondary() {
+		return accumulatedDeltaVSecondary;
+	}
+
+
+	public void setAccumulatedDeltaVSecondary(double accumulatedDeltaVSecondary) {
+		this.accumulatedDeltaVSecondary = accumulatedDeltaVSecondary;
+	}
+
+
 	public double getPrimaryPropellantFillingLevel() {
 		return primaryPropellantFillingLevel;
 	}

@@ -79,7 +79,7 @@ public class LaunchRealTimeSimulation {
     	SequenceContent sequenceContent3 = new SequenceContent();
     	sequenceContent3.addParachuteSeparation();
     	sequenceContent3.addPrimaryThrustControl();
-    	sequenceContent3.setTriggerEnd(3, 100);
+    	sequenceContent3.setTriggerEnd(2, 10);
     	SequenceSet.add(sequenceContent3);
     	SequenceContent sequenceContent4 = new SequenceContent();
     	SequenceSet.add(sequenceContent4);
@@ -127,12 +127,10 @@ public class LaunchRealTimeSimulation {
 	    	System.out.println("READ: Create IntegratorData");
 			double[] IntegINP = ReadInput.readIntegratorInput((int) inputOut[8]);
 	    	IntegratorData integratorData = new IntegratorData();
-	    	
-	    	
-	    	
+ 	
 	    	
     		double tGlobal = 1000;//inputOut[7];
-    		double Frequency = 5;
+    		double Frequency = 4;
     		double tIncrement = 1/Frequency; 
     		
     		
@@ -244,10 +242,19 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	  	      //---------------------------------------------------------------------------------------	
 		    			if(realTimeResultSet.getAltitude()<0) {
 		    				break;
-		    			} else if (tIS>500) {
-		    				break;
-		    			}
-	    		
+		    			} 
+		  	  //---------------------------------------------------------------------------------------
+		  	  //				  Implement Stop Handler here: 
+		  	  //---------------------------------------------------------------------------------------	
+		        double primaryDeltaVIncrement =realTimeContainer.getRealTimeSet().
+		        		get(realTimeContainer.getRealTimeSet().size()-1).
+		        		getActuatorSet().getPrimaryISP_is()*9.80665*Math.abs(realTimeContainer.
+		        				getRealTimeResultSet().getSpaceShip().getPropulsion().getMassFlowPrimary())/
+		        		realTimeContainer.getRealTimeResultSet().getSCMass()*tIncrement;
+		         
+		        
+		       realTimeContainer.getRealTimeResultSet().getSpaceShip().getPropulsion().setAccumulatedDeltaVPrimary(
+		    	   realTimeContainer.getRealTimeResultSet().getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+primaryDeltaVIncrement);
 	    		}
 		  	//---------------------------------------------------------------------------------------
 		  	//				  Generate total time to integrate the problem
@@ -381,14 +388,14 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeResult
   		  0+" "+
   		  0+" "+
   		  0+" "+
-  		  0+" "+
+  		  realTimeResultSet.getSpaceShip().getPropulsion().getMassFlowPrimary()+" "+
   		  (realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()-realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel())+" "+
   		  (realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()-realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel())+" "+
   		  0+" "+
   		  0+" "+
   		  0+" "+
   		  0+" "+
-  		  0+" "
+  		  realTimeResultSet.getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+" "
   		  );
 	return steps;	
 }

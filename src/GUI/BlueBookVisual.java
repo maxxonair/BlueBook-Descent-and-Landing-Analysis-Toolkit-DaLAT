@@ -325,7 +325,7 @@ public class BlueBookVisual implements  ActionListener {
     										  "Vel NED/ECI [m/s]",
     										  "FPA NED/ECI [m/s",
     										  "AZI  NED/ECI [m/s]",
-    										  "Engine Loss Indicator [true/false]",
+    										  "Primary Propulsion Propellant flow rate [kg/s]",
     										  "Used Propellant Primary [kg]",
     										  "Used Propellant Secondary [kg]",
     										  "DeltV RCS X [m/s]",
@@ -7593,8 +7593,8 @@ public static void EXPORT_Case() {
 		           try {
 		           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
 		           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[99])));
-		           INDICATOR_PROPPERC.setText("0"); 
-		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[93])));
+		           INDICATOR_PROPPERC.setText(""+decf.format(Double.parseDouble(tokens[93]))); 
+		           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[73])));
 		           } catch (NumberFormatException e) {
 		        	   System.err.println("Error: Emtpy String detected - Indicator Dashboard");
 		           }

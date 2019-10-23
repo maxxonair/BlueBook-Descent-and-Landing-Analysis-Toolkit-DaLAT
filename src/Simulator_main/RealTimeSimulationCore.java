@@ -743,12 +743,14 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
 	                double   t = interpolator.getCurrentTime();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
+	                double[] y     = interpolator.getInterpolatedState();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
 	                
 	                realTimeSet.add(masterSet);
 	                
 	                
 	                if(isLast) {
+
 	                	realTimeResultSet.setTime(t);
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
@@ -760,7 +762,12 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setVelocity( V_NED_ECEF_spherical[0]);
 	                	
 	                	realTimeResultSet.setSCMass(y[6]);
-	                	realTimeResultSet.setNormalizedDeceleration(ymo[3]/9.80665);
+	                	if(spherical) {
+	                	realTimeResultSet.setNormalizedDeceleration(Math.abs(ymo[3])/9.80665);
+	                	} else {
+	                		double decel = Math.sqrt(ymo[3]*ymo[3] + ymo[4]*ymo[4] + ymo[5]*ymo[5]);
+	                		realTimeResultSet.setNormalizedDeceleration(decel/9.80665);
+	                	}
 	                	
 	                	realTimeResultSet.setPQR(AngularRate);
 	                	realTimeResultSet.setEulerX( EulerAngle[0][0]);
@@ -770,6 +777,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
 	                	
 	                	realTimeResultSet.setMasterSet(masterSet);
+	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
 	                	realTimeResultSet.setSpaceShip(RealTimeSimulationCore.spaceShip);
 	                	
 	                	realTimeContainer.setRealTimeResultSet(realTimeResultSet);
