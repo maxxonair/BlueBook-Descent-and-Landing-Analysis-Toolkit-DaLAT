@@ -496,7 +496,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
     public static JPanel SequenceLeftPanel;
     public static JTextField INPUT_RCSXTHRUST, INPUT_RCSYTHRUST, INPUT_RCSZTHRUST, INPUT_RCSTANK, INPUT_RCSXISP, INPUT_RCSYISP,INPUT_RCSZISP;
-    
+    public static JPanel SequenceProgressBar;
+    public static List<JLabel> sequenceProgressBarContent = new ArrayList<JLabel>();
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
     
@@ -556,8 +557,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	public static List<Component> AeroLeftBarAdditionalComponents = new ArrayList<Component>();
     	public static List<Component> AeroParachuteBarAdditionalComponents = new ArrayList<Component>();
     	public static List<JRadioButton> ParachuteBulletPoints = new ArrayList<JRadioButton>();
-     	public static List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
-     	public static List<JPanel> sequenceList = new ArrayList<JPanel>();
+     	public static  List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
+     	public static  List<GUISequenceElement> sequenceContentList = new ArrayList<GUISequenceElement>();
+     	public static 				int sequenceDimensionWidth=1500;;
 	//-----------------------------------------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JPanel createContentPane () throws IOException{
@@ -3518,26 +3520,71 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				SequenceLeftPanel.setLocation(0, 0);
 				SequenceLeftPanel.setBackground(backgroundColor);
 				SequenceLeftPanel.setForeground(labelColor);
-				SequenceLeftPanel.setSize(400, 900);
+				SequenceLeftPanel.setPreferredSize(new Dimension(sequenceDimensionWidth, 850));
 				SequenceLeftPanel.setLayout(null); 
 			    	
 			  
-			      JScrollPane ScrollPaneSequenceInput = new JScrollPane(SequenceLeftPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			      ScrollPaneSequenceInput.setPreferredSize(new Dimension(405, exty_main));
+			      JScrollPane ScrollPaneSequenceInput = new JScrollPane(SequenceLeftPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
+			    		  																	  JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 			      ScrollPaneSequenceInput.getVerticalScrollBar().setUnitIncrement(16);
+			      ScrollPaneSequenceInput.getHorizontalScrollBar().setUnitIncrement(16);
 			      SequenceSetupPanel.add(ScrollPaneSequenceInput, BorderLayout.CENTER);
-			      JScrollPane ScrollPaneSequenceInput2 = new JScrollPane(SequenceRightPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			      ScrollPaneSequenceInput2.setPreferredSize(new Dimension(405, exty_main));
-			      ScrollPaneSequenceInput2.getVerticalScrollBar().setUnitIncrement(16);
-			     // SequenceSetupPanel.add(ScrollPaneSequenceInput2, BorderLayout.CENTER);
-			      
 
-			      sequenceList.add(GUISequenceElement.getSequenceElement(sequenceList.size()));
-			      sequenceList.get(0).setLocation(0, 0);
-			      SequenceLeftPanel.add(sequenceList.get(0));
-			      sequenceList.add(GUISequenceElement.getSequenceElement(sequenceList.size()));
-			      sequenceList.get(1).setLocation(50*1, sequenceList.get(0).getHeight());
-			      SequenceLeftPanel.add(sequenceList.get(1));
+			      
+				    SequenceProgressBar = new JPanel();
+				    SequenceProgressBar.setLocation(0, 370);
+				    SequenceProgressBar.setBackground(backgroundColor);
+				    SequenceProgressBar.setForeground(labelColor);
+				    SequenceProgressBar.setBorder(BorderFactory.createLineBorder(Color.ORANGE, 1));
+				    SequenceProgressBar.setSize(sequenceDimensionWidth, 20);
+				    SequenceProgressBar.setLayout(null); 
+				    SequenceLeftPanel.add(SequenceProgressBar);
+				    
+				    JPanel SequenceControlBar = new JPanel();
+				    SequenceControlBar.setLocation(5, 5);
+				    SequenceControlBar.setBackground(backgroundColor);
+				    SequenceControlBar.setForeground(labelColor);
+				    SequenceControlBar.setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
+				    SequenceControlBar.setSize(500, 50);
+				    SequenceControlBar.setLayout(null); 
+				    SequenceLeftPanel.add(SequenceControlBar);
+				    
+				    JLabel SequenceTitle = new JLabel("Sequence Setup");
+				    SequenceTitle.setLocation(2, 2);
+				    SequenceTitle.setBackground(backgroundColor);
+				    SequenceTitle.setForeground(labelColor);
+				    SequenceTitle.setSize(150, 20);
+				    SequenceControlBar.add(SequenceTitle);
+				    
+			        JButton SequenceToTheLeftButton = new JButton("");
+			        SequenceToTheLeftButton.setLocation(5, 25);
+			        SequenceToTheLeftButton.setSize(80,20);
+			        SequenceToTheLeftButton.setForeground(BlueBookVisual.getBackgroundColor());
+			        SequenceToTheLeftButton.setBackground(BlueBookVisual.getLabelColor());
+			        SequenceToTheLeftButton.setOpaque(true);
+			        SequenceToTheLeftButton.setBorderPainted(false);
+			        SequenceToTheLeftButton.addActionListener(new ActionListener() {
+
+						@Override
+						public void actionPerformed(ActionEvent arg0) {
+							// TODO Auto-generated method stub
+	        				for(int i=0;i<sequenceContentList.size();i++) {
+								if(sequenceContentList.get(i).isSelected()) {
+        							System.out.println("Sequence "+i+" selected.");
+        						}
+								System.out.println(i+"|"+sequenceContentList.get(i).getSequenceID());
+	        				}
+						} 
+			        	
+			        });
+			        SequenceControlBar.add(SequenceToTheLeftButton);
+				    
+			      int globalLeftGap = 30;
+			      int globalTopGap = 100;
+			      GUISequenceElement sequenceElement1 = new GUISequenceElement(sequenceContentList.size());
+			      sequenceContentList.add(sequenceElement1);
+			      sequenceContentList.get(0).getMasterPanel().setLocation(globalLeftGap, globalTopGap);
+			      SequenceLeftPanel.add(sequenceContentList.get(0).getMasterPanel());
 				//-----------------------------------------------------------------------------------------
 			    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
 				//-----------------------------------------------------------------------------------------		    
@@ -5583,7 +5630,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	
     }
     
-    private Image getScaledImage(Image srcImg, int w, int h){
+    static Image getScaledImage(Image srcImg, int w, int h){
         BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = resizedImg.createGraphics();
 
@@ -8978,8 +9025,11 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		public static Font getSmall_font() {
 			return small_font;
 		}
-		public static List<JPanel> getSequenceList() {
-			return sequenceList;
+		public static  List<JLabel> getSequenceProgressBarContent() {
+			return sequenceProgressBarContent;
+		}
+		public static  List<GUISequenceElement> getSequenceContentList() {
+			return sequenceContentList;
 		}
 		
 		
