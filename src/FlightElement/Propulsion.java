@@ -33,7 +33,6 @@ public class Propulsion {
 	private double massFlowPrimary=0;
 	
 	
-	
 	public double getMassFlowPrimary() {
 		return massFlowPrimary;
 	}

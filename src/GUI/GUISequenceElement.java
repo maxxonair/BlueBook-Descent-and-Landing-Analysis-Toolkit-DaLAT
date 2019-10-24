@@ -11,19 +11,19 @@ import java.util.List;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
+import GUI.BlueBookVisual.CustomRenderer;
 import javafx.application.Platform;
 
 public class GUISequenceElement {
 	
     private static int globalLeftGap = 30; // Change later and make dependent!!
     private static int globalTopGap = 100; // Change later and make dependent!!
-	
-	private static int masterPanelHeight=0;
 	
 	private static int sidePanelWidth = 303;
 	private static int elementHeight = 20;
@@ -32,8 +32,7 @@ public class GUISequenceElement {
 	private static int offsetX=3;
 	private boolean isSelected=false;
 	
-	static List<Object> contentList = new ArrayList<Object>();
-	static int numberOfEmptySpaces=0;
+	static int masterPanelHeight=0;
 	private int sequenceID;
 	
     static Border moonBorder 	= BorderFactory.createLineBorder(Color.GRAY, 1);
@@ -41,17 +40,46 @@ public class GUISequenceElement {
     
     JPanel masterPanel; 
     
+    private String[] elementEvents = {" ",
+    									  "Parachute Deployment",
+    									  "Parachute Separation",
+    									  "Stage Separation"
+    };
+    
+    private String[] elementEnd = {
+    								  "Global Time [s]",
+    								  "Sequence Time [s]",
+    								  "Altitude [m]",
+    								  "Velocity [m/s]"
+};
+    
+    private String[] flightController = {" ",
+    										"Roll control",
+										  "yaw control",
+										  "pitch control",
+										  "roll stabilisation",
+										  "Thrust full"
+};
+    
+    @SuppressWarnings("rawtypes")
+	private JComboBox eventSelect; 
+    @SuppressWarnings("rawtypes")
+	private JComboBox endSelect; 
+    @SuppressWarnings("rawtypes")
+	private JComboBox flightControllerSelect;
+    
+    private JTextField valueEnd;
+    
     public GUISequenceElement(int sequenceID) {
     	this.sequenceID=sequenceID; 
     	masterPanel = createSequencePanel();
     }
 	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JPanel createSequencePanel() {
-		masterPanelHeight=0;
-		for(int i=0;i<contentList.size();i++) {
-			contentList.remove(i);
-		}
-		numberOfEmptySpaces=0;
+	   masterPanelHeight=0;
+		 List<Object> contentList = new ArrayList<Object>();
+		int numberOfEmptySpaces=0;
 		
      	ImageIcon iconPlus =null;
      	ImageIcon iconMinus =null;
@@ -109,7 +137,7 @@ public class GUISequenceElement {
 	                    });
         	}} );
         masterPanel.add(SelectSequenceButton);
-
+	      contentList.add(SelectSequenceButton);
 
 		
 		  JTextField SequenceName = new JTextField("AutoSequence"){
@@ -149,9 +177,8 @@ public class GUISequenceElement {
 	      masterPanel.add(SequenceID);
 	      contentList.add(SequenceID);
 	      */
-	      numberOfEmptySpaces++;
-	      
-	      
+	  
+
 	        JButton AddSequenceElement = new JButton("");
 	        AddSequenceElement.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*2);
 	        AddSequenceElement.setSize(30,20);
@@ -166,42 +193,12 @@ public class GUISequenceElement {
 		                Platform.runLater(new Runnable() {
 		                    @Override
 		                    public void run() {
-		                    		   int newSequenceID = BlueBookVisual.getSequenceContentList().size();
-				      			   int locationX=0;
-				      			   int locationY=0;
-				      			   if(isOdd(newSequenceID)) {
-				      				   locationY = 400;
-				      			   } else {
-				      				   locationY=globalTopGap;
-				      			   }
-				      			   locationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3);
-		      			  //System.out.println(isOdd(newSequenceID)+"|"+newSequenceID+"|"+locationX+" | "+locationY);
-		      			GUISequenceElement guiSequenceElement = new GUISequenceElement(newSequenceID);
-				          BlueBookVisual.getSequenceContentList().add(guiSequenceElement);
-		      			  BlueBookVisual.getSequenceContentList().get(newSequenceID).getMasterPanel().setLocation(locationX, locationY);
-		    			      BlueBookVisual.SequenceLeftPanel.add(BlueBookVisual.getSequenceContentList().get(newSequenceID).getMasterPanel());
-		    			      BlueBookVisual.SequenceLeftPanel.revalidate();
-		    			      BlueBookVisual.SequenceLeftPanel.repaint();
-		    			      
-		    			      int labelx=40;
-		    			      int labelLocationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3 + sidePanelWidth /2 - labelx/2) ;
-		    			      JLabel IDlabel = new JLabel(""+newSequenceID);
-		    			      IDlabel.setLocation(labelLocationX, 0 );
-		    			      IDlabel.setSize(labelx, 20);
-		    			      IDlabel.setBorder(marsBorder);
-		    			      IDlabel.setHorizontalAlignment(JLabel.CENTER);
-		    			      IDlabel.setBackground(BlueBookVisual.getBackgroundColor());
-		    			      IDlabel.setForeground(BlueBookVisual.getLabelColor());
-		    			      IDlabel.setFont(BlueBookVisual.getSmall_font());
-		    			      BlueBookVisual.SequenceProgressBar.add(IDlabel);
-		    			      BlueBookVisual.getSequenceProgressBarContent().add(IDlabel);
-		    			      BlueBookVisual.SequenceProgressBar.revalidate();
-		    			      BlueBookVisual.SequenceProgressBar.repaint();
-		    			      resizeCanvas();
+		                    	addGUISequenceElment();
 		                    }
 		                    });
 	        	}} );
 	        masterPanel.add(AddSequenceElement);
+	        contentList.add(AddSequenceElement);
 	        if(sequenceID!=0) {
 	        JButton DeleteSequenceElement = new JButton("");
 	        DeleteSequenceElement.setLocation(offsetX+60, upperGap + (upperGap+lowerGap+elementHeight)*2);
@@ -263,10 +260,11 @@ public class GUISequenceElement {
 		                    });
 	        	}} );
 	        masterPanel.add(DeleteSequenceElement);
+		      //contentList.add(DeleteSequenceElement);
 	        }
-	      
+	        numberOfEmptySpaces++;
 	      JLabel SequenceFCContent = new JLabel("Flight Controller:");
-	      SequenceFCContent.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*4 );
+	      SequenceFCContent.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*3 );
 	      SequenceFCContent.setSize(250, 20);
 	      SequenceFCContent.setBackground(BlueBookVisual.getBackgroundColor());
 	      SequenceFCContent.setForeground(BlueBookVisual.getLabelColor());
@@ -274,7 +272,16 @@ public class GUISequenceElement {
 	      masterPanel.add(SequenceFCContent);
 	      contentList.add(SequenceFCContent);
 	      
-	      numberOfEmptySpaces++;
+	      flightControllerSelect = new JComboBox(flightController);
+	      flightControllerSelect.setRenderer(new CustomRenderer());
+	      flightControllerSelect.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*4);
+	      flightControllerSelect.setSize(250,20);
+	      flightControllerSelect.setSelectedIndex(0);
+	      flightControllerSelect.setMaximumRowCount(20);
+	      flightControllerSelect.setMaximumRowCount(20);
+	      masterPanel.add(flightControllerSelect);
+	      contentList.add(flightControllerSelect);
+	    
 	      
 	      JLabel SequenceEventContent = new JLabel("Events:");
 	      SequenceEventContent.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*6 );
@@ -285,7 +292,15 @@ public class GUISequenceElement {
 	      masterPanel.add(SequenceEventContent);
 	      contentList.add(SequenceEventContent);
 	      
-	      numberOfEmptySpaces++;
+	      eventSelect = new JComboBox(elementEvents);
+	      eventSelect.setRenderer(new CustomRenderer());
+	      eventSelect.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*7);
+	      eventSelect.setSize(250,20);
+	      eventSelect.setSelectedIndex(0);
+	      eventSelect.setMaximumRowCount(20);
+	      eventSelect.setMaximumRowCount(20);
+	      masterPanel.add(eventSelect);
+	      contentList.add(eventSelect);
 	      
 	      JLabel SequenceEndCondition = new JLabel("End Condition:");
 	      SequenceEndCondition.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*8 );
@@ -295,6 +310,50 @@ public class GUISequenceElement {
 	      SequenceEndCondition.setFont(BlueBookVisual.getSmall_font());
 	      masterPanel.add(SequenceEndCondition);
 	      contentList.add(SequenceEndCondition);
+	      
+	      JLabel relationLabel = new JLabel(">");
+	      relationLabel.setLocation(offsetX+150, upperGap + (upperGap+lowerGap+elementHeight)*9 );
+	      relationLabel.setSize(40, 20);
+	      relationLabel.setBackground(BlueBookVisual.getBackgroundColor());
+	      relationLabel.setForeground(BlueBookVisual.getLabelColor());
+	     // relationLabel.setFont(BlueBookVisual.getSmall_font());
+	      relationLabel.setHorizontalAlignment(JLabel.CENTER);
+	      masterPanel.add(relationLabel);
+	      
+	      valueEnd = new JTextField("0");
+	      valueEnd.setLocation(offsetX+190, upperGap + (upperGap+lowerGap+elementHeight)*9 );
+	      valueEnd.setSize(60, 20);
+	      valueEnd.setBackground(BlueBookVisual.getBackgroundColor());
+	      valueEnd.setForeground(BlueBookVisual.getLabelColor());
+	     // valueEnd.setFont(BlueBookVisual.getSmall_font());
+	      masterPanel.add(valueEnd);
+	      
+		  endSelect = new JComboBox(elementEnd);
+		  endSelect.setRenderer(new CustomRenderer());
+		  endSelect.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*9);
+		  endSelect.setSize(150,20);
+		  endSelect.setSelectedIndex(0);
+		  endSelect.setMaximumRowCount(20);
+		  endSelect.setMaximumRowCount(20);
+		  endSelect.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				int indx = getEndSelect().getSelectedIndex();
+				if(indx==0 || indx==1) {
+					relationLabel.setText(">");
+				} else if(indx==2 || indx==3) {
+					relationLabel.setText("<");
+				}
+				BlueBookVisual.WRITE_SequenceFile();
+			} 
+	    	  
+	      });
+	      masterPanel.add(endSelect);
+	      contentList.add(endSelect);
+	      
+	      numberOfEmptySpaces++;
 	      
 	      if(sequenceID==0) {
 	      int labelx=40;
@@ -312,6 +371,9 @@ public class GUISequenceElement {
 	      BlueBookVisual.SequenceProgressBar.revalidate();
 	      BlueBookVisual.SequenceProgressBar.repaint();
 	      }
+	      //----------------------------------------------------------------------------------------------------
+	      // 					 Resizing content Element 
+	      //----------------------------------------------------------------------------------------------------
 	      masterPanelHeight = upperGap + (upperGap+lowerGap+elementHeight)*(contentList.size()+numberOfEmptySpaces);
 	     // System.out.println(masterPanelHeight);
 			masterPanel.setSize(new Dimension(sidePanelWidth, masterPanelHeight));
@@ -321,7 +383,7 @@ public class GUISequenceElement {
 	public static int getMasterPanelHeight() {
 		return masterPanelHeight;
 	}
-	
+
 	
 	public static boolean isOdd(int input) {
 		boolean result=false;
@@ -329,7 +391,42 @@ public class GUISequenceElement {
 		return result;
 	}
 	
-	public void resizeCanvas() {
+	public static void addGUISequenceElment() {
+		   int newSequenceID = BlueBookVisual.getSequenceContentList().size();
+	   int locationX=0;
+	   int locationY=0;
+	   if(isOdd(newSequenceID)) {
+		   locationY = 400;
+	   } else {
+		   locationY=globalTopGap;
+	   }
+	   locationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3);
+//System.out.println(isOdd(newSequenceID)+"|"+newSequenceID+"|"+locationX+" | "+locationY);
+GUISequenceElement guiSequenceElement = new GUISequenceElement(newSequenceID);
+BlueBookVisual.getSequenceContentList().add(guiSequenceElement);
+BlueBookVisual.getSequenceContentList().get(newSequenceID).getMasterPanel().setLocation(locationX, locationY);
+BlueBookVisual.SequenceLeftPanel.add(BlueBookVisual.getSequenceContentList().get(newSequenceID).getMasterPanel());
+BlueBookVisual.SequenceLeftPanel.revalidate();
+BlueBookVisual.SequenceLeftPanel.repaint();
+
+int labelx=40;
+int labelLocationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3 + sidePanelWidth /2 - labelx/2) ;
+JLabel IDlabel = new JLabel(""+newSequenceID);
+IDlabel.setLocation(labelLocationX, 0 );
+IDlabel.setSize(labelx, 20);
+IDlabel.setBorder(marsBorder);
+IDlabel.setHorizontalAlignment(JLabel.CENTER);
+IDlabel.setBackground(BlueBookVisual.getBackgroundColor());
+IDlabel.setForeground(BlueBookVisual.getLabelColor());
+IDlabel.setFont(BlueBookVisual.getSmall_font());
+BlueBookVisual.SequenceProgressBar.add(IDlabel);
+BlueBookVisual.getSequenceProgressBarContent().add(IDlabel);
+BlueBookVisual.SequenceProgressBar.revalidate();
+BlueBookVisual.SequenceProgressBar.repaint();
+resizeCanvas();
+	}
+	
+	public static void resizeCanvas() {
 	      if(BlueBookVisual.getSequenceContentList().size()>7) {
 	    	  int newDimension = (int) (BlueBookVisual.sequenceDimensionWidth * BlueBookVisual.getSequenceContentList().size()/7);
 	    	  BlueBookVisual.SequenceLeftPanel.setPreferredSize(new Dimension(newDimension, 850));
@@ -361,5 +458,46 @@ public class GUISequenceElement {
 	public JPanel getMasterPanel() {
 		return masterPanel;
 	}
+
+	public String[] getElementEvents() {
+		return elementEvents;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public JComboBox getEndSelect() {
+		return endSelect;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public JComboBox getFlightControllerSelect() {
+		return flightControllerSelect;
+	}
+
+	@SuppressWarnings("rawtypes")
+	public JComboBox getEventSelect() {
+		return eventSelect;
+	}
+
+	public JTextField getValueEnd() {
+		return valueEnd;
+	}
+
+	public void setEventSelectIndx(int indx) {
+		this.eventSelect.setSelectedIndex(indx);;
+	}
+
+	public void setEndSelectIndex(int indx) {
+		this.endSelect.setSelectedIndex(indx);;
+	}
+
+	public void setFlightControllerSelectIndex(int index) {
+		this.flightControllerSelect.setSelectedIndex(index);;
+	}
+
+	public void setValueEnd(String text) {
+		this.valueEnd.setText(text);;
+	}
+	
+	
 	
 }

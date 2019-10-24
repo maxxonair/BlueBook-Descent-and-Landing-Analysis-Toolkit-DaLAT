@@ -227,7 +227,8 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	  	      //---------------------------------------------------------------------------------------
 	    	      //				       Create Sensor Data
 	    	      //---------------------------------------------------------------------------------------
-	    		  sensorSet.setMasterSet(realTimeContainer.getRealTimeSet().get(realTimeContainer.getRealTimeSet().size() - 1));
+	    		  sensorSet.setMasterSet(realTimeContainer.getRealTimeSet().get(realTimeContainer.
+	    				  getRealTimeSet().size() - 1));
 	    		  sensorSet.setRealTimeResultSet(realTimeResultSet);
 	    		  sensorSet.setGlobalTime(tIS);
 	    		    	   SensorModel.addVelocitySensorUncertainty(sensorSet,  4);

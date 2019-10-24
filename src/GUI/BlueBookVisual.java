@@ -161,6 +161,7 @@ public class BlueBookVisual implements  ActionListener {
 	public static String INERTIA_File 		    = "/INP/INERTIA.inp";
 	public static String InitialAttitude_File   = "/INP/INITIALATTITUDE.inp";
     public static String Aero_file 		        = System.getProperty("user.dir") + "/INP/AERO/aeroBasic.inp";
+    public static String sequenceFile 		    = System.getProperty("user.dir") + "/INP/sequenceFile.inp";
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -5622,6 +5623,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		Update_ErrorIndicator();
     	      Rotating2Inertial();
     	      Update_IntegratorSettings();
+    	      try {
+    	      READ_sequenceFile();
+    	      } catch(Exception e) {
+    	    	  System.out.println("ERROR: Reading sequenceFile.inp failed.");
+    	      }
 
         MainGUI.setOpaque(true);
         return MainGUI;
@@ -6039,6 +6045,47 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    	ROW_ERROR[3] = ""+Double.parseDouble(tokens[2]);
 				    	MODEL_ERROR.addRow(ROW_ERROR);
 	    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);} // Update numbering
+       }
+       br.close();
+       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+
+   }
+    
+    public static void READ_sequenceFile() throws IOException{	
+		BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
+       String strLine;
+       String fcSeparator="\\|FlightControllerElements\\|";
+       String eventSeparator="\\|EventManagementElements";
+       String endSeparator="\\|EndElement\\|";
+       int sequenceID=0;
+       try {
+       while ((strLine = br.readLine()) != null )   {
+	       
+	       	String[] initSplit = strLine.split(fcSeparator);
+
+	       	String[] head = initSplit[0].split(" ");
+	       
+	       	int  ID = Integer.parseInt(head[0]);
+	       	int flightControllerIndex = Integer.parseInt(initSplit[1].split(" ")[1]);
+	       	String[] arr     = strLine.split(eventSeparator);
+	       	//System.out.println(arr[1]);
+	       	int eventIndex  = Integer.parseInt(arr[1].split(" ")[1]);
+	       	
+	       	String[] arr2   = strLine.split(endSeparator);
+	       	//System.out.println(arr2[1]);
+	       	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
+	       	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
+	       	
+	       	System.out.println(ID+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
+	       	
+	       	if(sequenceID!=0) {
+	       		GUISequenceElement.addGUISequenceElment();
+	       	} 
+       		sequenceContentList.get(sequenceID).setFlightControllerSelectIndex(flightControllerIndex);
+       		sequenceContentList.get(sequenceID).setEventSelectIndx(eventIndex);
+       		sequenceContentList.get(sequenceID).setEndSelectIndex(endIndex);
+       		sequenceContentList.get(sequenceID).setValueEnd(""+endValue);
+	       	sequenceID++;
        }
        br.close();
        } catch(NullPointerException eNPE) { System.out.println(eNPE);}
@@ -7296,6 +7343,43 @@ fstream.close();
             			wr.write(r+System.getProperty( "line.separator" ));
             		}
 		            }               
+            wr.close();
+            } catch (IOException eIO) {
+            	System.out.println(eIO);
+            }
+    }
+    
+    public static void WRITE_SequenceFile() {
+        try {
+            File fac = new File(sequenceFile);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+            String fcSeparator="|FlightControllerElements|";
+            String eventSeparator="|EventManagementElements";
+            String endSeparator="|EndElement|";
+            FileWriter wr = new FileWriter(fac);
+            for (int i = 0; i<sequenceContentList.size(); i++)
+            {
+        		int ID = sequenceContentList.get(i).getSequenceID();
+            	String sequenceContent = ID+" "+
+            							 fcSeparator	+" "+ 
+            							 sequenceContentList.get(i).getFlightControllerSelect().getSelectedIndex()+" "+
+            							 fcSeparator	+" "+ 
+            							 eventSeparator+" "+ 
+            							 sequenceContentList.get(i).getEventSelect().getSelectedIndex()+" "+
+            							 eventSeparator+" "+ 
+            							 endSeparator+" "+ 
+            							 sequenceContentList.get(i).getEndSelect().getSelectedIndex()+" "+
+            							 sequenceContentList.get(i).getValueEnd().getText()+" "
+            							 +endSeparator+" ";
+            	
+            	wr.write(sequenceContent+System.getProperty( "line.separator" ));
+		    }               
             wr.close();
             } catch (IOException eIO) {
             	System.out.println(eIO);
