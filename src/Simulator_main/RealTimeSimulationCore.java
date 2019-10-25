@@ -721,7 +721,7 @@ List<MasterSet> masterList = new ArrayList<MasterSet>();
 List<RealTimeResultSet> realTimeList = new ArrayList<RealTimeResultSet>();
 RealTimeContainer realTimeContainer = new RealTimeContainer();
 //----------------------------------------------------------------------------------------------
-  			RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
+  		
 	        StepHandler WriteOut = new StepHandler() {
 
 	            public void init(double t0, double[] y0, double t) {
@@ -733,7 +733,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double[] y     = interpolator.getInterpolatedState();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
-	                if(t>0.05) {
+	             	RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	                	realTimeResultSet.setTime(t);
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
@@ -765,7 +765,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	             
 	                masterList.add(masterSet);
 	                realTimeList.add(realTimeResultSet);
-	                }
+	                
 	                
 	                if(isLast) {                	
 	                	realTimeContainer.setRealTimeResultSet(realTimeResultSet);
