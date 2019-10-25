@@ -7,7 +7,8 @@ import Model.DataSets.MasterSet;
 
 public class RealTimeContainer {
 
-	List<MasterSet> realTimeSet = new ArrayList<MasterSet>();
+	List<MasterSet> masterList = new ArrayList<MasterSet>();
+	List<RealTimeResultSet> realTimeList = new ArrayList<RealTimeResultSet>();
 	private RealTimeResultSet realTimeResultSet;
 	
 	public RealTimeContainer(){
@@ -15,13 +16,23 @@ public class RealTimeContainer {
 	}
 	
 
-	public List<MasterSet> getRealTimeSet() {
-		return realTimeSet;
+	public List<MasterSet> getMasterList() {
+		return masterList;
 	}
 
 
-	public void setRealTimeSet(List<MasterSet> realTimeSet) {
-		this.realTimeSet = realTimeSet;
+	public void setMasterList(List<MasterSet> realTimeSet) {
+		this.masterList = realTimeSet;
+	}
+
+
+	public List<RealTimeResultSet> getRealTimeList() {
+		return realTimeList;
+	}
+
+
+	public void setRealTimeList(List<RealTimeResultSet> realTimeList) {
+		this.realTimeList = realTimeList;
 	}
 
 

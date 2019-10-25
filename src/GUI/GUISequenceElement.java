@@ -49,12 +49,12 @@ public class GUISequenceElement {
     private String[] elementEnd = {
     								  "Global Time [s]",
     								  "Sequence Time [s]",
-    								  "Altitude [m]",
-    								  "Velocity [m/s]"
+    								  "Velocity [m/s]",
+    								  "Altitude [m]"
 };
     
     private String[] flightController = {" ",
-    										"Roll control",
+    										  "Roll control",
 										  "yaw control",
 										  "pitch control",
 										  "roll stabilisation",
@@ -69,6 +69,7 @@ public class GUISequenceElement {
 	private JComboBox flightControllerSelect;
     
     private JTextField valueEnd;
+    private JButton SelectSequenceButton;
     
     public GUISequenceElement(int sequenceID) {
     	this.sequenceID=sequenceID; 
@@ -99,7 +100,7 @@ public class GUISequenceElement {
 		masterPanel.setBorder(moonBorder);
 		masterPanel.setLocation(0,0);
 		
-        JButton SelectSequenceButton = new JButton("");
+        SelectSequenceButton = new JButton("");
         SelectSequenceButton.setLocation(0, upperGap + (upperGap+lowerGap+elementHeight)*0);
         SelectSequenceButton.setSize(sidePanelWidth,20);
         SelectSequenceButton.setForeground(BlueBookVisual.getBackgroundColor());
@@ -161,6 +162,7 @@ public class GUISequenceElement {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				SelectSequenceButton.setText(SequenceName.getText());
+				BlueBookVisual.WRITE_SequenceFile();
 			}
 	    	  
 	      });
@@ -254,6 +256,7 @@ public class GUISequenceElement {
 				    			      BlueBookVisual.SequenceProgressBar.revalidate();
 				    			      BlueBookVisual.SequenceProgressBar.repaint();
 				    			      resizeCanvas();
+				    			      BlueBookVisual.WRITE_SequenceFile();
 			    			      }
 		                    	}
 		                    }
@@ -279,6 +282,15 @@ public class GUISequenceElement {
 	      flightControllerSelect.setSelectedIndex(0);
 	      flightControllerSelect.setMaximumRowCount(20);
 	      flightControllerSelect.setMaximumRowCount(20);
+	      flightControllerSelect.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				BlueBookVisual.WRITE_SequenceFile();
+			}
+	    	  
+	      });
 	      masterPanel.add(flightControllerSelect);
 	      contentList.add(flightControllerSelect);
 	    
@@ -299,6 +311,15 @@ public class GUISequenceElement {
 	      eventSelect.setSelectedIndex(0);
 	      eventSelect.setMaximumRowCount(20);
 	      eventSelect.setMaximumRowCount(20);
+	      eventSelect.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				BlueBookVisual.WRITE_SequenceFile();
+			}
+	    	  
+	      });
 	      masterPanel.add(eventSelect);
 	      contentList.add(eventSelect);
 	      
@@ -325,7 +346,15 @@ public class GUISequenceElement {
 	      valueEnd.setSize(60, 20);
 	      valueEnd.setBackground(BlueBookVisual.getBackgroundColor());
 	      valueEnd.setForeground(BlueBookVisual.getLabelColor());
-	     // valueEnd.setFont(BlueBookVisual.getSmall_font());
+	      valueEnd.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				BlueBookVisual.WRITE_SequenceFile();
+			}
+	    	  
+	      });
 	      masterPanel.add(valueEnd);
 	      
 		  endSelect = new JComboBox(elementEnd);
@@ -424,6 +453,7 @@ BlueBookVisual.getSequenceProgressBarContent().add(IDlabel);
 BlueBookVisual.SequenceProgressBar.revalidate();
 BlueBookVisual.SequenceProgressBar.repaint();
 resizeCanvas();
+BlueBookVisual.WRITE_SequenceFile();
 	}
 	
 	public static void resizeCanvas() {
@@ -498,6 +528,15 @@ resizeCanvas();
 		this.valueEnd.setText(text);;
 	}
 	
+	public String getSequenceName() {
+		String st = SelectSequenceButton.getText();
+		st = st.replaceAll("\\s+","");
+		if(st.isEmpty()) {st="AutoSequence";}
+		return st;	
+	}
 	
+	public void setSequenceName(String name) {
+		SelectSequenceButton.setText(name);
+	}
 	
 }

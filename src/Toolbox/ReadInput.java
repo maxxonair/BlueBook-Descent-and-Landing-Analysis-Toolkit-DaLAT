@@ -10,6 +10,7 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import Sequence.SequenceContent;
 import Sequence.SequenceElement;
 import Simulator_main.StopCondition;
 
@@ -30,6 +31,7 @@ public class ReadInput {
     public static String ERROR_File 					= System.getProperty("user.dir") + "/INP/ErrorFile.inp";
 	public static String EventHandler_File			= System.getProperty("user.dir") + "/INP/eventhandler.inp";
     public static String SEQUENCE_File   			= System.getProperty("user.dir") + "/INP/sequence_1.inp";
+    public static String sequenceFile 		    = System.getProperty("user.dir") + "/INP/sequenceFile.inp";
 	
 	public static void updateSequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
 		   if (SEQUENCE_DATA.size()==0){
@@ -396,6 +398,82 @@ double[] readINP = new double[30];
    // System.out.println("READ: Propulsion setup successful.");
     } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Propulsion setup read failed.");}
     return readINP;
+}
+//---------------------------------------------------------------------------------------------------
+public static List<SequenceContent> READ_sequenceFile() throws IOException{	
+	List<SequenceContent> SequenceSet = new ArrayList<SequenceContent>();
+	BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
+   String strLine;
+   String fcSeparator="\\|FlightControllerElements\\|";
+   String eventSeparator="\\|EventManagementElements";
+   String endSeparator="\\|EndElement\\|";
+   try {
+   while ((strLine = br.readLine()) != null )   {
+       
+       	String[] initSplit = strLine.split(fcSeparator);
+
+       	String[] head = initSplit[0].split(" ");
+       //System.out.pri
+       	int  ID = Integer.parseInt(head[0]);
+       	//String sequenceName = head[1];
+       	int flightControllerIndex = Integer.parseInt(initSplit[1].split(" ")[1]);
+       	String[] arr     = strLine.split(eventSeparator);
+       	//System.out.println(arr[1]);
+       	int eventIndex  = Integer.parseInt(arr[1].split(" ")[1]);
+       	
+       	String[] arr2   = strLine.split(endSeparator);
+       	//System.out.println(arr2[1]);
+       	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
+       	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
+       	
+       	//System.out.println(ID+" "+sequenceName+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
+    	    SequenceContent sequenceContent = new SequenceContent();
+    	    sequenceContent.setID(ID);
+	    	//---------------------------------------------------------------------------------------------------
+	    	//					Flight Controller  
+	    	//---------------------------------------------------------------------------------------------------
+    	    if(flightControllerIndex==0) {
+    	    		// No Selection!
+    	    } else if (flightControllerIndex==1) { // roll control
+    	    	sequenceContent.addRollControl();
+    	    } else if (flightControllerIndex==2) { // yaw control
+    	    	sequenceContent.addYawControl();
+    	    } else if (flightControllerIndex==3) { // pitch control
+    	    	
+    	    } else if (flightControllerIndex==4) { // roll stabilisation
+    	    	sequenceContent.addRollControl();
+    	    } else if (flightControllerIndex==5) { // full thrust
+    	    	sequenceContent.addPrimaryThrustControl();
+    	    }
+      	//---------------------------------------------------------------------------------------------------
+      	//					Events
+      	//---------------------------------------------------------------------------------------------------
+    	    if(eventIndex==0) {
+    	    	// No Selection!
+    	    } else if (eventIndex==1) {
+    	    	sequenceContent.addParachuteDeployment();
+    	    } else if (eventIndex==2) {
+    	    	sequenceContent.addParachuteSeparation();
+    	    } else if (eventIndex==3) {
+    	    	// Stage Separation tbd
+    	    } else if (eventIndex==4) {
+    	    	
+    	    }
+        //---------------------------------------------------------------------------------------------------
+        	//					Sequence End
+        	//---------------------------------------------------------------------------------------------------   	    
+    	    sequenceContent.setTriggerEnd(endIndex, endValue);
+        //---------------------------------------------------------------------------------------------------
+        	//					Add Sequence 
+        	//---------------------------------------------------------------------------------------------------   	    
+    	    SequenceSet.add(sequenceContent);
+   }
+   br.close();
+   } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+   // Add additional sequence element to avoid reaching undefined space 
+   SequenceContent sequenceContent = new SequenceContent();
+   SequenceSet.add(sequenceContent);
+ return SequenceSet; 
 }
 //---------------------------------------------------------------------------------------------------
 public static String[] getIntegratorInputPath() {

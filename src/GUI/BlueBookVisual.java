@@ -501,6 +501,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static List<JLabel> sequenceProgressBarContent = new ArrayList<JLabel>();
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
+    static JTextField INPUT_GlobalFrequency, INPUT_ControllerFrequency,INPUT_GlobalTime;
     
     
 	 static int c_SEQUENCE = 12;
@@ -1829,7 +1830,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	         	icon_aerodynamic = new ImageIcon(getScaledImage(icon_aerodynamic.getImage(),size,size));
 	      }
 	      
-	     	TabPane_SimulationSetup.addTab("Basic and Controller Setup" , icon_setup2, BasicAndControllerPanel, null);
+	     	TabPane_SimulationSetup.addTab("Basic Setup" , icon_setup2, BasicAndControllerPanel, null);
 	     	TabPane_SimulationSetup.addTab("Sequence Setup" , icon_setup2, SequenceSetupPanel, null);
 	     	TabPane_SimulationSetup.addTab("Aerodynamic Setup" , icon_aerodynamic, AerodynamicSetupPanel, null);
 	     	TabPane_SimulationSetup.addTab("Noise Model Setup" , null, NoiseSetupPanel, null);
@@ -2376,97 +2377,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       LABEL_IntegSetting.setFont(HeadlineFont);
       LABEL_IntegSetting.setHorizontalAlignment(0);
       IntegratorInputPanel.add(LABEL_IntegSetting);
-      
-	  AscentDescent_SwitchChooser = new JComboBox(Thrust_switch);
-	 // AscentDescent_SwitchChooser.setBackground(backgroundColor);
-	  AscentDescent_SwitchChooser.setLocation(2, uy_p41 + 26 * 1 );
-	  AscentDescent_SwitchChooser.setSize(250,25);
-	  AscentDescent_SwitchChooser.setRenderer(new CustomRenderer());
-	  AscentDescent_SwitchChooser.setSelectedIndex(0);
-	  AscentDescent_SwitchChooser.addActionListener(new ActionListener() { 
-   	  public void actionPerformed(ActionEvent e) {
-   		Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
-   	  }
- 	  } );
-	  AscentDescent_SwitchChooser.addFocusListener(new FocusListener() {
 
-		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-		}
-
-		@Override
-		public void focusLost(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			 WRITE_INIT();
-		}
-		  
-	  });
-	  IntegratorInputPanel.add(AscentDescent_SwitchChooser);
-   
-      JLabel LABEL_writetime = new JLabel("Write time step [s]");
-      LABEL_writetime.setLocation(65, uy_p41 + 25 * 3 );
-      LABEL_writetime.setSize(250, 20);
-      LABEL_writetime.setBackground(backgroundColor);
-      LABEL_writetime.setForeground(labelColor);
-      IntegratorInputPanel.add(LABEL_writetime);
-
-     INPUT_WRITETIME = new JTextField(10);
-     INPUT_WRITETIME.setLocation(2, uy_p41 + 25 * 3 );
-     INPUT_WRITETIME.setSize(60, 20);
-     INPUT_WRITETIME.setHorizontalAlignment(JTextField.RIGHT);
-     INPUT_WRITETIME.addFocusListener(new FocusListener() {
-
- 		@Override
- 		public void focusGained(FocusEvent arg0) { }
-
- 		@Override
- 		public void focusLost(FocusEvent e) {
- 			// TODO Auto-generated method stub
- 			WRITE_INIT();
- 		}
-     	  
-       });
-     IntegratorInputPanel.add(INPUT_WRITETIME);
-
-    JLabel LABEL_TARGETBODY = new JLabel("Target Body");
-    LABEL_TARGETBODY.setLocation(163, uy_p41 + 25 * 5   );
-    LABEL_TARGETBODY.setSize(150, 20);
-    LABEL_TARGETBODY.setBackground(backgroundColor);
-    LABEL_TARGETBODY.setForeground(labelColor);
-    IntegratorInputPanel.add(LABEL_TARGETBODY);
-    
-	  Target_chooser = new JComboBox(Target_Options);
-	 // Target_chooser.setBackground(backgroundColor);
-	  Target_chooser.setLocation(2, uy_p41 + 25 * 5 );
-	  Target_chooser.setSize(150,25);
-	  Target_chooser.setRenderer(new CustomRenderer());
-	  Target_chooser.setSelectedIndex(3);
-	  Target_chooser.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) {
-    		
-    	  }
-  	  } );
-	  Target_chooser.addFocusListener(new FocusListener() {
-
-		@Override
-		public void focusGained(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			
-		}
-
-		@Override
-		public void focusLost(FocusEvent arg0) {
-			// TODO Auto-generated method stub
-			 WRITE_INIT();
-		}
-		  
-	  });
-	  IntegratorInputPanel.add(Target_chooser);
 	  
 	  Integrator_chooser = new JComboBox(Integrator_Options);
 	  //Integrator_chooser.setBackground(backgroundColor);
-	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 6 );
+	  Integrator_chooser.setLocation(2, uy_p41 + 25 * 1 );
 	  Integrator_chooser.setSize(380,25);
 	  Integrator_chooser.setRenderer(new CustomRenderer());
 	  Integrator_chooser.setSelectedIndex(3);
@@ -2494,7 +2409,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	  IntegratorInputPanel.add(Integrator_chooser);
 	  //------------------------------------------------------------------------------------------------------------------
       LABEL_IntegratorSetting_01 = new JLabel("");
-      LABEL_IntegratorSetting_01.setLocation(65, uy_p41 + 25 * 8 );
+      LABEL_IntegratorSetting_01.setLocation(65, uy_p41 + 25 * 3 );
       LABEL_IntegratorSetting_01.setSize(250, 20);
       LABEL_IntegratorSetting_01.setBackground(backgroundColor);
       LABEL_IntegratorSetting_01.setForeground(labelColor);
@@ -2509,7 +2424,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        // No!
 		    }
 		};
-      INPUT_IntegratorSetting_01.setLocation(2, uy_p41 + 25 * 8 );
+      INPUT_IntegratorSetting_01.setLocation(2, uy_p41 + 25 * 3 );
       INPUT_IntegratorSetting_01.setSize(60, 20);
       INPUT_IntegratorSetting_01.setBackground(backgroundColor);
       INPUT_IntegratorSetting_01.setForeground(labelColor);
@@ -2528,7 +2443,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       });
       IntegratorInputPanel.add(INPUT_IntegratorSetting_01);
       LABEL_IntegratorSetting_02 = new JLabel("");
-      LABEL_IntegratorSetting_02.setLocation(65, uy_p41 + 25 * 9 );
+      LABEL_IntegratorSetting_02.setLocation(65, uy_p41 + 25 * 4 );
       LABEL_IntegratorSetting_02.setSize(250, 20);
       LABEL_IntegratorSetting_02.setBackground(backgroundColor);
       LABEL_IntegratorSetting_02.setForeground(labelColor);
@@ -2543,7 +2458,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        // No!
 		    }
 		};
-      INPUT_IntegratorSetting_02.setLocation(2, uy_p41 + 25 * 9 );
+      INPUT_IntegratorSetting_02.setLocation(2, uy_p41 + 25 * 4 );
       INPUT_IntegratorSetting_02.setSize(60, 20);
       INPUT_IntegratorSetting_02.setBackground(backgroundColor);
       INPUT_IntegratorSetting_02.setForeground(labelColor);
@@ -2562,7 +2477,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       });
       IntegratorInputPanel.add(INPUT_IntegratorSetting_02);
       LABEL_IntegratorSetting_03 = new JLabel("");
-      LABEL_IntegratorSetting_03.setLocation(65, uy_p41 + 25 * 10 );
+      LABEL_IntegratorSetting_03.setLocation(65, uy_p41 + 25 * 5 );
       LABEL_IntegratorSetting_03.setSize(250, 20);
       LABEL_IntegratorSetting_03.setBackground(backgroundColor);
       LABEL_IntegratorSetting_03.setForeground(labelColor);
@@ -2577,7 +2492,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        // No!
 		    }
 		};
-      INPUT_IntegratorSetting_03.setLocation(2, uy_p41 + 25 * 10 );
+      INPUT_IntegratorSetting_03.setLocation(2, uy_p41 + 25 * 5 );
       INPUT_IntegratorSetting_03.setSize(60, 20);
       INPUT_IntegratorSetting_03.setBackground(backgroundColor);
       INPUT_IntegratorSetting_03.setForeground(labelColor);
@@ -2596,7 +2511,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       });
       IntegratorInputPanel.add(INPUT_IntegratorSetting_03);
       LABEL_IntegratorSetting_04 = new JLabel("");
-      LABEL_IntegratorSetting_04.setLocation(65, uy_p41 + 25 * 11 );
+      LABEL_IntegratorSetting_04.setLocation(65, uy_p41 + 25 * 6 );
       LABEL_IntegratorSetting_04.setSize(250, 20);
       LABEL_IntegratorSetting_04.setBackground(backgroundColor);
       LABEL_IntegratorSetting_04.setForeground(labelColor);
@@ -2611,7 +2526,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        // No!
 		    }
 		};
-      INPUT_IntegratorSetting_04.setLocation(2, uy_p41 + 25 * 11 );
+      INPUT_IntegratorSetting_04.setLocation(2, uy_p41 + 25 * 6 );
       INPUT_IntegratorSetting_04.setSize(60, 20);
       INPUT_IntegratorSetting_04.setBackground(backgroundColor);
       INPUT_IntegratorSetting_04.setForeground(labelColor);
@@ -2630,7 +2545,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       });
       IntegratorInputPanel.add(INPUT_IntegratorSetting_04);
       LABEL_IntegratorSetting_05 = new JLabel("");
-      LABEL_IntegratorSetting_05.setLocation(65, uy_p41 + 25 * 12 );
+      LABEL_IntegratorSetting_05.setLocation(65, uy_p41 + 25 * 7 );
       LABEL_IntegratorSetting_05.setSize(250, 20);
       LABEL_IntegratorSetting_05.setBackground(backgroundColor);
       LABEL_IntegratorSetting_05.setForeground(labelColor);
@@ -2645,7 +2560,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        // No!
 		    }
 		};
-      INPUT_IntegratorSetting_05.setLocation(2, uy_p41 + 25 * 12 );
+      INPUT_IntegratorSetting_05.setLocation(2, uy_p41 + 25 * 7 );
       INPUT_IntegratorSetting_05.setSize(60, 20);
       INPUT_IntegratorSetting_05.setBackground(backgroundColor);
       INPUT_IntegratorSetting_05.setForeground(labelColor);
@@ -2666,234 +2581,6 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       IntegratorInputPanel.add(INPUT_IntegratorSetting_05); 
       
     //------------------------------------------------------------------------------------------------------------------
-    // Coordinate System and Degree of Freedom Setup 
-      
-      
-      JLabel LABEL_VCoordinateSystem = new JLabel("Select Coordinate System to solve the Velocity Vector");
-      LABEL_VCoordinateSystem.setLocation(5, uy_p41 + 25 * 13   );
-      LABEL_VCoordinateSystem.setSize(350, 20);
-      LABEL_VCoordinateSystem.setBackground(backgroundColor);
-      LABEL_VCoordinateSystem.setForeground(labelColor);
-      IntegratorInputPanel.add(LABEL_VCoordinateSystem);
-      
-      SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
-      SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
-      SELECT_VelocitySpherical.setLocation(5, uy_p41 + 25 * 14 );
-      SELECT_VelocitySpherical.setSize(220,20);
-      SELECT_VelocitySpherical.setBackground(backgroundColor);
-      SELECT_VelocitySpherical.setForeground(labelColor);
-      SELECT_VelocitySpherical.setFont(small_font);
-      SELECT_VelocityCartesian.setLocation(5, uy_p41 + 25 * 15);
-      SELECT_VelocityCartesian.setSize(220,20);
-      SELECT_VelocityCartesian.setBackground(backgroundColor);
-      SELECT_VelocityCartesian.setForeground(labelColor);
-      SELECT_VelocityCartesian.setFont(small_font);
-     ButtonGroup bg_velocity=new ButtonGroup();    
-     bg_velocity.add(SELECT_VelocitySpherical);
-     bg_velocity.add(SELECT_VelocityCartesian); 
-     IntegratorInputPanel.add(SELECT_VelocitySpherical);
-     IntegratorInputPanel.add(SELECT_VelocityCartesian);
-     SELECT_VelocitySpherical.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			if(SELECT_VelocitySpherical.isSelected()) {
-				VelocityCoordinateSystem = 1;
-			} else if (SELECT_VelocityCartesian.isSelected()) {
-				VelocityCoordinateSystem = 2;
-			}
-			WRITE_INIT();
-		}
-     });
-     SELECT_VelocityCartesian.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			if(SELECT_VelocitySpherical.isSelected()) {
-				VelocityCoordinateSystem = 1;
-			} else if (SELECT_VelocityCartesian.isSelected()) {
-				VelocityCoordinateSystem = 2;
-			}
-			WRITE_INIT();
-		}
-    	 
-     });
-     
-     JLabel LABEL_SelectDoF = new JLabel("Select Degrees of Freedom");
-     LABEL_SelectDoF.setLocation(5, uy_p41 + 25 * 16   );
-     LABEL_SelectDoF.setSize(350, 20);
-     LABEL_SelectDoF.setBackground(backgroundColor);
-     LABEL_SelectDoF.setForeground(labelColor);
-     IntegratorInputPanel.add(LABEL_SelectDoF);
-     
-     SELECT_3DOF =new JRadioButton("3DOF Model");    
-     SELECT_6DOF =new JRadioButton("6DOF Model");      
-     SELECT_3DOF.setLocation(5, uy_p41 + 25 * 17 );
-     SELECT_3DOF.setSize(220,20);
-     SELECT_3DOF.setBackground(backgroundColor);
-     SELECT_3DOF.setForeground(labelColor);
-     SELECT_3DOF.setFont(small_font);
-     SELECT_6DOF.setLocation(5, uy_p41 + 25 * 18);
-     SELECT_6DOF.setSize(220,20);
-     SELECT_6DOF.setBackground(backgroundColor);
-     SELECT_6DOF.setForeground(labelColor);
-     SELECT_6DOF.setFont(small_font);
-    ButtonGroup bg_dof=new ButtonGroup();    
-    bg_dof.add(SELECT_3DOF);
-    bg_dof.add(SELECT_6DOF); 
-    IntegratorInputPanel.add(SELECT_3DOF);
-    IntegratorInputPanel.add(SELECT_6DOF);
-    SELECT_3DOF.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			if(SELECT_3DOF.isSelected()) {
-				DOF_System = 3;
-			} else if (SELECT_6DOF.isSelected()) {
-				DOF_System = 6;
-			}
-			WRITE_INIT();
-		}
-   	 
-    });
-    SELECT_6DOF.addActionListener(new ActionListener() {
-
-		@Override
-		public void actionPerformed(ActionEvent arg0) {
-			if(SELECT_3DOF.isSelected()) {
-				DOF_System = 3;
-			} else if (SELECT_6DOF.isSelected()) {
-				DOF_System = 6;
-			}
-			WRITE_INIT();
-		}
-   	 
-    });      
-	  //------------------------------------------------------------------------------------------------------------------
-    // Solver Stop conditions
-	    JLabel LABEL_EventHandler = new JLabel("Solver stop conditions:");
-	    LABEL_EventHandler.setLocation(2, uy_p41 + 25 * 23   );
-	    LABEL_EventHandler.setSize(150, 20);
-	    LABEL_EventHandler.setBackground(backgroundColor);
-	    LABEL_EventHandler.setForeground(labelColor);
-	    IntegratorInputPanel.add(LABEL_EventHandler);
-
-	    TABLE_EventHandler = new JTable();
-	   // TABLE_SEQUENCE.setFont(table_font);
-	    
-		Action action_EventHandler = new AbstractAction()
-	    {
-	        /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-
-			public void actionPerformed(ActionEvent e)
-	        {// Action
-				  WRITE_INIT();	
-				  WRITE_EventHandler();
-				  System.out.println("write eventhandler file.");
-	        }
-	    };
-	    @SuppressWarnings("unused")
-		TableCellListener tcl_EventHandler = new TableCellListener(TABLE_EventHandler, action_EventHandler);
-	    MODEL_EventHandler = new DefaultTableModel(){
-
-			private static final long serialVersionUID = 1L;
-
-			@Override
-	        public boolean isCellEditable(int row, int column) {
-	           //all cells false
-				if (row == 0 && column == 0){
-					return false;
-				} else {
-					return true; 
-				}
-	        }
-	    }; 
-	
-	    MODEL_EventHandler.setColumnIdentifiers(COLUMS_EventHandler);
-	    
-	    TABLE_EventHandler.setModel(MODEL_EventHandler);
-	    int tablewidth_EventHandler = 385;
-	    int tableheight_EventHandler = 230;
-	  // ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
-	    TABLE_EventHandler.setBackground(backgroundColor);
-	    TABLE_EventHandler.setForeground(labelColor);
-	    TABLE_EventHandler.getTableHeader().setBackground(backgroundColor);
-	    TABLE_EventHandler.getTableHeader().setForeground(labelColor);
-	    TABLE_EventHandler.setSize(tablewidth_EventHandler, tableheight_EventHandler);
-	    TABLE_EventHandler.getTableHeader().setReorderingAllowed(false);
-	    TABLE_EventHandler.setRowHeight(35);
-
-		    TableColumn EventHandlerType_colum   		 = 	    TABLE_EventHandler.getColumnModel().getColumn(0);
-		    TableColumn EventHandlerValue_column 	     = 	    TABLE_EventHandler.getColumnModel().getColumn(1);
-
-		    EventHandlerType_colum.setPreferredWidth(300);
-		    EventHandlerValue_column.setPreferredWidth(100);
-
-		    TABLE_EventHandler.getTableHeader().setBackground(backgroundColor);
-		    TABLE_EventHandler.getTableHeader().setForeground(labelColor);
-	    
-	    EventHandlerTypeCombobox.setBackground(backgroundColor);
-	    try {
-	    for (int i=0;i<EventHandler_Type.length;i++) {EventHandlerTypeCombobox.addItem(EventHandler_Type[i]);}
-	    } catch(NullPointerException eNPE) {
-	    	System.out.println(eNPE);
-	    }
-	    EventHandlerType_colum.setCellEditor(new DefaultCellEditor(EventHandlerTypeCombobox));
-	   
-
-	    
-	    JScrollPane TABLE_EventHandler_ScrollPane = new JScrollPane(TABLE_EventHandler,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-	    TABLE_EventHandler_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
-	    TABLE_EventHandler_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
-	    TABLE_EventHandler_ScrollPane.setBackground(backgroundColor);
-	    TABLE_EventHandler_ScrollPane.setSize(tablewidth_EventHandler,tableheight_EventHandler);
-	    TABLE_EventHandler_ScrollPane.getViewport().setBackground(backgroundColor);
-	    TABLE_EventHandler_ScrollPane.setLocation(2, uy_p41 + 25 * 24 );
-	    //TABLE_EventHandler_ScrollPane.setOpaque(false);
-	    IntegratorInputPanel.add(TABLE_EventHandler_ScrollPane);
-	    
-    	ROW_EventHandler[0] = ""+EventHandler_Type[0];
-    	ROW_EventHandler[1] = "";
-    	MODEL_EventHandler.addRow(ROW_EventHandler);
-
-    	
-        JButton BUTTON_AddEventHandler = new JButton("Add");
-        BUTTON_AddEventHandler.setLocation(155, uy_p41 + 25 * 23);
-        BUTTON_AddEventHandler.setSize(65,20);
-        BUTTON_AddEventHandler.setEnabled(true);
-        BUTTON_AddEventHandler.setForeground(Color.BLACK);
-        BUTTON_AddEventHandler.setBackground(backgroundColor);
-        BUTTON_AddEventHandler.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) { 
-        	    	ROW_EventHandler[0] = ""+EventHandler_Type[1];
-        	    	ROW_EventHandler[1] = "0";
-        	    	MODEL_EventHandler.addRow(ROW_EventHandler); 
-        	    	WRITE_EventHandler();
-        	  } } );
-        IntegratorInputPanel.add(BUTTON_AddEventHandler);
-        
-        JButton BUTTON_DeleteEventHandler = new JButton("Delete");
-        BUTTON_DeleteEventHandler.setLocation(225, uy_p41 + 25 * 23);
-        BUTTON_DeleteEventHandler.setSize(75,20);
-        BUTTON_DeleteEventHandler.setEnabled(true);
-        BUTTON_DeleteEventHandler.setForeground(Color.BLACK);
-        BUTTON_DeleteEventHandler.setBackground(backgroundColor);
-        BUTTON_DeleteEventHandler.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) { 
-        	    	int j = TABLE_EventHandler.getSelectedRow();
-        	    	if(j!=0) { // Time stopper set by default -> cannot be deleted 
-        	    	if (j >= 0){MODEL_EventHandler.removeRow(j);}
-        	    	}
-        	    	WRITE_EventHandler();
-        	  } } );
-        IntegratorInputPanel.add(BUTTON_DeleteEventHandler);
-
- 
 	  //   Right side :
     JPanel P2_ControllerPane = new JPanel();
    // P2_ControllerPane.setLayout(null);
@@ -2901,313 +2588,253 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     P2_ControllerPane.setBackground(backgroundColor);
     P2_ControllerPane.setForeground(labelColor);
     
+    //-----------------------------------------------------------------------------------------------------------------------------
+    //                  Additional Setup 
+    //-----------------------------------------------------------------------------------------------------------------------------
     JPanel P2_SequenceMAIN = new JPanel();
     P2_SequenceMAIN.setLayout(new BorderLayout());
-   // P2_SequenceMAIN.setPreferredSize(new Dimension(900, 400));
+    P2_SequenceMAIN.setPreferredSize(new Dimension(900, 480));
     P2_SequenceMAIN.setBackground(backgroundColor);
     P2_SequenceMAIN.setForeground(labelColor);
+    P2_SequenceMAIN.setLayout(null);
     PANEL_RIGHT_InputSection.add(P2_SequenceMAIN, BorderLayout.PAGE_START);
-    //-----------------------------------------------------------------------------------------------------------------------------
-    //                  Sequence table 
-    //-----------------------------------------------------------------------------------------------------------------------------
-    TABLE_SEQUENCE = new JTable(){
-   	 
-    	/**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		@Override
-    	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-            Component comp = super.prepareRenderer(renderer, row, col);
-            Object value = getModel().getValueAt(row, col);
-            String val_TLFC = (String) getModel().getValueAt(row, 4);
-            String val_TVCFC = (String) getModel().getValueAt(row, 8);
-          //  JTextField textfield= super.getComponent();
-            try {
-            	if (value.equals(""+SequenceType[2])) {
-                    comp.setBackground(Color.orange);
-                    comp.setForeground(labelColor);
-            	} else if (value.equals(""+SequenceType[0])) {
-                    comp.setBackground(backgroundColor);
-                    comp.setForeground(labelColor);
-            	} else if (value.equals(""+SequenceType[1])) {
-                    comp.setBackground(Color.blue);
-                    comp.setForeground(Color.white);
-            	} else if (value.equals(""+SequenceType[3])) {
-                    comp.setBackground(Color.green);
-                    comp.setForeground(labelColor);
-            	} else if (value.equals(""+SequenceType[4])) {
-                    comp.setBackground(Color.CYAN);
-                    comp.setForeground(labelColor);
-            	} else if (value.equals(""+SequenceType[5])) {
-                    comp.setBackground(Color.red);
-                    comp.setForeground(Color.white);
-            	} else if (col==9&&val_TVCFC.equals(""+SequenceTVCFC[0])){
-                    comp.setBackground(light_gray);
-                    comp.setForeground(Color.gray);
-            	}else if (col==10&&val_TVCFC.equals(""+SequenceTVCFC[0])){
-                    comp.setBackground(light_gray);
-                    comp.setForeground(Color.gray);
-            	} else if (col==11&&val_TVCFC.equals(""+SequenceTVCFC[0])){
-                    comp.setBackground(light_gray);
-                    comp.setForeground(Color.gray);
-            	} else if (col==5&&val_TLFC.equals(""+SequenceFC[0])){
-                    comp.setBackground(light_gray);
-                    comp.setForeground(Color.gray);
-            	} else if (col==6&&val_TLFC.equals(""+SequenceFC[0])){
-                    comp.setBackground(light_gray);
-                    comp.setForeground(Color.gray);
-            	} else if (col==7&&val_TLFC.equals(""+SequenceFC[0])){
-                    comp.setBackground(light_gray);
-                    comp.setForeground(Color.gray);
-            	}  else {
-                    comp.setBackground(backgroundColor);
-                    comp.setForeground(labelColor);
-            	}         
-            } catch (NullPointerException e) {
-            	
-            }
-           // comp.setFont(table_font);
-            
-            return comp;
-        }
-    };
-   // TABLE_SEQUENCE.setFont(table_font);
     
-	Action action3 = new AbstractAction()
-    {
-        /**
-		 * 
-		 */
-		private static final long serialVersionUID = 1L;
-
-		public void actionPerformed(ActionEvent e)
-        {WriteSequenceINP();}
-    };
-    @SuppressWarnings("unused")
-	TableCellListener tcl3 = new TableCellListener(TABLE_SEQUENCE, action3);
-    MODEL_SEQUENCE = new DefaultTableModel(){
-
-		private static final long serialVersionUID = 1L;
+    JLabel LABEL_TARGETBODY = new JLabel("Target Body");
+    LABEL_TARGETBODY.setLocation(163, uy_p41 + 25 * 2   );
+    LABEL_TARGETBODY.setSize(150, 20);
+    LABEL_TARGETBODY.setBackground(backgroundColor);
+    LABEL_TARGETBODY.setForeground(labelColor);
+    P2_SequenceMAIN.add(LABEL_TARGETBODY);
+    
+	  Target_chooser = new JComboBox(Target_Options);
+	 // Target_chooser.setBackground(backgroundColor);
+	  Target_chooser.setLocation(2, uy_p41 + 25 * 2 );
+	  Target_chooser.setSize(150,25);
+	  Target_chooser.setRenderer(new CustomRenderer());
+	  Target_chooser.setSelectedIndex(3);
+	  Target_chooser.addActionListener(new ActionListener() { 
+    	  public void actionPerformed(ActionEvent e) {
+    		
+    	  }
+  	  } );
+	  Target_chooser.addFocusListener(new FocusListener() {
 
 		@Override
-        public boolean isCellEditable(int row, int column) {
-           //all cells false
-			String val_TVCFC = (String) MODEL_SEQUENCE.getValueAt(row, 8);
-			String val_TLFC = (String) MODEL_SEQUENCE.getValueAt(row, 4);
-			if (column == 0 ){
-				return false;
-			} else if (column==9 && val_TVCFC.equals(SequenceTVCFCCombobox.getItemAt(0))) {
-				return false; 
-			} else if (column==10 && val_TVCFC.equals(SequenceTVCFCCombobox.getItemAt(0))) {
-				return false; 
-			} else if (column==11 && val_TVCFC.equals(SequenceTVCFCCombobox.getItemAt(0))) {
-				return false; 
-			} else if (column==5 && val_TLFC.equals(SequenceFCCombobox.getItemAt(0))) {
-				return false; 
-			} else if (column==6 && val_TLFC.equals(SequenceFCCombobox.getItemAt(0))) {
-				return false; 
-			} else if (column==7 && val_TLFC.equals(SequenceFCCombobox.getItemAt(0))) {
-				return false; 
-			} else {
-				return true; 
+		public void focusGained(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void focusLost(FocusEvent arg0) {
+			// TODO Auto-generated method stub
+			 WRITE_INIT();
+		}
+		  
+	  });
+	  P2_SequenceMAIN.add(Target_chooser);
+    
+    
+    JLabel LABEL_VCoordinateSystem = new JLabel("Select Coordinate System to solve the Velocity Vector");
+    LABEL_VCoordinateSystem.setLocation(5, uy_p41 + 25 * 3   );
+    LABEL_VCoordinateSystem.setSize(350, 20);
+    LABEL_VCoordinateSystem.setBackground(backgroundColor);
+    LABEL_VCoordinateSystem.setForeground(labelColor);
+    P2_SequenceMAIN.add(LABEL_VCoordinateSystem);
+    
+    SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
+    SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
+    SELECT_VelocitySpherical.setLocation(5, uy_p41 + 25 * 4 );
+    SELECT_VelocitySpherical.setSize(220,20);
+    SELECT_VelocitySpherical.setBackground(backgroundColor);
+    SELECT_VelocitySpherical.setForeground(labelColor);
+    SELECT_VelocitySpherical.setFont(small_font);
+    SELECT_VelocityCartesian.setLocation(5, uy_p41 + 25 * 5);
+    SELECT_VelocityCartesian.setSize(220,20);
+    SELECT_VelocityCartesian.setBackground(backgroundColor);
+    SELECT_VelocityCartesian.setForeground(labelColor);
+    SELECT_VelocityCartesian.setFont(small_font);
+   ButtonGroup bg_velocity=new ButtonGroup();    
+   bg_velocity.add(SELECT_VelocitySpherical);
+   bg_velocity.add(SELECT_VelocityCartesian); 
+   P2_SequenceMAIN.add(SELECT_VelocitySpherical);
+   P2_SequenceMAIN.add(SELECT_VelocityCartesian);
+   SELECT_VelocitySpherical.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_VelocitySpherical.isSelected()) {
+				VelocityCoordinateSystem = 1;
+			} else if (SELECT_VelocityCartesian.isSelected()) {
+				VelocityCoordinateSystem = 2;
 			}
-        }
-    }; 
-    MODEL_SEQUENCE.setColumnIdentifiers(COLUMS_SEQUENCE);
-    TABLE_SEQUENCE.setModel(MODEL_SEQUENCE);
-    TABLE_SEQUENCE.setBackground(backgroundColor);
-    TABLE_SEQUENCE.setBackground(backgroundColor);
-    TABLE_SEQUENCE.setForeground(labelColor);
-    TABLE_SEQUENCE.getTableHeader().setReorderingAllowed(false);
-    TABLE_SEQUENCE.setRowHeight(45);
-    
-   // TABLE_SEQUENCE.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS);
+			WRITE_INIT();
+		}
+   });
+   SELECT_VelocityCartesian.addActionListener(new ActionListener() {
 
-	    TableColumn SequID_colum   			 = TABLE_SEQUENCE.getColumnModel().getColumn(0);
-	    TableColumn SequENDTypeColumn 	     = TABLE_SEQUENCE.getColumnModel().getColumn(1);
-	    TableColumn SequENDValColumn  		 = TABLE_SEQUENCE.getColumnModel().getColumn(2);
-	    TableColumn SequTypeColumn 	   		 = TABLE_SEQUENCE.getColumnModel().getColumn(3);
-	    TableColumn SequenceFCColumn 	  	 = TABLE_SEQUENCE.getColumnModel().getColumn(4);
-	    TableColumn FCvelColumn 	   		     = TABLE_SEQUENCE.getColumnModel().getColumn(5);
-	    TableColumn FCaltColumn	   			 = TABLE_SEQUENCE.getColumnModel().getColumn(6);
-	    TableColumn FCtargetCurveColumn    	 = TABLE_SEQUENCE.getColumnModel().getColumn(7);
-	    
-	    TableColumn TVCFCColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(8);
-	    TableColumn TVCFCxColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(9);
-	    TableColumn TVCFCyColumn    	 	     = TABLE_SEQUENCE.getColumnModel().getColumn(10);
-	    TableColumn TVCFCtargetCurveColumn   = TABLE_SEQUENCE.getColumnModel().getColumn(11);
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			if(SELECT_VelocitySpherical.isSelected()) {
+				VelocityCoordinateSystem = 1;
+			} else if (SELECT_VelocityCartesian.isSelected()) {
+				VelocityCoordinateSystem = 2;
+			}
+			WRITE_INIT();
+		}
+  	 
+   });
+   
+   JLabel LABEL_SelectDoF = new JLabel("Select Degrees of Freedom");
+   LABEL_SelectDoF.setLocation(5, uy_p41 + 25 * 6   );
+   LABEL_SelectDoF.setSize(350, 20);
+   LABEL_SelectDoF.setBackground(backgroundColor);
+   LABEL_SelectDoF.setForeground(labelColor);
+   P2_SequenceMAIN.add(LABEL_SelectDoF);
+   
+   SELECT_3DOF =new JRadioButton("3DOF Model");    
+   SELECT_6DOF =new JRadioButton("6DOF Model");      
+   SELECT_3DOF.setLocation(5, uy_p41 + 25 * 7 );
+   SELECT_3DOF.setSize(220,20);
+   SELECT_3DOF.setBackground(backgroundColor);
+   SELECT_3DOF.setForeground(labelColor);
+   SELECT_3DOF.setFont(small_font);
+   SELECT_6DOF.setLocation(5, uy_p41 + 25 * 8);
+   SELECT_6DOF.setSize(220,20);
+   SELECT_6DOF.setBackground(backgroundColor);
+   SELECT_6DOF.setForeground(labelColor);
+   SELECT_6DOF.setFont(small_font);
+  ButtonGroup bg_dof=new ButtonGroup();    
+  bg_dof.add(SELECT_3DOF);
+  bg_dof.add(SELECT_6DOF); 
+  P2_SequenceMAIN.add(SELECT_3DOF);
+  P2_SequenceMAIN.add(SELECT_6DOF);
+  SELECT_3DOF.addActionListener(new ActionListener() {
 
-	    
-	    TABLE_SEQUENCE.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-	    SequID_colum.setPreferredWidth(50);
-	    SequENDTypeColumn.setPreferredWidth(100);
-	    SequENDValColumn.setPreferredWidth(100);
-	    SequTypeColumn.setPreferredWidth(200);
-	    SequenceFCColumn.setPreferredWidth(150);
-	    FCvelColumn.setPreferredWidth(130);
-	    FCaltColumn.setPreferredWidth(130);
-	    FCtargetCurveColumn.setPreferredWidth(150); 
-	    
-	    TVCFCColumn.setPreferredWidth(150);
-	    TVCFCxColumn.setPreferredWidth(130);
-	    TVCFCyColumn.setPreferredWidth(130);
-	    TVCFCtargetCurveColumn.setPreferredWidth(150); 
-	    
-	    ((JTable) TABLE_SEQUENCE).setFillsViewportHeight(true);
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if(SELECT_3DOF.isSelected()) {
+				DOF_System = 3;
+			} else if (SELECT_6DOF.isSelected()) {
+				DOF_System = 6;
+			}
+			WRITE_INIT();
+		}
+ 	 
+  });
+  SELECT_6DOF.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			if(SELECT_3DOF.isSelected()) {
+				DOF_System = 3;
+			} else if (SELECT_6DOF.isSelected()) {
+				DOF_System = 6;
+			}
+			WRITE_INIT();
+		}
+ 	 
+  }); 
+  
+  JLabel LABEL_ControllerFrequency = new JLabel("Set Control Loop Frequency [Hz]");
+  LABEL_ControllerFrequency.setLocation(INPUT_width, uy_p41 + 25 * 10 );
+  LABEL_ControllerFrequency.setSize(300, 20);
+  LABEL_ControllerFrequency.setBackground(backgroundColor);
+  LABEL_ControllerFrequency.setForeground(labelColor);
+  P2_SequenceMAIN.add(LABEL_ControllerFrequency);
+ 
+ 
+  
+  INPUT_ControllerFrequency = new JTextField(10);
+  INPUT_ControllerFrequency.setLocation(2, uy_p41 + 25 * 10);
+  INPUT_ControllerFrequency.setSize(INPUT_width-20, 20);
+  //INPUT_M0.setBackground(backgroundColor);
+  //INPUT_M0.setForeground(labelColor);
+  INPUT_ControllerFrequency.setHorizontalAlignment(JTextField.RIGHT);
+  INPUT_ControllerFrequency.addFocusListener(new FocusListener() {
+
+	@Override
+	public void focusGained(FocusEvent arg0) { }
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		WRITE_INIT();
+	}
+	  
+  });
+  P2_SequenceMAIN.add(INPUT_ControllerFrequency);
+  
+  JLabel LABEL_GlobalFrequency = new JLabel("Set Global Result Frequency [Hz]");
+  LABEL_GlobalFrequency.setLocation(INPUT_width, uy_p41 + 25 * 11 );
+  LABEL_GlobalFrequency.setSize(300, 20);
+  LABEL_GlobalFrequency.setBackground(backgroundColor);
+  LABEL_GlobalFrequency.setForeground(labelColor);
+  P2_SequenceMAIN.add(LABEL_GlobalFrequency);
+ 
+ 
+  
+  INPUT_GlobalFrequency = new JTextField(10);
+  INPUT_GlobalFrequency.setLocation(2, uy_p41 + 25 * 11);
+  INPUT_GlobalFrequency.setSize(INPUT_width-20, 20);
+  //INPUT_M0.setBackground(backgroundColor);
+  //INPUT_M0.setForeground(labelColor);
+  INPUT_GlobalFrequency.setEditable(false);
+  INPUT_GlobalFrequency.setHorizontalAlignment(JTextField.RIGHT);
+  INPUT_GlobalFrequency.addFocusListener(new FocusListener() {
+
+	@Override
+	public void focusGained(FocusEvent arg0) { }
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		WRITE_INIT();
+	}
+	  
+  });
+  P2_SequenceMAIN.add(INPUT_GlobalFrequency);
+  
+  JLabel LABEL_IntegTime = new JLabel("Set Maximum Simulation Time [s]");
+  LABEL_IntegTime.setLocation(INPUT_width, uy_p41 + 25 * 12 );
+  LABEL_IntegTime.setSize(300, 20);
+  LABEL_IntegTime.setBackground(backgroundColor);
+  LABEL_IntegTime.setForeground(labelColor);
+  P2_SequenceMAIN.add(LABEL_IntegTime);
+ 
+ 
+  
+  INPUT_GlobalTime = new JTextField(10);
+  INPUT_GlobalTime.setLocation(2, uy_p41 + 25 * 12);
+  INPUT_GlobalTime.setSize(INPUT_width-20, 20);
+  //INPUT_M0.setBackground(backgroundColor);
+  //INPUT_M0.setForeground(labelColor);
+  INPUT_GlobalTime.setHorizontalAlignment(JTextField.RIGHT);
+  INPUT_GlobalTime.addFocusListener(new FocusListener() {
+
+	@Override
+	public void focusGained(FocusEvent arg0) { }
+
+	@Override
+	public void focusLost(FocusEvent e) {
+		WRITE_INIT();
+	}
+	  
+  });
+  P2_SequenceMAIN.add(INPUT_GlobalTime);
     
-    TABLE_SEQUENCE.getTableHeader().setBackground(backgroundColor);
-    TABLE_SEQUENCE.getTableHeader().setForeground(labelColor);
     
-    SequenceENDTypeCombobox.setBackground(backgroundColor);
-    try {
-    for (int i=0;i<SequenceENDType.length;i++) {
-    	SequenceENDTypeCombobox.addItem(SequenceENDType[i]);
-    }
-    } catch(NullPointerException eNPE) {
-    	System.out.println(eNPE);
-    }
-    SequENDTypeColumn.setCellEditor(new DefaultCellEditor(SequenceENDTypeCombobox));
     
-    SequenceTypeCombobox.setBackground(backgroundColor);
-    try {
-    for (int i=0;i<SequenceType.length;i++) {
-    	SequenceTypeCombobox.addItem(SequenceType[i]);
-    }
-    } catch(NullPointerException eNPE) {
-    	System.out.println(eNPE);
-    }
-    SequTypeColumn.setCellEditor(new DefaultCellEditor(SequenceTypeCombobox));
-    
-    SequenceFCCombobox.setBackground(backgroundColor);
-    try {
-    for (int i=0;i<SequenceFC.length;i++) {
-    	SequenceFCCombobox.addItem(SequenceFC[i]);
-    }
-    } catch(NullPointerException eNPE) {
-    	System.out.println(eNPE);
-    }
-    SequenceFCColumn.setCellEditor(new DefaultCellEditor(SequenceFCCombobox));
-    
-    FCTargetCurveCombobox.setBackground(backgroundColor);
-    try {
-    for (int i=0;i<FCTargetCurve.length;i++) {
-    	FCTargetCurveCombobox.addItem(FCTargetCurve[i]);
-    }
-    } catch(NullPointerException eNPE) {
-    	System.out.println(eNPE);
-    }
-    FCtargetCurveColumn.setCellEditor(new DefaultCellEditor(FCTargetCurveCombobox));
-    
-    SequenceTVCFCCombobox.setBackground(backgroundColor);
-    try {
-    for (int i=0;i<SequenceTVCFC.length;i++) {
-    	SequenceTVCFCCombobox.addItem(SequenceTVCFC[i]);
-    }
-    } catch(NullPointerException eNPE) {
-    	System.out.println(eNPE);
-    }
-    TVCFCColumn.setCellEditor(new DefaultCellEditor(SequenceTVCFCCombobox));
-    
-    TVCFCTargetCurveCombobox.setBackground(backgroundColor);
-    try {
-    for (int i=0;i<TargetCurve_Options_TVC.length;i++) {
-    	TVCFCTargetCurveCombobox.addItem(TargetCurve_Options_TVC[i]);
-    }
-    } catch(NullPointerException eNPE) {
-    	System.out.println(eNPE);
-    }
-    TVCFCtargetCurveColumn.setCellEditor(new DefaultCellEditor(TVCFCTargetCurveCombobox));
-    
-    JScrollPane TABLE_SEQUENCE_ScrollPane = new JScrollPane(TABLE_SEQUENCE,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-    //TABLE_SEQUENCE_ScrollPane.setLayout(null);
-    TABLE_SEQUENCE_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
-    TABLE_SEQUENCE_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
-    TABLE_SEQUENCE_ScrollPane.setBackground(backgroundColor);
-    //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
-    //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
-    P2_SequenceMAIN.add(TABLE_SEQUENCE_ScrollPane, BorderLayout.PAGE_START);
+    //P2_SequenceMAIN.add(TABLE_SEQUENCE_ScrollPane, BorderLayout.PAGE_START);
     
     JPanel SequenceControlPanel = new JPanel();
     SequenceControlPanel.setLayout(null);
     SequenceControlPanel.setPreferredSize(new Dimension(400, 60));
     SequenceControlPanel.setBackground(backgroundColor);
     SequenceControlPanel.setForeground(labelColor);
-    P2_SequenceMAIN.add(SequenceControlPanel, BorderLayout.PAGE_END);
+    PANEL_RIGHT_InputSection.add(SequenceControlPanel, BorderLayout.CENTER);
 
-    JButton BUTTON_AddSequence = new JButton("Add Sequence");
-    BUTTON_AddSequence.setLocation(5, 5);
-    BUTTON_AddSequence.setSize(145,25);
-    BUTTON_AddSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  AddSequence();
-    	  } } );
-    SequenceControlPanel.add(BUTTON_AddSequence);
-    JButton BUTTON_DeleteSequence = new JButton("Delete Sequence");
-    BUTTON_DeleteSequence.setLocation(5, 32);
-    BUTTON_DeleteSequence.setSize(145,25);
-    BUTTON_DeleteSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  DeleteSequence();
-    	  } } );
-    SequenceControlPanel.add(BUTTON_DeleteSequence);
-    
-    JButton BUTTON_UpSequence = new JButton("Sequence Up");
-    BUTTON_UpSequence.setLocation(155, 5);
-    BUTTON_UpSequence.setSize(145,25);
-    BUTTON_UpSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  UpSequence();
-    	  } } );
-    SequenceControlPanel.add(BUTTON_UpSequence);
-    JButton BUTTON_RemoveAllSequence = new JButton("Remove All");
-    BUTTON_RemoveAllSequence.setLocation(325, 5);
-    BUTTON_RemoveAllSequence.setSize(145,25);
-    BUTTON_RemoveAllSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  DeleteAllSequence();
-    	  } } );
-    SequenceControlPanel.add(BUTTON_RemoveAllSequence);
-    JButton BUTTON_DownSequence = new JButton("Sequence down");
-    BUTTON_DownSequence.setLocation(155, 32);
-    BUTTON_DownSequence.setSize(145,25);
-    BUTTON_DownSequence.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  DownSequence();
-    	  } } );
-    SequenceControlPanel.add(BUTTON_DownSequence);
-    JButton BUTTON_AddFC = new JButton("Add Flight Controller");
-    BUTTON_AddFC.setLocation(325, 32);
-    BUTTON_AddFC.setSize(145,25);
-    BUTTON_AddFC.setEnabled(false);
-    BUTTON_AddFC.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  
-    	  } } );
-    SequenceControlPanel.add(BUTTON_AddFC);
-    
-    JButton BUTTON_ImportFC = new JButton("Import Flight Controller");
-    BUTTON_ImportFC.setLocation(475, 5);
-    BUTTON_ImportFC.setSize(145,25);
-    BUTTON_ImportFC.setEnabled(false);
-    BUTTON_ImportFC.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  
-    	  } } );
-    SequenceControlPanel.add(BUTTON_ImportFC);
-    
-    JButton BUTTON_ExportFC = new JButton("Export Flight Controller");
-    BUTTON_ExportFC.setLocation(475, 32);
-    BUTTON_ExportFC.setSize(145,25);
-    BUTTON_ExportFC.setEnabled(false);
-    BUTTON_ExportFC.addActionListener(new ActionListener() { 
-    	  public void actionPerformed(ActionEvent e) { 
-    		  
-    	  } } );
-    SequenceControlPanel.add(BUTTON_ExportFC);
-    
-    
+
     JButton BUTTON_AddController = new JButton("Add Controller");
     BUTTON_AddController.setLocation(655, 5);
     BUTTON_AddController.setSize(145,25);
@@ -3246,11 +2873,11 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     //-----------------------------------------------------------------------------------------------------------------------------
     JPanel Pane_Sequence = new JPanel();
     Pane_Sequence.setLocation(0, 0);
-    Pane_Sequence.setPreferredSize(new Dimension(900, 200));
+    Pane_Sequence.setPreferredSize(new Dimension(900, 250));
     Pane_Sequence.setLayout(new BorderLayout());
     Pane_Sequence.setBackground(backgroundColor);
     Pane_Sequence.setForeground(labelColor);
-    PANEL_RIGHT_InputSection.add(Pane_Sequence, BorderLayout.CENTER);
+    PANEL_RIGHT_InputSection.add(Pane_Sequence, BorderLayout.PAGE_END);
 
     JSplitPane SplitPane_Page2_Charts_HorizontalSplit = new JSplitPane();
     SplitPane_Page2_Charts_HorizontalSplit.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
@@ -5832,7 +5459,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		Error_Indicator.setBackground(backgroundColor);
     		Error_Indicator.setForeground(labelColor);
     	}
-    	Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
+   // 	Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
     }
     public static void Update_IntegratorSettings() {
     	if(Integrator_chooser.getSelectedIndex()==0) {
@@ -6064,8 +5691,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	       	String[] initSplit = strLine.split(fcSeparator);
 
 	       	String[] head = initSplit[0].split(" ");
-	       
-	       	int  ID = Integer.parseInt(head[0]);
+	       //System.out.pri
+	       //	int  ID = Integer.parseInt(head[0]);
+	       	String sequenceName = head[1];
 	       	int flightControllerIndex = Integer.parseInt(initSplit[1].split(" ")[1]);
 	       	String[] arr     = strLine.split(eventSeparator);
 	       	//System.out.println(arr[1]);
@@ -6076,11 +5704,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	       	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
 	       	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
 	       	
-	       	System.out.println(ID+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
+	       //	System.out.println(ID+" "+sequenceName+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
 	       	
 	       	if(sequenceID!=0) {
 	       		GUISequenceElement.addGUISequenceElment();
 	       	} 
+	       	sequenceContentList.get(sequenceID).setSequenceName(sequenceName);
        		sequenceContentList.get(sequenceID).setFlightControllerSelectIndex(flightControllerIndex);
        		sequenceContentList.get(sequenceID).setEventSelectIndx(eventIndex);
        		sequenceContentList.get(sequenceID).setEndSelectIndex(endIndex);
@@ -6159,8 +5788,8 @@ try {
         		M0=InitialState;
         	} else if (k==7){
         		INDICATOR_INTEGTIME.setText(decf.format(InitialState));
-        		//INPUT_INTEGTIME.setText(decf.format(InitialState));
-        		 MODEL_EventHandler.setValueAt(decf.format(InitialState), 0, 1);
+        		INPUT_GlobalTime.setText(decf.format(InitialState));
+        		 //MODEL_EventHandler.setValueAt(decf.format(InitialState), 0, 1);
         	} else if (k==8){
         		int Integ_indx = (int) InitialState;
         		Integrator_chooser.setSelectedIndex(Integ_indx);
@@ -6180,12 +5809,12 @@ try {
                 	INDICATOR_TARGET.setBorder(Venus_border);
                 }
             } else if (k==10){
-	            	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
+	            //	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
             } else if (k==11){
-	            	INPUT_REFELEV.setText(decf.format(InitialState));  // Reference Elevation
+	            	INPUT_REFELEV.setText(decf.format(InitialState));       // Reference Elevation
 		    } else if (k==12) {
-	        		int Integ_indx = (int) InitialState;
-	        		AscentDescent_SwitchChooser.setSelectedIndex(Integ_indx);
+	        		//int Integ_indx = (int) InitialState;
+	        		//AscentDescent_SwitchChooser.setSelectedIndex(Integ_indx);
 		    } else if (k==13) {
 			    	int Integ_indx = (int) InitialState;
 			    	if(Integ_indx==1) {
@@ -6206,6 +5835,10 @@ try {
 		    	INPUT_AngularRate_Y.setText(decAngularRate.format(InitialState));
 		    } else if (k==17) {
 		    	INPUT_AngularRate_Z.setText(decAngularRate.format(InitialState));
+		    } else if(k==18) {
+		    	INPUT_ControllerFrequency.setText(decf.format(InitialState));
+		    }else if(k==19) {
+		    	INPUT_GlobalFrequency.setText(decf.format(InitialState));
 		    }
         	k++;
         }
@@ -6985,7 +6618,7 @@ fstream.close();
                 	r = Double.parseDouble(INPUT_M0.getText()) ;
                 	wr.write(r+System.getProperty( "line.separator" ));	
             		} else if (i == 7 ){
-                    r = Double.parseDouble((String) MODEL_EventHandler.getValueAt( 0, 1)) ;
+                    r = Double.parseDouble((String) INPUT_GlobalTime.getText()) ;
                     wr.write(r+System.getProperty( "line.separator" ));	
 		    		} else if (i == 8 ){
 		            rr =  Integrator_chooser.getSelectedIndex() ;
@@ -6994,27 +6627,33 @@ fstream.close();
 		            rr =  Target_chooser.getSelectedIndex() ;
 		            wr.write(rr+System.getProperty( "line.separator" ));	
 		    		} else if (i == 10 ){
-		            r = Double.parseDouble(INPUT_WRITETIME.getText())  ; // delta-t write out
+		            r = 0;//Double.parseDouble(INPUT_WRITETIME.getText())  ; // delta-t write out
 		            wr.write(r+System.getProperty( "line.separator" ));	
 		    		} else if (i == 11 ){
 			        r = Double.parseDouble(INPUT_REFELEV.getText())  ; // Reference elevation
 			        wr.write(r+System.getProperty( "line.separator" ));	
 		        } else if (i == 12) {
-		            	rr =  AscentDescent_SwitchChooser.getSelectedIndex() ;
+		            	rr =  0;//AscentDescent_SwitchChooser.getSelectedIndex() ;
 		            wr.write(rr+System.getProperty( "line.separator" ));	
-		        } else if (i == 13) {
+		        } else if(i == 13) {
 	                wr.write(VelocityCoordinateSystem+System.getProperty( "line.separator" ));	
-		        } else if (i == 14) {
+		        } else if(i == 14) {
 	                wr.write(DOF_System+System.getProperty( "line.separator" ));	
-		        } else if (i == 15) {
+		        } else if(i == 15) {
 		        	double rate = Double.parseDouble(INPUT_AngularRate_X.getText());
 		        	wr.write(rate+System.getProperty( "line.separator" ));	
-		        } else if (i == 16) {
+		        } else if(i == 16) {
 		        	double rate = Double.parseDouble(INPUT_AngularRate_Y.getText());
 		        	wr.write(rate+System.getProperty( "line.separator" ));	
-		        } else if (i == 17) {
+		        } else if(i == 17) {
 		        	double rate = Double.parseDouble(INPUT_AngularRate_Z.getText());
 		        	wr.write(rate+System.getProperty( "line.separator" ));	
+		        } else if(i==18) {
+		        	double value = Double.parseDouble(INPUT_ControllerFrequency.getText());
+		        	wr.write(value+System.getProperty( "line.separator" ));
+		        } else if(i==19) {
+		        	double value = Double.parseDouble(INPUT_GlobalFrequency.getText());
+		        	wr.write(value+System.getProperty( "line.separator" ));
 		        }
 		            }               
             wr.close();
@@ -7367,6 +7006,7 @@ fstream.close();
             {
         		int ID = sequenceContentList.get(i).getSequenceID();
             	String sequenceContent = ID+" "+
+						 			 sequenceContentList.get(i).getSequenceName()+" "+
             							 fcSeparator	+" "+ 
             							 sequenceContentList.get(i).getFlightControllerSelect().getSelectedIndex()+" "+
             							 fcSeparator	+" "+ 

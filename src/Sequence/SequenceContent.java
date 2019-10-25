@@ -13,6 +13,8 @@ import Model.DataSets.SensorSet;
 
 public class SequenceContent {
 	
+	private int ID; 
+	
 	private List<FlightController> controllerSets = new ArrayList<FlightController>();	
 	private List<FlightController> EventSets = new ArrayList<FlightController>();
 	
@@ -77,13 +79,17 @@ public class SequenceContent {
 	}
 
 	public boolean isTriggerEnd(SensorSet sensorSet) {
-		if(triggerType == 1) {		// Time trigger
+		if(triggerType == 0) {		// Time trigger
 			if(sensorSet.getGlobalTime()>triggerValue) {
+				triggerEnd=true;
+			}
+		} else if (triggerType == 1) {
+			//System.out.println(ID+"|"+sensorSet.getControllerTime()+"|"+triggerValue);
+			if(sensorSet.getControllerTime()>triggerValue) {
 				triggerEnd=true;
 			}
 		} else if (triggerType == 2) {	
 			if(sensorSet.getRealTimeResultSet().getVelocity()<triggerValue && sensorSet.getGlobalTime()>5) {
-				//System.out.println(sensorSet.getRealTimeResultSet().getVelocity()+"|"+sensorSet.getGlobalTime());
 				triggerEnd=true;
 			}
 		} else if (triggerType == 3 ) {	
@@ -103,6 +109,14 @@ public class SequenceContent {
 
 	public List<FlightController> getEventSets() {
 		return EventSets;
+	}
+
+	public int getID() {
+		return ID;
+	}
+
+	public void setID(int iD) {
+		ID = iD;
 	}	 
 
 }

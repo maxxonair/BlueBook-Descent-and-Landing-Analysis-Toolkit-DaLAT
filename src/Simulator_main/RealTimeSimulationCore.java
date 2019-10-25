@@ -16,7 +16,6 @@ import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
-import Model.ControllerModel;
 import Model.ForceModel;
 import Model.GravityModel;
 import Model.AtmosphereModel;
@@ -29,8 +28,6 @@ import Model.DataSets.ErrorSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
-import Sequence.Sequence;
-import Sequence.SequenceElement;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
@@ -613,8 +610,6 @@ e2.printStackTrace();
 
 RealTimeSimulationCore.spaceShip = spaceShip;
 tankContent = spaceShip.getPropulsion().getPrimaryPropellant();
-//currentDataSet.setPropellantLevelIsPrimary(spaceShip.getPropulsion().getPrimaryPropellant());
-//currentDataSet.setPropellantLevelIsSecondary(spaceShip.getPropulsion().getSecondaryPropellant());
 RealTimeSimulationCore.controlCommandSet = controlCommandSet;
 
 RealTimeSimulationCore.integratorData = integratorData;
@@ -632,8 +627,6 @@ InertiaTensor = spaceShip.getInertiaTensorMatrix();
 
 q_vector      = integratorData.getInitialQuarterions();
 
-controlCommandSet.setCntr_h_init(integratorData.getInitRadius()-rm);
-controlCommandSet.setCntr_v_init(integratorData.getInitVelocity());
 
 actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
  M0 			  = spaceShip.getMass()  ; 
@@ -649,12 +642,6 @@ ref_ELEVATION =  integratorData.getRefElevation();
 //----------------------------------------------------------------------------------------------
 currentDataSet.setLocalElevation(integratorData.getRefElevation());
 currentDataSet.setTARGET(integratorData.getTargetBody());
-Sequence.setSequence_RES_closed(false);
-List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>();
-SequenceElement newSequenceElement = new SequenceElement( 0, 0,  100,  1,  0, 0, 0, 0, 0, 0, 0, 0);
-SEQUENCE_DATA.add(newSequenceElement);
-currentDataSet.setSEQUENCE_DATA_main(SEQUENCE_DATA);
-ControllerModel.getCTRL_steps().clear();
 //----------------------------------------------------------------------------------------------
 //Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -730,7 +717,8 @@ currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
 currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
 currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
 //ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);	
-List<MasterSet> realTimeSet = new ArrayList<MasterSet>();
+List<MasterSet> masterList = new ArrayList<MasterSet>();
+List<RealTimeResultSet> realTimeList = new ArrayList<RealTimeResultSet>();
 RealTimeContainer realTimeContainer = new RealTimeContainer();
 //----------------------------------------------------------------------------------------------
   			RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
@@ -741,16 +729,11 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	            }
 	            
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
-	                double   t = interpolator.getCurrentTime();
+	                double   t     = interpolator.getCurrentTime();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double[] y     = interpolator.getInterpolatedState();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
-	                
-	                realTimeSet.add(masterSet);
-	                
-	                
-	                if(isLast) {
-
+	                if(t>0.05) {
 	                	realTimeResultSet.setTime(t);
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
@@ -779,9 +762,15 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setMasterSet(masterSet);
 	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
 	                	realTimeResultSet.setSpaceShip(RealTimeSimulationCore.spaceShip);
-	                	
+	             
+	                masterList.add(masterSet);
+	                realTimeList.add(realTimeResultSet);
+	                }
+	                
+	                if(isLast) {                	
 	                	realTimeContainer.setRealTimeResultSet(realTimeResultSet);
-	                	realTimeContainer.setRealTimeSet(realTimeSet);
+	                	realTimeContainer.setMasterList(masterList);
+	                	realTimeContainer.setRealTimeList(realTimeList);
 	                }
 	            }
 	            
@@ -795,7 +784,8 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	        }
 	        */
 	        try {
-	        	double t= integratorData.getMaxIntegTime();
+	       	double t= integratorData.getMaxIntegTime();
+	        	//double t=  0.1;
 	        	IntegratorModule.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        	System.out.println("ERROR: Integrator failed:");
