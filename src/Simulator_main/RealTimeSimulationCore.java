@@ -717,7 +717,9 @@ currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
 currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
 currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
 //ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);	
+@SuppressWarnings("unused")
 List<MasterSet> masterList = new ArrayList<MasterSet>();
+@SuppressWarnings("unused")
 List<RealTimeResultSet> realTimeList = new ArrayList<RealTimeResultSet>();
 RealTimeContainer realTimeContainer = new RealTimeContainer();
 //----------------------------------------------------------------------------------------------
@@ -758,8 +760,10 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setEulerZ( EulerAngle[2][0]);
 	                	realTimeResultSet.setQuarternions(q_vector);
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
+	                	integratorData.setGroundtrack(integratorData.getGroundtrack()+groundtrack);
 	                	
 	                	realTimeResultSet.setMasterSet(masterSet);
+	                	realTimeResultSet.setIntegratorData(integratorData);
 	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
 	                	realTimeResultSet.setSpaceShip(RealTimeSimulationCore.spaceShip);
 	             

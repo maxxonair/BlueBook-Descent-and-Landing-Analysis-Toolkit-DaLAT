@@ -48,6 +48,16 @@ public class IntegratorData {
 	int AeroParachuteModel;
 	double ConstParachuteCd;
 	
+	private double groundtrack=0;
+	
+	public double getGroundtrack() {
+		return groundtrack;
+	}
+
+	public void setGroundtrack(double groundtrack) {
+		this.groundtrack = groundtrack;
+	}
+	
 	private double[][] initialQuarterions = {	{1},
 			{0},
 			{0},

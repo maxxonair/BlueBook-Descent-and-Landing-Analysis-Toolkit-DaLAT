@@ -40,13 +40,25 @@ public class RealTimeResultSet {
 	
 	private double time =0;
 	
+	
 	private MasterSet masterSet; 
 	
 	private SpaceShip spaceShip; 
 	
+	private IntegratorData integratorData;
+	
 	private double normalizedDeceleration=0;
 	
 	
+
+	public IntegratorData getIntegratorData() {
+		return integratorData;
+	}
+
+	public void setIntegratorData(IntegratorData integratorData) {
+		this.integratorData = integratorData;
+	}
+
 	public SpaceShip getSpaceShip() {
 		return spaceShip;
 	}

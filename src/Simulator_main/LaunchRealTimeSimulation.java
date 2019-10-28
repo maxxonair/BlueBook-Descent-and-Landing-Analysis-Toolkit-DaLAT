@@ -132,7 +132,8 @@ public class LaunchRealTimeSimulation {
 	    		integratorData.setMaxIntegTime(tIncrement);
 	    		
 	    	    ArrayList<String> steps = new ArrayList<String>();
-    			RealTimeContainer realTimeContainer = new RealTimeContainer();		
+    			RealTimeContainer realTimeContainer = new RealTimeContainer();	
+
     			
 		        long startTime   = System.nanoTime();	
 		    	System.out.println("------------------------------------------");
@@ -194,11 +195,13 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		  sensorSet.setGlobalTime(tIS);
 	    		    	   SensorModel.addVelocitySensorUncertainty(sensorSet,  4);
 	    		    			//SensorModel.addAltitudeSensorUncertainty(sensorSet,  5);
-	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);
+	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);   
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------
 	    		    	   for(int i=0;i<realTimeContainer.getMasterList().size();i++) {
+	    		    		   integratorData.setGroundtrack(realTimeContainer.getRealTimeList().get(i).
+	    		    				   getIntegratorData().getGroundtrack());
 	    		    		   	steps = addStep(steps, realTimeContainer, integratorData, i);
 	    		    	   }
 	  	      //---------------------------------------------------------------------------------------
@@ -258,6 +261,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	ControlCommandSet controlCommandSet = masterSet.getControlCommandSet();
 	ForceMomentumSet forceMomentumSet = masterSet.getForceMomentumSet();
 	ActuatorSet actuatorSet = masterSet.getActuatorSet();
+	
 	//System.out.println(realTimeContainer.getRealTimeSet().size());
 	steps.add((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()) + " " + 
     			realTimeResultSet.getLongitude() + " " + 
@@ -324,7 +328,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
   		  0+ " " + 
   		  realTimeResultSet.getVelocity()*Math.cos(realTimeResultSet.getFpa())+" "+
   		  realTimeResultSet.getVelocity()*Math.sin(realTimeResultSet.getFpa())+" "+
-  		  0+" "+ 	  
+  		  realTimeContainer.getRealTimeList().get(subIndx).getIntegratorData().getGroundtrack()/1000+" "+ 	  
   		  controlCommandSet.getActiveSequence()+" "+
   		  sensorSet.getControllerTime()+" "+
   		  aerodynamicSet.getDragCoefficientParachute()+" "+
