@@ -50,6 +50,27 @@ public class IntegratorData {
 	
 	private double groundtrack=0;
 	
+	private boolean isAtmosphereNoiseModel;
+	private boolean isActuatorNoiseModel; 
+	
+	
+	
+	public boolean isActuatorNoiseModel() {
+		return isActuatorNoiseModel;
+	}
+
+	public void setActuatorNoiseModel(boolean isActuatorNoiseModel) {
+		this.isActuatorNoiseModel = isActuatorNoiseModel;
+	}
+
+	public boolean isAtmosphereNoiseModel() {
+		return isAtmosphereNoiseModel;
+	}
+
+	public void setAtmosphereNoiseModel(boolean isAtmosphereNoiseModel) {
+		this.isAtmosphereNoiseModel = isAtmosphereNoiseModel;
+	}
+
 	public double getGroundtrack() {
 		return groundtrack;
 	}

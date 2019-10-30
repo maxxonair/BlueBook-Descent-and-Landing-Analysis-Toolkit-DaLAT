@@ -1,5 +1,7 @@
 package Model.DataSets;
 
+import NoiseSet.AtmosphereNoiseSet;
+
 public class AtmosphereSet {
 
     public   double DynamicPressure=0;
@@ -11,9 +13,15 @@ public class AtmosphereSet {
     public   double StaticPressure = 0 ;      				//   pressure [Pa]
     public   double PressureCoefficient = 0;				//  
 
-    
+    private AtmosphereNoiseSet atmosphereNoiseSet = new AtmosphereNoiseSet();
     
 
+	public AtmosphereNoiseSet getAtmosphereNoiseSet() {
+		return atmosphereNoiseSet;
+	}
+	public void setAtmosphereNoiseSet(AtmosphereNoiseSet atmosphereNoiseSet) {
+		this.atmosphereNoiseSet = atmosphereNoiseSet;
+	}
 	public   double getDynamicPressure() {
 		return DynamicPressure;
 	}

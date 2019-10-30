@@ -1,5 +1,7 @@
 package Model.DataSets;
 
+import NoiseSet.ActuatorNoiseSet;
+
 public class ActuatorSet {
 	
 	private double primaryThrust_is=0;
@@ -24,8 +26,22 @@ public class ActuatorSet {
     
     private boolean ParachuteDeployed=false;
     private boolean ParachuteEject=false;
+    
+    private ActuatorNoiseSet actuatorNoiseSet = new ActuatorNoiseSet();
+    
+    
         
     
+	public ActuatorNoiseSet getActuatorNoiseSet() {
+		return actuatorNoiseSet;
+	}
+
+
+	public void setActuatorNoiseSet(ActuatorNoiseSet actuatorNoiseSet) {
+		this.actuatorNoiseSet = actuatorNoiseSet;
+	}
+
+
 	public boolean isParachuteEject() {
 		return ParachuteEject;
 	}

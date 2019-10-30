@@ -10,11 +10,11 @@ import Toolbox.Mathbox;
 public class GravityModel  {
 
 	
-	   public static double[][] DATA_GRAVITY = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
-				{1.9554537E-3,0,0}, 						// Earth
-				{9.0880835E-5,0,0},				// Moon (Earth) GRAIL data
-				{0,0,0},									// Mars
-				{0,0,0,0},											// Venus
+	   public static double[][] DATA_GRAVITY = { 
+				{0.0010826269 ,-0.0000025323 ,-0.0000016204 }, 						// Earth
+				{0.0002027,0,0},				// Moon (Earth) GRAIL data
+				{0.001964, 0.000036 ,0},									// Mars
+				{0.000027,0,0,0},											// Venus
 		};
 	
 	

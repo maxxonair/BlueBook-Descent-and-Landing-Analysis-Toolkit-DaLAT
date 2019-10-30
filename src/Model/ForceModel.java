@@ -54,7 +54,7 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
-	atmosphereSet = AtmosphereModel.getAtmosphereSet(spaceShip, currentDataSet);
+	atmosphereSet = AtmosphereModel.getAtmosphereSet(spaceShip, currentDataSet, integratorData);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Aerodynamic
     	//-------------------------------------------------------------------------------------------------------------------  
@@ -75,7 +75,7 @@ public class ForceModel {
 	if(isAutoPilot) {
 			controlCommandSet = Sequence.getControlCommandSet(currentDataSet, spaceShip, errorSet);
 	}
-    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet);
+    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet, integratorData);
     
     forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------

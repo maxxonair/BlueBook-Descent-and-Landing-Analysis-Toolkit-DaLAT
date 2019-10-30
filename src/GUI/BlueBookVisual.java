@@ -1852,6 +1852,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			NoiseSetupPanel.setPreferredSize(new Dimension(1350, 1350));
 			NoiseSetupPanel.setLayout(new BorderLayout());
 			
+			JPanel gravityModelPanel = new JPanel();
+			gravityModelPanel.setLocation(0, 0);
+			gravityModelPanel.setBackground(backgroundColor);
+			gravityModelPanel.setForeground(labelColor);
+			gravityModelPanel.setPreferredSize(new Dimension(1350, 1350));
+			gravityModelPanel.setLayout(new BorderLayout());
+			
 		
 	     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
 	     	ImageIcon icon_inertia = new ImageIcon("images/inertia.png","");
@@ -1867,7 +1874,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	     	TabPane_SimulationSetup.addTab("Basic Setup" , icon_setup2, BasicAndControllerPanel, null);
 	     	TabPane_SimulationSetup.addTab("Sequence Setup" , icon_setup2, SequenceSetupPanel, null);
 	     	TabPane_SimulationSetup.addTab("Aerodynamic Setup" , icon_aerodynamic, AerodynamicSetupPanel, null);
-	     	TabPane_SimulationSetup.addTab("Noise Model Setup" , null, NoiseSetupPanel, null);
+	     	TabPane_SimulationSetup.addTab("Gravity Setup" , icon_setup2, gravityModelPanel, null);
+	     	TabPane_SimulationSetup.addTab("Noise and Error Model Setup" , null, NoiseSetupPanel, null);
 	     	PageX04_SimSetup.add(TabPane_SimulationSetup);
 		TabPane_SimulationSetup.setSelectedIndex(0);
 		TabPane_SimulationSetup.setFont(small_font);
@@ -7413,7 +7421,7 @@ public static void EXPORT_Case() {
 	              DataInputStream in = new DataInputStream(fstream);
 	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	              String strLine;
-
+try {
 	              while ((strLine = br.readLine()) != null )   {
 		           String[] tokens = strLine.split(" ");
 		           double x = Double.parseDouble(tokens[6]);
@@ -7436,13 +7444,16 @@ public static void EXPORT_Case() {
 		        	   }
 		        	   
 		           }
-	              
-	       fstream.close();
-	       in.close();
-	       br.close();
-	       
-		    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries11);    
-		    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
+	   	       fstream.close();
+		       in.close();
+		       br.close();
+		       
+			    CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.addSeries(xyseries11);    
+			    CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.addSeries(xyseries_FPA_is);
+} catch (NullPointerException e) {
+	System.out.println("ERRROR: AddDataset_DashboardOverviewChart");
+}
+
 
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }

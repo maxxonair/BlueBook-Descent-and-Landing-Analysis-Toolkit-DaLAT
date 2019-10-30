@@ -1,5 +1,2 @@
-0 InitSequence |FlightControllerElements| 4 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 2 400.0 |EndElement| 
-1 ParachuteDeployment |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 1 |EventManagementElements |EndElement| 3 1000.0 |EndElement| 
-2 ParachuteSeparation |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 2 |EventManagementElements |EndElement| 1 1.0 |EndElement| 
-3 fullThrust |FlightControllerElements| 5 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 15.0 |EndElement| 
-4 freeFall |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 3 0 |EndElement| 
+0 Launch |FlightControllerElements| 5 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 1000.0 |EndElement| 
+1 FreeFall |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0 |EndElement| 

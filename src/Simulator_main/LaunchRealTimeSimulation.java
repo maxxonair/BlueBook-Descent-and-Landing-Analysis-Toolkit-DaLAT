@@ -122,6 +122,9 @@ public class LaunchRealTimeSimulation {
 	    		integratorData.setConstParachuteCd((double) ReadInput.readAeroFile()[4]);
 	    		//integratorData.setDegreeOfFreedom((int) inputOut[14]);
 	    		integratorData.setDegreeOfFreedom(6);
+	    		
+	    		integratorData.setAtmosphereNoiseModel(true);
+	    		integratorData.setActuatorNoiseModel(true);
 		    	//--------------------------------------------------------------------------------------
 	    		ControlCommandSet controlCommandSet = new ControlCommandSet(); 
 	    		//--------------------------------------------------------------------------------------

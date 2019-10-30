@@ -10,7 +10,9 @@ import java.util.List;
 
 import FlightElement.SpaceShip;
 import Model.DataSets.AtmosphereSet;
+import Noise.AtmosphereNoiseModel;
 import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.IntegratorData;
 import Toolbox.Mathbox;
 
 
@@ -29,6 +31,7 @@ public static double kB    = 1.380650424e-23;              // Boltzmann constant
 public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 
 public static double sigma = 1.6311e-9;     // Average collision diameter (<- check that again)
+
 
 public static void  Set_File_Paths(int TARGET) throws URISyntaxException{
 	String dir = System.getProperty("user.dir");
@@ -113,7 +116,7 @@ public static double atm_read(int variable, double altitude) {
 	return atm_read;
 }
 
-public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet currentDataSet) {
+public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
 	AtmosphereSet atmosphereSet = new AtmosphereSet();
 	double altitude = currentDataSet.getxIS()[2] - currentDataSet.getRM() ; 
 	if (altitude>200000 || currentDataSet.getTARGET() == 1){ // In space conditions: 
@@ -121,18 +124,31 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet
 		atmosphereSet.setDensity(0);  						    // Density 							[kg/m3]
 		atmosphereSet.setDynamicPressure(0);  					// Dynamic pressure 					[Pa]
     		atmosphereSet.setStaticTemperature(0); 					// Temperature 						[K]
-    		atmosphereSet.setGamma(0);  							// Heat capacity ratio 				[-]
-    		atmosphereSet.setGasConstant(0);	 					// Gas constant 						[J/kgK]
+    		atmosphereSet.setGamma(0);  							    // Heat capacity ratio 				[-]
+    		atmosphereSet.setGasConstant(0);	 					    // Gas constant 						[J/kgK]
     		atmosphereSet.setMach(0); 	  							// Mach number 						[-]
       	//----------------------------------------------------------------------------------------------
 	} else { // In atmosphere conditions (if any)
-		atmosphereSet.setDensity(AtmosphereModel.atm_read(1, altitude) );        													 // density                         [kg/m3]
+
+		if(integratorData.isAtmosphereNoiseModel()) {
+			AtmosphereNoiseModel.setDensityNoise(atmosphereSet.getAtmosphereNoiseSet());
+			AtmosphereNoiseModel.setStaticTemperatureNoise(atmosphereSet.getAtmosphereNoiseSet());
+		} else {
+			atmosphereSet.getAtmosphereNoiseSet().setDensityNoise(0);
+			atmosphereSet.getAtmosphereNoiseSet().setStaticTemperatureNoise(0);
+		}
+		
+		double density = AtmosphereModel.atm_read(1, altitude)+AtmosphereModel.atm_read(1, altitude)*atmosphereSet.getAtmosphereNoiseSet().getDensityNoise();
+		double staticTemperature = AtmosphereModel.atm_read(2, altitude) + AtmosphereModel.atm_read(2, altitude)*atmosphereSet.getAtmosphereNoiseSet().getStaticTemperatureNoise();
+		double gamma = AtmosphereModel.atm_read(4, altitude);
+		double gasConstant = AtmosphereModel.atm_read(3, altitude );
+		atmosphereSet.setDensity(density);        													 // density                         [kg/m3]
 		atmosphereSet.setDynamicPressure(0.5 * atmosphereSet.getDensity() * ( currentDataSet.getV_NED_ECEF_spherical()[0] * currentDataSet.getV_NED_ECEF_spherical()[0]));     // Dynamic pressure                [Pa]
-		atmosphereSet.setStaticTemperature(AtmosphereModel.atm_read(2, altitude));                     								// Temperature                     [K]
-		atmosphereSet.setGamma(AtmosphereModel.atm_read(4, altitude)) ;              	        										// Heat capacity ratio			   [-]
-		atmosphereSet.setGasConstant(AtmosphereModel.atm_read(3, altitude ));                       								// Gas Constant                    [J/kgK]
-		atmosphereSet.setStaticPressure(atmosphereSet.getDensity()*atmosphereSet.getGasConstant()*atmosphereSet.getStaticTemperature());   																			// Ambient pressure 			   [Pa]
-		atmosphereSet.setMach(currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt( atmosphereSet.getStaticTemperature() * atmosphereSet.getGamma() * atmosphereSet.getGasConstant()));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
+		atmosphereSet.setStaticTemperature(staticTemperature); 
+		atmosphereSet.setGamma(gamma) ;              	        										// Heat capacity ratio			   [-]
+		atmosphereSet.setGasConstant(gasConstant);                       								// Gas Constant                    [J/kgK]
+		atmosphereSet.setStaticPressure(density*gasConstant*staticTemperature);   																			// Ambient pressure 			   [Pa]
+		atmosphereSet.setMach(currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt( staticTemperature * gamma * gasConstant));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
         	// Continous/Transition/Free molecular flow [-]
 	}
 return atmosphereSet; 

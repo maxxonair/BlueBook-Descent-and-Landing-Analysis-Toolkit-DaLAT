@@ -3,13 +3,26 @@ package Model;
 import FlightElement.SpaceShip;
 import Model.DataSets.ActuatorSet;
 import Model.DataSets.ControlCommandSet;
+import Noise.ActuatorNoiseModel;
 import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.IntegratorData;
 
 public class ActuatorModel {
 	
-	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
+	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
 		ActuatorSet actuatorSet = new ActuatorSet();
 		//double deltaPropellant = spaceShip.getMass() - currentDataSet.getxIS()[6];
+		if(integratorData.isActuatorNoiseModel()) {
+			ActuatorNoiseModel.setPrimaryThrustNoise(actuatorSet.getActuatorNoiseSet());
+			ActuatorNoiseModel.setRCSXNoise(actuatorSet.getActuatorNoiseSet());
+			ActuatorNoiseModel.setRCSYNoise(actuatorSet.getActuatorNoiseSet());
+			ActuatorNoiseModel.setRCSZNoise(actuatorSet.getActuatorNoiseSet());
+		} else {
+			actuatorSet.getActuatorNoiseSet().setPrimaryThrustNoise(0);
+			actuatorSet.getActuatorNoiseSet().setRCSMomentumX(0);
+			actuatorSet.getActuatorNoiseSet().setRCSMomentumY(0);
+			actuatorSet.getActuatorNoiseSet().setRCSMomentumZ(0);
+		}
 		
 		//double primaryPropellant = spaceShip.getPropulsion().getPrimaryPropellant()-deltaPropellant;
 		double primaryPropellant = spaceShip.getPropulsion().getPrimaryPropellantFillingLevel();
@@ -23,7 +36,9 @@ public class ActuatorModel {
     			}
 		// Set Thrust 
 		if(primaryPropellant>0) {
-		actuatorSet.setPrimaryThrust_is(controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax());
+			double thrustNominal = controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax();
+			double thrustIs = thrustNominal + thrustNominal * actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise();
+		actuatorSet.setPrimaryThrust_is(thrustIs);
 		} else {
 			actuatorSet.setPrimaryThrust_is(0);
 		}
@@ -34,7 +49,9 @@ public class ActuatorModel {
 		
 		
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX())) {
-		actuatorSet.setMomentumRCS_X_is(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX());
+			double momentumNominal = controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX(); 
+			double momentumIs = momentumNominal + actuatorSet.getActuatorNoiseSet().getRCSMomentumX()*momentumNominal; 
+		actuatorSet.setMomentumRCS_X_is(momentumIs);
 		actuatorSet.setRCS_X_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_X());
 		} else {
 			actuatorSet.setMomentumRCS_X_is(0);	
@@ -42,14 +59,19 @@ public class ActuatorModel {
 			System.out.println("ERROR: Roll control failed - reset RCS X");
 		}
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY())) {
-		actuatorSet.setMomentumRCS_Y_is(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY());
+			double momentumNominal = controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY(); 
+			double momentumIs = momentumNominal + actuatorSet.getActuatorNoiseSet().getRCSMomentumY()*momentumNominal; 
+		actuatorSet.setMomentumRCS_Y_is(momentumIs);
 		actuatorSet.setRCS_Y_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_Y());
 		} else {
 		actuatorSet.setMomentumRCS_Y_is(0);
 		actuatorSet.setRCS_Y_ISP(0);
 		System.out.println("ERROR: Pitch control failed - reset RCS Y");
 		}
-		actuatorSet.setMomentumRCS_Z_is(controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumZ());
+		
+		double momentumNominal = controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumZ(); 
+		double momentumIs = momentumNominal + actuatorSet.getActuatorNoiseSet().getRCSMomentumZ()*momentumNominal; 
+		actuatorSet.setMomentumRCS_Z_is(momentumIs);
 		actuatorSet.setRCS_Z_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_Z());
 		
 		
