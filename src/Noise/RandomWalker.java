@@ -43,6 +43,25 @@ public class RandomWalker {
 		return value;
 	}
 	
+	public static double randomWalker1D(double value, double upperLimit, double lowerLimit, double change, double randomVariation, double percentage, double stepVariation) {
+		change += Math.random()*randomVariation;
+
+		if(Math.random()>0.5) {
+			percentage=0.5+stepVariation;
+		} else {
+			percentage=0.5-stepVariation;
+		}
+		value = getWalker( value,  change, percentage);
+		
+		if(value>upperLimit) {
+			value=upperLimit;
+		} else if(value<lowerLimit) {
+			value=lowerLimit;
+		}
+		
+		return value;
+	}
+	
 	private static double getWalker(double value, double change, double percentage) {
 		if(Math.random()>percentage) {
 			value+=change;

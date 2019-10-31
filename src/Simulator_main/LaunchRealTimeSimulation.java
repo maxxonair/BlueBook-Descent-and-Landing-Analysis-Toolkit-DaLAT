@@ -19,6 +19,10 @@ import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
 import Model.DataSets.SensorSet;
+import Plotter.DataContainer;
+import Plotter.DataSetXY;
+import Plotter.Pair;
+import Plotter.PlotXY;
 import Sequence.MasterController;
 import Sequence.SequenceContent;
 import Simulator_main.DataSets.IntegratorData;
@@ -35,6 +39,10 @@ public class LaunchRealTimeSimulation {
     static DecimalFormat df_X4 = new DecimalFormat("#.###");
     
     static SensorSet sensorSet = new SensorSet();
+    
+	static DataContainer dataContainer = new DataContainer();
+	static DataSetXY dataSet =  new DataSetXY();
+	static boolean isPlot=false;
 	
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -226,6 +234,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		       realTimeContainer.getRealTimeResultSet().getSpaceShip().getPropulsion().setAccumulatedDeltaVPrimary(
 		    	   realTimeContainer.getRealTimeResultSet().getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+primaryDeltaVIncrement);
 	    		}
+
 		  	//---------------------------------------------------------------------------------------
 		  	//				  Generate total time to integrate the problem
 		  	//---------------------------------------------------------------------------------------	
@@ -237,6 +246,10 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    //				  Create Result File
 		  	//---------------------------------------------------------------------------------------	
 	    		createWriteOut(steps);
+	    		if(isPlot) {
+	    		dataContainer.addDataSet(dataSet);
+	    		PlotXY.plot(dataContainer);
+	    		}
 }
     
 private static void createWriteOut(ArrayList<String> steps) {
@@ -264,7 +277,12 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	ControlCommandSet controlCommandSet = masterSet.getControlCommandSet();
 	ForceMomentumSet forceMomentumSet = masterSet.getForceMomentumSet();
 	ActuatorSet actuatorSet = masterSet.getActuatorSet();
-	
+	if(isPlot) {
+	dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
+			actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise()));
+	dataContainer.setxAxisLabel("Time");
+	dataContainer.setyAxisLabel("Noise");
+	}
 	//System.out.println(realTimeContainer.getRealTimeSet().size());
 	steps.add((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()) + " " + 
     			realTimeResultSet.getLongitude() + " " + 

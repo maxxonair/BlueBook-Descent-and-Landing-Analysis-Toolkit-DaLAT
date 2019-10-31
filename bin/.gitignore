@@ -1,8 +1,6 @@
 /Controller/
 /FlightElement/
 /GUI/
-/Model/
 /Noise/
-/Sequence/
+/Plotter/
 /Simulator_main/
-/NoiseSet/
