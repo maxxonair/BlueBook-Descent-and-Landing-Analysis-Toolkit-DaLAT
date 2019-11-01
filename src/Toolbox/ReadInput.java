@@ -444,6 +444,11 @@ public static List<SequenceContent> READ_sequenceFile() throws IOException{
     	    	sequenceContent.addRollControl();
     	    } else if (flightControllerIndex==5) { // full thrust
     	    	sequenceContent.addPrimaryThrustControl();
+    	    } else if (flightControllerIndex==6) { // ascent controller
+    	    	sequenceContent.addAscentController();
+    	    } else if (flightControllerIndex==7) { // external Controller
+    	    	String scriptName=""; // INSERT SCRIPT NAME method ->TBD!
+    	    	sequenceContent.addExternalControl(scriptName);
     	    }
       	//---------------------------------------------------------------------------------------------------
       	//					Events

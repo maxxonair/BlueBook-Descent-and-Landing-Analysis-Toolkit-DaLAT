@@ -19,7 +19,6 @@ import org.apache.commons.math3.ode.events.EventHandler;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
 
-import Model.ControllerModel;
 import Model.ForceModel;
 import Model.AtmosphereModel;
 import Model.GravityModel;
@@ -32,7 +31,6 @@ import Model.DataSets.ErrorSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
-import Sequence.Sequence;
 import Sequence.SequenceElement;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
@@ -560,9 +558,9 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 //----------------------------------------------------------------------------------------------
     	currentDataSet.setLocalElevation(integratorData.getRefElevation());
     	currentDataSet.setTARGET(integratorData.getTargetBody());
-		Sequence.setSequence_RES_closed(false);
+		
     	currentDataSet.setSEQUENCE_DATA_main(SEQUENCE_DATA);
-		ControllerModel.getCTRL_steps().clear();
+	
 //----------------------------------------------------------------------------------------------
 //					Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -670,7 +668,7 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
   	     	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
   	     	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
   	     	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
-  			ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);
+
 //----------------------------------------------------------------------------------------------
 	        StepHandler WriteOut = new StepHandler() {
 
@@ -690,11 +688,8 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 	                double CTRL_TM_Error =0;
 	                double CTRL_TVC_Error =0;
 	                double CTRL_Time =0;
-	                if(currentDataSet.getSEQUENCE_DATA_main().get(Sequence.getActiveSequence()).get_sequence_type()==3) {
-	                CTRL_TM_Error=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(Sequence.getActiveSequence()).get_CTRL_ERROR();
-	                CTRL_TVC_Error=ControllerModel.getFlight_CTRL_PitchCntrl().get(Sequence.getActiveSequence()).get_CTRL_ERROR();  
-	                }
-	                CTRL_Time=ControllerModel.getFlight_CTRL_ThrustMagnitude().get(controlCommandSet.getSequenceID()).get_CTRL_TIME();
+
+	     
 	                if( t > twrite ) {
 	                	twrite = twrite + integratorData.getIntegTimeStep(); 
 	                    steps.add(t + " " + 
@@ -810,7 +805,7 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 	                            writer.println(step);
 	                        }
 	                        System.out.println("Write: Result file. ");
-	                        if(!Sequence.isSequence_RES_closed()) {System.out.println("Warning: Sequence end not reached - SEQU.res not built");}
+	                        
 	                        writer.close();
 	                    } catch(Exception e) {System.out.println("ERROR: Writing result file failed");System.out.println(e);};
 	                }

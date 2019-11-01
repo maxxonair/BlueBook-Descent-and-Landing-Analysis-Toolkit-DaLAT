@@ -10,7 +10,6 @@ import Model.DataSets.ErrorSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
-import Sequence.Sequence;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import Toolbox.Mathbox;
@@ -72,9 +71,7 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-	if(isAutoPilot) {
-			controlCommandSet = Sequence.getControlCommandSet(currentDataSet, spaceShip, errorSet);
-	}
+
     actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet, integratorData);
     
     forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());

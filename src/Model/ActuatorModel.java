@@ -98,7 +98,7 @@ public class ActuatorModel {
 		 		System.out.println("ERROR: ISP model - ISP below 0");
 		 		IspOut=0; 
 		 	} else {
-		 		double m = (spaceShip.getPropulsion().getPrimaryISPMax() - spaceShip.getPropulsion().getPrimaryISPMin())/(1 - ControllerModel.getCmd_min());
+		 		double m = (spaceShip.getPropulsion().getPrimaryISPMax() - spaceShip.getPropulsion().getPrimaryISPMin())/(1);
 		 		double n = spaceShip.getPropulsion().getPrimaryISPMax() - m ; 
 		 		IspOut = m * Throttle_CMD + n; 
 		 	}

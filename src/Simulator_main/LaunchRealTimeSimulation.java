@@ -278,8 +278,10 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	ForceMomentumSet forceMomentumSet = masterSet.getForceMomentumSet();
 	ActuatorSet actuatorSet = masterSet.getActuatorSet();
 	if(isPlot) {
-	dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
-			actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise()));
+	//dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
+	//		actuatorSet.getPrimaryThrust_is()));
+		dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
+						realTimeResultSet.getAltitude()));
 	dataContainer.setxAxisLabel("Time");
 	dataContainer.setyAxisLabel("Noise");
 	}

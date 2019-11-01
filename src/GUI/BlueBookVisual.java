@@ -356,19 +356,7 @@ public class BlueBookVisual implements  ActionListener {
 			  									 "FPA [rad]",
 			  									 "Azimuth [rad]",
     											     "SC Mass [kg]"};
-    
-	public static String[] COLUMS_SEQUENCE = {"ID", 
-			 "Sequence END type", 
-			 "Sequence END value", 
-			 "Sequence type", 
-			 "Sequence TL FC",		// Thrust Level Flight Controller
-			 "TL FC target velocity [m/s]", 
-			 "TL FC target altitude [m]", 
-			 "TL FC target curve",
-			 "Sequence TVC FC", 		// Thrust Vector Control Flight Controller 
-			 "TVC FC Input Value 1 [-]", 
-			 "TVC FC Input Value 2 [-]", 
-			 "TVC FC target curve"};
+
 	public static String[] COLUMS_CONTROLLER = {"ID",
 												"Controller Type",
 												"P gain",

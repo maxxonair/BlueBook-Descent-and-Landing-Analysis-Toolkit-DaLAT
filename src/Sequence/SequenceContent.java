@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Controller.FlightController;
+import Controller.FlightController_AscentController;
+import Controller.FlightController_ExternalController;
 import Controller.FlightController_RollControl;
 import Controller.FlightController_YawControl;
 import Controller.FligthController_PrimaryThrust;
@@ -51,6 +53,16 @@ public class SequenceContent {
 	
 	public void addPitchControl() {
 		
+	}
+	
+	public void addExternalControl(String scriptName) {
+		FlightController_ExternalController externalController = new FlightController_ExternalController(scriptName);
+		controllerSets.add(externalController);
+	}
+	
+	public void addAscentController() {
+		FlightController_AscentController ascentController = new FlightController_AscentController();
+		controllerSets.add(ascentController);
 	}
 	
 	public void addYawControl() {

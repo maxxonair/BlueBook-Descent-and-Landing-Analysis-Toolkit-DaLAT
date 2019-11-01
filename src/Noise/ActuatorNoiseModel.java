@@ -11,7 +11,7 @@ public class ActuatorNoiseModel {
 	
 	
 	public static void setPrimaryThrustNoise(ActuatorNoiseSet actuatorNoiseSet) {
-		MainThrustNoise = RandomWalker.randomWalker1D(MainThrustNoise,0.06,-0.06, 0.008, 0.005);
+		MainThrustNoise = RandomWalker.randomWalker1D(MainThrustNoise,0.01,-0.01, 0.0005, 0.00);
 		actuatorNoiseSet.setPrimaryThrustNoise(MainThrustNoise);
 	}
 	

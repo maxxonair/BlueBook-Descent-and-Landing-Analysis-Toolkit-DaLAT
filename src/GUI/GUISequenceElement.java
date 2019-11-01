@@ -58,7 +58,9 @@ public class GUISequenceElement {
 										  "yaw control",
 										  "pitch control",
 										  "roll stabilisation",
-										  "Thrust full"
+										  "Thrust full",
+										  "Ascent Control",
+										  "External Controller"
 };
     
     @SuppressWarnings("rawtypes")

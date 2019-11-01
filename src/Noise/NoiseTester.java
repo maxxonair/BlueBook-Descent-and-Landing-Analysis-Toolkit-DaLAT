@@ -25,7 +25,7 @@ public class NoiseTester {
 		dataContainer.addDataSet(dataSet);
 */
 		DataSetXY muSet =  new DataSetXY();
-		for(int k=0;k<100;k++) {
+		for(int k=0;k<2;k++) {
 		DataSetXY set2 =  new DataSetXY();
 	    double currentValue =Math.random()/5-0.1;
 	    double upDown = Math.random()/10;
