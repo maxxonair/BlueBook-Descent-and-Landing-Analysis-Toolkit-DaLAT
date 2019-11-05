@@ -456,7 +456,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     private static Crosshair yCH_DashboardFlexibleChart;    
     static public JFreeChart chartA3_1,chartA3_2,chartA3_3,chartA3_4; 
     public static ChartPanel CP_A31,CP_A32,CP_A33,CP_A34;
-	public static DefaultTableXYDataset CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = new DefaultTableXYDataset();
+	public static XYSeriesCollection CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = new XYSeriesCollection();
 	public static DefaultTableXYDataset CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA = new DefaultTableXYDataset();
 	public static DefaultTableXYDataset ResultSet_GroundClearance_FlightPath = new DefaultTableXYDataset();
 	public static DefaultTableXYDataset ResultSet_GroundClearance_Elevation = new DefaultTableXYDataset();
@@ -494,10 +494,12 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
     public static JPanel SequenceLeftPanel;
     public static JTextField INPUT_RCSXTHRUST, INPUT_RCSYTHRUST, INPUT_RCSZTHRUST, INPUT_RCSTANK, INPUT_RCSXISP, INPUT_RCSYISP,INPUT_RCSZISP;
-    public static JPanel SequenceProgressBar, FlexibleChartContentPanel;
+    public static JPanel SequenceProgressBar, FlexibleChartContentPanel, FlexibleChartContentPanel2;
     public static List<JLabel> sequenceProgressBarContent = new ArrayList<JLabel>();
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
+    private static JButton yAxisIndicator, xAxisIndicator, yAxisIndicator2, xAxisIndicator2;
+    private static  VariableList variableListY, variableListX,variableListY2, variableListX2;
     static JTextField INPUT_GlobalFrequency, INPUT_ControllerFrequency,INPUT_GlobalTime;
     
     
@@ -548,7 +550,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     static XYSeriesCollection ResultSet_PolarMap = new XYSeriesCollection();
     	static int page1_plot_y =380;
     	@SuppressWarnings("rawtypes")
-    	public static JComboBox axis_chooser, axis_chooser2,axis_chooser3,axis_chooser4; 
+    	public static JComboBox axis_chooser3,axis_chooser4; 
         final static JFXPanel targetWindowFxPanel = new JFXPanel();
     	public static int thirdWindowIndx = 1;
     	
@@ -1459,52 +1461,134 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    //yControlPanel.setPreferredSize(new Dimension(400, 25));
 	    yControlPanel.setBackground(backgroundColor);
 	    FlexibleChartContentPanel.add(yControlPanel, BorderLayout.LINE_START);
+
+	      
+	       yAxisIndicator = new JButton();
+	       variableListY =  new VariableList(yAxisIndicator, "y",2);
+	       yAxisIndicator.setBackground(backgroundColor);
+	       yAxisIndicator.setForeground(labelColor);
+	       yAxisIndicator.setOpaque(true);
+	       yAxisIndicator.setBorderPainted(false);
+	      TextIcon t1 = new TextIcon(yAxisIndicator, "Altitude [m]", TextIcon.Layout.HORIZONTAL);
+	      RotatedIcon r1 = new RotatedIcon(t1, RotatedIcon.Rotate.UP);
+	      t1.setFont(small_font);
+	      yAxisIndicator.addActionListener(new ActionListener() {
+
+	
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				variableListY.getVariableList(Axis_Option_NR);
+			}
+	    	  
+	      });
+	      yAxisIndicator.setIcon( r1 );
+	      variableListY.setSelectedIndx(4);
+	      
+	       
+	       xAxisIndicator = new JButton();
+	       variableListX =  new VariableList(xAxisIndicator, "x",2);
+	       xAxisIndicator.setBackground(backgroundColor);
+	       xAxisIndicator.setForeground(labelColor);
+	       xAxisIndicator.setOpaque(true);
+	       xAxisIndicator.setBorderPainted(false);
+	       t1 = new TextIcon(xAxisIndicator, "Time [s]", TextIcon.Layout.HORIZONTAL);
+	       r1 = new RotatedIcon(t1, RotatedIcon.Rotate.ABOUT_CENTER);
+	      xAxisIndicator.addActionListener(new ActionListener() {
+
+	
+			@Override
+			public void actionPerformed(ActionEvent arg1) {
+				variableListX.getVariableList(Axis_Option_NR);
+			}
+	    	  
+	      });
+	      xAxisIndicator.setIcon( r1 );
+
+	      xAxisIndicator.setPreferredSize(new Dimension(25,25));
+	      yAxisIndicator.setPreferredSize(new Dimension(25,25));
+	      xAxisIndicator.setMinimumSize(new Dimension(25,25));
+	      yAxisIndicator.setMinimumSize(new Dimension(25,25));
+	      xControlPanel.add(xAxisIndicator, BorderLayout.CENTER);
+	      yControlPanel.add(yAxisIndicator, BorderLayout.CENTER);
 	    
-	      JLabel LABEL_XAxis = new JLabel("X-Axis");
-	      LABEL_XAxis.setHorizontalAlignment(0);
-	      LABEL_XAxis.setBackground(backgroundColor);
-	      LABEL_XAxis.setForeground(labelColor);
-	      LABEL_XAxis.setFont(small_font);
-	    //  xControlPanel.add(LABEL_XAxis, BorderLayout.LINE_START);
-	      JLabel LABEL_YAxis = new JLabel("Y-Axis");
-	      LABEL_YAxis.setBackground(backgroundColor);
-	      LABEL_YAxis.setForeground(labelColor);
-	      LABEL_YAxis.setFont(small_font);
-	      LABEL_XAxis.setMinimumSize(new Dimension(30,20));
-	      LABEL_YAxis.setMinimumSize(new Dimension(30,20));
-	     // yControlPanel.add(LABEL_YAxis, BorderLayout.LINE_START);
-		  axis_chooser = new JComboBox(Axis_Option_NR);
-		  axis_chooser.setRenderer(new CustomRenderer());
-		  axis_chooser2 = new JComboBox(Axis_Option_NR);
-		  axis_chooser2.setFont(small_font);
-		  axis_chooser.setFont(small_font);
-		//  axis_chooser.setPreferredSize(new Dimension(50,20));
-		  axis_chooser2.setRenderer(new CustomRenderer());
-	      axis_chooser2.setSelectedIndex(3);
-	      axis_chooser2.setMaximumRowCount(20);
-	      axis_chooser.setMaximumRowCount(20);
-	      axis_chooser2.addActionListener(new ActionListener() { 
-	    	  public void actionPerformed(ActionEvent e) {
-	    		  Update_DashboardFlexibleChart();
-	    	  }
-	  	  } );
-	      axis_chooser.setSelectedIndex(0);
-	      axis_chooser.setPreferredSize(new Dimension(90,20));
-	      axis_chooser2.setPreferredSize(new Dimension(35,20));
-	      axis_chooser.setMinimumSize(new Dimension(50,20));
-	      axis_chooser2.setMinimumSize(new Dimension(35,20));
-	      //axis_chooser2.setUI(ColorArrowUI.createUI(axis_chooser2));
-	      axis_chooser.addActionListener(new ActionListener() { 
-	    	  public void actionPerformed(ActionEvent e) {
-	    		  Update_DashboardFlexibleChart();
-	    	  }
-	  	  } );
-	      xControlPanel.add(axis_chooser, BorderLayout.CENTER);
-	      yControlPanel.add(axis_chooser2, BorderLayout.CENTER);
 	    
-	    
-	    
-	    
+	    //---------------------------------------------------------
+	      
+		    FlexibleChartContentPanel2 = new JPanel();
+		    FlexibleChartContentPanel2.setLayout(new BorderLayout());
+		    FlexibleChartContentPanel2.setBackground(backgroundColor);
+		    FlexibleChartContentPanel2.setForeground(labelColor);
+			//SpaceShip3DControlPanel.setSize(450, 400);
+		    SplitPane_Page1_Charts_vertical.add(FlexibleChartContentPanel2, JSplitPane.LEFT);
+		    
+		    JPanel FlexibleChartControlPanel2 = new JPanel();
+		    FlexibleChartControlPanel2.setLayout(new BorderLayout());
+		    FlexibleChartControlPanel2.setBackground(backgroundColor);
+		    FlexibleChartContentPanel2.add(FlexibleChartControlPanel2, BorderLayout.PAGE_START);
+		    
+		    JPanel xControlPanel2 = new JPanel();
+		    xControlPanel2.setLayout(new BorderLayout());
+		    //xControlPanel.setPreferredSize(new Dimension(1000, 25));
+		    xControlPanel2.setBackground(backgroundColor);
+		    FlexibleChartContentPanel2.add(xControlPanel2, BorderLayout.PAGE_END);
+		    
+		    JPanel yControlPanel2 = new JPanel();
+		    yControlPanel2.setLayout(new BorderLayout());
+		    //yControlPanel.setPreferredSize(new Dimension(400, 25));
+		    yControlPanel2.setBackground(backgroundColor);
+		    FlexibleChartContentPanel2.add(yControlPanel2, BorderLayout.LINE_START);
+
+		     
+		       yAxisIndicator2 = new JButton();
+		       variableListY2 =  new VariableList(yAxisIndicator2, "y",1);
+		       yAxisIndicator2.setBackground(backgroundColor);
+		       yAxisIndicator2.setForeground(labelColor);
+		       yAxisIndicator2.setOpaque(true);
+		       yAxisIndicator2.setBorderPainted(false);
+		      TextIcon t2 = new TextIcon(yAxisIndicator2, "Altitude [m]", TextIcon.Layout.HORIZONTAL);
+		      RotatedIcon r2 = new RotatedIcon(t2, RotatedIcon.Rotate.UP);
+		      t2.setFont(small_font);
+		      yAxisIndicator2.addActionListener(new ActionListener() {
+
+		
+				@Override
+				public void actionPerformed(ActionEvent arg2) {
+					variableListY2.getVariableList(Axis_Option_NR);
+				}
+		    	  
+		      });
+		      yAxisIndicator2.setIcon( r2 );
+		      variableListY2.setSelectedIndx(4);
+		      
+		       
+		       xAxisIndicator2 = new JButton();
+		       variableListX2 =  new VariableList(xAxisIndicator2, "x",1);
+		       xAxisIndicator2.setBackground(backgroundColor);
+		       xAxisIndicator2.setForeground(labelColor);
+		       xAxisIndicator2.setOpaque(true);
+		       xAxisIndicator2.setBorderPainted(false);
+		       t2 = new TextIcon(xAxisIndicator2, "Velocity [m/s]", TextIcon.Layout.HORIZONTAL);
+		       r2 = new RotatedIcon(t2, RotatedIcon.Rotate.ABOUT_CENTER);
+		      xAxisIndicator2.addActionListener(new ActionListener() {
+
+		
+				@Override
+				public void actionPerformed(ActionEvent arg3) {
+					variableListX2.getVariableList(Axis_Option_NR);
+				}
+		    	  
+		      });
+		      xAxisIndicator2.setIcon( r2 );
+		      variableListX2.setSelectedIndx(6);
+
+		      xAxisIndicator2.setPreferredSize(new Dimension(25,25));
+		      yAxisIndicator2.setPreferredSize(new Dimension(25,25));
+		      xAxisIndicator2.setMinimumSize(new Dimension(25,25));
+		      yAxisIndicator2.setMinimumSize(new Dimension(25,25));
+		      xControlPanel2.add(xAxisIndicator2, BorderLayout.CENTER);
+		      yControlPanel2.add(yAxisIndicator2, BorderLayout.CENTER);
+		      
+		      
 		
         JScrollPane scrollPane_P1 = new JScrollPane(P1_SidePanel);
         scrollPane_P1.setPreferredSize(new Dimension(415, exty_main));
@@ -1524,11 +1608,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         //LABEL_LONG.setBorder(Moon_border);
         LABEL_LONG.setBackground(backgroundColor);
         LABEL_LONG.setForeground(labelColor);
+        LABEL_LONG.setFont(small_font);
         P1_SidePanel.add(LABEL_LONG);
         JLabel LABEL_LAT = new JLabel(" Latitude [deg]");
         LABEL_LAT.setLocation(65, uy_p41 + 25 );
         LABEL_LAT.setSize(150, 20);
         LABEL_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_LAT.setFont(small_font);
         //LABEL_LAT.setBorder(Moon_border);
         LABEL_LAT.setBackground(backgroundColor);
         LABEL_LAT.setForeground(labelColor);
@@ -1536,6 +1622,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JLabel LABEL_ALT = new JLabel(" Altitude [m]");
         LABEL_ALT.setLocation(65, uy_p41 + 50 );
         LABEL_ALT.setSize(150, 20);
+        LABEL_ALT.setFont(small_font);
         LABEL_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_ALT.setBorder(Moon_border);
         LABEL_ALT.setBackground(backgroundColor);
@@ -1547,6 +1634,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_VEL.setLocation(65, uy_p41 + 75 + y_ext_vel);
         LABEL_VEL.setSize(150, 20);
         LABEL_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_VEL.setFont(small_font);
         //LABEL_VEL.setBorder(Moon_border);
         LABEL_VEL.setBackground(backgroundColor);
         LABEL_VEL.setForeground(labelColor);
@@ -1555,6 +1643,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_FPA.setLocation(65, uy_p41 + 100 + y_ext_vel);
         LABEL_FPA.setSize(150, 20);
         LABEL_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_FPA.setFont(small_font);
         //LABEL_FPA.setBorder(Moon_border);
         LABEL_FPA.setBackground(backgroundColor);
         LABEL_FPA.setForeground(labelColor);
@@ -1563,6 +1652,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_AZI.setLocation(65, uy_p41 + 125 + y_ext_vel);
         LABEL_AZI.setSize(150, 20);
         LABEL_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+        LABEL_AZI.setFont(small_font);
         //LABEL_AZI.setBorder(Moon_border);
         LABEL_AZI.setBackground(backgroundColor);
         LABEL_AZI.setForeground(labelColor);
@@ -1574,12 +1664,14 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         LABEL_M0.setSize(150, 20);
         LABEL_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_M0.setBorder(Moon_border);
+        LABEL_M0.setFont(small_font);
         LABEL_M0.setBackground(backgroundColor);
         LABEL_M0.setForeground(labelColor);
         P1_SidePanel.add(LABEL_M0);
         JLabel LABEL_INTEGTIME = new JLabel(" Integration Time [s]");
         LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 + y_ext_vel*2);
         LABEL_INTEGTIME.setSize(150, 20);
+        LABEL_INTEGTIME.setFont(small_font);
         LABEL_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
         //LABEL_INTEGTIME.setBorder(Moon_border);
         LABEL_INTEGTIME.setBackground(backgroundColor);
@@ -1605,70 +1697,78 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         INDICATOR_LONG.setLocation(2, uy_p41 + 25 * 0 );
         INDICATOR_LONG.setSize(60, 20);
         INDICATOR_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_LONG.setBorder(Moon_border);
+       // INDICATOR_LONG.setBorder(Moon_border);
         INDICATOR_LONG.setBackground(backgroundColor);
         INDICATOR_LONG.setForeground(labelColor);
+        INDICATOR_LONG.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_LONG.setFont(small_font);
         P1_SidePanel.add(INDICATOR_LONG);
         INDICATOR_LAT = new JLabel();
         INDICATOR_LAT.setLocation(2, uy_p41 + 25 * 1 );
         INDICATOR_LAT.setSize(60, 20);
         INDICATOR_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_LAT.setBorder(Moon_border);
+        //INDICATOR_LAT.setBorder(Moon_border);
         INDICATOR_LAT.setBackground(backgroundColor);
         INDICATOR_LAT.setFont(small_font);
+        INDICATOR_LAT.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_LAT.setForeground(labelColor);
         P1_SidePanel.add(INDICATOR_LAT);
          INDICATOR_ALT = new JLabel();
         INDICATOR_ALT.setLocation(2, uy_p41 + 25 * 2 );
         INDICATOR_ALT.setSize(60, 20);
         INDICATOR_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_ALT.setBorder(Moon_border);
+        //INDICATOR_ALT.setBorder(Moon_border);
         INDICATOR_ALT.setBackground(backgroundColor);
         INDICATOR_ALT.setFont(small_font);
+        INDICATOR_ALT.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_ALT.setForeground(labelColor);
         P1_SidePanel.add(INDICATOR_ALT);
         INDICATOR_VEL = new JLabel();
         INDICATOR_VEL.setLocation(2, uy_p41 + 25 * 3 + y_ext_vel);
         INDICATOR_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_VEL.setBorder(Moon_border);
+        //INDICATOR_VEL.setBorder(Moon_border);
         INDICATOR_VEL.setBackground(backgroundColor);
         INDICATOR_VEL.setFont(small_font);
         INDICATOR_VEL.setForeground(labelColor);
+        INDICATOR_VEL.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_VEL.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_VEL);
         INDICATOR_FPA = new JLabel();
         INDICATOR_FPA.setLocation(2, uy_p41 + 25 * 4 + y_ext_vel);
         INDICATOR_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_FPA.setBorder(Moon_border);
+        //INDICATOR_FPA.setBorder(Moon_border);
         INDICATOR_FPA.setBackground(backgroundColor);
         INDICATOR_FPA.setFont(small_font);
         INDICATOR_FPA.setForeground(labelColor);
+        INDICATOR_FPA.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_FPA.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_FPA);
         INDICATOR_AZI = new JLabel();
         INDICATOR_AZI.setLocation(2, uy_p41 + 25 * 5 + y_ext_vel);
         INDICATOR_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_AZI.setBorder(Moon_border);
+        //INDICATOR_AZI.setBorder(Moon_border);
         INDICATOR_AZI.setBackground(backgroundColor);
         INDICATOR_AZI.setForeground(labelColor);
+        INDICATOR_AZI.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_AZI.setFont(small_font);
         INDICATOR_AZI.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_AZI);        
         INDICATOR_M0 = new JLabel();
         INDICATOR_M0.setLocation(2, uy_p41 + 25 * 6 + y_ext_vel*2);
         INDICATOR_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_M0.setBorder(Moon_border);
+        //INDICATOR_M0.setBorder(Moon_border);
         INDICATOR_M0.setBackground(backgroundColor);
         INDICATOR_M0.setForeground(labelColor);
+        INDICATOR_M0.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_M0.setFont(small_font);
         INDICATOR_M0.setSize(60, 20);
         P1_SidePanel.add(INDICATOR_M0);
         INDICATOR_INTEGTIME = new JLabel();
         INDICATOR_INTEGTIME.setLocation(2, uy_p41 + 25 * 7 + y_ext_vel*2);
         INDICATOR_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        INDICATOR_INTEGTIME.setBorder(Moon_border);
+        //INDICATOR_INTEGTIME.setBorder(Moon_border);
         INDICATOR_INTEGTIME.setBackground(backgroundColor);
+        INDICATOR_INTEGTIME.setHorizontalAlignment(JLabel.RIGHT);
         INDICATOR_INTEGTIME.setForeground(labelColor);
         INDICATOR_INTEGTIME.setFont(small_font);
         INDICATOR_INTEGTIME.setSize(60, 20);
@@ -5303,7 +5403,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
        
 	//-------------------------------------------------------------------------------------------------------------------------------
         // Create Charts:
-       CreateChart_DashboardOverviewChart_Altitude_Velocity(RM);
+       CreateChart_DashboardOverviewChart_Altitude_Velocity();
        //CreateChart_DashboardOverviewChart_Time_FPA();
 
      	CreateChart_DashBoardFlexibleChart();
@@ -5386,6 +5486,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     		Update_ErrorIndicator();
     	      Rotating2Inertial();
     	      Update_IntegratorSettings();
+    	      Update_DashboardFlexibleChart2();
     	      try {
     	      READ_sequenceFile();
     	      } catch(Exception e) {
@@ -5681,7 +5782,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	}
 		LABEL_IntegratorSetting_05.requestFocusInWindow();
     }
-    public void UPDATE_Page01(boolean fullImport){
+    
+    
+    
+    public static JButton getxAxisIndicator() {
+		return xAxisIndicator;
+	}
+	public void UPDATE_Page01(boolean fullImport){
 		  try {
 			READ_INPUT();
 			if(fullImport) {
@@ -5695,12 +5802,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		  if(fullImport) {
 	    	CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.removeAllSeries();
 	    	CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.removeAllSeries();
-	    	try {
-	    	CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = AddDataset_DashboardOverviewChart(RM);
-	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
-	    		System.out.println(eFNF2);
-	    	System.out.println("ERROR: Dashboard chart could not be created. Add dataset failed");
-	    	}
+
+	    //	Update_DashboardFlexibleChart2();
+
 	    	ResultSet_MercatorMap.removeAllSeries();
 	    	try {
 	    	ResultSet_MercatorMap = AddDataset_Mercator_MAP();
@@ -7430,7 +7534,7 @@ public static void EXPORT_Case() {
 	for(int i=0;i<result.length;i++) {if(Math.abs(result[i])<1E-9) {result[i]=0; }}
 	return result; 
 	}
-	
+	/*
 	public static DefaultTableXYDataset AddDataset_DashboardOverviewChart(double RM) throws IOException , FileNotFoundException, ArrayIndexOutOfBoundsException{		
 	   	XYSeries xyseries11 = new XYSeries("Trajectory", false, false); 
 	   	
@@ -7477,6 +7581,7 @@ try {
 
 	    return CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity;
 	   }
+	*/
 	
 	public static void createTargetView3D() {
         final JFXPanel fxPanel = new JFXPanel();
@@ -7564,9 +7669,9 @@ try {
       
 	}
 	
-	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity(double RM) throws IOException {
+	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity() throws IOException {
 		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
-		CHART_P1_DashBoardOverviewChart_Altitude_Velocity = ChartFactory.createStackedXYAreaChart("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
+		CHART_P1_DashBoardOverviewChart_Altitude_Velocity = ChartFactory.createScatterPlot("", "", "", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
 		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getXYPlot(); 
 	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
 	    plot.setRenderer(0, renderer); 
@@ -7656,7 +7761,8 @@ try {
 	    ChartPanel_DashBoardOverviewChart_Altitude_Velocity.addOverlay(crosshairOverlay);
 	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity,BorderLayout.PAGE_START);
 	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
-	   SplitPane_Page1_Charts_vertical.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity, JSplitPane.LEFT);
+	   //SplitPane_Page1_Charts_vertical.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity, JSplitPane.LEFT);
+	   FlexibleChartContentPanel2.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity, BorderLayout.CENTER);
 	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
 		//jPanel4.validate();	
 		CHART_P1_DashBoardOverviewChart_fd = false;
@@ -7752,7 +7858,7 @@ try {
 	public static void CreateChart_DashBoardFlexibleChart() throws IOException {
 		//result1.removeAllSeries();
 		try {
-		ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(4,3);
+		ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(4,3, ResultSet_FlexibleChart);
 		} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {
 			
 		}
@@ -7831,16 +7937,35 @@ try {
 		//jPanel4.validate();	
 		Chart_DashBoardFlexibleChart_fd = false;
 	}
+
 	public static void Update_DashboardFlexibleChart(){
 	    	ResultSet_FlexibleChart.removeAllSeries();
 	    	try {
-	    	ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(axis_chooser.getSelectedIndex(),axis_chooser2.getSelectedIndex());
-	    	Chart_DashBoardFlexibleChart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
-	    	Chart_DashBoardFlexibleChart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
+	    	ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(variableListX.getSelectedIndx(),variableListY.getSelectedIndx(), 
+	    			ResultSet_FlexibleChart);
+	   //	Chart_DashBoardFlexibleChart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
+	    //	Chart_DashBoardFlexibleChart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
 	    	}
 	}
 	
+	public static void Update_DashboardFlexibleChart2(){
+		CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.removeAllSeries();
+    	try {
+    		CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = AddDataset_DashboardFlexibleChart(variableListX2.getSelectedIndx(),
+    				variableListY2.getSelectedIndx(), CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);
+   //	Chart_DashBoardFlexibleChart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
+    //	Chart_DashBoardFlexibleChart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
+    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
+    	}
+}
+	
+	public static VariableList getVariableListY() {
+		return variableListY;
+	}
+	public static VariableList getVariableListX() {
+		return variableListX;
+	}
 	public static void createChart_3DRotation() {
 		JPanel SpaceShip3DPanel = new JPanel();
 		SpaceShip3DPanel.setLayout(new BorderLayout());
@@ -7860,7 +7985,7 @@ try {
             }
        });
 	}
-	public static XYSeriesCollection AddDataset_DashboardFlexibleChart(int x, int y) throws IOException , IIOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
+	public static XYSeriesCollection AddDataset_DashboardFlexibleChart(int x, int y, XYSeriesCollection XYSeries) throws IOException , IIOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
 	   			  XYSeries xyseries10 = new XYSeries("", false, true); 
 	              FileInputStream fstream = null;
 	      		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
@@ -7873,7 +7998,8 @@ try {
 						            double xx=0; double yy=0; 
 						            if(x==3) {
 						             xx = Double.parseDouble(tokens[x]); } else {
-						            	 String x_axis_label = String.valueOf(axis_chooser.getSelectedItem());
+						            	 @SuppressWarnings("static-access")
+										String x_axis_label = Axis_Option_NR[variableListX.getSelectedIndx()];
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
 						            	 boolean isangle2 = x_axis_label.indexOf("[deg/s]") !=-1? true: false;
 						            	 if(isangle || isangle2) {xx = Double.parseDouble(tokens[x])*rad2deg;} else {
@@ -7881,7 +8007,8 @@ try {
 						            	 }
 						            if(y==3) {
 						             yy = Double.parseDouble(tokens[y]);} else {
-						            	 String x_axis_label = String.valueOf(axis_chooser2.getSelectedItem());
+						            	 @SuppressWarnings("static-access")
+										String x_axis_label = Axis_Option_NR[variableListY.getSelectedIndx()];
 						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
 						            	 boolean isangle2 = x_axis_label.indexOf("[deg/s]") !=-1? true: false;
 						            	 if(isangle || isangle2) {yy = Double.parseDouble(tokens[y])*rad2deg;} else {
@@ -7890,11 +8017,11 @@ try {
 						         	xyseries10.add(xx , yy);
 					           }
 	       in.close();
-	    ResultSet_FlexibleChart.addSeries(xyseries10); 
+	       XYSeries.addSeries(xyseries10); 
 	              } catch (NullPointerException eNPE) { 
 	            	 // System.out.println(eNPE);
 	            	  }
-	    return ResultSet_FlexibleChart;
+	    return XYSeries;
 	   }
 	public void SET_MAP(int TARGET) throws URISyntaxException, IOException{
 		final XYPlot plot2 = (XYPlot) Chart_MercatorMap.getPlot();
@@ -7933,6 +8060,7 @@ try {
 		  }
 		  }
 	}
+	
 	public static DefaultTableXYDataset AddDataset_GroundClearance() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
        	XYSeries xyseries_FlightPath = new XYSeries("Flight Path", false, false); 
        	XYSeries xyseries_Delta = new XYSeries("Ground clearance", false, false); 
@@ -8165,6 +8293,10 @@ try {
 		       CPXX4.addOverlay(crosshairOverlay2);
 		       CPXX4.setPreferredSize(new Dimension(1300, 660));
 		       PageX04_Map.add(CPXX4, BorderLayout.CENTER);	
+	}
+	
+	public static JButton getyAxisIndicator() {
+		return yAxisIndicator;
 	}
 	public static void CreateChart_PolarMap() throws IOException {
 		ResultSet_PolarMap.removeAllSeries();

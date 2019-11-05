@@ -136,7 +136,7 @@ public class TargetView3D extends Application{
 	
 	        @Override
 	        public void chartMouseMoved(ChartMouseEvent event) {
-		        	if(BlueBookVisual.axis_chooser.getSelectedIndex()==0) {
+		        	if(BlueBookVisual.getVariableListX().getSelectedIndx()==0) {
 		            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
 		            JFreeChart chart = event.getChart();
 		            XYPlot plot = (XYPlot) chart.getPlot();
