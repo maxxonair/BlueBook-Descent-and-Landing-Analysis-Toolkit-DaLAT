@@ -70,6 +70,8 @@ import javax.imageio.ImageIO;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
+import javax.swing.filechooser.FileFilter;
+
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicComboBoxUI;
@@ -806,6 +808,17 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                    public void actionPerformed(ActionEvent e) {
                 	   UPDATE_Page01(true);
                     } });
+        
+       
+        JMenuItem menuItem_Refresh = new JMenuItem("Refresh Attitude                 "); 
+        menuItem_Refresh.setForeground(Color.BLACK);
+        menuItem_Refresh.setFont(small_font);
+        menu_SIM.add(menuItem_Refresh);
+        menuItem_Refresh.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   refreshSpaceCraftView();
+                    } });
+        
         menuItem_SimSettings = new JMenuItem("Run RealTime Module              "); 
         menuItem_SimSettings.setForeground(Color.BLACK);
         menuItem_SimSettings.setFont(small_font);
@@ -1147,7 +1160,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
          thirdWindow.add(menuItem);
          menu_ThirdWindow.add(menuItem);
          
-        JMenuItem menuItemSelect3D = new JMenuItem("Select 3D SpaceShip");
+        JMenuItem menuItemSelect3D = new JMenuItem("Select Attitude Indicator");
        // menuItemSelect3D.setForeground(labelColor);
          menuItemSelect3D.setFont(small_font);
          menuItemSelect3D.setForeground(Color.black);
@@ -1157,11 +1170,30 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                     	// Refresh Object file path
                     	// refresh SpaceShipView3D
                     	// refresh SpaceShipView3dFrontPage
-                       	File myfile;
+                    File myfile;
                 		myfile = new File(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/");
                     	JFileChooser fileChooser = new JFileChooser(myfile);
+                    //	fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("*.obj", "obj"));
+                    //	fileChooser.setFileHidingEnabled(true);;
+                    //	fileChooser.setFileFilter(new FileNameExtensionFilter("*.obj", "obj"));
+                    	fileChooser.setFileFilter(new FileFilter() {
+
+                    		   public String getDescription() {
+                    		       return "Wavefront (*.obj)";
+                    		   }
+
+                    		   public boolean accept(File f) {
+                    		       if (f.isDirectory()) {
+                    		           return false;
+                    		       } else {
+                    		           String filename = f.getName().toLowerCase();
+                    		           return filename.endsWith(".obj")  ;
+                    		       }
+                    		   }
+                    		});
                    	if (fileChooser.showOpenDialog(menuItemSelect3D) == JFileChooser.APPROVE_OPTION) {
-                        File file = fileChooser.getSelectedFile() ;
+                   		
+                   		File file = fileChooser.getSelectedFile() ;
                         String filePath = file.getAbsolutePath();
                         SpaceShipView3DFrontPage.setModelObjectPath(filePath);
                         refreshSpaceCraftView() ;
