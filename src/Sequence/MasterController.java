@@ -25,18 +25,27 @@ double sequence=0;
 			controlCommandSet.setMomentumRCS_Z_cmd(0);
 			
 			controlCommandSet.setPrimaryThrustThrottleCmd(0);
+			try {
 			//------------------------------------------------------------------------------------------------------------
 			// 				Get Controller Response for active Sequence
 			//------------------------------------------------------------------------------------------------------------
 			for(int ctrIndx=0;ctrIndx<SequenceSet.get(controlCommandSet.getActiveSequence()).getControllerSets().size();ctrIndx++) {
 				controlCommandSet = SequenceSet.get(controlCommandSet.getActiveSequence()).getControllerSets().get(ctrIndx).getCommand(controlCommandSet, sensorSet, spaceShip, CtrlFrequency);
 			}
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println("ERROR: MasterController detected Index out of Bounds. Flight Controller Set");
+			}
+			try {
 			//------------------------------------------------------------------------------------------------------------
 			// 				Get Event Response for active Sequence
 			//------------------------------------------------------------------------------------------------------------			
 			for(int ctrIndx=0;ctrIndx<SequenceSet.get(controlCommandSet.getActiveSequence()).getEventSets().size();ctrIndx++) {
 				controlCommandSet = SequenceSet.get(controlCommandSet.getActiveSequence()).getEventSets().get(ctrIndx).getCommand(controlCommandSet, sensorSet, spaceShip, CtrlFrequency);
 			}
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println("ERROR: MasterController detected Index out of Bounds. Event Set");
+			}
+			try {
 			//------------------------------------------------------------------------------------------------------------
 			// 				Set Sequence end Trigger
 			//------------------------------------------------------------------------------------------------------------
@@ -44,6 +53,9 @@ double sequence=0;
 				int activeSequence=controlCommandSet.getActiveSequence();
 				activeSequence++;
 				controlCommandSet.setActiveSequence(activeSequence);
+			}
+			} catch (IndexOutOfBoundsException e) {
+				System.out.println("ERROR: MasterController detected Index out of Bounds. Sequence Set");
 			}
 
 		MasterController.controlCommandSet = controlCommandSet; 

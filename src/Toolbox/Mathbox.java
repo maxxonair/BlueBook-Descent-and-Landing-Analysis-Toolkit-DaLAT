@@ -4,7 +4,12 @@ package Toolbox;
 import org.apache.commons.math3.util.FastMath;
 
 public class Mathbox{
-	public static double LinearInterpolate( double atm_x[] , double atm_y[] , double xx)
+    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
+	
+    private static double Psi=0;
+    
+    
+    public static double LinearInterpolate( double atm_x[] , double atm_y[] , double xx)
 	{
 	double yvalue=0;
 	double y1 = 0,y2 = 0,x1 = 0,x2 = 0;
@@ -203,9 +208,21 @@ public class Mathbox{
 		double b = Quaternions[1][0];
 		double c = Quaternions[2][0];
 		double d = Quaternions[3][0];
-		EulerAngles[0][0] = Math.atan2(2*(c*d+a*b),(a*a-b*b-c*c+d*d));
 		EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
-		EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));
+		double range = 0.01;
+		if(EulerAngles[1][0] > PI/2 - range) {
+			double delta = Math.atan2(2*(c*d + a*b) - 2*(b*c + a*d) , 2*(b*d + a*c) + (a*a - b*b + c*c - d*d));
+			EulerAngles[0][0] = delta + Psi;
+			EulerAngles[2][0] =  Psi;
+		} else if (EulerAngles[1][0] < -PI/2 + range) {
+			double delta = Math.atan2(2*(c*d + a*b) + 2*(b*c + a*d), 2*(b*d + a*c) - (a*a - b*b + c*c - d*d));
+			EulerAngles[0][0] = delta - Psi;
+			EulerAngles[2][0] = Psi;		
+		} else {
+			EulerAngles[0][0] = Math.atan2( 2*(c*d+a*b),(a*a-b*b-c*c+d*d));
+			EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));	
+		}
+		Psi = EulerAngles[2][0];
 		return EulerAngles;
 	}
 	
@@ -236,14 +253,7 @@ public class Mathbox{
         	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
         	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
         	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
-        }
-		//-------------------------
-		/*
-	    EulerAngles[0][0] = Math.atan2(2*(qw*qx+qy*qz), 1-2*(qx*qx+qy*qy));
-	    EulerAngles[1][0] = Math.asin(qw*qy - qz*qx);
-	    EulerAngles[2][0] = Math.atan2(2*(qw*qz+qx*qy), 1-2*(qy*qy + qz*qz));
-		*/
-	    
+        }	    
 			return EulerAngles;
 	}
 	

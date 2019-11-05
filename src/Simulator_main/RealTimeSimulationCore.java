@@ -467,7 +467,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 			    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
 			    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
 		
-			    	    EulerAngle = Mathbox.Quaternions2Euler2(q_vector);
+			    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
 		    		} else {
 			    		double[][] ElementMatrix = {{  -q_vector[1][0] , -q_vector[2][0]  , -q_vector[3][0]  }, 
 			    				         			{   q_vector[0][0] , -q_vector[3][0]  ,  q_vector[2][0]  },

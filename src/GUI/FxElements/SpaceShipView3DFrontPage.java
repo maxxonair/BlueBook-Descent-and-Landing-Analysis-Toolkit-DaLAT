@@ -152,15 +152,15 @@ public class SpaceShipView3DFrontPage {
 			        				setRotationX(drotX);
 			        				rotX = getRotx;
 			                    	}
-			                    	if(!Double.isNaN(getRotz)) {
-			        				double drotY = getRoty - rotY;
-			        				setRotationY(drotY);
-			        				rotY = getRoty;
+			                    	if(!Double.isNaN(getRoty)) {
+			        				double drotY = getRoty - rotZ;
+			        				setRotationZ(drotY);
+			        				rotZ = getRoty;
 			                    	}
 			                    	if(!Double.isNaN(getRotz)){
-			        				double drotZ = getRotz - rotZ;
-			        				setRotationZ(drotZ);
-			        				rotZ = getRotz;
+			        				double drotZ = getRotz - rotY;
+			        				setRotationY(drotZ);
+			        				rotY = getRotz;
 			                    	}
 
 			        				} catch (Exception e) {

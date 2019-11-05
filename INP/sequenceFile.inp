@@ -1,3 +1,2 @@
-0 Launch |FlightControllerElements| 5 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 15 |EndElement| 
-1 FreeFall |FlightControllerElements| 6 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 400 |EndElement| 
-2 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 1000 |EndElement| 
+0 Launch |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 300.0 |EndElement| 
+1 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0 |EndElement| 
