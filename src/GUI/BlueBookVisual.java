@@ -935,6 +935,30 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
                		thread.start();
                		
                     } });
+        JMenuItem menuItem_DataPlotter = new JMenuItem("Open BlueBook DataPlotter               "); 
+        menuItem_DataPlotter.setForeground(Color.BLACK);
+        menuItem_DataPlotter.setFont(small_font);
+        menuItem_DataPlotter.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_PostProcessing.add(menuItem_DataPlotter);
+        menuItem_DataPlotter.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {
+                	   
+                	   Thread thread = new Thread(new Runnable() {
+               		    public void run() {
+               		    	@SuppressWarnings("unused")
+							Process proc = null;
+               		    try {
+               		    	proc = Runtime.getRuntime().exec("java -jar BlueBookPlot.jar");
+							} catch (IOException e) {
+								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
+								e.printStackTrace();
+							};
+               		    }
+               		});
+               		thread.start();
+               		
+                    } });
       //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_VisualEngine = new JMenu("Visual Engine");
         menu_VisualEngine.setForeground(labelColor);
