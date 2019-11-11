@@ -32,7 +32,7 @@ import Toolbox.ReadInput;
 
 public class LaunchRealTimeSimulation {
 	
-    public static double PI    = 3.14159265359;                 // PI                                       [-] 
+    public static double PI    = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;                 // PI                                       [-] 
 	static double deg2rad 	   = PI/180.0; 					    //Convert degrees to radians
 	static double rad2deg 	   = 180/PI; 					    //Convert radians to degrees
 	
@@ -42,7 +42,7 @@ public class LaunchRealTimeSimulation {
     
 	static DataContainer dataContainer = new DataContainer();
 	static DataSetXY dataSet =  new DataSetXY();
-	static boolean isPlot=false;
+	static boolean isPlot=true;
 	
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -279,9 +279,9 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	ActuatorSet actuatorSet = masterSet.getActuatorSet();
 	if(isPlot) {
 	//dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
-	//		actuatorSet.getPrimaryThrust_is()));
-		dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
-						realTimeResultSet.getAltitude()));
+	//		aerodynamicSet.getFlowzone()));
+		dataSet.addPair(new Pair(realTimeResultSet.getAltitude(), 
+				aerodynamicSet.getFlowzone()));
 	dataContainer.setxAxisLabel("Time");
 	dataContainer.setyAxisLabel("Noise");
 	}
@@ -327,9 +327,9 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
     		  forceMomentumSet.getF_Gravity_NED()[0][0]+" "+
     		  forceMomentumSet.getF_Gravity_NED()[1][0]+" "+
     		  forceMomentumSet.getF_Gravity_NED()[2][0]+" "+
-      		  realTimeResultSet.getCartesianPosECEF()[0][0]+" "+
-      		  realTimeResultSet.getCartesianPosECEF()[1][0]+" "+
-      		  realTimeResultSet.getCartesianPosECEF()[2][0]+" "+
+      		  realTimeResultSet.getCartesianPosECEF()[0]+" "+
+      		  realTimeResultSet.getCartesianPosECEF()[1]+" "+
+      		  realTimeResultSet.getCartesianPosECEF()[2]+" "+
       		  0 + " " + 
       		  0 + " " + 
       		  0 + " " +       	 	  

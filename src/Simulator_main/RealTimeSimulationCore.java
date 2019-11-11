@@ -759,6 +759,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setEulerY( EulerAngle[1][0]);
 	                	realTimeResultSet.setEulerZ( EulerAngle[2][0]);
 	                	realTimeResultSet.setQuarternions(q_vector);
+	                	realTimeResultSet.setCartesianPosECEF(r_ECEF_cartesian);
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
 	                	integratorData.setGroundtrack(integratorData.getGroundtrack()+groundtrack);
 	                	

@@ -34,9 +34,7 @@ public class RealTimeResultSet {
 			 						 {0},
 			 						 {0}};
 	
-	private double[][] CartesianPosECEF = {{0},
-			 							   {0},
-			 							   {0}};
+	private double[] CartesianPosECEF = {0,0,0};
 	
 	private double time =0;
 	
@@ -208,11 +206,11 @@ public class RealTimeResultSet {
 		PQR = pQR;
 	}
 
-	public double[][] getCartesianPosECEF() {
+	public double[] getCartesianPosECEF() {
 		return CartesianPosECEF;
 	}
 
-	public void setCartesianPosECEF(double[][] cartesianPosECEF) {
+	public void setCartesianPosECEF(double[] cartesianPosECEF) {
 		CartesianPosECEF = cartesianPosECEF;
 	}
 

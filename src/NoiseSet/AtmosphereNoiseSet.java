@@ -6,6 +6,18 @@ public class AtmosphereNoiseSet {
 	private double staticTemperatureNoise=0;
 	private double gammaNoise=0;
 	
+	private double staticTemperatureMaximumExpectedVariation=30;
+	
+	
+	
+	public double getStaticTemperatureMaximumExpectedVariation() {
+		return staticTemperatureMaximumExpectedVariation;
+	}
+
+	public void setStaticTemperatureMaximumExpectedVariation(double staticTemperatureMaximumExpectedVariation) {
+		this.staticTemperatureMaximumExpectedVariation = staticTemperatureMaximumExpectedVariation;
+	}
+
 	public AtmosphereNoiseSet() {
 		
 	}

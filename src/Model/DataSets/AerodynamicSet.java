@@ -19,9 +19,16 @@ public class AerodynamicSet {
     public double DragCoefficientParachute=0;
     public double DragForceParachute=0;
     
+    private double KnudsenNumber=0;
+
     
     
-    
+	public double getKnudsenNumber() {
+		return KnudsenNumber;
+	}
+	public void setKnudsenNumber(double knudsenNumber) {
+		KnudsenNumber = knudsenNumber;
+	}
 	public double getDragCoefficientParachute() {
 		return DragCoefficientParachute;
 	}

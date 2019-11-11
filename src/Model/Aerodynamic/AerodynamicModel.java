@@ -17,12 +17,9 @@ public class AerodynamicModel {
     public static double sigma = 1.6311e-9;
     
 	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet) {
-		double Lt = 1.6311e-9;
 		AerodynamicSet aerodynamicSet = new AerodynamicSet();
 		aerodynamicSet.setCdC(get_CdC(atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet));                           							// Continuum flow drag coefficient [-]
 		aerodynamicSet.setDragCoefficient(calcDrag(atmosphereSet, currentDataSet, aerodynamicSet, spaceShip, integratorData)); 		    	// Lift coefficient                [-]
-		aerodynamicSet.setFlowzone(calcFlowzone(currentDataSet.getV_NED_ECEF_spherical()[0], 
-				currentDataSet.getR_ECEF_spherical()[2], atmosphereSet.getStaticPressure(), atmosphereSet.getStaticTemperature(), Lt)); 
 		//-----------------------------------------------------------------------------------------------
 		aerodynamicSet.setDragForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getDragCoefficient());  		// Aerodynamic drag Force 		   [N]
 		aerodynamicSet.setLiftForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getLiftCoefficient() * cos( aerodynamicSet.getAerodynamicBankAngle() ) );               // Aerodynamic lift Force 		   [N]
@@ -72,41 +69,31 @@ public class AerodynamicModel {
 				double CDC=get_CdC( atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet);
 				//System.out.println(currentDataSet.gettIS()+"|"+CDC);
 				//double Lt = read_data(file_cship,2);
-				double Kn = kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * PI * sigma * sigma * atmosphereSet.getStaticPressure() * currentDataSet.getLt() );
+				double Kn = kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * PI * sigma * sigma * atmosphereSet.getStaticPressure() * 1 );
+				aerodynamicSet.setKnudsenNumber(Kn);
+				System.out.println(Kn);
 				if(Kn<0.1){
 			//	               Continuum flow        <---------------
 					CD = CDC;
+					aerodynamicSet.setFlowzone(1);
 				}
 				if(Kn>0.1 && Kn<10){
 			//	               Transtional zone      <---------------
 				double S = currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt(2 * atmosphereSet.getGasConstant() * atmosphereSet.getStaticTemperature());
 				double Cdfm= 1.75 + Math.sqrt(PI)/(2 * S);
 				CD= CDC + ( Cdfm - CDC ) * ( 1/3 * Math.log10( Kn / Math.sin( PI / 6 ) ) * 0.5113 ) ;
+				aerodynamicSet.setFlowzone(2);
 				}
 				if(Kn>10){
 			//	               Free molecular zone   <---------------
 				double S = currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt(2 * atmosphereSet.getGasConstant() * atmosphereSet.getStaticTemperature());
 				CD= 1.75 + Math.sqrt(PI)/(2 * S);
+				aerodynamicSet.setFlowzone(3);
 				}
 		}
 	return CD;
 	}
 	//----------------------------------------------------------------------------------------------------------------------------
-	public static int calcFlowzone( double vel, double h , double P , double T, double Lt)
-	{
-	double Kn = kB * T / ( Math.sqrt(2) * PI * sigma * sigma * P * Lt );
-	int flowzone = 0;
-	if(Kn<0.1){
-	flowzone = 1;
-	}
-	if(Kn>0.1 && Kn<10){
-	flowzone = 2;
-	}
-	if(Kn>10){
-	flowzone = 3;
-	}
-	return flowzone;
-	}
 
 	public static double get_CdC(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData, CurrentDataSet currentDataSet){
 		double CdC = 1.55 ; 

@@ -28,7 +28,7 @@ double is_value = 0 ;
 private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 
 public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
-public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
+public static double PI    = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 
 public static double sigma = 1.6311e-9;     // Average collision diameter (<- check that again)
 
@@ -119,7 +119,7 @@ public static double atm_read(int variable, double altitude) {
 public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
 	AtmosphereSet atmosphereSet = new AtmosphereSet();
 	double altitude = currentDataSet.getxIS()[2] - currentDataSet.getRM() ; 
-	if (altitude>200000 || currentDataSet.getTARGET() == 1){ // In space conditions: 
+	if (altitude>160000 || currentDataSet.getTARGET() == 1){ // In space conditions: 
 		// Set atmosphere properties to zero: 
 		atmosphereSet.setDensity(0);  						    // Density 							[kg/m3]
 		atmosphereSet.setDynamicPressure(0);  					// Dynamic pressure 					[Pa]
@@ -131,15 +131,16 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet
 	} else { // In atmosphere conditions (if any)
 
 		if(integratorData.isAtmosphereNoiseModel()) {
-			AtmosphereNoiseModel.setDensityNoise(atmosphereSet.getAtmosphereNoiseSet());
-			AtmosphereNoiseModel.setStaticTemperatureNoise(atmosphereSet.getAtmosphereNoiseSet());
+			AtmosphereNoiseModel.setDensityNoise(atmosphereSet, altitude);
+			AtmosphereNoiseModel.setStaticTemperatureNoise(atmosphereSet, altitude);
 		} else {
 			atmosphereSet.getAtmosphereNoiseSet().setDensityNoise(0);
 			atmosphereSet.getAtmosphereNoiseSet().setStaticTemperatureNoise(0);
 		}
 		
 		double density = AtmosphereModel.atm_read(1, altitude)+AtmosphereModel.atm_read(1, altitude)*atmosphereSet.getAtmosphereNoiseSet().getDensityNoise();
-		double staticTemperature = AtmosphereModel.atm_read(2, altitude) + AtmosphereModel.atm_read(2, altitude)*atmosphereSet.getAtmosphereNoiseSet().getStaticTemperatureNoise();
+		double staticTemperature = AtmosphereModel.atm_read(2, altitude) + atmosphereSet.getAtmosphereNoiseSet().getStaticTemperatureNoise();
+		if(staticTemperature<0) {staticTemperature=0;}
 		double gamma = AtmosphereModel.atm_read(4, altitude);
 		double gasConstant = AtmosphereModel.atm_read(3, altitude );
 		atmosphereSet.setDensity(density);        													 // density                         [kg/m3]

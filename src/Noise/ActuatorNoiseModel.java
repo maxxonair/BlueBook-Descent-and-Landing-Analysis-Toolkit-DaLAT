@@ -16,17 +16,17 @@ public class ActuatorNoiseModel {
 	}
 	
 	public static void setRCSXNoise(ActuatorNoiseSet actuatorNoiseSet) {
-		RCSXNoise = RandomWalker.randomWalker1D(RCSXNoise,0.05,-0.05, 0.008, 0.005);
+		RCSXNoise = RandomWalker.randomWalker1D(RCSXNoise,0.007,-0.007, 0.005, 0.005);
 		actuatorNoiseSet.setRCSMomentumX(RCSXNoise);
 	}
 	
 	public static void setRCSYNoise(ActuatorNoiseSet actuatorNoiseSet) {
-		RCSYNoise = RandomWalker.randomWalker1D(RCSYNoise,0.05,-0.05, 0.008, 0.005);
+		RCSYNoise = RandomWalker.randomWalker1D(RCSYNoise,0.01,-0.01, 0.008, 0.005);
 		actuatorNoiseSet.setRCSMomentumY(RCSYNoise);
 	}
 	
 	public static void setRCSZNoise(ActuatorNoiseSet actuatorNoiseSet) {
-		RCSZNoise = RandomWalker.randomWalker1D(RCSXNoise,0.05,-0.05, 0.008, 0.005);
+		RCSZNoise = RandomWalker.randomWalker1D(RCSXNoise,0.01,-0.01, 0.008, 0.005);
 		actuatorNoiseSet.setRCSMomentumZ(RCSZNoise);
 	}
 

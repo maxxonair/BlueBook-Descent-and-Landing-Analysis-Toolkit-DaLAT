@@ -33,7 +33,7 @@ double sequence=0;
 				controlCommandSet = SequenceSet.get(controlCommandSet.getActiveSequence()).getControllerSets().get(ctrIndx).getCommand(controlCommandSet, sensorSet, spaceShip, CtrlFrequency);
 			}
 			} catch (IndexOutOfBoundsException e) {
-				System.out.println("ERROR: MasterController detected Index out of Bounds. Flight Controller Set");
+			//	System.out.println("ERROR: MasterController detected Index out of Bounds. Flight Controller Set");
 			}
 			try {
 			//------------------------------------------------------------------------------------------------------------
@@ -43,7 +43,7 @@ double sequence=0;
 				controlCommandSet = SequenceSet.get(controlCommandSet.getActiveSequence()).getEventSets().get(ctrIndx).getCommand(controlCommandSet, sensorSet, spaceShip, CtrlFrequency);
 			}
 			} catch (IndexOutOfBoundsException e) {
-				System.out.println("ERROR: MasterController detected Index out of Bounds. Event Set");
+				//System.out.println("ERROR: MasterController detected Index out of Bounds. Event Set");
 			}
 			try {
 			//------------------------------------------------------------------------------------------------------------
@@ -55,7 +55,7 @@ double sequence=0;
 				controlCommandSet.setActiveSequence(activeSequence);
 			}
 			} catch (IndexOutOfBoundsException e) {
-				System.out.println("ERROR: MasterController detected Index out of Bounds. Sequence Set");
+				//System.out.println("ERROR: MasterController detected Index out of Bounds. Sequence Set");
 			}
 
 		MasterController.controlCommandSet = controlCommandSet; 

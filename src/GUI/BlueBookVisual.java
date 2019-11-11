@@ -938,8 +938,8 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         JMenuItem menuItem_DataPlotter = new JMenuItem("Open BlueBook DataPlotter               "); 
         menuItem_DataPlotter.setForeground(Color.BLACK);
         menuItem_DataPlotter.setFont(small_font);
-        menuItem_DataPlotter.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        //menuItem_DataPlotter.setAccelerator(KeyStroke.getKeyStroke(
+       //         KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PostProcessing.add(menuItem_DataPlotter);
         menuItem_DataPlotter.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
@@ -1873,7 +1873,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
       INDICATOR_RESPROP.setBackground(Color.black);
       INDICATOR_RESPROP.setForeground(labelColor);
       P1_SidePanel.add(INDICATOR_RESPROP);
-
+/*
         JButton Button_RunSimulation = new JButton("Run Simulation");
         Button_RunSimulation.setLocation(240, uy_p41 + 25 * 0);
         Button_RunSimulation.setSize(145,25);
@@ -1919,7 +1919,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				} 
         	}} );
         P1_SidePanel.add(Button_RunSimulation);
- 
+ */
 //-----------------------------------------------------------------------------------------------
 //								Console Window        
 //-----------------------------------------------------------------------------------------------
@@ -5823,8 +5823,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
+	    	Update_DashboardFlexibleChart();
+	    	Update_DashboardFlexibleChart2();
 		  if(fullImport) {
-	    	CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.removeAllSeries();
 	    	CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.removeAllSeries();
 
 	    //	Update_DashboardFlexibleChart2();
@@ -5832,10 +5833,9 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	    	ResultSet_MercatorMap.removeAllSeries();
 	    	try {
 	    	ResultSet_MercatorMap = AddDataset_Mercator_MAP();
-	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
-	    		
-	    	}
+	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {}
 	    	Update_DashboardFlexibleChart();
+	    	Update_DashboardFlexibleChart2();
       	    		try {
 	        	    		result11_A3_1.removeAllSeries();
 	        	    		result11_A3_2.removeAllSeries();
@@ -6321,9 +6321,9 @@ fstream.close();
 								Object[] tokens = strLine.split(" ");
 							    MODEL_RAWData.addRow(tokens);
 						     	RealTimeResultSet resultElement = new RealTimeResultSet();
-							    double[][] CartesianPosition = {{Double.parseDouble((String) tokens[41])},
-			 							   						{Double.parseDouble((String) tokens[42])},
-			 							   						{Double.parseDouble((String) tokens[43])}};
+							    double[] CartesianPosition = {Double.parseDouble((String) tokens[41]),
+			 							   						Double.parseDouble((String) tokens[42]),
+			 							   						Double.parseDouble((String) tokens[43])};
 							    resultElement.setCartesianPosECEF(CartesianPosition);
 							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
 							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
@@ -7978,10 +7978,9 @@ try {
     	try {
     		CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = AddDataset_DashboardFlexibleChart(variableListX2.getSelectedIndx(),
     				variableListY2.getSelectedIndx(), CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);
-   //	Chart_DashBoardFlexibleChart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
-    //	Chart_DashBoardFlexibleChart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
     	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
     	}
+    	
 }
 	
 	public static VariableList getVariableListY() {
@@ -8038,6 +8037,15 @@ try {
 						            	 if(isangle || isangle2) {yy = Double.parseDouble(tokens[y])*rad2deg;} else {
 						             yy = Double.parseDouble(tokens[y]);	}
 						             }
+						            
+							           try {
+								           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
+								           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[99])));
+								           INDICATOR_PROPPERC.setText(""+decf.format(Double.parseDouble(tokens[93]))); 
+								           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[73])));
+								           } catch (NumberFormatException e) {
+								        	   System.err.println("Error: Emtpy String detected - Indicator Dashboard");
+								           }
 						         	xyseries10.add(xx , yy);
 					           }
 	       in.close();

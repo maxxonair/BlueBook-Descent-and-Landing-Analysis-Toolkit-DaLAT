@@ -319,9 +319,9 @@ private static SmartGroup prepareTrajectory() {
 	    material.setSpecularColor(Color.GREEN); 	
 	    material.setDiffuseColor(Color.GREEN);
 	    	sphere.setMaterial(material);	
-	    	sphere.translateXProperty().set( (resultSet.get(i).getCartesianPosECEF()[0][0]/1000) );
-	    	sphere.translateYProperty().set( (-resultSet.get(i).getCartesianPosECEF()[2][0]/1000) );
-	    	sphere.translateZProperty().set( (resultSet.get(i).getCartesianPosECEF()[1][0]/1000) );
+	    	sphere.translateXProperty().set( (resultSet.get(i).getCartesianPosECEF()[0]/1000) );
+	    	sphere.translateYProperty().set( (-resultSet.get(i).getCartesianPosECEF()[2]/1000) );
+	    	sphere.translateZProperty().set( (resultSet.get(i).getCartesianPosECEF()[1]/1000) );
 	    	trajectorySet.getChildren().add(sphere);
 		}
 		
@@ -341,9 +341,9 @@ public static SmartGroup prepareSpacecraft(int indx) {
 				    material.setSpecularColor(Color.RED); 	
 				    material.setDiffuseColor(Color.RED);
 				    	sphere.setMaterial(material);	
-				    	sphere.translateXProperty().set( (resultSet.get(indx).getCartesianPosECEF()[0][0]/1000) );
-				    	sphere.translateYProperty().set( (-resultSet.get(indx).getCartesianPosECEF()[2][0]/1000) );
-				    	sphere.translateZProperty().set( (resultSet.get(indx).getCartesianPosECEF()[1][0]/1000) );
+				    	sphere.translateXProperty().set( (resultSet.get(indx).getCartesianPosECEF()[0]/1000) );
+				    	sphere.translateYProperty().set( (-resultSet.get(indx).getCartesianPosECEF()[2]/1000) );
+				    	sphere.translateZProperty().set( (resultSet.get(indx).getCartesianPosECEF()[1]/1000) );
 				    	Spacecraft.getChildren().add(sphere);
         }
     });	
