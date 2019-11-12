@@ -59,7 +59,7 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------  
     	
     	aerodynamicSet = AerodynamicModel.getAerodynamicSet(atmosphereSet, spaceShip, currentDataSet, integratorData, 
-    														actuatorSet);
+    														actuatorSet, controlCommandSet);
     	
     	// 					    Force Definition - Aerodynamic Forces | Aerodynamic Frame |
 

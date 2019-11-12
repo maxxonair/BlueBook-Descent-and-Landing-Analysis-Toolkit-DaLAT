@@ -42,7 +42,7 @@ public class LaunchRealTimeSimulation {
     
 	static DataContainer dataContainer = new DataContainer();
 	static DataSetXY dataSet =  new DataSetXY();
-	static boolean isPlot=true;
+	static boolean isPlot=false;
 	
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());

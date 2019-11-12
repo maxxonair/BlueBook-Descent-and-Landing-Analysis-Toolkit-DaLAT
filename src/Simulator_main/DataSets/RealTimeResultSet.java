@@ -45,9 +45,20 @@ public class RealTimeResultSet {
 	
 	private IntegratorData integratorData;
 	
+	private CurrentDataSet currentDataSet;
+		
+	
 	private double normalizedDeceleration=0;
 	
 	
+
+	public CurrentDataSet getCurrentDataSet() {
+		return currentDataSet;
+	}
+
+	public void setCurrentDataSet(CurrentDataSet currentDataSet) {
+		this.currentDataSet = currentDataSet;
+	}
 
 	public IntegratorData getIntegratorData() {
 		return integratorData;

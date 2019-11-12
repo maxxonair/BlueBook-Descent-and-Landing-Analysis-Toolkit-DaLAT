@@ -10,6 +10,8 @@ import Simulator_main.DataSets.IntegratorData;
 public class ActuatorModel {
 	
 	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
+		
+		
 		ActuatorSet actuatorSet = new ActuatorSet();
 		//double deltaPropellant = spaceShip.getMass() - currentDataSet.getxIS()[6];
 		if(integratorData.isActuatorNoiseModel()) {
@@ -37,7 +39,9 @@ public class ActuatorModel {
 		// Set Thrust 
 		if(primaryPropellant>0) {
 			double thrustNominal = controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax();
-			double thrustIs = thrustNominal + thrustNominal * actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise();
+			double randomThrustVariation = thrustNominal * actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise();
+			double thrustIs = thrustNominal + randomThrustVariation;
+			//thrustIs = getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel);
 		actuatorSet.setPrimaryThrust_is(thrustIs);
 		} else {
 			actuatorSet.setPrimaryThrust_is(0);
@@ -104,4 +108,13 @@ public class ActuatorModel {
 		 	}
 		 	return IspOut; 
 		 }
+	 
+		private static double getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel) {
+			if(timeSinceCMD<timeToThrustLevel) {
+				double y = 1/( 1 + Math.pow((timeSinceCMD/(timeToThrustLevel-timeSinceCMD)),-2));
+				return y;
+			} else {
+				return 1;
+			}
+		}
 }

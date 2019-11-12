@@ -7,6 +7,7 @@ import FlightElement.SpaceShip;
 import Model.DataSets.ActuatorSet;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
+import Model.DataSets.ControlCommandSet;
 import Model.DataSets.HypersonicSet;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
@@ -16,7 +17,18 @@ public class AerodynamicModel {
     public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
     public static double sigma = 1.6311e-9;
     
-	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet) {
+    private static int sequenceIs=-1;
+    private static double lastTimeMark=0;
+    
+	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
+		
+		if(sequenceIs!=controlCommandSet.getActiveSequence()) {
+			sequenceIs=controlCommandSet.getActiveSequence();
+			lastTimeMark = currentDataSet.getGlobalTime();
+		}
+		currentDataSet.setSequenceTime(currentDataSet.getGlobalTime()-lastTimeMark);
+		
+		
 		AerodynamicSet aerodynamicSet = new AerodynamicSet();
 		aerodynamicSet.setCdC(get_CdC(atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet));                           							// Continuum flow drag coefficient [-]
 		aerodynamicSet.setDragCoefficient(calcDrag(atmosphereSet, currentDataSet, aerodynamicSet, spaceShip, integratorData)); 		    	// Lift coefficient                [-]
@@ -40,6 +52,9 @@ public class AerodynamicModel {
 					}
 					//System.out.println(Ma+"|"+CdP);
 				}
+				double parachuteDeploymentEffect = getParachuteDeploymentMode(currentDataSet.getSequenceTime(), 3) ;
+				CdP = CdP * parachuteDeploymentEffect;
+				
 				aerodynamicSet.setDragCoefficientParachute(CdP);
 				// Linear model derived from data provided by: 
 				// I. Clarke, Supersonic Inflatable Aerodynamic Decelerators For Use On Future Robotic Missions to Mars 
@@ -71,7 +86,7 @@ public class AerodynamicModel {
 				//double Lt = read_data(file_cship,2);
 				double Kn = kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * PI * sigma * sigma * atmosphereSet.getStaticPressure() * 1 );
 				aerodynamicSet.setKnudsenNumber(Kn);
-				System.out.println(Kn);
+				//System.out.println(Kn);
 				if(Kn<0.1){
 			//	               Continuum flow        <---------------
 					CD = CDC;
@@ -107,6 +122,15 @@ public class AerodynamicModel {
 		
 		
 		return CdC; 
+	}
+	
+	private static double getParachuteDeploymentMode(double timeSinceMortar, double timeToFullDeployment) {
+		if(timeSinceMortar<timeToFullDeployment) {
+			double y = 1/( 1 + Math.pow((timeSinceMortar/(timeToFullDeployment-timeSinceMortar)),-2));
+			return y;
+		} else {
+			return 1;
+		}
 	}
 
 }

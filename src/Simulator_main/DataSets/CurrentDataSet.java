@@ -14,6 +14,8 @@ public class CurrentDataSet {
 	private  double Lt;
 	private  double[] xIS;
 	private  double tIS;
+	private double globalTime=0;
+	private double sequenceTime=0;
 	private  int TARGET;
 	double[] V_NED_ECEF_spherical;
 	public double[] r_ECEF_cartesian ;
@@ -28,7 +30,20 @@ public class CurrentDataSet {
 	public  double[][] EulerAngle      = {{0},{0},{0}};
 	
 	
+	
 
+	public double getSequenceTime() {
+		return sequenceTime;
+	}
+	public void setSequenceTime(double sequenceTime) {
+		this.sequenceTime = sequenceTime;
+	}
+	public double getGlobalTime() {
+		return globalTime;
+	}
+	public void setGlobalTime(double globalTime) {
+		this.globalTime = globalTime;
+	}
 	public  double[][] getEulerAngle() {
 		return EulerAngle;
 	}

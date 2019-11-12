@@ -1,5 +1,4 @@
 0 Launch |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 2 450.0 |EndElement| 
 1 ParachuteDeployment |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 1 |EventManagementElements |EndElement| 3 2000.0 |EndElement| 
 2 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 2 |EventManagementElements |EndElement| 1 2.0 |EndElement| 
-3 FullThrust |FlightControllerElements| 5 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 30.0 |EndElement| 
-4 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0 |EndElement| 
+3 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 5000 |EndElement| 

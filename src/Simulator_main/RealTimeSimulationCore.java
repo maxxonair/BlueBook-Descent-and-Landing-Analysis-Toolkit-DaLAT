@@ -317,6 +317,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	currentDataSet.setxIS(x);
 	    	currentDataSet.settIS(t);
+	    	currentDataSet.setGlobalTime(integratorData.getGlobalTime()+t);
 	    	currentDataSet.setValDt(val_dt);
 	    	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
 	    	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
@@ -745,6 +746,8 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setAzi( V_NED_ECEF_spherical[2]);
 	                	realTimeResultSet.setFpa( V_NED_ECEF_spherical[1]);
 	                	realTimeResultSet.setVelocity( V_NED_ECEF_spherical[0]);
+	                	
+	                	realTimeResultSet.setCurrentDataSet(currentDataSet);
 	                	
 	                	realTimeResultSet.setSCMass(y[6]);
 	                	if(spherical) {
