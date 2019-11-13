@@ -41,7 +41,7 @@ The image shows the simulation input section to prepare a simulation. For more c
 
 Note: 
 
-The project is currently developed mainlay on MacOS, hence the compiled jar files are compiled for macOS. However, the system is from time to time tested on Windows and Linux and should run on both systems as well. Currently some bugs can be experienced when running the GUI from Windows, the SIM module should run without problems on all operating systems. Work is ongoing to eliminate bugs and run all modules smoothly on all operating systems. 
+BlueBook is developed to be a crossplatform application compatible to all operating systems. The project is currently developed and tested mainlay on MacOS, which can cause minor bugs and GUI issues when running on other platforms. However, the system is from time to time tested on Windows and Linux and should run on both systems without major issues. Currently some bugs can be experienced when running the GUI from Windows, the SIM module should run without problems on all operating systems. Work is ongoing to eliminate bugs and run all modules smoothly on all operating systems. 
 
 To run the VisualEngine the program has to be compiled on the respective operating system. 
 To set up the project in Eclipse the natives for the LWJGL jars have to be set accordingly. 
