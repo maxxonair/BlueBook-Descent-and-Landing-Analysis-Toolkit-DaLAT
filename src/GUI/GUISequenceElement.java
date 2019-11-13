@@ -43,7 +43,8 @@ public class GUISequenceElement {
     private String[] elementEvents = {" ",
     									  "Parachute Deployment",
     									  "Parachute Separation",
-    									  "Stage Separation"
+    									  "Stage Separation",
+    									  "Heat Shield Separation"
     };
     
     private String[] elementEnd = {

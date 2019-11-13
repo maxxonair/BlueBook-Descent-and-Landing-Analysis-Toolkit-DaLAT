@@ -70,6 +70,8 @@ public class LaunchRealTimeSimulation {
 	    	spaceShip.setMass(inputOut[6]);
 	    	spaceShip.getAeroElements().setSurfaceArea(ReadInput.readSurfaceArea(inputOut[6]));
 	    	spaceShip.getAeroElements().setHeatshieldRadius(ReadInput.readAeroFile()[2]);
+	    	spaceShip.getAeroElements().setParachuteMass(70);
+	    	spaceShip.getAeroElements().setHeatShieldMass(120);
 	    	spaceShip.getPropulsion().setPrimaryISPMax(ReadInput.readPropulsionInput()[0]);
 	    	spaceShip.getPropulsion().setPrimaryPropellant(ReadInput.readPropulsionInput()[1]);
 	    	spaceShip.getPropulsion().setPrimaryThrustMax(ReadInput.readPropulsionInput()[2]);
@@ -278,10 +280,10 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	ForceMomentumSet forceMomentumSet = masterSet.getForceMomentumSet();
 	ActuatorSet actuatorSet = masterSet.getActuatorSet();
 	if(isPlot) {
-	//dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
-	//		aerodynamicSet.getFlowzone()));
-		dataSet.addPair(new Pair(realTimeResultSet.getAltitude(), 
-				aerodynamicSet.getFlowzone()));
+	dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
+			masterSet.getSpaceShip().getMass()));
+	//	dataSet.addPair(new Pair(realTimeResultSet.getAltitude(), 
+	//			aerodynamicSet.getFlowzone()));
 	dataContainer.setxAxisLabel("Time");
 	dataContainer.setyAxisLabel("Noise");
 	}

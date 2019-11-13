@@ -462,7 +462,7 @@ public static List<SequenceContent> READ_sequenceFile() throws IOException{
     	    } else if (eventIndex==3) {
     	    	// Stage Separation tbd
     	    } else if (eventIndex==4) {
-    	    	
+    	    	sequenceContent.addHeatShieldSeparation();
     	    }
         //---------------------------------------------------------------------------------------------------
         	//					Sequence End

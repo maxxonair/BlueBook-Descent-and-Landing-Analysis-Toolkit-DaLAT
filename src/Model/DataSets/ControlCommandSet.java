@@ -20,10 +20,23 @@ public class ControlCommandSet {
     
     private boolean ParachuteDeployedCMD=false; 
     private boolean ParachuteEjectCMD=false;
+    private boolean HeatShieldEjectionCMD=false;
     
     private int activeSequence;
     
     
+    
+    
+	public boolean isHeatShieldEjectionCMD() {
+		return HeatShieldEjectionCMD;
+	}
+
+
+	public void setHeatShieldEjectionCMD(boolean heatShieldEjectionCMD) {
+		HeatShieldEjectionCMD = heatShieldEjectionCMD;
+	}
+
+
 	public int getActiveSequence() {
 		return activeSequence;
 	}

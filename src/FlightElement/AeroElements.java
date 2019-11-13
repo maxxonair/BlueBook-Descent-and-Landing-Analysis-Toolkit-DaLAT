@@ -8,6 +8,10 @@ public class AeroElements {
 	
 	private double ParachuteSurfaceArea;
 	
+	private double ParachuteMass=0;
+	
+	private double HeatShieldMass=0;
+	
 	
 
 	public AeroElements() {
@@ -15,6 +19,30 @@ public class AeroElements {
 	}
 	
 	
+
+	public double getHeatShieldMass() {
+		return HeatShieldMass;
+	}
+
+
+
+	public void setHeatShieldMass(double heatShieldMass) {
+		HeatShieldMass = heatShieldMass;
+	}
+
+
+
+	public double getParachuteMass() {
+		return ParachuteMass;
+	}
+
+
+
+	public void setParachuteMass(double parachuteMass) {
+		ParachuteMass = parachuteMass;
+	}
+
+
 
 	public double getParachuteSurfaceArea() {
 		return ParachuteSurfaceArea;

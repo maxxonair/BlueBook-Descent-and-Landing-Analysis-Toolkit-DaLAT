@@ -1,5 +1,7 @@
 package Model.DataSets;
 
+import FlightElement.SpaceShip;
+
 public class MasterSet {
 
     public  AtmosphereSet atmosphereSet = new AtmosphereSet();
@@ -8,6 +10,16 @@ public class MasterSet {
     public  AerodynamicSet aerodynamicSet = new AerodynamicSet();
     public  ControlCommandSet controlCommandSet = new ControlCommandSet();
     public  ActuatorSet actuatorSet = new ActuatorSet();
+    public 	 SpaceShip spaceShip = new SpaceShip(); 
+    
+    
+    
+	public SpaceShip getSpaceShip() {
+		return spaceShip;
+	}
+	public void setSpaceShip(SpaceShip spaceShip) {
+		this.spaceShip = spaceShip;
+	}
 	public  AtmosphereSet getAtmosphereSet() {
 		return atmosphereSet;
 	}

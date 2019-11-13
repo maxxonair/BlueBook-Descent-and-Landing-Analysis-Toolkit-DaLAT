@@ -74,6 +74,10 @@ public class ForceModel {
 
     actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet, integratorData);
     
+    spaceShip = actuatorSet.getSpaceShip();
+    
+    //System.out.println(spaceShip.getMass());
+    
     forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Thrust Forces | Body fixed Frame |
@@ -129,6 +133,7 @@ public class ForceModel {
     	masterSet.setForceMomentumSet(forceMomentumSet);
     	masterSet.setGravitySet(gravitySet);
     	masterSet.setControlCommandSet(controlCommandSet);
+    	masterSet.setSpaceShip(spaceShip);
     	return masterSet;
 	}
 

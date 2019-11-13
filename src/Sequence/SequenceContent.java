@@ -9,6 +9,7 @@ import Controller.FlightController_ExternalController;
 import Controller.FlightController_RollControl;
 import Controller.FlightController_YawControl;
 import Controller.FligthController_PrimaryThrust;
+import Controller.Events.HeatShieldEjection;
 import Controller.Events.ParachuteDeployment;
 import Controller.Events.ParachuteSeparation;
 import Model.DataSets.SensorSet;
@@ -83,6 +84,11 @@ public class SequenceContent {
 	public void addParachuteSeparation() {
 		ParachuteSeparation parachuteSeparation = new ParachuteSeparation();
 		EventSets.add(parachuteSeparation);
+	}
+	
+	public void addHeatShieldSeparation() {
+		HeatShieldEjection heatShieldEjection = new HeatShieldEjection();
+		EventSets.add(heatShieldEjection);
 	}
 	
 	public void setTriggerEnd(int triggerType, double triggerValue) {

@@ -8,6 +8,12 @@ import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
 
 public class ActuatorModel {
+	private static boolean parachuteEjectionMark=true;
+	private static boolean heatshieldEjectionMark=true;
+	
+	private static double interimValue=-100;
+	private static double PrimaryPropulsionTimeMark=0;
+	private static double propTime=0;
 	
 	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
 		
@@ -38,9 +44,21 @@ public class ActuatorModel {
     			}
 		// Set Thrust 
 		if(primaryPropellant>0) {
-			double thrustNominal = controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax();
-			double randomThrustVariation = thrustNominal * actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise();
-			double thrustIs = thrustNominal + randomThrustVariation;
+			double thrustIs =0;;
+			double prviousCMD  = interimValue;
+			double transientTime = 2;
+			if(isThrustCMDChange(controlCommandSet.getPrimaryThrustThrottleCmd(), integratorData) && propTime < transientTime) {
+			    propTime = integratorData.getGlobalTime() - PrimaryPropulsionTimeMark;
+				double ThrustRunUp = getMainEngineResponseDelay( propTime,  transientTime,  controlCommandSet.getPrimaryThrustThrottleCmd(),  prviousCMD);
+				System.out.println(ThrustRunUp);
+				double thrustNominal = ThrustRunUp * spaceShip.getPropulsion().getPrimaryThrustMax();
+				//System.out.println(thrustNominal);
+				thrustIs = thrustNominal;
+			} else {
+				double thrustNominal = controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax();
+				double randomThrustVariation = thrustNominal * actuatorSet.getActuatorNoiseSet().getPrimaryThrustNoise();
+				 thrustIs = thrustNominal + randomThrustVariation;
+			}
 			//thrustIs = getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel);
 		actuatorSet.setPrimaryThrust_is(thrustIs);
 		} else {
@@ -84,9 +102,23 @@ public class ActuatorModel {
 		}
 		
 		if(controlCommandSet.isParachuteEjectCMD()) {
+			if(parachuteEjectionMark) {
+				spaceShip.setMass(spaceShip.getMass() - spaceShip.getAeroElements().getParachuteMass());
+				//System.err.println("EJECT");
+				parachuteEjectionMark=false;
+			}
 			actuatorSet.setParachuteEject(true);
 		}
 		
+		if(controlCommandSet.isHeatShieldEjectionCMD()) {
+			if(heatshieldEjectionMark) {
+				spaceShip.setMass(spaceShip.getMass() - spaceShip.getAeroElements().getHeatShieldMass());
+				heatshieldEjectionMark=false;
+			}
+			actuatorSet.setHeatShieldEject(true);
+		}
+
+		actuatorSet.setSpaceShip(spaceShip);
 		return actuatorSet;
 	}
 
@@ -109,9 +141,30 @@ public class ActuatorModel {
 		 	return IspOut; 
 		 }
 	 
-		private static double getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel) {
+	 	private static boolean isThrustCMDChange(double CMD, IntegratorData integratorData) {
+	 		if(CMD!=interimValue) {
+		 		interimValue=CMD;
+		 		PrimaryPropulsionTimeMark = integratorData.getGlobalTime();
+	 			return true;
+	 		} else {
+		 		interimValue=CMD;
+	 			return false;
+	 		}
+	 	}
+	 
+		private static double getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel, double CMDThrustLevel, double OldThrustLevel) {
 			if(timeSinceCMD<timeToThrustLevel) {
-				double y = 1/( 1 + Math.pow((timeSinceCMD/(timeToThrustLevel-timeSinceCMD)),-2));
+				double y=0;
+				double x=0;
+				if(OldThrustLevel>CMDThrustLevel) {
+					double amplitude =	OldThrustLevel - CMDThrustLevel;
+					 x = timeToThrustLevel - timeSinceCMD;
+					 y = OldThrustLevel - amplitude/( 1 + Math.pow((x/(timeSinceCMD)),-2)) ;
+				} else {
+					double amplitude =	CMDThrustLevel - OldThrustLevel ;
+					 x = timeSinceCMD;
+					 y = OldThrustLevel + amplitude/( 1 + Math.pow((x/(timeToThrustLevel-x)),-2));	
+				}
 				return y;
 			} else {
 				return 1;

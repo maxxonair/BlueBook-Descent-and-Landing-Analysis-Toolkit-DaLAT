@@ -1,5 +1,6 @@
 package Model.DataSets;
 
+import FlightElement.SpaceShip;
 import NoiseSet.ActuatorNoiseSet;
 
 public class ActuatorSet {
@@ -26,12 +27,36 @@ public class ActuatorSet {
     
     private boolean ParachuteDeployed=false;
     private boolean ParachuteEject=false;
+    private boolean HeatShieldEject=false;
     
     private ActuatorNoiseSet actuatorNoiseSet = new ActuatorNoiseSet();
+    
+    private SpaceShip spaceShip;
+    
     
     
         
     
+	public boolean isHeatShieldEject() {
+		return HeatShieldEject;
+	}
+
+
+	public void setHeatShieldEject(boolean heatShieldEject) {
+		HeatShieldEject = heatShieldEject;
+	}
+
+
+	public SpaceShip getSpaceShip() {
+		return spaceShip;
+	}
+
+
+	public void setSpaceShip(SpaceShip spaceShip) {
+		this.spaceShip = spaceShip;
+	}
+
+
 	public ActuatorNoiseSet getActuatorNoiseSet() {
 		return actuatorNoiseSet;
 	}

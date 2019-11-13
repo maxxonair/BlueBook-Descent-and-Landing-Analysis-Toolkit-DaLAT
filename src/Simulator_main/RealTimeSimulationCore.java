@@ -45,10 +45,10 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    public static boolean ISP_Throttle_model = false; 
 	    public static boolean stophandler_ON     = true; 
 	    
-	    public static 	    boolean spherical   = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
-	    public static 		boolean is_6DOF     = true;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
-		public static 		int SixDoF_Option   = 1;  
-		public static       boolean FlatEarther = false;
+	    public static 	    boolean spherical    = false;	  // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
+	    public static 		boolean is_6DOF      = true;    // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
+		public static 		int SixDoF_Option    = 1;  
+		public static       boolean FlatEarther  = false;
 	    //............................................                                       .........................................
 		//
 	    //	                                                         Constants
@@ -353,7 +353,12 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    	atmosphereSet = masterSet.getAtmosphereSet();
 	    	aerodynamicSet = masterSet.getAerodynamicSet();
 	    	actuatorSet = masterSet.getActuatorSet();
+	    	spaceShip = masterSet.getSpaceShip();
+	    //	System.out.println(spaceShip.getMass());
 	    //	controlCommandSet = masterSet.getControlCommandSet();
+	    	if(currentDataSet.getxIS()[6]!=spaceShip.getMass()) {
+	    		x[6]= spaceShip.getMass();
+	    	}
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	// 									     Equations of Motion
 	    	//-------------------------------------------------------------------------------------------------------------------
@@ -769,7 +774,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setMasterSet(masterSet);
 	                	realTimeResultSet.setIntegratorData(integratorData);
 	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
-	                	realTimeResultSet.setSpaceShip(RealTimeSimulationCore.spaceShip);
+	                	realTimeResultSet.setSpaceShip(masterSet.getSpaceShip());
 	             
 	                masterList.add(masterSet);
 	                realTimeList.add(realTimeResultSet);
