@@ -741,8 +741,10 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double[] y     = interpolator.getInterpolatedState();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
+	         	    double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
 	             	RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	                	realTimeResultSet.setTime(t);
+	                	realTimeResultSet.setGlobalTime(currentTime);
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
 	                	realTimeResultSet.setRadius(r_ECEF_spherical[2]);
@@ -770,7 +772,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setCartesianPosECEF(r_ECEF_cartesian);
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
 	                	integratorData.setGroundtrack(integratorData.getGroundtrack()+groundtrack);
-	                	
+	                //if(masterSet.getActuatorSet().getPrimaryThrust_is()>10 && masterSet.getActuatorSet().getPrimaryThrust_is()<6000){	System.out.println(masterSet.getActuatorSet().getPrimaryThrust_is()); }
 	                	realTimeResultSet.setMasterSet(masterSet);
 	                	realTimeResultSet.setIntegratorData(integratorData);
 	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));

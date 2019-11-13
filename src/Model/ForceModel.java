@@ -76,7 +76,6 @@ public class ForceModel {
     
     spaceShip = actuatorSet.getSpaceShip();
     
-    //System.out.println(spaceShip.getMass());
     
     forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------

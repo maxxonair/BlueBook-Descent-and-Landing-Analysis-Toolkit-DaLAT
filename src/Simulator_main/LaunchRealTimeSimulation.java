@@ -216,6 +216,8 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		    		   integratorData.setGroundtrack(realTimeContainer.getRealTimeList().get(i).
 	    		    				   getIntegratorData().getGroundtrack());
 	    		    		   	steps = addStep(steps, realTimeContainer, integratorData, i);
+	    		    		   	
+	    		    		   	
 	    		    	   }
 	  	      //---------------------------------------------------------------------------------------
 	  		  //				  Implement Stop Handler here: 
@@ -288,7 +290,8 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	dataContainer.setyAxisLabel("Noise");
 	}
 	//System.out.println(realTimeContainer.getRealTimeSet().size());
-	steps.add((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()) + " " + 
+	// integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime())
+	steps.add(realTimeResultSet.getGlobalTime() + " " + 
     			realTimeResultSet.getLongitude() + " " + 
     			realTimeResultSet.getLatitude() + " " + 
     			realTimeResultSet.getAltitude() + " " + 
@@ -359,8 +362,8 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
   		  aerodynamicSet.getDragCoefficientParachute()+" "+
 		  aerodynamicSet.getDragForceParachute()+" "+
 		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
-		  (forceMomentumSet.getThrustTotal())+" "+
-		  (forceMomentumSet.getThrustTotal()/realTimeResultSet.getSCMass())+" "+
+		  (actuatorSet.getPrimaryThrust_is())+" "+
+		  (actuatorSet.getPrimaryThrust_is()/realTimeResultSet.getSCMass())+" "+
 		  realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel()/realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
 		  actuatorSet.getPrimaryISP_is()+" "+
 		  controlCommandSet.getMomentumRCS_X_cmd()+" "+

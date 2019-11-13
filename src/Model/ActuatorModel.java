@@ -3,6 +3,7 @@ package Model;
 import FlightElement.SpaceShip;
 import Model.DataSets.ActuatorSet;
 import Model.DataSets.ControlCommandSet;
+import Model.DataSets.PrimaryThrustChangeLog;
 import Noise.ActuatorNoiseModel;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
@@ -11,13 +12,18 @@ public class ActuatorModel {
 	private static boolean parachuteEjectionMark=true;
 	private static boolean heatshieldEjectionMark=true;
 	
-	private static double interimValue=-100;
-	private static double PrimaryPropulsionTimeMark=0;
-	private static double propTime=0;
+	//private static double propTime=0;
+	private static boolean isTransient=false; 
+	private static double transientTime = 1.2;
+	
+	private static double currentTime;
+	
+	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
 	
 	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
 		
-		
+	    currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
+
 		ActuatorSet actuatorSet = new ActuatorSet();
 		//double deltaPropellant = spaceShip.getMass() - currentDataSet.getxIS()[6];
 		if(integratorData.isActuatorNoiseModel()) {
@@ -45,14 +51,12 @@ public class ActuatorModel {
 		// Set Thrust 
 		if(primaryPropellant>0) {
 			double thrustIs =0;;
-			double prviousCMD  = interimValue;
-			double transientTime = 2;
-			if(isThrustCMDChange(controlCommandSet.getPrimaryThrustThrottleCmd(), integratorData) && propTime < transientTime) {
-			    propTime = integratorData.getGlobalTime() - PrimaryPropulsionTimeMark;
-				double ThrustRunUp = getMainEngineResponseDelay( propTime,  transientTime,  controlCommandSet.getPrimaryThrustThrottleCmd(),  prviousCMD);
-				System.out.println(ThrustRunUp);
+			updatePrimaryThrustChangeLog(controlCommandSet.getPrimaryThrustThrottleCmd(), integratorData);
+			if(primaryThrustChangeLog.isChange()) {isTransient=true;}
+			if( isTransient && isTransientTime(integratorData, primaryThrustChangeLog) ) {
+				//System.out.println(primaryThrustChangeLog.getPropTime());
+				double ThrustRunUp = getMainEngineResponseDelay( primaryThrustChangeLog.getPropTime(),  transientTime,  primaryThrustChangeLog.getCMD_NEW(),  primaryThrustChangeLog.getCMD_OLD());
 				double thrustNominal = ThrustRunUp * spaceShip.getPropulsion().getPrimaryThrustMax();
-				//System.out.println(thrustNominal);
 				thrustIs = thrustNominal;
 			} else {
 				double thrustNominal = controlCommandSet.getPrimaryThrustThrottleCmd()*spaceShip.getPropulsion().getPrimaryThrustMax();
@@ -141,13 +145,25 @@ public class ActuatorModel {
 		 	return IspOut; 
 		 }
 	 
-	 	private static boolean isThrustCMDChange(double CMD, IntegratorData integratorData) {
-	 		if(CMD!=interimValue) {
-		 		interimValue=CMD;
-		 		PrimaryPropulsionTimeMark = integratorData.getGlobalTime();
+	 	private static  PrimaryThrustChangeLog updatePrimaryThrustChangeLog(double CMD, IntegratorData integratorData) {
+	 		if(CMD!=primaryThrustChangeLog.getCMD_NEW()) {
+	 			primaryThrustChangeLog.setTimeStamp(currentTime);
+	 			primaryThrustChangeLog.setCMD_OLD(primaryThrustChangeLog.getCMD_NEW());
+	 			primaryThrustChangeLog.setCMD_NEW(CMD);
+	 			primaryThrustChangeLog.setChange(true);
+	 		} else {
+	 			primaryThrustChangeLog.setChange(false);
+	 		}
+	 		return primaryThrustChangeLog;
+	 	}
+	 	
+	 	private static boolean isTransientTime(IntegratorData integratorData, PrimaryThrustChangeLog primaryThrustChangeLog) {
+	 		primaryThrustChangeLog.setPropTime( currentTime - primaryThrustChangeLog.getTimeStamp() );	
+	 		if(primaryThrustChangeLog.getPropTime() < transientTime) {
+	 			isTransient=true;
 	 			return true;
 	 		} else {
-		 		interimValue=CMD;
+	 			isTransient=false;
 	 			return false;
 	 		}
 	 	}

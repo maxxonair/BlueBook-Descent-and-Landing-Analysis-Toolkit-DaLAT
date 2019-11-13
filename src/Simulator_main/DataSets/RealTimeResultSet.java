@@ -50,7 +50,18 @@ public class RealTimeResultSet {
 	
 	private double normalizedDeceleration=0;
 	
+	private double globalTime=0;
 	
+	
+	
+
+	public double getGlobalTime() {
+		return globalTime;
+	}
+
+	public void setGlobalTime(double globalTime) {
+		this.globalTime = globalTime;
+	}
 
 	public CurrentDataSet getCurrentDataSet() {
 		return currentDataSet;
