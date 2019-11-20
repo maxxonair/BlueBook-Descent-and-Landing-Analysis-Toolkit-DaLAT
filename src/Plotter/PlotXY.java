@@ -11,6 +11,10 @@ public class PlotXY extends Application{
 	
 	private static DataContainer dataContainer = new DataContainer();
     private  LineChart<Number,Number> lineChart;
+    
+    public PlotXY() {
+    	
+    }
 	
     @SuppressWarnings({ "rawtypes", "unchecked" })
 	public void start(Stage stage) {
@@ -47,7 +51,7 @@ public class PlotXY extends Application{
           }
         */
         lineChart.setCreateSymbols(false);
-        lineChart.setLegendVisible(false);
+        lineChart.setLegendVisible(true);
         
         Scene scene  = new Scene(lineChart,800,600);
         stage.setScene(scene);
@@ -55,7 +59,7 @@ public class PlotXY extends Application{
     }
 
  
-    public static void plot(DataContainer Container) {
+    public void plot(DataContainer Container) {
     	dataContainer = Container;
         launch();
     }

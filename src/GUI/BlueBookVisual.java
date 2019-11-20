@@ -124,6 +124,8 @@ import javafx.embed.swing.JFXPanel;
 
 import com.apple.eawt.Application;
 
+import GUI.DataStructures.InputFileSet;
+
 public class BlueBookVisual implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
@@ -428,6 +430,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     private static Crosshair yCrosshair_x; 
     public static Crosshair xCrosshair_A3_1,xCrosshair_A3_2,xCrosshair_A3_3,xCrosshair_A3_4,yCrosshair_A3_1,yCrosshair_A3_2,yCrosshair_A3_3,yCrosshair_A3_4;
     public static Crosshair xCrosshair_DashBoardOverviewChart_Altitude_Velocity, yCrosshair_DashBoardOverviewChart_Altitude_Velocity,xCrosshair_DashBoardOverviewChart_Time_FPA, yCrosshair_DashBoardOverviewChart_Time_FPA;
+    private static Crosshair xCH_DashboardFlexibleChart, yCH_DashboardFlexibleChart;
     public static JPanel PageX04_Dashboard;
     public static JPanel PageX04_Map;
     public static JPanel PageX04_3;
@@ -451,9 +454,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 	public static JFreeChart Chart_DashBoardFlexibleChart;	
 	public static ChartPanel ChartPanel_DashBoardOverviewChart_Altitude_Velocity; 
 	public static ChartPanel ChartPanel_DashBoardOverviewChart_Time_FPA; 
-	public static ChartPanel ChartPanel_DashBoardFlexibleChart;
-    private static Crosshair xCH_DashboardFlexibleChart;
-    private static Crosshair yCH_DashboardFlexibleChart;    
+	public static ChartPanel ChartPanel_DashBoardFlexibleChart;    
     static public JFreeChart chartA3_1,chartA3_2,chartA3_3,chartA3_4; 
     public static ChartPanel CP_A31,CP_A32,CP_A33,CP_A34;
 	public static XYSeriesCollection CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = new XYSeriesCollection();
@@ -560,7 +561,10 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
     	public static List<JRadioButton> ParachuteBulletPoints = new ArrayList<JRadioButton>();
      	public static  List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
      	public static  List<GUISequenceElement> sequenceContentList = new ArrayList<GUISequenceElement>();
-     	public static 				int sequenceDimensionWidth=1500;;
+     	public static 				int sequenceDimensionWidth=1500;
+     	
+     	
+     	private static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
 	//-----------------------------------------------------------------------------
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public JPanel createContentPane () throws IOException{
@@ -1130,13 +1134,13 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
         
         ButtonGroup thirdWindow = new ButtonGroup();
         
-        menuItem = new JRadioButtonMenuItem("Flight Path Angle");
+        menuItem = new JRadioButtonMenuItem("Third 2D Chart Window");
        //menuItem.setForeground(labelColor);
         menuItem.setFont(small_font);
         menuItem.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
                 	   try {
-					   CreateChart_DashboardOverviewChart_Time_FPA();
+					   CreateChart_ThirdWindowChart();
 					   SplitPane_Page1_Charts_vertical.setDividerLocation(500);
 					   thirdWindowIndx=0;
 					} catch (IOException e1) {
@@ -6308,6 +6312,12 @@ fstream.close();
     
     public static void READ_RAWDATA() {
     	resultSet.clear();
+    try {
+		analysisFile = 	readResultFileList(RES_File);
+	} catch (IOException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
     	// Delete all exisiting rows:
     	for(int j=MODEL_RAWData.getRowCount()-1;j>=0;j--) {MODEL_RAWData.removeRow(j);}
     	// Read all data from file: 
@@ -6562,6 +6572,16 @@ fstream.close();
 	   } catch(NullPointerException | IOException eNPE) { System.out.println(eNPE);System.out.println("ERROR: Read SEQU.res failed. ");}
 	   return SEQUENCE_DATA;
 	}
+    
+    public static List<InputFileSet> readResultFileList(String filePath) throws IOException{
+    	List<InputFileSet> newInputFileSetList = new ArrayList<InputFileSet>();
+
+   		      	InputFileSet newInputFileSet = new InputFileSet();
+   		      	newInputFileSet.setInputDataFilePath(filePath);
+   		      	newInputFileSetList.add(newInputFileSet);
+
+    return newInputFileSetList;
+    }
 	public static void WriteErrorINP() {
 	    try {
 	        File fac = new File(ERROR_File);
@@ -7766,17 +7786,9 @@ try {
 	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
 	                    RectangleEdge.BOTTOM);
 	            
-	            double max = xAxis.getUpperBound();
-	            double min = xAxis.getLowerBound();
-	            int indx = (int) ( (1- x/(max-min))*resultSet.size());
-		            		if(thirdWindowIndx==0) {
-		            			try {
-			            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getTime());
-			            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(resultSet.get(indx).getFpa()*rad2deg);
-		            			} catch (IndexOutOfBoundsException e) {
-		            				System.err.println("Error: DashBoardOverviewChart_Time_FPA Index out of bounds");
-		            			}
-		            			}
+	            //double max = xAxis.getUpperBound();
+	           // double min = xAxis.getLowerBound();
+	            //int indx = (int) ( (1- x/(max-min))*resultSet.size());
 	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
 	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
 	            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(y);
@@ -7792,174 +7804,104 @@ try {
 		CHART_P1_DashBoardOverviewChart_fd = false;
 	}
 	
-	public static void CreateChart_DashboardOverviewChart_Time_FPA() throws IOException {
-		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
-	    CHART_P1_DashBoardOverviewChart_Time_FPA = ChartFactory.createStackedXYAreaChart("", "Time [s]", "Flight Path Angle [deg] ", CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
-		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Time_FPA.getXYPlot(); 
-	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-	    plot.setRenderer(0, renderer); 
-	    renderer.setSeriesPaint( 0 , labelColor );	
-	    CHART_P1_DashBoardOverviewChart_Time_FPA.setBackgroundPaint(backgroundColor);
-		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
-		plot.getDomainAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelFont(font3);
-		plot.getRangeAxis().setAxisLinePaint(labelColor);
-		plot.getRangeAxis().setLabelPaint(labelColor);
-		plot.getDomainAxis().setLabelPaint(labelColor);
-		plot.getDomainAxis().setAxisLinePaint(labelColor);
-		plot.setForegroundAlpha(0.5f);
-		plot.setBackgroundPaint(backgroundColor);
-		plot.setDomainGridlinePaint(labelColor);
-		plot.setRangeGridlinePaint(labelColor); 
-		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		CHART_P1_DashBoardOverviewChart_Time_FPA.getLegend().setBackgroundPaint(backgroundColor);
-		CHART_P1_DashBoardOverviewChart_Time_FPA.getLegend().setItemPaint(labelColor);
-		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-		//domainAxis.setInverted(true);
-	    double size = 2.0;
-	    double size2 = 1.0;
-	    double delta = size / 2.0;
-	    double delta2 = size2 / 2.0;
-		Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
-		Shape dot2 = new Ellipse2D.Double(-delta2, -delta2, size2, size2);
-		renderer.setSeriesShape(0, dot);
-		renderer.setSeriesShape(1, dot2);
-		
-		JPanel PlotPanel_X43 = new JPanel();
-		PlotPanel_X43.setLayout(new BorderLayout());
-		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
-		PlotPanel_X43.setBackground(backgroundColor);
-	
-		ChartPanel_DashBoardOverviewChart_Time_FPA = new ChartPanel(CHART_P1_DashBoardOverviewChart_Time_FPA);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.setMaximumDrawHeight(50000);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.setMaximumDrawWidth(50000);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.setMinimumDrawHeight(0);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.setMinimumDrawWidth(0);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.setMouseWheelEnabled(true);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.setPreferredSize(new Dimension(900, page1_plot_y));
-	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(0, Color.GRAY, new BasicStroke(0f));
-	    xCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
-	    xCrosshair_DashBoardOverviewChart_Time_FPA.setLabelBackgroundPaint(labelColor);
-	     yCrosshair_DashBoardOverviewChart_Time_FPA = new Crosshair(0, Color.GRAY, new BasicStroke(0f));
-	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelVisible(true);
-	     yCrosshair_DashBoardOverviewChart_Time_FPA.setLabelBackgroundPaint(labelColor);
-	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Time_FPA);
-	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Time_FPA);
-		ChartPanel_DashBoardOverviewChart_Time_FPA.addChartMouseListener(new ChartMouseListener() {
-	        @Override
-	        public void chartMouseClicked(ChartMouseEvent event) {
-	            // ignore
-	        }
-	
-	        @Override
-	        public void chartMouseMoved(ChartMouseEvent event) {
-	            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardOverviewChart_Time_FPA.getScreenDataArea();
-	            JFreeChart chart = event.getChart();
-	            XYPlot plot = (XYPlot) chart.getPlot();
-	            ValueAxis xAxis = plot.getDomainAxis();
-	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-	                    RectangleEdge.BOTTOM);
-	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Time_FPA.setValue(x);
-	            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Time_FPA.setValue(y);
-	        }
-	});
-	    
-	    ChartPanel_DashBoardOverviewChart_Time_FPA.addOverlay(crosshairOverlay);
-	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Time_FPA,BorderLayout.PAGE_START);
-	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
- 	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
- 		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
- 	    }
-	   SpaceShip3DControlPanel.add(ChartPanel_DashBoardOverviewChart_Time_FPA, BorderLayout.PAGE_START);
-	   SpaceShip3DControlPanelContent.add(ChartPanel_DashBoardOverviewChart_Time_FPA);
-	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
-		//jPanel4.validate();	
-		CHART_P1_DashBoardOverviewChart_fd = false;
+	public static void CreateChart_ThirdWindowChart() throws IOException {
+		ChartSetting chartSetting = new ChartSetting();
+		chartSetting.setX(0);
+		chartSetting.setY(6);
+		List<String> variableList = new ArrayList<String>();
+		for(int i=0;i<Axis_Option_NR.length;i++) {
+			variableList.add(Axis_Option_NR[i]);
+		}
+        PlotElement plotElement = new PlotElement(0, variableList, analysisFile, chartSetting);
+        JPanel plotElementPanel = plotElement.createPlotElement(plotElement);
+  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
+  		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
+  	    }
+	   FlexibleChartContentPanel.add(plotElementPanel, BorderLayout.CENTER);
+	   SpaceShip3DControlPanel.add(plotElementPanel, BorderLayout.CENTER);
+	   SpaceShip3DControlPanelContent.add(plotElementPanel);
 	}
 	public static void CreateChart_DashBoardFlexibleChart() throws IOException {
 		//result1.removeAllSeries();
-		try {
-		ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(4,3, ResultSet_FlexibleChart);
-		} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {
+				try {
+				ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(4,3, ResultSet_FlexibleChart);
+				} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {
+					
+				}
+			    //-----------------------------------------------------------------------------------
+			    Chart_DashBoardFlexibleChart = ChartFactory.createScatterPlot("", "", "", ResultSet_FlexibleChart, PlotOrientation.VERTICAL, false, false, false); 
+				XYPlot plot = (XYPlot)Chart_DashBoardFlexibleChart.getXYPlot(); 
+			    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
+			    plot.setRenderer(0, renderer); 
+			    renderer.setSeriesPaint( 0 , labelColor);	
+				Chart_DashBoardFlexibleChart.setBackgroundPaint(backgroundColor);
+				Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
+				plot.getDomainAxis().setLabelFont(font3);
+				plot.getRangeAxis().setLabelFont(font3);
+				plot.getRangeAxis().setLabelPaint(labelColor);
+				plot.getDomainAxis().setLabelPaint(labelColor);
+				plot.setForegroundAlpha(0.5f);
+				plot.setBackgroundPaint(backgroundColor);
+				plot.setDomainGridlinePaint(labelColor);
+				plot.setRangeGridlinePaint(labelColor); 
+				//Chart_DashBoardFlexibleChart.getLegend().setBackgroundPaint(backgroundColor);
+				//Chart_DashBoardFlexibleChart.getLegend().setItemPaint(labelColor);
+				final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
+				rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
+				//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
+				//domainAxis.setInverted(true);
+
+				
+				//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
+			    double size = 2.0;
+			    double delta = size / 2.0;
+				Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
+				renderer.setSeriesShape(0, dot);
+
 			
-		}
-	    //-----------------------------------------------------------------------------------
-	    Chart_DashBoardFlexibleChart = ChartFactory.createScatterPlot("", "", "", ResultSet_FlexibleChart, PlotOrientation.VERTICAL, false, false, false); 
-		XYPlot plot = (XYPlot)Chart_DashBoardFlexibleChart.getXYPlot(); 
-	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-	    plot.setRenderer(0, renderer); 
-	    renderer.setSeriesPaint( 0 , labelColor);	
-		Chart_DashBoardFlexibleChart.setBackgroundPaint(backgroundColor);
-		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
-		plot.getDomainAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelPaint(labelColor);
-		plot.getDomainAxis().setLabelPaint(labelColor);
-		plot.setForegroundAlpha(0.5f);
-		plot.setBackgroundPaint(backgroundColor);
-		plot.setDomainGridlinePaint(labelColor);
-		plot.setRangeGridlinePaint(labelColor); 
-		//Chart_DashBoardFlexibleChart.getLegend().setBackgroundPaint(backgroundColor);
-		//Chart_DashBoardFlexibleChart.getLegend().setItemPaint(labelColor);
-		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-		//domainAxis.setInverted(true);
-
-		
-		//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
-	    double size = 2.0;
-	    double delta = size / 2.0;
-		Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
-		renderer.setSeriesShape(0, dot);
-
-	
-		ChartPanel_DashBoardFlexibleChart = new ChartPanel(Chart_DashBoardFlexibleChart);
-		ChartPanel_DashBoardFlexibleChart.setMaximumDrawHeight(50000);
-		ChartPanel_DashBoardFlexibleChart.setMaximumDrawWidth(50000);
-		ChartPanel_DashBoardFlexibleChart.setMinimumDrawHeight(0);
-		ChartPanel_DashBoardFlexibleChart.setMinimumDrawWidth(0);
-		ChartPanel_DashBoardFlexibleChart.setMouseWheelEnabled(true);
-		//ChartPanel_DashBoardFlexibleChart.setPreferredSize(new Dimension(900, page1_plot_y));
-		ChartPanel_DashBoardFlexibleChart.addChartMouseListener(new ChartMouseListener() {
-	        @Override
-	        public void chartMouseClicked(ChartMouseEvent event) {
-	            // ignore
-	        }
-	
-	        @Override
-	        public void chartMouseMoved(ChartMouseEvent event) {
-	            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
-	            JFreeChart chart = event.getChart();
-	            XYPlot plot = (XYPlot) chart.getPlot();
-	            ValueAxis xAxis = plot.getDomainAxis();
-	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-	                    RectangleEdge.BOTTOM);
-	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            BlueBookVisual.xCH_DashboardFlexibleChart.setValue(x);
-	            BlueBookVisual.yCH_DashboardFlexibleChart.setValue(y);
-	        }
-	});
-	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	    xCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.RED, new BasicStroke(0f));
-	    xCH_DashboardFlexibleChart.setLabelVisible(true);
-	    xCH_DashboardFlexibleChart.setLabelPaint(labelColor);
-	    xCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
-	    yCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	    yCH_DashboardFlexibleChart.setLabelVisible(true);
-	    yCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
-	    crosshairOverlay.addDomainCrosshair(xCH_DashboardFlexibleChart);
-	    crosshairOverlay.addRangeCrosshair(yCH_DashboardFlexibleChart);
-	    ChartPanel_DashBoardFlexibleChart.addOverlay(crosshairOverlay);
-	   //PlotPanel_X44.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.PAGE_START);
-	    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
-	    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
-	   FlexibleChartContentPanel.add(ChartPanel_DashBoardFlexibleChart, BorderLayout.CENTER);
-		//jPanel4.validate();	
-		Chart_DashBoardFlexibleChart_fd = false;
+				ChartPanel_DashBoardFlexibleChart = new ChartPanel(Chart_DashBoardFlexibleChart);
+				ChartPanel_DashBoardFlexibleChart.setMaximumDrawHeight(50000);
+				ChartPanel_DashBoardFlexibleChart.setMaximumDrawWidth(50000);
+				ChartPanel_DashBoardFlexibleChart.setMinimumDrawHeight(0);
+				ChartPanel_DashBoardFlexibleChart.setMinimumDrawWidth(0);
+				ChartPanel_DashBoardFlexibleChart.setMouseWheelEnabled(true);
+				//ChartPanel_DashBoardFlexibleChart.setPreferredSize(new Dimension(900, page1_plot_y));
+				ChartPanel_DashBoardFlexibleChart.addChartMouseListener(new ChartMouseListener() {
+			        @Override
+			        public void chartMouseClicked(ChartMouseEvent event) {
+			            // ignore
+			        }
+			
+			        @Override
+			        public void chartMouseMoved(ChartMouseEvent event) {
+			            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
+			            JFreeChart chart = event.getChart();
+			            XYPlot plot = (XYPlot) chart.getPlot();
+			            ValueAxis xAxis = plot.getDomainAxis();
+			            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
+			                    RectangleEdge.BOTTOM);
+			            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
+			            BlueBookVisual.xCH_DashboardFlexibleChart.setValue(x);
+			            BlueBookVisual.yCH_DashboardFlexibleChart.setValue(y);
+			        }
+			});
+			    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
+			    xCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.RED, new BasicStroke(0f));
+			    xCH_DashboardFlexibleChart.setLabelVisible(true);
+			    xCH_DashboardFlexibleChart.setLabelPaint(labelColor);
+			    xCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
+			    yCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
+			    yCH_DashboardFlexibleChart.setLabelVisible(true);
+			    yCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
+			    crosshairOverlay.addDomainCrosshair(xCH_DashboardFlexibleChart);
+			    crosshairOverlay.addRangeCrosshair(yCH_DashboardFlexibleChart);
+			    ChartPanel_DashBoardFlexibleChart.addOverlay(crosshairOverlay);
+			   //PlotPanel_X44.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.PAGE_START);
+			    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
+			    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
+			   FlexibleChartContentPanel.add(ChartPanel_DashBoardFlexibleChart, BorderLayout.CENTER);
+				//jPanel4.validate();	
+				Chart_DashBoardFlexibleChart_fd = false;
 	}
 
 	public static void Update_DashboardFlexibleChart(){

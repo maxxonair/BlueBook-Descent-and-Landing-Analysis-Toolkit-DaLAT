@@ -9,11 +9,11 @@ public class testScript {
 	 static DataContainer dataContainer = new DataContainer();
 	
 	public static void main(String[] args) {
+		 DataSetXY dataSet =  new DataSetXY();
 		double timeToThrustLevel=2;
 		double OldThrustLevel = 0.36;
 		double CMDThrustLevel = 0.73;
-		for(double timeSinceCMD=0;timeSinceCMD<timeToThrustLevel;timeSinceCMD+=0.01) {
-		 DataSetXY dataSet =  new DataSetXY();	
+		for(double timeSinceCMD=0;timeSinceCMD<timeToThrustLevel;timeSinceCMD+=0.01) {	
 			double y=0;
 			double x=0;
 			if(OldThrustLevel>CMDThrustLevel) {
@@ -31,7 +31,7 @@ public class testScript {
 		
 	dataContainer.setxAxisLabel("time");
 	dataContainer.setyAxisLabel("value");
-	
-	PlotXY.plot(dataContainer);
+	PlotXY plot = new PlotXY();
+	plot.plot(dataContainer);
 	}
 }

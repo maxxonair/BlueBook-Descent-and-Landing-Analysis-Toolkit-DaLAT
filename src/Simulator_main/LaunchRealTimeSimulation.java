@@ -252,7 +252,8 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		createWriteOut(steps);
 	    		if(isPlot) {
 	    		dataContainer.addDataSet(dataSet);
-	    		PlotXY.plot(dataContainer);
+	    		PlotXY plot = new PlotXY();
+	    		plot.plot(dataContainer);
 	    		}
 }
     

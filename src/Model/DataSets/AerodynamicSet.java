@@ -16,6 +16,14 @@ public class AerodynamicSet {
     public   double LiftCoefficient=0;
     public   double SideForceCoefficient=0;
     
+    private double CMx=0;
+    private double CMy=0;
+    private double CMz=0;
+    
+    private double Mx =0;
+    private double My =0;
+    private double Mz =0;
+    
     public double DragCoefficientParachute=0;
     public double DragForceParachute=0;
     
@@ -23,6 +31,42 @@ public class AerodynamicSet {
 
     
     
+	public double getCMx() {
+		return CMx;
+	}
+	public void setCMx(double cMx) {
+		CMx = cMx;
+	}
+	public double getCMy() {
+		return CMy;
+	}
+	public void setCMy(double cMy) {
+		CMy = cMy;
+	}
+	public double getCMz() {
+		return CMz;
+	}
+	public void setCMz(double cMz) {
+		CMz = cMz;
+	}
+	public double getMx() {
+		return Mx;
+	}
+	public void setMx(double mx) {
+		Mx = mx;
+	}
+	public double getMy() {
+		return My;
+	}
+	public void setMy(double my) {
+		My = my;
+	}
+	public double getMz() {
+		return Mz;
+	}
+	public void setMz(double mz) {
+		Mz = mz;
+	}
 	public double getKnudsenNumber() {
 		return KnudsenNumber;
 	}

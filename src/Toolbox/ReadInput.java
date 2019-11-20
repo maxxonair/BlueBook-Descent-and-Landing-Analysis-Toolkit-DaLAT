@@ -200,7 +200,7 @@ double[] readINP = new double[10];
 		fstream.close();
 		in.close();
 		br.close();
-    System.out.println("READ: Integrator setup successful.");
+   // System.out.println("READ: Integrator setup successful.");
     } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Integrator setup read failed.");}
     return readINP;
 }

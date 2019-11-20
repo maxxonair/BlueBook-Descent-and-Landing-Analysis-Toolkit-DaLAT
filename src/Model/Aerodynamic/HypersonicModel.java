@@ -24,17 +24,20 @@ public class HypersonicModel {
     	atmosphereSet.setStaticPressure(1000);
     	atmosphereSet.setStaticTemperature(140);;
     	atmosphereSet.setGasConstant(197);
-    	aerodynamicSet.setAerodynamicAngleOfAttack(20*deg2rad);
+    	aerodynamicSet.setAerodynamicAngleOfAttack(45*deg2rad);
     	aerodynamicSet.setAngleOfSideslip(0*deg2rad);
     	SpaceShip spaceShip = new SpaceShip();
     	spaceShip.getAeroElements().setHeatshieldRadius(2.3);
     	CurrentDataSet currentDataSet = new CurrentDataSet();
     	currentDataSet.settIS(0);
     	HypersonicSet hypersonicSet = hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip, currentDataSet);
-    	System.out.println(hypersonicSet.getCL());
-    	System.out.println(hypersonicSet.getCY());
-    	System.out.println(hypersonicSet.getCD());
-    	System.out.println(hypersonicSet.getLD());
+    	System.out.println("CL:"+hypersonicSet.getCL());
+    	System.out.println("CY:"+hypersonicSet.getCY());
+    	System.out.println("CD:"+hypersonicSet.getCD());
+    	System.out.println("L/D:"+hypersonicSet.getLD());
+    	System.out.println("CMx:"+hypersonicSet.getCMx());
+    	System.out.println("CMy:"+hypersonicSet.getCMy());
+    	System.out.println("CMz:"+hypersonicSet.getCMz());
     }
     
 	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
@@ -56,10 +59,10 @@ public class HypersonicModel {
 	double pinf  = atmosphereSet.getStaticPressure();
 	double Vinfp = atmosphereSet.getMach()*Math.sqrt(atmosphereSet.getGamma()*R*atmosphereSet.getStaticTemperature()); 			// Freestream Velocity [m/s]
 	double qinf  = atmosphereSet.getDynamicPressure();  		// Freestream dynamic pressure
-	double[][] rCG = {{-0.1},{0},{-0.5}};          					// Center of gravity
+	double[][] rCG = {{-0.0},{-0.2},{-0.0 }};          					// Center of Mass
 	//daoa=20;                   					// Angle of Attack [deg]                  				// Angle of side slip [deg]/Do not use Cd when dbeta  
-	double raoa=aerodynamicSet.getAerodynamicAngleOfAttack();           				// Angle of Attack [rad]
-	double rbeta=aerodynamicSet.getAngleOfSideslip();        				 // Angle of side slip [rad]
+	double raoa  = aerodynamicSet.getAerodynamicAngleOfAttack();           	 // Angle of Attack [rad]
+	double rbeta = aerodynamicSet.getAngleOfSideslip();        				 // Angle of side slip [rad]
 	double[][] Vinf= {{Math.sin(raoa)}, {-Math.cos(raoa)*Math.sin(rbeta)}, {Math.cos(raoa)*Math.cos(rbeta)}};     
 	       Vinf=Mathbox.Multiply_Scalar_Matrix(-Vinfp, Vinf); 
 	       Vinf=Mathbox.normalizeVector(Vinf);       // Normalized Surface Velocity Vector 
@@ -71,9 +74,9 @@ public class HypersonicModel {
 	//--------------------------------------------
 	double RN, RC;
 	
-	double[][] Malpha = { {Math.cos(raoa),   0 ,  -Math.sin(raoa) } ,
-						  {0   ,    1   ,   0      },
-						  {Math.sin(raoa) ,  0  , Math.cos(raoa)}};
+	double[][] Malpha = { {Math.cos(raoa) ,    0   ,  -Math.sin(raoa) } ,
+						  {0              ,    1   ,   0              },
+						  {Math.sin(raoa) ,    0   , Math.cos(raoa)   }};
 	
 	double[][] Mbeta =  {{ 1  ,   0             ,    0     }, 
 					     { 0  , Math.cos(rbeta) ,  Math.sin(rbeta) },
@@ -325,6 +328,9 @@ public class HypersonicModel {
 	double nplusx=0;
 	double nplusy=0;
 	double nplusz=0;
+	double nplusMx=0;
+	double nplusMy=0;
+	double nplusMz=0;
 	
 		for(int j=1;j<sit1;j++) {
 			for(int i=1;i<sit2;i++) {
@@ -352,34 +358,34 @@ public class HypersonicModel {
 			} else {
 			nplusz=NCzA[j][i];
 			}
-			/*
-			if (isnan(NMx(j,i,:))) {
+			
+			if (Double.isNaN(NMx[j][i])) {
 			nplusMx=0;
 			} else {
-			nplusMx=NMx(j,i,:);
+			nplusMx=NMx[j][i];
 			}
 			
-			if (isnan(NMy(j,i,:))) {
+			if (Double.isNaN(NMy[j][i])) {
 			nplusMy=0;
 			} else {
-			nplusMy=NMy(j,i,:);
+			nplusMy = NMy[j][i];
 			}
 			
-			if (isnan(NMz(j,i,:))) {
+			if (Double.isNaN(NMz[j][i])) {
 			nplusMz=0;
 			} else {
-			nplusMz=NMz(j,i,:);
+			nplusMz = NMz[j][i];
 			}
-			*/
+			
 			VarACx = VarACx + nplusx;
 			VarACy = VarACy + nplusy;
 			VarACz = VarACz + nplusz;
 			VarACp = VarACp + nplus ;
-			/*
+			
 			VarMx  = VarMx  + nplusMx;
 			VarMy  = VarMy  + nplusMy;
 			VarMz  = VarMz  + nplusMz;
-					*/
+					
 			VarA   = VarA   + NArea[j][i];
 			}
 		}
@@ -405,10 +411,10 @@ public class HypersonicModel {
 		double CL     = - CAer[0][0];
 		double CY     =   CAer[1][0];
 		double CD     =   CAer[2][0];
-		/*
-		double Cmx    = real(VarMx/(qinf*VarA*(2*RB)));
-		double Cmy    = real(VarMy/(qinf*VarA*(2*RB)));
-		double Cmz    = real(VarMz/(qinf*VarA*(2*RB)));
+		
+		double Cmx    = (VarMx/(qinf*VarA*(2*RB)));
+		double Cmy    = (VarMy/(qinf*VarA*(2*RB)));
+		double Cmz    = (VarMz/(qinf*VarA*(2*RB)));
 		
 		//--------------------------------------------
 		if (-1e-8 < Cmx && Cx < 1e-8 ) {
@@ -420,7 +426,7 @@ public class HypersonicModel {
 		if (-1e-8 < Cmz && Cz < 1e-8 ) {
 		Cmz=0;
 		}
-		*/
+		
 		double LD    = CL/CD;
 		//--------------------------------------------------------------------------
 		hypersonicSet.setCA(CA);
@@ -432,6 +438,9 @@ public class HypersonicModel {
 		hypersonicSet.setCy(Cy);
 		hypersonicSet.setCz(Cz);
 		hypersonicSet.setLD(LD);
+		hypersonicSet.setCMx(Cmx);
+		hypersonicSet.setCMy(Cmy);
+		hypersonicSet.setCMz(Cmz);
 		
 	return hypersonicSet;
 	}

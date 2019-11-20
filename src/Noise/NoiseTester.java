@@ -52,7 +52,8 @@ public class NoiseTester {
 		//muSet.addPair(new Pair(k, mu));
 		dataContainer.addDataSet(set2);
 		}
-			PlotXY.plot(dataContainer);
+		PlotXY plot = new PlotXY();
+		plot.plot(dataContainer);
 	}
 	
 

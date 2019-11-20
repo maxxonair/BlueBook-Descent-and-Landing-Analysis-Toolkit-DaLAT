@@ -33,7 +33,7 @@ public class ForceModel {
 		  
 		  double[][] M_total_B     = {{0},{0},{0}};
 		
-		  //double[][] M_Aero_A      = {{0},{0},{0}};
+		  double[][] M_Aero_B      = {{0},{0},{0}};
 		  //double[][] M_Aero_B      = {{0},{0},{0}};
 		  double[][] M_Thrust_B    = {{0},{0},{0}};
 		  
@@ -68,6 +68,12 @@ public class ForceModel {
 	   	F_Aero_A[2][0] = -  aerodynamicSet.getLiftForce()  ;
 	   	
 	   	forceMomentumSet.setF_Aero_A(F_Aero_A);
+	   	
+	   	M_Aero_B[0][0] = aerodynamicSet.getMx(); 
+	   	M_Aero_B[1][0] = aerodynamicSet.getMy();
+	   	M_Aero_B[2][0] = aerodynamicSet.getMz();
+	   	
+	   	forceMomentumSet.setM_Aero_B(M_Aero_B);
     	//-------------------------------------------------------------------------------------------------------------------
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
@@ -90,7 +96,7 @@ public class ForceModel {
 	    M_Thrust_B[1][0] = actuatorSet.getMomentumRCS_Y_is();
 	   	M_Thrust_B[2][0] = actuatorSet.getMomentumRCS_Z_is();
 	   	
-	   	M_total_B = M_Thrust_B;
+	   	M_total_B = Mathbox.Addup_Matrices(M_Thrust_B , M_Aero_B);
 	   	//System.out.println(actuatorSet.getMomentumRCS_Y_is());
 	   	if(Math.abs(M_total_B[0][0])>0) {
 	   		forceMomentumSet.setRCSThrustX(spaceShip.getPropulsion().getSecondaryThrust_RCS_X()*Math.abs(controlCommandSet.getMomentumRCS_X_cmd()));

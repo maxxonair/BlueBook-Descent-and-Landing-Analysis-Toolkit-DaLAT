@@ -30,7 +30,10 @@ public class AerodynamicModel {
 		
 		
 		AerodynamicSet aerodynamicSet = new AerodynamicSet();
-		aerodynamicSet.setCdC(get_CdC(atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet));                           							// Continuum flow drag coefficient [-]
+		
+		getAerodynamicCoefficients(atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet); 
+		
+		
 		aerodynamicSet.setDragCoefficient(calcDrag(atmosphereSet, currentDataSet, aerodynamicSet, spaceShip, integratorData)); 		    	// Lift coefficient                [-]
 		//-----------------------------------------------------------------------------------------------
 		aerodynamicSet.setDragForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getDragCoefficient());  		// Aerodynamic drag Force 		   [N]
@@ -67,21 +70,27 @@ public class AerodynamicModel {
 			aerodynamicSet.setDragCoefficientParachute(0.0);
 			aerodynamicSet.setDragForceParachute(0);	
 		}
+		//-----------------------------------------------------------------------------------------------
+		double referenceLength = 1;
+		aerodynamicSet.setMx(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMx());  		
+		aerodynamicSet.setMy(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMy());              
+		aerodynamicSet.setMz(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMz()); 	                 
+		//----------------------------------------------------------------------------------------------
 		return aerodynamicSet;
 	}
 	
 
 	//----------------------------------------------------------------------------------------------------------------------------
 	//
-//	                                        Calculate Drag with three flowzone approach
-//	                                      Free molecular -> transitional -> Contiuum flow
+	//	                                        Calculate Drag with three flowzone approach
+	//	                                      Free molecular -> transitional -> Contiuum flow
 	//
 	//----------------------------------------------------------------------------------------------------------------------------
 	public static double calcDrag(AtmosphereSet atmosphereSet, CurrentDataSet currentDataSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData)
 	{
 	double CD = 0;
 		if(atmosphereSet.getDensity()!=0) {
-				double CDC=get_CdC( atmosphereSet,  aerodynamicSet,  spaceShip, integratorData, currentDataSet);
+				double CDC=aerodynamicSet.getCdC();
 				//System.out.println(currentDataSet.gettIS()+"|"+CDC);
 				//double Lt = read_data(file_cship,2);
 				double Kn = kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * PI * sigma * sigma * atmosphereSet.getStaticPressure() * 1 );
@@ -110,19 +119,25 @@ public class AerodynamicModel {
 	}
 	//----------------------------------------------------------------------------------------------------------------------------
 
-	public static double get_CdC(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData, CurrentDataSet currentDataSet){
+	public static double getAerodynamicCoefficients(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData, CurrentDataSet currentDataSet){
 		double CdC = 1.55 ; 
-		
 		if(integratorData.getAeroDragModel()==0) {
 			 CdC = 1.55 ; 
 		} else if (integratorData.getAeroDragModel()==1) {
 		    	HypersonicSet hypersonicSet = HypersonicModel.hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip, currentDataSet);
 		    	CdC = hypersonicSet.getCD();
+		    	aerodynamicSet.setLiftCoefficient(hypersonicSet.getCL());
+		    	aerodynamicSet.setSideForceCoefficient(hypersonicSet.getCY());
+		    	
+		    	aerodynamicSet.setCMx(hypersonicSet.getCMx());
+		    	aerodynamicSet.setCMy(hypersonicSet.getCMy());
+		    	aerodynamicSet.setCMz(hypersonicSet.getCMz());
 		}
 		
-		
+		aerodynamicSet.setCdC(CdC);
 		return CdC; 
 	}
+	
 	
 	private static double getParachuteDeploymentMode(double timeSinceMortar, double timeToFullDeployment) {
 		if(timeSinceMortar<timeToFullDeployment) {

@@ -1,5 +1,11 @@
-/Controller/
-/FlightElement/
 /GUI/
 /Model/
+/NeuralNetwork/
+/Noise/
+/NoiseSet/
+/Plotter/
+/Sequence/
 /Simulator_main/
+/TestAndVerification/
+/Toolbox/
+/VisualEngine/
