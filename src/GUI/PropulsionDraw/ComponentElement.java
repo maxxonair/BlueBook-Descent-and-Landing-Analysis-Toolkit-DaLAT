@@ -24,7 +24,6 @@ public class ComponentElement extends JComponent {
 	 */
 	private static final long serialVersionUID = 1L;
 	
-	
   private volatile int screenX = 0;
   private volatile int screenY = 0;
   private volatile int myX = 0;
@@ -47,13 +46,25 @@ public class ComponentElement extends JComponent {
   
   private boolean isImage=true;
   
+  private Canvas canvas;
+  
+  JLabel labelElement;
+  
   JPanel background;
 
-  public  ComponentElement(String imageFilePath) {
+  public  ComponentElement(String imageFilePath, Canvas canvas) {
+	  
+	  this.canvas=canvas;
 	
     setBounds(0, 0, sizeX, sizeY);
     setLayout(new BorderLayout());
     setOpaque(false);
+    
+    labelElement = new JLabel("Element");
+    labelElement.setSize(150, 25);
+    labelElement.setForeground(Color.WHITE);
+    labelElement.setHorizontalAlignment(JLabel.CENTER);
+    add(labelElement, BorderLayout.PAGE_START);
     
     
     if(isImage) {
@@ -116,9 +127,9 @@ public class ComponentElement extends JComponent {
 	        posY = myY + deltaY;
 	       // System.out.println(posX+"|"+posY);
 	        
-	        Point cPoint = DrawTest.Canvas.getLocation();
-	        Point fPoint = DrawTest.getFrame().getLocation();
-	        Dimension cSize = DrawTest.Canvas.getSize();
+	        Point cPoint = canvas.getLocation();
+	        Point fPoint = new Point(0,0);
+	        Dimension cSize = canvas.getSize();
 	        int fx = (int) fPoint.getX();
 	        int fy = (int) fPoint.getY();
 	        int cx = (int) - cPoint.getX();
@@ -152,19 +163,8 @@ public class ComponentElement extends JComponent {
 			        }
 	        }
 	        setLocation(posIsX, posIsY);
-    	  } else if(e.getButton()==2) {
-    		  /*
-    		  Dimension size = getSize();
-    		  int sizeX = (int) size.getWidth();
-    		  int sizeY = (int) size.getHeight();
-    		  
-  	        int deltaX = e.getXOnScreen() - screenX;
-  	        int deltaY = e.getYOnScreen() - screenY;
-    		  setSize(sizeX+deltaX, sizeY+deltaY);
-    		  background.setSize(sizeX+deltaX, sizeY+deltaY);
-
-    		  */
-    	  }
+	        canvas.repaint();
+    	  } 
 
       }
 
@@ -174,6 +174,26 @@ public class ComponentElement extends JComponent {
     });
     grabFocus();
   }
+  
+  
+
+public Canvas getCanvas() {
+	return canvas;
+}
+
+public void setName(String name) {
+	labelElement.setText(""+name);
+	labelElement.repaint();
+	repaint();
+}
+
+public void setCanvas(Canvas canvas) {
+	this.canvas = canvas;
+}
+
+public void setElementName(String name) {
+	labelElement.setText(name);
+}
 
 public int getPosX() {
 	return posX;

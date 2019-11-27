@@ -113,6 +113,7 @@ import GUI.FxElements.SpaceShipView3DFrontPage;
 import GUI.FxElements.TargetView3D;
 import GUI.FxElements.TargetWindow;
 import GUI.PostProcessing.CreateCustomChart;
+import GUI.PropulsionDraw.PropulsionDrawEditor;
 import GUI.Settings.Settings;
 import Toolbox.TextAreaOutputStream;
 import Toolbox.Mathbox;
@@ -1144,7 +1145,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 					   SplitPane_Page1_Charts_vertical.setDividerLocation(500);
 					   thirdWindowIndx=0;
 					} catch (IOException e1) {
-					     System.err.println("Error: Thrid window could not be creaeted");
+					     System.err.println("Error: Thrid window could not be created");
 					}
                     } });
         thirdWindow.add(menuItem);
@@ -3840,7 +3841,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			     // propulsionInputPanel.setSize(SidePanel_Width, 350);
 			      propulsionInputPanel.setBackground(backgroundColor);
 			      propulsionInputPanel.setForeground(labelColor);
-			      propulsionInputPanel.setLayout(null);
+			      propulsionInputPanel.setLayout(new BorderLayout());
 			      
 			      JPanel guidanceNavigationAndControlPanel = new JPanel();
 			     // propulsionInputPanel.setLocation(0, uy_p41 + 26 * 38 );
@@ -4236,19 +4237,25 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		        //                         Propulsion Definition Block
 		        //--------------------------------------------------------------------------------------------- 
 		      
-		      
-		        String path4 = "images/propulsionSystem.jpg";
-		        File file4 = new File(path4);
-		        try {
-		        BufferedImage image4 = ImageIO.read(file4);
-		        JLabel label3 = new JLabel(new ImageIcon(image4));
-		        label3.setSize(690,550);
-		        label3.setLocation(435, 5);
-		       // label3.setBorder(Moon_border);
-		        propulsionInputPanel.add(label3);
-		        } catch (Exception e) {
-		        	System.err.println("Error: Propulsion Setup - could not load image");
-		        }
+			        JPanel propulsionSidePanel = new JPanel();
+			        propulsionSidePanel.setPreferredSize(new Dimension(400, 800));
+			        propulsionSidePanel.setBackground(backgroundColor);
+			        propulsionSidePanel.setLayout(null);
+			        propulsionInputPanel.add(propulsionSidePanel, BorderLayout.EAST);
+			        
+			        
+			    PropulsionDrawEditor propulsionDrawEditior = new PropulsionDrawEditor();
+		        JPanel PropulsionEditor = propulsionDrawEditior.getPropulsionDrawArea();
+		        //PropulsionEditor.setSize(600, 500);
+		        //PropulsionEditor.setLocation(400, 30);
+		        PropulsionEditor.addComponentListener(new ComponentAdapter() 
+		        {  
+		            public void componentResized(ComponentEvent evt) {
+		            	propulsionDrawEditior.getCanvas().resizeBackgroundImage();
+		            }
+		    });
+		        propulsionInputPanel.add(PropulsionEditor, BorderLayout.CENTER);
+		        
 		      
 		      JLabel LABEL_PrimarySettings = new JLabel("Primary Propulsion System Settings");
 		      LABEL_PrimarySettings.setLocation(0, uy_p41 + 25 * 3 );
@@ -4257,7 +4264,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      LABEL_PrimarySettings.setForeground(labelColor);
 		      LABEL_PrimarySettings.setFont(HeadlineFont);
 		      LABEL_PrimarySettings.setHorizontalAlignment(JLabel.LEFT);
-		      propulsionInputPanel.add(LABEL_PrimarySettings);
+		      propulsionSidePanel.add(LABEL_PrimarySettings);
 		      
 		      
 		      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
@@ -4265,39 +4272,39 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		      LABEL_ME_ISP.setSize(300, 20);
 		      LABEL_ME_ISP.setBackground(backgroundColor);
 		      LABEL_ME_ISP.setForeground(labelColor);
-		      propulsionInputPanel.add(LABEL_ME_ISP);
+		      propulsionSidePanel.add(LABEL_ME_ISP);
 		      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
 		      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 5);
 		      LABEL_ME_PropMass.setSize(300, 20);
 		      LABEL_ME_PropMass.setBackground(backgroundColor);
 		      LABEL_ME_PropMass.setForeground(labelColor);
-		      propulsionInputPanel.add(LABEL_ME_PropMass);
+		      propulsionSidePanel.add(LABEL_ME_PropMass);
 		      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
 		      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
 		      LABEL_ME_Thrust_max.setSize(300, 20);
 		      LABEL_ME_Thrust_max.setBackground(backgroundColor);
 		      LABEL_ME_Thrust_max.setForeground(labelColor);
-		      propulsionInputPanel.add(LABEL_ME_Thrust_max);
+		      propulsionSidePanel.add(LABEL_ME_Thrust_max);
 		      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
 		      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
 		      LABEL_ME_Thrust_min.setSize(300, 20);
 		      LABEL_ME_Thrust_min.setBackground(backgroundColor);
 		      LABEL_ME_Thrust_min.setForeground(labelColor);
-		      propulsionInputPanel.add(LABEL_ME_Thrust_min);
+		      propulsionSidePanel.add(LABEL_ME_Thrust_min);
 		      
 		      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
 		      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
 		      LABEL_ME_ISP_Model.setSize(300, 20);
 		      LABEL_ME_ISP_Model.setBackground(backgroundColor);
 		      LABEL_ME_ISP_Model.setForeground(labelColor);
-		      propulsionInputPanel.add(LABEL_ME_ISP_Model);
+		      propulsionSidePanel.add(LABEL_ME_ISP_Model);
 		      
 		      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
 		      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 9 );
 		      LABEL_ME_ISP_min.setSize(300, 20);
 		      LABEL_ME_ISP_min.setBackground(backgroundColor);
 		      LABEL_ME_ISP_min.setForeground(labelColor);
-		      propulsionInputPanel.add(LABEL_ME_ISP_min);
+		      propulsionSidePanel.add(LABEL_ME_ISP_min);
 		     
 			 
 		      INPUT_ISP = new JTextField(10){
@@ -4327,7 +4334,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				}
 		    	  
 		      });
-		      propulsionInputPanel.add(INPUT_ISP);
+		      propulsionSidePanel.add(INPUT_ISP);
 		     INPUT_PROPMASS = new JTextField(10){
 				    /**
 					 * 
@@ -4355,7 +4362,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				}
 		   	  
 		     });
-		     propulsionInputPanel.add(INPUT_PROPMASS);        
+		     propulsionSidePanel.add(INPUT_PROPMASS);        
 		     INPUT_THRUSTMAX = new JTextField(10){
 				    /**
 					 * 
@@ -4383,7 +4390,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				}
 		   	  
 		     });
-		     propulsionInputPanel.add(INPUT_THRUSTMAX);
+		     propulsionSidePanel.add(INPUT_THRUSTMAX);
 		     INPUT_THRUSTMIN = new JTextField(10){
 				    /**
 					 * 
@@ -4411,7 +4418,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				}
 		   	  
 		     });
-		     propulsionInputPanel.add(INPUT_THRUSTMIN);
+		     propulsionSidePanel.add(INPUT_THRUSTMIN);
 		     
 		     INPUT_ISPMODEL = new JCheckBox(){
 				    /**
@@ -4434,7 +4441,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		       	 }
 		                  });
 		     INPUT_ISPMODEL.setHorizontalAlignment(0);
-		     propulsionInputPanel.add(INPUT_ISPMODEL);
+		     propulsionSidePanel.add(INPUT_ISPMODEL);
 		     
 		     
 		     INPUT_ISPMIN = new JTextField(10){
@@ -4464,7 +4471,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				}
 		   	  
 		     });
-		     propulsionInputPanel.add(INPUT_ISPMIN);
+		     propulsionSidePanel.add(INPUT_ISPMIN);
 		     
 		        
 				JPanel RCSPanel = new JPanel();
@@ -4472,7 +4479,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 				RCSPanel.setBackground(backgroundColor);
 				RCSPanel.setSize(400, 350);
 				RCSPanel.setLayout(null);
-				propulsionInputPanel.add(RCSPanel);
+				propulsionSidePanel.add(RCSPanel);
 				
 		      JLabel LABEL_RCSSettings = new JLabel("Reaction Control System Settings");
 		      LABEL_RCSSettings.setLocation(0, uy_p41 + 10 * 0  );

@@ -10,7 +10,6 @@ import java.awt.image.BufferedImage;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
-import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
 class ButtonElement extends JComponent {
@@ -39,17 +38,26 @@ class ButtonElement extends JComponent {
 		        add(label, BorderLayout.CENTER);      
 	    } else {
 	    	setBorder(new LineBorder(Color.BLACK, 1));
-	        JPanel background = new JPanel();
+	    	JLabel background = new JLabel();
 			Color color = new Color((int) (Math.random()*255),
 					(int) (Math.random()*255), 
 					(int) (Math.random()*255));
 	        background.setBackground(color);
+	        background.setForeground(color);
 	        add(background, BorderLayout.CENTER);
 	    }
 
 	}
+	
+	
 	  
-	  static Image getScaledImage(Image srcImg, int w, int h){
+	  public void setImage(boolean isImage) {
+		this.isImage = isImage;
+	}
+
+
+
+	static Image getScaledImage(Image srcImg, int w, int h){
 		    BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
 		    Graphics2D g2 = resizedImg.createGraphics();
 
