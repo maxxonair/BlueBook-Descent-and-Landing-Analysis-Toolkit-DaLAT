@@ -35,6 +35,12 @@ The GUI is designed to simplify pre- and postprocessing work and allow to set up
 
 The image shows the simulation input section to prepare a simulation. For more clarity this section is devided in subtabs. The shown basic setup section allows to setup the initial state of the spacecraft including position, velocity and attitude  vectors. Furthermore settings concerning the integration method, the used coordinate systems and the time resolution can be made here. 
 
+To model the propulsion sub-system a graphical block modelling approach is currently tested. The editor library for this has been developed for this GUI. 
+
+![Github GUI7](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage7.png)
+
+The image shows a simple propulsion system setup created with this editor. 
+
 3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations (using the SIM module) with user inputs (pilot in the loop). The VE is currently in early development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
 
 ![Github VisualEngine](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/VisualEngine.png)
