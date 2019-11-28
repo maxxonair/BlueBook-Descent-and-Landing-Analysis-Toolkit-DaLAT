@@ -92,14 +92,15 @@ public class ReadWrite {
 		       		int x = Integer.parseInt(tokens[3]);
 		       		int y = Integer.parseInt(tokens[4]);
 		       		UUID ID = UUID.fromString(tokens[5]);
-		       		//System.out.println(name+"|"+type+"|"+x);
+		       		//System.out.println(name+"|"+x+"|"+y);
 		       	    boxElement = canvas.addElement(this, type, ID);
 		       		boxElement.getElement().setLocation(x, y);
+		       		((ComponentElement) boxElement.getElement()).updatePosition(x, y);
 		       		boxElement.setName(name);
 		       		boxElement.getMetaFile().setName(name);
 		       		boxElement.getMetaFile().setID(ID);
 		       		} catch (ArrayIndexOutOfBoundsException e) {
-		       			
+		       			System.out.println("ERROR: Reading Element Head failed.");
 		       		}
 		       	} else if(tokens[0].equals(relationElementIdentifier)){
 		       		// Relationship detected: 

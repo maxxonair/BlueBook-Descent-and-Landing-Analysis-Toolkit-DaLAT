@@ -38,8 +38,24 @@ class ElementPopUpMenu extends JPopupMenu {
         add(anItem2);
         addSeparator();
         //----------------------------------------------------------------
+        JMenuItem anItem3 = new JMenuItem("Clone Element");
+        anItem3.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				int type = boxElement.getMetaFile().getElementType();
+				canvas.cloneElement(canvas.getReadWrite(),  type,  boxElement);
+		    	  canvas.getReadWrite().writeFile();
+			}
+        	
+        });
+        add(anItem3);
+        addSeparator();
+        //----------------------------------------------------------------
         ButtonGroup buttonGroup = new ButtonGroup();
         JMenu addLink = new JMenu("Add link with");
+        @SuppressWarnings("unused")
+		MenuScroller setScrollerFor = new MenuScroller(addLink,40);
         List<JRadioButtonMenuItem> menuItems = new ArrayList<>();
         for(int i=0;i<canvas.getCanvasElements().size();i++) {
 	        menuItems.add(new JRadioButtonMenuItem(""+canvas.getCanvasElements().get(i).getName()));
@@ -80,12 +96,7 @@ class ElementPopUpMenu extends JPopupMenu {
 					         for(int j=0;j<relationships.size();j++) {
 					            				UUID parentID = relationships.get(j).getParent().getMetaFile().getID();
 					            				UUID childID = relationships.get(j).getChild().getMetaFile().getID();
-					            				System.out.println(thisID+"|"+partnerID);
-					            				System.out.println(parentID+"|"+childID);
-					            				System.out.println("-----------------------------------");
 					        					if(parentID.equals(thisID) && childID.equals(partnerID) || parentID.equals(partnerID) && childID.equals(thisID) ) {
-					        						
-					        						System.out.println("delete "+relationships.get(j).getParent().getName());
 					        						relationships.remove(j);	
 					        					}
 					            	}

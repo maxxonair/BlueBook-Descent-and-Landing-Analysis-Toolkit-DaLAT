@@ -80,7 +80,7 @@ public class ComponentMetaFile {
 		updateMetaDataLine(elementMetaList,  name,  value);
 	}
 
-	protected List<MetaDataLine> updateMetaDataLine(List<MetaDataLine> list, String name, String value) {
+	public List<MetaDataLine> updateMetaDataLine(List<MetaDataLine> list, String name, String value) {
 		boolean lineExists=false;
 		//System.out.println("update file");
 		for (MetaDataLine line : list) {
@@ -104,6 +104,10 @@ public class ComponentMetaFile {
 
 	public void setID(UUID iD) {
 		ID = iD;
+	}
+
+	public void setElementMetaList(List<MetaDataLine> elementMetaList) {
+		this.elementMetaList = elementMetaList;
 	}
 	
 	

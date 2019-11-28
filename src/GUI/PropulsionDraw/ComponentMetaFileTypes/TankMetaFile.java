@@ -1,6 +1,8 @@
 package GUI.PropulsionDraw.ComponentMetaFileTypes;
 
 
+import java.util.List;
+
 import GUI.PropulsionDraw.ReadWrite;
 
 public class TankMetaFile extends ComponentMetaFile {
@@ -33,6 +35,28 @@ public class TankMetaFile extends ComponentMetaFile {
 		return volume;
 	}
 
+	protected void readMetaList() {
+		List<MetaDataLine> list = super.getElementMetaList();
+		for(MetaDataLine line : list) {
+			if(line.name.equals("Propellant [-]")) {
+				propellantType = line.value;
+			} else if (line.name.equals("Volume [litre]")) {
+				volume = Double.parseDouble(line.value);
+			} else if (line.name.equals("Current Pressure [Pa]")) {
+				pressureIs = Double.parseDouble(line.value);
+			} else if (line.name.equals("Operating Pressure [Pa]")) {
+				operatingPressure = Double.parseDouble(line.value);
+			} else if (line.name.equals("MEOP [Pa]")) {
+				MEOP = Double.parseDouble(line.value);
+			} else if (line.name.equals("Mean Temp. [K]")) {
+				meanTemperature = Double.parseDouble(line.value);
+			} else if (line.name.equals("Propellant Capacity [kg]")) {
+				propellantMassCapacity = Double.parseDouble(line.value);
+			} else if (line.name.equals("Filling Level [kg]")) {
+				fillingLevel = Double.parseDouble(line.value);
+			} 
+		}
+	}
 	
 	public void setVolume(double volume) {
 		this.volume = volume;

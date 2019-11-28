@@ -178,10 +178,10 @@ public JPanel getPropulsionDrawArea() {
     		
     
     JPanel OperatorPanel = new JPanel();
-    OperatorPanel.setSize(500, 200);
-    OperatorPanel.setLocation(0, 0);
+    //OperatorPanel.setSize(500, 200);
+   // OperatorPanel.setLocation(0, 0);
     //OperatorPanel.setBackground(BlueBookVisual.getBackgroundColor());
-    OperatorPanel.setLayout(new GridLayout(14,1));
+    OperatorPanel.setLayout(new GridLayout(10,2));
     
     JScrollPane scrollPane = new JScrollPane(OperatorPanel, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
             JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);

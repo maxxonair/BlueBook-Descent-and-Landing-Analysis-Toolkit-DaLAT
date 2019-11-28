@@ -15,7 +15,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.border.LineBorder;
 
 import GUI.PropulsionDraw.ComponentMetaFileTypes.ComponentMetaFile;
 
@@ -46,7 +45,6 @@ public class ComponentElement extends JComponent {
   private int sizeX = 100;
   private int sizeY = 100;
   
-  private boolean isImage=true;
   
   private Canvas canvas;
   
@@ -54,11 +52,15 @@ public class ComponentElement extends JComponent {
   
   JPanel background;
   JComponent component;
+  
+  private JLabel label;
+  private String imageFilePath;
 
   public  ComponentElement(String imageFilePath, Canvas canvas) {
 	  
 	  this.canvas=canvas;
 	  this.component = this;
+	  this.imageFilePath=imageFilePath;
 	
     setBounds(0, 0, sizeX, sizeY);
     setLayout(new BorderLayout());
@@ -70,23 +72,13 @@ public class ComponentElement extends JComponent {
     labelElement.setHorizontalAlignment(JLabel.CENTER);
     add(labelElement, BorderLayout.PAGE_START);
     
-    
-    if(isImage) {
         ImageIcon image;
 			image = new ImageIcon(imageFilePath,"");
 			image = new ImageIcon(getScaledImage(image.getImage(),sizeX,sizeY));
-	        JLabel label = new JLabel(image);
-	        add(label, BorderLayout.CENTER);      
-    } else {
-    	setBorder(new LineBorder(Color.BLACK, 1));
-        JPanel background = new JPanel();
-		Color color = new Color((int) (Math.random()*255),
-				(int) (Math.random()*255), 
-				(int) (Math.random()*255));
-        background.setBackground(color);
-        add(background, BorderLayout.CENTER);
-    }
-
+	         label = new JLabel(image);
+	        add(label, BorderLayout.CENTER);
+	        
+    
     addMouseListener(new MouseListener() {
 
       @Override
@@ -219,7 +211,21 @@ public void setPosY(int posY) {
 	this.posY = posY;
 }
 
-private void updatePosition(int x, int y) {
+public void resizeElement(int x, int y) {
+	sizeX = x;
+	sizeY = y;
+	setSize(x,y);
+	this.remove(label);
+    ImageIcon image;
+		image = new ImageIcon(imageFilePath,"");
+		image = new ImageIcon(getScaledImage(image.getImage(),x,y));
+         label = new JLabel(image);
+        add(label, BorderLayout.CENTER);
+	repaint();
+}
+
+
+public void updatePosition(int x, int y) {
 	for(BoxElement element : canvas.getCanvasElements()) {
 		if(component==element.getElement()) {
 			ComponentMetaFile file = element.getMetaFile();

@@ -3,7 +3,6 @@ package GUI.PropulsionDraw;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.EventQueue;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -18,7 +17,6 @@ import java.util.List;
 import java.util.UUID;
 
 import javax.swing.ImageIcon;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import GUI.PropulsionDraw.Relationship;
@@ -152,7 +150,7 @@ public class Canvas extends JPanel {
 	public List<Relationship> getRelationships() {
 		return relationships;
 	}
-
+/*
     public static void main(String[] args) {
         EventQueue.invokeLater(new Runnable() {
             @Override
@@ -167,7 +165,7 @@ public class Canvas extends JPanel {
             }
         });
     }
-    
+    */
     public void linkReadWrite(ReadWrite readWrite) {
     	this.readWrite = readWrite;
     }
@@ -185,9 +183,10 @@ public class Canvas extends JPanel {
          repaint();
     }
     
-    public BoxElement addElement(ReadWrite readWrite, int type) {
+    public BoxElement addElement(ReadWrite readWrite, int type) { // new element -> new ID
   	  BoxElement newElement = new BoxElement(partsCatalogue.getList().get(type).getName(), 
   			  partsCatalogue.getList().get(type).getLogoFilePath(), this, readWrite);
+  	checkCustomResize( newElement,  type);
   	  newElement.setName(partsCatalogue.getList().get(type).getName());
   	  ComponentMetaFile metaFile =  createMetaFile(type, readWrite);
   	  metaFile.setID(UUID.randomUUID());
@@ -198,9 +197,10 @@ public class Canvas extends JPanel {
     		return newElement;
     }
     
-    public BoxElement addElement(ReadWrite readWrite, int type, UUID ID) {
+    public BoxElement addElement(ReadWrite readWrite, int type, UUID ID) { // exisiting element with given ID
     	  BoxElement newElement = new BoxElement(partsCatalogue.getList().get(type).getName(), 
     			  partsCatalogue.getList().get(type).getLogoFilePath(), this, readWrite);
+    	  		checkCustomResize( newElement,  type);
     	  	 newElement.setName(partsCatalogue.getList().get(type).getName());
       	  ComponentMetaFile metaFile = createMetaFile(type, readWrite);
       	  metaFile.setID(UUID.randomUUID());
@@ -211,10 +211,44 @@ public class Canvas extends JPanel {
       		return newElement;
       }
     
+    public BoxElement cloneElement(ReadWrite readWrite, int type, BoxElement boxElement) { // new element -> new ID
+    	String name = boxElement.getMetaFile().getName()+" Clone";
+    	  BoxElement newElement = new BoxElement(name, 
+    			  partsCatalogue.getList().get(type).getLogoFilePath(), this, readWrite);
+    	  
+    	  //((ComponentElement) newElement.getElement()).setPosX(boxElement.getElement().getX()+100);
+    	  //((ComponentElement) newElement.getElement()).setPosY(boxElement.getElement().getY());
+    	  
+    	  checkCustomResize( newElement,  type);
+    	  //newElement.setName(partsCatalogue.getList().get(type).getName());
+    	  ComponentMetaFile metaFile =  createMetaFile(type, readWrite);
+    	  metaFile.setID(UUID.randomUUID());
+    	  metaFile.setName(name);
+    	  metaFile.setPositionX(boxElement.getElement().getX()+100);
+    	  metaFile.setPositionY(boxElement.getElement().getY());
+    	  metaFile.setElementMetaList(boxElement.getMetaFile().getElementMetaList());
+    	  metaFile.updateMetaDataLine(metaFile.getElementMetaList(), "Name", name);
+    	  newElement.setMetaFile(metaFile);
+    	  addMainEngine(newElement, boxElement.getElement().getX()+100, boxElement.getElement().getY());
+      		repaint();
+      		return newElement;
+      }
+    
     
     public ReadWrite getReadWrite() {
 		return readWrite;
 	}
+    
+    public BoxElement checkCustomResize(BoxElement element, int type) {
+    	
+    	if(type==16) {// Joint
+    		 ((ComponentElement) element.getElement()).resizeElement(20, 25);
+    	} else if (type == 4) { // tank 
+    		//((ComponentElement) element.getElement()).resizeElement(150, 150);
+    	}
+    	
+    	return element;
+    }
 
 	static Image getScaledImage(Image srcImg, int w, int h){
     	try {

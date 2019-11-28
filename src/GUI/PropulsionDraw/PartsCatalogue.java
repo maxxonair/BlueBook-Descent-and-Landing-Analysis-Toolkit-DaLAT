@@ -30,6 +30,7 @@ public class PartsCatalogue {
 
 	private  String imagePressureTransducer = "images/propulsionElements/pressureTransducer.png";
 	private  String imagePipeElement = "images/propulsionElements/pipeElement.png";
+	private  String imageJoint = "images/propulsionElements/joint.png";
 	
 	public PartsCatalogue(ReadWrite readWrite) {
 		list = new ArrayList<>();
@@ -53,6 +54,7 @@ public class PartsCatalogue {
 		list.add(new CatalogueElement("BurstDisk",null,imageBurstDisk));
 		list.add(new CatalogueElement("PressureTransducer",null,imagePressureTransducer));
 		list.add(new CatalogueElement("PipeElement",null,imagePipeElement));
+		list.add(new CatalogueElement(" ",null,imageJoint));
 	}
 
 	public List<CatalogueElement> getList() {
