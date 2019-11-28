@@ -4148,7 +4148,7 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 			      LABEL_IYZ.setHorizontalAlignment(0);
 			      InertiaMatrixPanel.add(LABEL_IYZ);
 		        
-		         INPUT_IZX = new JTextField();
+		        INPUT_IZX = new JTextField();
 		        INPUT_IZX.setLocation(gap_size_x+(box_size_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_y)*2);
 		        INPUT_IZX.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 		        INPUT_IZX.setBorder(Moon_border);

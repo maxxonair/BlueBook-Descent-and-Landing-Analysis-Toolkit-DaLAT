@@ -1,24 +1,23 @@
 package GUI.PropulsionDraw;
 
 
-import javax.swing.JComponent;
 
 
 public class Relationship {
 
-    private JComponent parent;
-    private JComponent child;
+    private BoxElement parent;
+    private BoxElement child;
 
-    public Relationship(JComponent parent, JComponent child) {
+    public Relationship(BoxElement parent, BoxElement child) {
         this.parent = parent;
         this.child = child;
     }
 
-    public JComponent getChild() {
+    public BoxElement getChild() {
         return child;
     }
 
-    public JComponent getParent() {
+    public BoxElement getParent() {
         return parent;
     }
 

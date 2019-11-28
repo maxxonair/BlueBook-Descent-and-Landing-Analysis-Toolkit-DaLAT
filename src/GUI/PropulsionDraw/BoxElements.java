@@ -21,11 +21,9 @@ class BoxElement{
 	
 	private ElementPopUpMenu menu ;
 	
-	public BoxElement(String name, String imageFilePath, Canvas canvas) {
+	public BoxElement(String name, String imageFilePath, Canvas canvas, ReadWrite readWrite) {
 		this.name = name ; 
 		boxElement = this;
-		int ID = canvas.getCanvasElements().size();
-		metaFile = new ComponentMetaFile(ID);
 		
 		element = new ComponentElement(imageFilePath, canvas);
 		element.addMouseListener(new PopClickListener() {
@@ -42,11 +40,7 @@ class BoxElement{
 
 		    private void doPop(MouseEvent e) {
 		    	    menu = new ElementPopUpMenu(element, canvas, boxElement);
-
-		    	    for(BoxElement element : canvas.getCanvasElements()) {
-		    	    	System.out.println(element.getName());
-		    	    }
-		    	    
+		    	   
 		        menu.show(e.getComponent(), e.getX(), e.getY());
 		    }
 		});
@@ -83,6 +77,7 @@ class BoxElement{
 
 	public void setMetaFile(ComponentMetaFile metaFile) {
 		this.metaFile = metaFile;
+		setName(metaFile.getName());
 	}
 
 

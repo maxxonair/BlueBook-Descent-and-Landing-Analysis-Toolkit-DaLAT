@@ -15,13 +15,17 @@ import java.awt.geom.Point2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import javax.swing.ImageIcon;
-import javax.swing.JComponent;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import GUI.PropulsionDraw.Relationship;
+import GUI.PropulsionDraw.ComponentMetaFileTypes.ComponentMetaFile;
+import GUI.PropulsionDraw.ComponentMetaFileTypes.MainEngineMetaFile;
+import GUI.PropulsionDraw.ComponentMetaFileTypes.TankMetaFile;
+import GUI.PropulsionDraw.ComponentMetaFileTypes.ThrusterPodMetaFile;
 
 
 public class Canvas extends JPanel {
@@ -38,7 +42,12 @@ public class Canvas extends JPanel {
 	
 	private Image backgroundImage;
 	
-	private static String backgroundImagePath = "images/propulsionElements/blueprintBackground.png";
+	private ReadWrite readWrite;
+	
+	@SuppressWarnings("unused")
+	private PartsCatalogue partsCatalogue;
+	
+	private String backgroundImagePath = "images/propulsionElements/blueprintBackground.png";
 	
 	static Font smallFont  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
 	
@@ -50,32 +59,17 @@ public class Canvas extends JPanel {
 			imageIn = new ImageIcon(backgroundImagePath,"");
 		Image	image = getScaledImage(imageIn.getImage(),(int) getSize().getWidth(), (int) getHeight());
 	         setBackgroundImage(image);
-	         	/*
-				BoxElement Tank = new BoxElement("Tank", imageTankBasic, this);
-			    add(Tank.getElement());
-			    addCanvasElement(Tank);
-				BoxElement Tank2 = new BoxElement("Tank2", imageTankBasic, this);
-			    add(Tank2.getElement());
-			    addCanvasElement(Tank2);
-			    Tank.getElement().setLocation(50, 10);
-			    Tank2.getElement().setLocation(150, 10);
-				BoxElement Engine2 = new BoxElement("Engine", imageRocketEngine, this);	
-			    add(Engine2.getElement());
-			    addCanvasElement(Engine2);
-			    Engine2.getElement().setLocation(100, 200);
-			    relate(Tank.getElement(), Engine2.getElement());
-			    //relate(Tank2.getElement(), Engine2.getElement());
-	         	 */
+
         setPreferredSize(new Dimension(500,500));
 	}
-	
+	/*
     protected List<BoxElement> getShapes() {
         ArrayList<BoxElement> shapes = new ArrayList<>();
        // shapes.addAll(mainEngineElements);
         return shapes;
     }
     
-	
+	*/
     @Override
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -86,8 +80,8 @@ public class Canvas extends JPanel {
 
         for (Relationship relationship : relationships) {
 
-            Point2D p1 = new Point2D.Double(relationship.getParent().getBounds().getCenterX(), relationship.getParent().getBounds().getCenterY());
-            Point2D p2 = new Point2D.Double(relationship.getChild().getBounds().getCenterX(), relationship.getChild().getBounds().getCenterY());
+            Point2D p1 = new Point2D.Double(relationship.getParent().getElement().getBounds().getCenterX(), relationship.getParent().getElement().getBounds().getCenterY());
+            Point2D p2 = new Point2D.Double(relationship.getChild().getElement().getBounds().getCenterX(), relationship.getChild().getElement().getBounds().getCenterY());
             g2.setStroke(new BasicStroke(5));
             g2.setColor(Color.WHITE);
             Line2D line = new Line2D.Float(p1, p2);
@@ -99,16 +93,7 @@ public class Canvas extends JPanel {
 
         g2.dispose();
     }
-    
-    public void addTankElement(String name, String iconFilePath, int x, int y) {
-		BoxElement Tank = new BoxElement(name, iconFilePath, this);;
-	    add(Tank.getElement());
-	    addCanvasElement(Tank);
-		Tank.getElement().setLocation(x, y);
-		revalidate();
-	    repaint();
-    }
-    
+
     public void addTankElement(BoxElement Tank, int x, int y) {
 	    add(Tank.getElement());
 	    addCanvasElement(Tank);
@@ -116,16 +101,7 @@ public class Canvas extends JPanel {
 		revalidate();
 	    repaint();
     }
-    
-    public void addMainEngine(String name, String iconFilePath, int x, int y) {
-		BoxElement Engine = new BoxElement("Engine", iconFilePath, this);	
-	    add(Engine.getElement());
-	    addCanvasElement(Engine);
-	    Engine.getElement().setLocation(x, y);
-		revalidate();
-	    repaint();
-    }
-    
+
     public void addMainEngine(BoxElement Engine, int x, int y) {	
 	    add(Engine.getElement());
 	    addCanvasElement(Engine);
@@ -162,8 +138,11 @@ public class Canvas extends JPanel {
 		return canvasElements;
 	}
 	
-	protected void relate(JComponent parent, JComponent child) {
-	    relationships.add(new Relationship(parent, child));
+	protected void relate(BoxElement parent, BoxElement child) {
+		if(parent.getMetaFile().getID()!=child.getMetaFile().getID()) {
+		    relationships.add(new Relationship(parent, child));
+		    readWrite.writeFile();
+		}
 	}
 	
 	public void setRelationships(List<Relationship> relationships) {
@@ -179,6 +158,7 @@ public class Canvas extends JPanel {
             @Override
             public void run() {
                 JFrame f = new JFrame();
+               // ReadWrite readWrite = new ReadWrite(null,null);
                 f.add(new Canvas());
                 f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
                 f.pack();
@@ -186,6 +166,14 @@ public class Canvas extends JPanel {
                 f.setVisible(true);
             }
         });
+    }
+    
+    public void linkReadWrite(ReadWrite readWrite) {
+    	this.readWrite = readWrite;
+    }
+    
+    public void linkPartsCatalogue(PartsCatalogue partsCatalogue) {
+    	this.partsCatalogue=partsCatalogue;
     }
     
     public void resizeBackgroundImage() {
@@ -197,8 +185,38 @@ public class Canvas extends JPanel {
          repaint();
     }
     
+    public BoxElement addElement(ReadWrite readWrite, int type) {
+  	  BoxElement newElement = new BoxElement(partsCatalogue.getList().get(type).getName(), 
+  			  partsCatalogue.getList().get(type).getLogoFilePath(), this, readWrite);
+  	  newElement.setName(partsCatalogue.getList().get(type).getName());
+  	  ComponentMetaFile metaFile =  createMetaFile(type, readWrite);
+  	  metaFile.setID(UUID.randomUUID());
+  	  metaFile.setName(partsCatalogue.getList().get(type).getName());
+  	  newElement.setMetaFile(metaFile);
+  	  addMainEngine(newElement, 50, 50);
+    		repaint();
+    		return newElement;
+    }
     
-    static Image getScaledImage(Image srcImg, int w, int h){
+    public BoxElement addElement(ReadWrite readWrite, int type, UUID ID) {
+    	  BoxElement newElement = new BoxElement(partsCatalogue.getList().get(type).getName(), 
+    			  partsCatalogue.getList().get(type).getLogoFilePath(), this, readWrite);
+    	  	 newElement.setName(partsCatalogue.getList().get(type).getName());
+      	  ComponentMetaFile metaFile = createMetaFile(type, readWrite);
+      	  metaFile.setID(UUID.randomUUID());
+      	 metaFile.setName(partsCatalogue.getList().get(type).getName());
+    	      newElement.setMetaFile(metaFile);
+    	  	  addMainEngine(newElement, 50, 50);
+      		repaint();
+      		return newElement;
+      }
+    
+    
+    public ReadWrite getReadWrite() {
+		return readWrite;
+	}
+
+	static Image getScaledImage(Image srcImg, int w, int h){
     	try {
         BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = resizedImg.createGraphics();
@@ -212,8 +230,25 @@ public class Canvas extends JPanel {
     		//System.out.println("ERROR/getScaledImage > Illegal Argument");
     		return srcImg;
     	}
-    } 
-    
+    }
 
+	public void setBackgroundImagePath(String backgroundImagePath) {
+		this.backgroundImagePath = backgroundImagePath;
+		repaint();
+	} 
+    
+	public ComponentMetaFile createMetaFile(int type, ReadWrite readWrite) { 
+		if(type==0 || type ==1) {
+			return  new MainEngineMetaFile(type, readWrite);
+		} else if ( type==2 || type==3) {
+			return new ThrusterPodMetaFile(type, readWrite);
+		} else if (type == 4) {
+			return new TankMetaFile(type, readWrite);
+		} else {
+			return new ComponentMetaFile(type, readWrite);
+		}
+		
+	
+	}
 
 }

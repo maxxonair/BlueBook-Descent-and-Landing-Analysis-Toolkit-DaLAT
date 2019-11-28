@@ -6,6 +6,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
@@ -14,6 +16,7 @@ import java.awt.event.MouseListener;
 
 import javax.swing.JFrame;
 import javax.swing.JMenu;
+import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -24,35 +27,29 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 
 import GUI.BlueBookVisual;
 import GUI.PostProcessing.CreateCustomChart.BackgroundMenuBar;
-import GUI.PropulsionDraw.ComponentMetaFileTypes.MainEngineMetaFile;
-import GUI.PropulsionDraw.ComponentMetaFileTypes.TankMetaFile;
 
 public class PropulsionDrawEditor {
 	
 	
 	static JFrame frame = new JFrame("Propulsion Block Draw Mk1");
 	
-	public Canvas Canvas;
+	public static Canvas Canvas;
+	private static ReadWrite readWrite;
 	
-	private static String imageRocketEngine = "images/propulsionElements/rocketEngine.png";
-	private static String imageSingleThruster = "images/propulsionElements/singleThruster.png";
-	private static String imageDualThruster = "images/propulsionElements/dualThruster.png";
-	private static String imageQuadroThruster = "images/propulsionElements/quadroThruster.png";
-	private static String imageFilter = "images/propulsionElements/filter.png";
-	private static String imageSolenoidValve = "images/propulsionElements/solenoidValve.png";
-	private static String imagePyroValve = "images/propulsionElements/pyroValve.png";
-	private static String imageFillDrainValve = "images/propulsionElements/fillDrainValve.png";
-	private static String imageCheckValve = "images/propulsionElements/checkValve.png";
-	private static String imageReliefValve = "images/propulsionElements/reliefValve.png";
-	private static String imagePressureTransducer = "images/propulsionElements/pressureTransducer.png";
-	private static String imageOrifice = "images/propulsionElements/orifice.png";
-	private static String imageBurstDisk = "images/propulsionElements/burstDisk.png";
-	private static String imageTankBasic = "images/propulsionElements/tankBasic.png";
+	PartsCatalogue partsCatalogue;
+
+	private  String ReadWriteFilePath   = System.getProperty("user.dir") + "/INP/PropulsionSystem.inp";
 	
 	static Font smallFont  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
 	
 	public PropulsionDrawEditor() {
 	    Canvas = new Canvas();
+	    readWrite = new ReadWrite(ReadWriteFilePath, Canvas);
+	    Canvas.linkReadWrite(readWrite);
+	    partsCatalogue = new PartsCatalogue(readWrite);
+	    Canvas.linkPartsCatalogue(partsCatalogue);
+	    readWrite.linkPartsCatalogue(partsCatalogue);
+		 readWrite.readFile();
 	}
 	
   public static void main(String[] args) {
@@ -68,12 +65,62 @@ public class PropulsionDrawEditor {
     menuBar.setPreferredSize(new Dimension(1200, 25));
     frame.add(menuBar, BorderLayout.NORTH);
 
-    JMenu menuMain = new JMenu("File");
+    JMenu menuMain = new JMenu("Editor");
     menuMain.setForeground(BlueBookVisual.getLabelColor());
     menuMain.setBackground(BlueBookVisual.getBackgroundColor());
     menuMain.setFont(smallFont);
     menuMain.setMnemonic(KeyEvent.VK_A);
     menuBar.add(menuMain);
+    
+    JMenuItem itemSave = new JMenuItem("Save as");  
+    itemSave.setFont(smallFont);
+    itemSave.setMnemonic(KeyEvent.VK_A);
+    itemSave.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    });
+    menuMain.add(itemSave);
+    
+    JMenuItem itemImport = new JMenuItem("Import");  
+    itemImport.setFont(smallFont);
+    itemImport.setMnemonic(KeyEvent.VK_A);
+    itemImport.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    });
+    menuMain.add(itemImport);
+    menuMain.addSeparator();
+    
+    JMenuItem item = new JMenuItem("Delete All");  
+    item.setFont(smallFont);
+    item.setMnemonic(KeyEvent.VK_A);
+    item.addActionListener(new ActionListener() {
+
+		@Override
+		public void actionPerformed(ActionEvent arg0) {
+			for(int i=Canvas.getCanvasElements().size()-1;i>=0;i--) {
+				Canvas.remove(Canvas.getCanvasElements().get(i).getElement());
+				Canvas.getCanvasElements().remove(i);
+			}
+			for(int i=Canvas.getRelationships().size()-1;i>=0;i--) {
+				Canvas.getRelationships().remove(i);
+			}
+			readWrite.writeFile();
+			Canvas.repaint();
+		}
+    	
+    });
+    menuMain.add(item);
     
     PropulsionDrawEditor propulsionDrawEditior = new PropulsionDrawEditor();
     JPanel panel = propulsionDrawEditior.getPropulsionDrawArea();
@@ -103,6 +150,7 @@ public JPanel getPropulsionDrawArea() {
 	JPanel mainPanel = new JPanel();
 	mainPanel.setSize(600, 800);
 	mainPanel.setLayout(new BorderLayout());
+	
 	
     JSplitPane splitPaneVertical = new JSplitPane();
     splitPaneVertical.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
@@ -140,55 +188,28 @@ public JPanel getPropulsionDrawArea() {
     //scrollPane.setPreferredSize(new Dimension(300,500));
     scrollPane.getVerticalScrollBar().setUnitIncrement(16);
     splitPaneVertical.add(scrollPane, JSplitPane.LEFT);
-    	    
-    	    
-    	    ButtonElement tankButton = getElement("Tank", imageTankBasic, 2);
+    
+    
+    	    int type=0;
+    	    for(CatalogueElement element : partsCatalogue.getList()) {
+    	    ButtonElement tankButton = getElement(element.getName(), element.getLogoFilePath(), type);
     	    OperatorPanel.add(tankButton);
-    	    
-    	    ButtonElement rocketEngine = getElement("Main Engine", imageRocketEngine, 1);
-    	    OperatorPanel.add(rocketEngine);
-    	    
-    	    ButtonElement singleThruster = getElement("Thruster", imageSingleThruster, 3);
-    	    OperatorPanel.add(singleThruster);
-    	    
-    	    ButtonElement dualThruster = getElement("Thruster", imageDualThruster, 3);
-    	    OperatorPanel.add(dualThruster);
-    	    
-    	    ButtonElement quadroThruster = getElement("Thruster", imageQuadroThruster, 3);
-    	    OperatorPanel.add(quadroThruster);
-    	    
-    	    ButtonElement solenoidValve = getElement("Solenoid Valve", imageSolenoidValve, 4);
-    	    OperatorPanel.add(solenoidValve);
-    	    
-    	    ButtonElement pyroValve = getElement("Pyro Valve", imagePyroValve, 4);
-    	    OperatorPanel.add(pyroValve);
-    	    
-    	    ButtonElement reliefValve = getElement("Relief Valve", imageReliefValve, 4);
-    	    OperatorPanel.add(reliefValve);
-    	    
-    	    ButtonElement fillDrainValve = getElement("Fill/Drain Valve", imageFillDrainValve, 4);
-    	    OperatorPanel.add(fillDrainValve);
-    	    
-    	    ButtonElement checkValve = getElement("Check Valve", imageCheckValve, 4);
-    	    OperatorPanel.add(checkValve);
-    	    
-    	    ButtonElement filter = getElement("Filter", imageFilter, 5);
-    	    OperatorPanel.add(filter);
-    	    
-    	    ButtonElement orifice = getElement("Orifice", imageOrifice, 5);
-    	    OperatorPanel.add(orifice);
-    	    
-    	    ButtonElement burstDisk = getElement("Burst Disk", imageBurstDisk, 5);
-    	    OperatorPanel.add(burstDisk);
-    	    
-    	    ButtonElement pressureTransducer = getElement("PressureTransducer", imagePressureTransducer, 5);
-    	    OperatorPanel.add(pressureTransducer);
-    	    
+    	    type++;
+    	    }
+
     	    Canvas.setSize(new Dimension(500, 500));
     	    Canvas.setBorder(new LineBorder(Color.BLACK, 1));
     	    Canvas.setOpaque(false);
     	    Canvas.setLayout(null);
     	    splitPaneVertical.add(Canvas,  JSplitPane.RIGHT);
+    	    
+    	    mainPanel.addComponentListener(new ComponentAdapter() 
+	    {  
+	            public void componentResized(ComponentEvent evt) {
+	            	Canvas.resizeBackgroundImage();
+	            }
+	    });
+    	    
     	    
     	    return mainPanel;
 }
@@ -207,37 +228,8 @@ public ButtonElement getElement(String elementName, String logoFilePath, int typ
 
 	      @Override
 	      public void mousePressed(MouseEvent e) {
-	    	  if(type ==1) { // Main Engine
-		    	  BoxElement Engine = new BoxElement(elementName, logoFilePath, Canvas);
-		    	  Canvas.addMainEngine(Engine, 50, 50);
-		    	  MainEngineMetaFile engineFile = new MainEngineMetaFile(Engine.getMetaFile().getID());
-		    	  Engine.setMetaFile(engineFile);
-		    	  Canvas.repaint();
-	    	  } else if (type ==2) { // Tank
-		    	  BoxElement Tank = new BoxElement(elementName, logoFilePath, Canvas);
-		    	  Canvas.addMainEngine(Tank, 50, 50);
-		    	  TankMetaFile engineFile = new TankMetaFile(Tank.getMetaFile().getID());
-		    	  Tank.setMetaFile(engineFile);
-		    	  Canvas.repaint();
-	    	  } else if (type ==3) { // Thruster
-		    	  BoxElement Engine = new BoxElement(elementName, logoFilePath, Canvas);
-		    	  Canvas.addMainEngine(Engine, 50, 50);
-		    	  MainEngineMetaFile engineFile = new MainEngineMetaFile(Engine.getMetaFile().getID());
-		    	  Engine.setMetaFile(engineFile);
-		    	  Canvas.repaint();
-	    	  } else if (type ==4) { // Valve 
-		    	  BoxElement Engine = new BoxElement(elementName, logoFilePath, Canvas);
-		    	  Canvas.addMainEngine(Engine, 50, 50);
-		    	  //MainEngineMetaFile engineFile = new MainEngineMetaFile(Engine.getMetaFile().getID());
-		    	 // Engine.setMetaFile(engineFile);
-		    	  Canvas.repaint();
-	    	  } else if(type ==5)  { // Plumbing element
-		    	  BoxElement Engine = new BoxElement(elementName, logoFilePath, Canvas);
-		    	  Canvas.addMainEngine(Engine, 50, 50);
-		    	  //MainEngineMetaFile engineFile = new MainEngineMetaFile(Engine.getMetaFile().getID());
-		    	 // Engine.setMetaFile(engineFile);
-		    	  Canvas.repaint(); 
-	    	  }
+	    	  Canvas.addElement(readWrite,  type) ;
+	    	  readWrite.writeFile();
 	      }
 
 	      @Override
@@ -253,12 +245,7 @@ public ButtonElement getElement(String elementName, String logoFilePath, int typ
 	      
 
 	    });
-	    buttonElement.addComponentListener(new ComponentAdapter() 
-	    {  
-	            public void componentResized(ComponentEvent evt) {
-	            	Canvas.resizeBackgroundImage();
-	            }
-	    });
+
 	    return buttonElement;
 }
 

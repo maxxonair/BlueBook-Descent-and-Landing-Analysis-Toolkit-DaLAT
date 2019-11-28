@@ -1,7 +1,7 @@
 package GUI.PropulsionDraw.ComponentMetaFileTypes;
 
 
-
+import GUI.PropulsionDraw.ReadWrite;
 
 public class MainEngineMetaFile extends ComponentMetaFile {
 	
@@ -10,8 +10,8 @@ public class MainEngineMetaFile extends ComponentMetaFile {
 	private double O2F;
 	
 
-	public MainEngineMetaFile(int ID) {
-		super(ID);
+	public MainEngineMetaFile(int elementType, ReadWrite readWrite) {
+		super( elementType, readWrite);
 		super.elementMetaList = super.updateMetaDataLine(super.elementMetaList, "Thrust [N]", ""+thrust);
 		super.elementMetaList = super.updateMetaDataLine(super.elementMetaList, "ISP [s]", ""+ISP);
 		super.elementMetaList = super.updateMetaDataLine(super.elementMetaList, "O/F [-]", ""+O2F);

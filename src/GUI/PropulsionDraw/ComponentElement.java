@@ -17,6 +17,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.border.LineBorder;
 
+import GUI.PropulsionDraw.ComponentMetaFileTypes.ComponentMetaFile;
+
 public class ComponentElement extends JComponent {
 
   /**
@@ -51,16 +53,18 @@ public class ComponentElement extends JComponent {
   JLabel labelElement;
   
   JPanel background;
+  JComponent component;
 
   public  ComponentElement(String imageFilePath, Canvas canvas) {
 	  
 	  this.canvas=canvas;
+	  this.component = this;
 	
     setBounds(0, 0, sizeX, sizeY);
     setLayout(new BorderLayout());
     setOpaque(false);
     
-    labelElement = new JLabel("Element");
+    labelElement = new JLabel("");
     labelElement.setSize(150, 25);
     labelElement.setForeground(Color.WHITE);
     labelElement.setHorizontalAlignment(JLabel.CENTER);
@@ -163,6 +167,8 @@ public class ComponentElement extends JComponent {
 			        }
 	        }
 	        setLocation(posIsX, posIsY);
+	        updatePosition(posIsX, posIsY);
+	        canvas.getReadWrite().writeFile();
 	        canvas.repaint();
     	  } 
 
@@ -211,6 +217,17 @@ public int getPosY() {
 public void setPosY(int posY) {
 	setLocation(posX, posY);
 	this.posY = posY;
+}
+
+private void updatePosition(int x, int y) {
+	for(BoxElement element : canvas.getCanvasElements()) {
+		if(component==element.getElement()) {
+			ComponentMetaFile file = element.getMetaFile();
+			file.setPositionX(x);
+			file.setPositionY(y);
+			element.setMetaFile(file);
+		}
+	}
 }
 
 static Image getScaledImage(Image srcImg, int w, int h){
