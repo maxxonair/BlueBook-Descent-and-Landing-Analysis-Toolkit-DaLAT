@@ -5,7 +5,6 @@ import java.awt.event.KeyListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-import javax.swing.JComponent;
 
 import GUI.PropulsionDraw.ComponentMetaFileTypes.ComponentMetaFile;
 
@@ -21,8 +20,11 @@ class BoxElement{
 	
 	private ElementPopUpMenu menu ;
 	
+	private Canvas canvas;
+	
 	public BoxElement(String name, String imageFilePath, Canvas canvas, ReadWrite readWrite) {
 		this.name = name ; 
+		this.canvas=canvas;
 		boxElement = this;
 		
 		element = new ComponentElement(imageFilePath, canvas);
@@ -76,12 +78,14 @@ class BoxElement{
 
 
 	public void setMetaFile(ComponentMetaFile metaFile) {
+		this.metaFile=null;
 		this.metaFile = metaFile;
+		metaFile.readMetaList();
 		setName(metaFile.getName());
 	}
 
 
-	public JComponent getElement() {
+	public ComponentElement getElement() {
 		return element;
 	}
 
@@ -115,4 +119,11 @@ class BoxElement{
 
 
 	}
+
+
+
+	public Canvas getCanvas() {
+		return canvas;
+	}
+	
 }

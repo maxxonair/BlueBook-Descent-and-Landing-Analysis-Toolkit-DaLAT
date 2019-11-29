@@ -35,10 +35,12 @@ public class TankMetaFile extends ComponentMetaFile {
 		return volume;
 	}
 
-	protected void readMetaList() {
+	public void readMetaList() {
 		List<MetaDataLine> list = super.getElementMetaList();
 		for(MetaDataLine line : list) {
-			if(line.name.equals("Propellant [-]")) {
+			if(line.name.equals("System mass [kg]")) {
+				super.systemMass = Double.parseDouble(line.value);
+			} else if(line.name.equals("Propellant [-]")) {
 				propellantType = line.value;
 			} else if (line.name.equals("Volume [litre]")) {
 				volume = Double.parseDouble(line.value);

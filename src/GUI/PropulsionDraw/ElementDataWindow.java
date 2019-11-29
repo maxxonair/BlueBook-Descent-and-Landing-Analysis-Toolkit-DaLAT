@@ -18,15 +18,25 @@ import GUI.PropulsionDraw.ComponentMetaFileTypes.MetaDataLine;
 
 public class ElementDataWindow {
 	private static JFrame frame;
-	public static void showWindow(BoxElement boxElement) {
+	private static int elementHeight=35;
+	private static int frameWidth=300;
+	@SuppressWarnings("unused")
+	private  Canvas canvas;
+	private BoxElement boxElement;
+	public ElementDataWindow(BoxElement boxElement, Canvas canvas) {
+		this.boxElement=boxElement;
+		this.canvas= canvas;
+	}
+	
+	public  void showWindow() {
 	     frame = new JFrame(""+boxElement.getName());	
 	    List<MetaDataLine> elementMetaList = boxElement.getMetaFile().getElementMetaList();
 	    
 	    for(MetaDataLine line : elementMetaList) {
-		    	JPanel panel = CreateLine(line.name, ""+line.value, boxElement);
+		    	JPanel panel = CreateLine(line.name, ""+line.value);
 		    	frame.add(panel);
 	    }
-		frame.setSize(300, elementMetaList.size()*35);
+		frame.setSize(frameWidth, elementMetaList.size()*elementHeight);
 		frame.setLayout(new GridLayout(elementMetaList.size(),1));
 	    //f.pack();
 	    frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -40,7 +50,7 @@ public class ElementDataWindow {
 	}
 	
 
-		public static JPanel CreateLine(String description, String value, BoxElement boxElement) {
+		public  JPanel CreateLine(String description, String value) {
 			JPanel panel = new JPanel();
 			panel.setLayout(null);
 			panel.setSize(300, 30);
@@ -64,7 +74,9 @@ public class ElementDataWindow {
 						} else {
 							boxElement.getMetaFile().getMetaListUpdate(label.getText(), text.getText());
 						}
+						canvas.getStatsPanel().updatePanel();
 						frame.dispose();
+						
 				}
 				
 			});
@@ -81,9 +93,11 @@ public class ElementDataWindow {
 					if(description.equals("Name")) {
 						boxElement.setName(text.getText());
 						boxElement.getMetaFile().setName(text.getText());
+						boxElement.getCanvas().getStatsPanel().updatePanel();
 					} else {
 						boxElement.getMetaFile().getMetaListUpdate(label.getText(), text.getText());
 					}
+					canvas.getStatsPanel().updatePanel();
 				}
 				
 			});

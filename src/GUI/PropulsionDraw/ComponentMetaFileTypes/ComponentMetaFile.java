@@ -14,6 +14,8 @@ public class ComponentMetaFile {
 	private String name;
 	private String description="";
 	
+	protected double systemMass=0;
+	
 	private int positionX=50;
 	private int positionY=50;
 	
@@ -31,6 +33,7 @@ public class ComponentMetaFile {
 		name = "Element";
 		elementMetaList = updateMetaDataLine(elementMetaList, "Name", name);
 		elementMetaList = updateMetaDataLine(elementMetaList, "Description", description);
+		elementMetaList = updateMetaDataLine(elementMetaList, "System mass [kg]", ""+systemMass);
 	}
 
 	public UUID getID() {
@@ -39,6 +42,35 @@ public class ComponentMetaFile {
 
 	public String getName() {
 		return name;
+	}
+	
+	public void readMetaList() {
+		for(MetaDataLine line : elementMetaList) {
+			if(line.name.equals("System mass [kg]")) {
+				systemMass = Double.parseDouble(line.value);
+			} else if (line.name.equals("Name")) {
+				name = line.value;
+			}
+		}
+	}
+	
+	protected void readMetaList(List<MetaDataLine> elementMetaList) {
+		for(MetaDataLine line : elementMetaList) {
+			if(line.name.equals("System mass [kg]")) {
+				systemMass = Double.parseDouble(line.value);
+			} else if (line.name.equals("Name")) {
+				name = line.value;
+			}
+		}
+	}
+
+	public double getSystemMass() {
+		return systemMass;
+	}
+
+	public void setSystemMass(double systemMass) {
+		this.systemMass = systemMass;
+		elementMetaList = updateMetaDataLine(elementMetaList, "System mass [kg]", ""+systemMass);
 	}
 
 	public void setName(String name) {
@@ -95,6 +127,7 @@ public class ComponentMetaFile {
 			list.add(line);
 		}
 		readWrite.writeFile();
+		readMetaList(list);
 		return list;
 	}
 
@@ -108,6 +141,7 @@ public class ComponentMetaFile {
 
 	public void setElementMetaList(List<MetaDataLine> elementMetaList) {
 		this.elementMetaList = elementMetaList;
+		readMetaList();
 	}
 	
 	

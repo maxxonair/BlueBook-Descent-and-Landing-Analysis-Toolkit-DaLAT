@@ -4256,6 +4256,28 @@ public static String[] Vel_Frame_options = { "Cartesian Coordinate Frame (NED)",
 		    });
 		        propulsionInputPanel.add(PropulsionEditor, BorderLayout.CENTER);
 		        
+		        
+		        JButton propEditorButton = new JButton("Open Full Size Editor");
+		        propEditorButton.setSize(200,30);
+		        propEditorButton.setLocation(0, uy_p41 + 25 * 1);
+		        propEditorButton.setBackground(backgroundColor);
+		        propEditorButton.setForeground(Color.BLACK);
+		        propEditorButton.setFont(small_font);
+		        propEditorButton.addActionListener(new ActionListener() {
+		        	 public void actionPerformed(ActionEvent e)
+		        	  {
+	                	   Thread thread = new Thread(new Runnable() {
+	                  		    public void run() {
+	                  		    		PropulsionDrawEditor.setExit(false);
+	                  		       	PropulsionDrawEditor.main(null);
+
+	                  		    }
+	                  		});
+	                  		thread.start();
+		        		 
+		        	  }
+		        });
+		        propulsionSidePanel.add(propEditorButton);
 		      
 		      JLabel LABEL_PrimarySettings = new JLabel("Primary Propulsion System Settings");
 		      LABEL_PrimarySettings.setLocation(0, uy_p41 + 25 * 3 );

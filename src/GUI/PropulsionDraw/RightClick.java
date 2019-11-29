@@ -31,7 +31,8 @@ class ElementPopUpMenu extends JPopupMenu {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				ElementDataWindow.showWindow(boxElement);
+				ElementDataWindow window = new ElementDataWindow(boxElement, canvas);
+				window.showWindow();
 			}
         	
         });
@@ -50,6 +51,18 @@ class ElementPopUpMenu extends JPopupMenu {
         	
         });
         add(anItem3);
+        addSeparator();
+        //----------------------------------------------------------------
+        JMenuItem anItem4 = new JMenuItem("Rotate Element");
+        anItem4.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				((ComponentElement) boxElement.getElement()).rotateImage();
+			}
+        	
+        });
+        add(anItem4);
         addSeparator();
         //----------------------------------------------------------------
         ButtonGroup buttonGroup = new ButtonGroup();
@@ -137,6 +150,7 @@ class ElementPopUpMenu extends JPopupMenu {
 				}
 				canvas.setRelationships(relationships);
 				canvas.repaint();
+				canvas.getStatsPanel().updatePanel();
 			}
         	
         });

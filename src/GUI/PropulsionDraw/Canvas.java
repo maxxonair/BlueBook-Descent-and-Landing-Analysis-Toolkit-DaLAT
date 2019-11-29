@@ -22,6 +22,7 @@ import javax.swing.JPanel;
 import GUI.PropulsionDraw.Relationship;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.ComponentMetaFile;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.MainEngineMetaFile;
+import GUI.PropulsionDraw.ComponentMetaFileTypes.MetaDataLine;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.TankMetaFile;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.ThrusterPodMetaFile;
 
@@ -49,9 +50,12 @@ public class Canvas extends JPanel {
 	
 	static Font smallFont  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
 	
+	private StatisticsPanel statsPanel;
+	
 	public Canvas() {
 		relationships = new ArrayList<>();
 		canvasElements = new ArrayList<>();
+		statsPanel = new StatisticsPanel(this);
 	    
 	    ImageIcon imageIn;
 			imageIn = new ImageIcon(backgroundImagePath,"");
@@ -100,10 +104,10 @@ public class Canvas extends JPanel {
 	    repaint();
     }
 
-    public void addMainEngine(BoxElement Engine, int x, int y) {	
-	    add(Engine.getElement());
-	    addCanvasElement(Engine);
-	    Engine.getElement().setLocation(x, y);
+    public void addElement(BoxElement boxElement, int x, int y) {	
+	    add(boxElement.getElement());
+	    addCanvasElement(boxElement);
+	    boxElement.getElement().setLocation(x, y);
 		revalidate();
 	    repaint();
     }
@@ -150,22 +154,7 @@ public class Canvas extends JPanel {
 	public List<Relationship> getRelationships() {
 		return relationships;
 	}
-/*
-    public static void main(String[] args) {
-        EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JFrame f = new JFrame();
-               // ReadWrite readWrite = new ReadWrite(null,null);
-                f.add(new Canvas());
-                f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                f.pack();
-                f.setLocationRelativeTo(null);
-                f.setVisible(true);
-            }
-        });
-    }
-    */
+
     public void linkReadWrite(ReadWrite readWrite) {
     	this.readWrite = readWrite;
     }
@@ -192,7 +181,7 @@ public class Canvas extends JPanel {
   	  metaFile.setID(UUID.randomUUID());
   	  metaFile.setName(partsCatalogue.getList().get(type).getName());
   	  newElement.setMetaFile(metaFile);
-  	  addMainEngine(newElement, 50, 50);
+  	addElement(newElement, 50, 50);
     		repaint();
     		return newElement;
     }
@@ -206,32 +195,45 @@ public class Canvas extends JPanel {
       	  metaFile.setID(UUID.randomUUID());
       	 metaFile.setName(partsCatalogue.getList().get(type).getName());
     	      newElement.setMetaFile(metaFile);
-    	  	  addMainEngine(newElement, 50, 50);
+    	      addElement(newElement, 50, 50);
       		repaint();
       		return newElement;
       }
     
     public BoxElement cloneElement(ReadWrite readWrite, int type, BoxElement boxElement) { // new element -> new ID
-    	String name = boxElement.getMetaFile().getName()+" Clone";
+    	
+      String name = boxElement.getMetaFile().getName()+" Clone";
+	  int newFileX = boxElement.getElement().getX()+100;
+	  int newFileY = boxElement.getElement().getY();
+	  
+	  
     	  BoxElement newElement = new BoxElement(name, 
     			  partsCatalogue.getList().get(type).getLogoFilePath(), this, readWrite);
     	  
-    	  //((ComponentElement) newElement.getElement()).setPosX(boxElement.getElement().getX()+100);
-    	  //((ComponentElement) newElement.getElement()).setPosY(boxElement.getElement().getY());
-    	  
     	  checkCustomResize( newElement,  type);
-    	  //newElement.setName(partsCatalogue.getList().get(type).getName());
+    	  //----------------------------------------------------------------------------------
     	  ComponentMetaFile metaFile =  createMetaFile(type, readWrite);
     	  metaFile.setID(UUID.randomUUID());
-    	  metaFile.setName(name);
-    	  metaFile.setPositionX(boxElement.getElement().getX()+100);
-    	  metaFile.setPositionY(boxElement.getElement().getY());
-    	  metaFile.setElementMetaList(boxElement.getMetaFile().getElementMetaList());
-    	  metaFile.updateMetaDataLine(metaFile.getElementMetaList(), "Name", name);
+    	 // metaFile.setName(name);
+    	  metaFile.setPositionX(newFileX);
+    	  metaFile.setPositionY(newFileY);
+    	  List<MetaDataLine> elementMetaList = new ArrayList<>();
+    	  for(MetaDataLine line :boxElement.getMetaFile().getElementMetaList() ) {
+    		  String description = line.name;
+    		  String value = line.value;
+    		  MetaDataLine liner = new MetaDataLine(description, value);
+    		  elementMetaList.add(liner);
+    	  }
+    	  metaFile.setElementMetaList(elementMetaList);
     	  newElement.setMetaFile(metaFile);
-    	  addMainEngine(newElement, boxElement.getElement().getX()+100, boxElement.getElement().getY());
-      		repaint();
-      		return newElement;
+    	  metaFile.setName(name);
+    	  //------------------------------------------------------------------------------------
+    	  addElement(newElement, newFileX, newFileY);
+    	  newElement.setName(name);
+    	  newElement.getElement().repaint();
+      repaint();
+      
+      return newElement;
       }
     
     
@@ -242,7 +244,7 @@ public class Canvas extends JPanel {
     public BoxElement checkCustomResize(BoxElement element, int type) {
     	
     	if(type==16) {// Joint
-    		 ((ComponentElement) element.getElement()).resizeElement(20, 25);
+    		 ((ComponentElement) element.getElement()).resizeElement(30, 30);
     	} else if (type == 4) { // tank 
     		//((ComponentElement) element.getElement()).resizeElement(150, 150);
     	}
@@ -284,5 +286,22 @@ public class Canvas extends JPanel {
 		
 	
 	}
+	
+	public void deleteAllContent() {
+		for(int i=getCanvasElements().size()-1;i>=0;i--) {
+			remove(getCanvasElements().get(i).getElement());
+			getCanvasElements().remove(i);
+		}
+		for(int i=getRelationships().size()-1;i>=0;i--) {
+			getRelationships().remove(i);
+		}
+		readWrite.writeFile();
+		repaint();
+	}
+	public StatisticsPanel getStatsPanel() {
+		return statsPanel;
+	}
+	
+	
 
 }

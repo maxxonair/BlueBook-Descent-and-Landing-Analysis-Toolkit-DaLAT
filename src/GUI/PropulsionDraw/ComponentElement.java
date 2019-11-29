@@ -3,6 +3,8 @@ package GUI.PropulsionDraw;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
@@ -45,7 +47,9 @@ public class ComponentElement extends JComponent {
   private int sizeX = 100;
   private int sizeY = 100;
   
+  private double rotAngle = 0;
   
+  static Font smallFont  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
   private Canvas canvas;
   
   JLabel labelElement;
@@ -69,13 +73,36 @@ public class ComponentElement extends JComponent {
     labelElement = new JLabel("");
     labelElement.setSize(150, 25);
     labelElement.setForeground(Color.WHITE);
+    labelElement.setFont(smallFont);
     labelElement.setHorizontalAlignment(JLabel.CENTER);
     add(labelElement, BorderLayout.PAGE_START);
     
         ImageIcon image;
 			image = new ImageIcon(imageFilePath,"");
 			image = new ImageIcon(getScaledImage(image.getImage(),sizeX,sizeY));
-	         label = new JLabel(image);
+			BufferedImage bi = toBufferedImage(image.getImage());
+	         //label = new JLabel(image);
+	         label = new JLabel() {
+
+	             /**
+				 * 
+				 */
+				private static final long serialVersionUID = 1L;
+
+				@Override
+	             public Dimension getPreferredSize() {
+	                 return new Dimension(sizeX, sizeY);
+	             }
+
+	             @Override
+	             protected void paintComponent(Graphics g) {
+	                 super.paintComponent(g);
+	                 Graphics2D g2 = (Graphics2D) g;
+	             	double rotAngleRad = Math.toRadians(rotAngle);
+	                 g2.rotate(rotAngleRad, bi.getWidth() / 2, bi.getHeight() / 2);
+	                 g2.drawImage(bi, 0, 0, null);
+	             }
+	         };
 	        add(label, BorderLayout.CENTER);
 	        
     
@@ -219,10 +246,46 @@ public void resizeElement(int x, int y) {
     ImageIcon image;
 		image = new ImageIcon(imageFilePath,"");
 		image = new ImageIcon(getScaledImage(image.getImage(),x,y));
-         label = new JLabel(image);
+		BufferedImage bi = toBufferedImage(image.getImage());
+         label = new JLabel() {
+
+             /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			@Override
+             public Dimension getPreferredSize() {
+                 return new Dimension(sizeX, sizeY);
+             }
+
+             @Override
+             protected void paintComponent(Graphics g) {
+                 super.paintComponent(g);
+                 Graphics2D g2 = (Graphics2D) g;
+             	double rotAngleRad = Math.toRadians(rotAngle);
+                 g2.rotate(rotAngleRad, bi.getWidth() / 2, bi.getHeight() / 2);
+                 g2.drawImage(bi, 0, 0, null);
+             }
+         };
         add(label, BorderLayout.CENTER);
 	repaint();
 }
+
+public void rotateImage() {
+	rotAngle = rotAngle + 90;
+	if(rotAngle>=360) {
+		rotAngle=0;
+	}
+	repaint();
+	canvas.getReadWrite().writeFile();
+}
+
+
+public double getRotAngle() {
+	return rotAngle;
+}
+
 
 
 public void updatePosition(int x, int y) {
@@ -246,6 +309,31 @@ static Image getScaledImage(Image srcImg, int w, int h){
 
     return resizedImg;
 }
-  
+ 
+public static BufferedImage toBufferedImage(Image img)
+{
+    if (img instanceof BufferedImage)
+    {
+        return (BufferedImage) img;
+    }
+
+    // Create a buffered image with transparency
+    BufferedImage bimage = new BufferedImage(img.getWidth(null), img.getHeight(null), BufferedImage.TYPE_INT_ARGB);
+
+    // Draw the image on to the buffered image
+    Graphics2D bGr = bimage.createGraphics();
+    bGr.drawImage(img, 0, 0, null);
+    bGr.dispose();
+
+    // Return the buffered image
+    return bimage;
+}
+
+
+
+public void setRotAngle(double rotAngle) {
+	this.rotAngle = rotAngle;
+}
+
 
 }
