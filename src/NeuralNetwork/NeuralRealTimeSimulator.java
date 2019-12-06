@@ -29,7 +29,7 @@ import Simulator_main.RealTimeSimulationCore;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
-import Toolbox.ReadInput;
+import utils.ReadInput;
 
 public class NeuralRealTimeSimulator {
 	

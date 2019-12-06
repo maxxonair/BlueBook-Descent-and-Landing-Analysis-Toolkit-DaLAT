@@ -5,7 +5,7 @@ import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.HypersonicSet;
 import Simulator_main.DataSets.CurrentDataSet;
-import Toolbox.Mathbox;
+import utils.Mathbox;
 
 public class HypersonicModel {
     public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;

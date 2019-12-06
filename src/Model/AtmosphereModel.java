@@ -13,7 +13,7 @@ import Model.DataSets.AtmosphereSet;
 import Noise.AtmosphereNoiseModel;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
-import Toolbox.Mathbox;
+import utils.Mathbox;
 
 
 public class AtmosphereModel  {

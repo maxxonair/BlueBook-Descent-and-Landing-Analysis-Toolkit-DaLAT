@@ -4,7 +4,7 @@ import static java.lang.Math.*;
 
 import Model.DataSets.GravitySet;
 import Simulator_main.DataSets.CurrentDataSet;
-import Toolbox.Mathbox;
+import utils.Mathbox;
 
 
 public class GravityModel  {

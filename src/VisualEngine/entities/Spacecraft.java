@@ -11,11 +11,11 @@ import Simulator_main.RealTimeSimulationCore;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
-import Toolbox.ReadInput;
 import VisualEngine.animation.AnimationSet;
 import VisualEngine.models.TexturedModel;
 import VisualEngine.renderEngine.DisplayManager;
 import VisualEngine.terrains.Terrain;
+import utils.ReadInput;
 
 public class Spacecraft extends Entity {
 	

@@ -32,7 +32,7 @@ import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
-import Toolbox.Mathbox;
+import utils.Mathbox;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
 

@@ -46,7 +46,7 @@ public class StatisticsPanel {
 			mass = mass + element.getMetaFile().getSystemMass();
 			//System.out.println(element.getMetaFile().getSystemMass());
 		}
-		JPanel systemMass = CreateLine("Total Mass [kg]: ", ""+decf.format(mass));
+		JPanel systemMass = CreateLine("Total Mass (dry) [kg]: ", ""+decf.format(mass));
 		panel.add(systemMass);
 		
 		double fuelCapacity = 0 ; 

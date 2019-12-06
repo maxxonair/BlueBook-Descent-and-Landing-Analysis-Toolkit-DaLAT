@@ -61,7 +61,7 @@ public class SensorModel {
 			isEulerZ -= variation2;	
 		}
 		double[][] Euler = {{isEulerX},{isEulerY},{isEulerZ}};
-		double[][] quarternions = Toolbox.Mathbox.Euler2Quarternions(Euler);
+		double[][] quarternions = utils.Mathbox.Euler2Quarternions(Euler);
 		sensorSet.getRealTimeResultSet().setQuarternions(quarternions);
 		return sensorSet;
 	}

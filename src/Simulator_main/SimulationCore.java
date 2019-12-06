@@ -34,7 +34,7 @@ import Model.DataSets.MasterSet;
 import Sequence.SequenceElement;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
-import Toolbox.Mathbox;
+import utils.Mathbox;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
 

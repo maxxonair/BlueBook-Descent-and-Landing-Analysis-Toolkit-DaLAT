@@ -12,7 +12,7 @@ import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
 import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
-import Toolbox.Mathbox;
+import utils.Mathbox;
 
 public class ForceModel {
 		
