@@ -51,7 +51,15 @@ public class SidePanelLeft {
 	public static JTextField INPUT_FPA_Rs;
 
 	public static JTextField INPUT_AZI_Rs;
-    public   JLabel LABEL_IntegratorSetting_01, LABEL_IntegratorSetting_02, LABEL_IntegratorSetting_03, LABEL_IntegratorSetting_04, LABEL_IntegratorSetting_05; 
+    public static   JLabel LABEL_IntegratorSetting_01;
+
+	public static JLabel LABEL_IntegratorSetting_02;
+
+	public static JLabel LABEL_IntegratorSetting_03;
+
+	public static JLabel LABEL_IntegratorSetting_04;
+
+	public static JLabel LABEL_IntegratorSetting_05; 
     public static  JTextField INPUT_IntegratorSetting_01;
 
 	public static JTextField INPUT_IntegratorSetting_02;
@@ -807,7 +815,7 @@ public class SidePanelLeft {
 		return mainPanel;
 	}
 	
-    public  void Update_IntegratorSettings() {
+    public static  void Update_IntegratorSettings() {
     	if(Integrator_chooser.getSelectedIndex()==0) {
     		// Dormand Prince 853 Integrator 
     		// 4 Inputs 

@@ -271,25 +271,28 @@ public class TimePanel {
 		String[] date = utcString.split(" ")[0].split(":");
 		String[] time = utcString.split(" ")[1].split(":");
 
-		this.setYear(Integer.parseInt(date[0]));
-		this.setMonth(Integer.parseInt(date[1]));
-		this.setDay(Integer.parseInt(date[2]));
-		
-		this.setHour(Integer.parseInt(time[0]));
-		this.setMinute(Integer.parseInt(time[1]));
-		this.setSecond(Integer.parseInt(time[2]));
-		
-		((JTextField) inputPanels.get(0).getComponent(1)).setText(""+year);
-		((JTextField) inputPanels.get(1).getComponent(1)).setText(""+month);
-		((JTextField) inputPanels.get(2).getComponent(1)).setText(""+day);
-		
-		((JTextField) inputPanels.get(3).getComponent(1)).setText(""+hour);
-		((JTextField) inputPanels.get(4).getComponent(1)).setText(""+minute);
-		((JTextField) inputPanels.get(5).getComponent(1)).setText(""+second);
-		
-		((JTextField) inputPanels.get(7).getComponent(1)).setText(""+aTime.getJ2000());
-		((JTextField) inputPanels.get(8).getComponent(1)).setText(""+aTime.getUtcString());
-		
+		try {
+			this.setYear(Integer.parseInt(date[0]));
+			this.setMonth(Integer.parseInt(date[1]));
+			this.setDay(Integer.parseInt(date[2]));
+			
+			this.setHour(Integer.parseInt(time[0]));
+			this.setMinute(Integer.parseInt(time[1]));
+			this.setSecond(Integer.parseInt(time[2]));
+			
+			((JTextField) inputPanels.get(0).getComponent(1)).setText(""+year);
+			((JTextField) inputPanels.get(1).getComponent(1)).setText(""+month);
+			((JTextField) inputPanels.get(2).getComponent(1)).setText(""+day);
+			
+			((JTextField) inputPanels.get(3).getComponent(1)).setText(""+hour);
+			((JTextField) inputPanels.get(4).getComponent(1)).setText(""+minute);
+			((JTextField) inputPanels.get(5).getComponent(1)).setText(""+second);
+			
+			((JTextField) inputPanels.get(7).getComponent(1)).setText(""+aTime.getJ2000());
+			((JTextField) inputPanels.get(8).getComponent(1)).setText(""+aTime.getUtcString());
+		} catch (ArrayIndexOutOfBoundsException exception) {
+			System.out.println("ERROR/TimePanel: Reading time string failed. Format error");
+		}
 	}
 
 	public AbsoluteTime getaTime() {

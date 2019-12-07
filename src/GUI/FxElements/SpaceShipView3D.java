@@ -8,8 +8,7 @@ import javax.swing.event.ChangeListener;
 
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
-import GUI.BlueBookVisual;
-
+import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -79,7 +78,7 @@ public class SpaceShipView3D extends Application{
 		
 		initMouseControl(model, coordinateSystem, scene, fxpanel);
 
-		BlueBookVisual.sliderEuler1.addChangeListener(new ChangeListener() {
+		CenterPanelRight.sliderEuler1.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -88,8 +87,8 @@ public class SpaceShipView3D extends Application{
                     @Override
                     public void run() {
                     	
-				double drotX = BlueBookVisual.sliderEuler1.getValue() - rotX;
-				rotX=BlueBookVisual.sliderEuler1.getValue();
+				double drotX = CenterPanelRight.sliderEuler1.getValue() - rotX;
+				rotX=CenterPanelRight.sliderEuler1.getValue();
 				setRotationX( drotX);
 				//new TurnAction(model.rz, 15);
 
@@ -98,7 +97,7 @@ public class SpaceShipView3D extends Application{
 			}
 			
 		});
-		BlueBookVisual.sliderEuler2.addChangeListener(new ChangeListener() {
+		CenterPanelRight.sliderEuler2.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -107,8 +106,8 @@ public class SpaceShipView3D extends Application{
                     @Override
                     public void run() {
                     	
-				double drotZ = BlueBookVisual.sliderEuler2.getValue() - rotZ;
-				rotZ=BlueBookVisual.sliderEuler2.getValue();
+				double drotZ = CenterPanelRight.sliderEuler2.getValue() - rotZ;
+				rotZ=CenterPanelRight.sliderEuler2.getValue();
 				setRotationZ( drotZ);
 				
                     }
@@ -116,7 +115,7 @@ public class SpaceShipView3D extends Application{
 			}
 			
 		});
-		BlueBookVisual.sliderEuler3.addChangeListener(new ChangeListener() {
+		CenterPanelRight.sliderEuler3.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -125,8 +124,8 @@ public class SpaceShipView3D extends Application{
                     @Override
                     public void run() {
                     	
-				double drotY = BlueBookVisual.sliderEuler3.getValue() - rotY;
-				rotY=BlueBookVisual.sliderEuler3.getValue();
+				double drotY = CenterPanelRight.sliderEuler3.getValue() - rotY;
+				rotY=CenterPanelRight.sliderEuler3.getValue();
 				
 				setRotationY( drotY);
 				

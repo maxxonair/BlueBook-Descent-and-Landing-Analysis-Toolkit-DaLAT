@@ -1,30 +1,20 @@
 package GUI;
 
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Font;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.Hashtable;
 import java.util.List;
 
-import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JSlider;
-import javax.swing.JTextField;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
-import org.jfree.ui.HorizontalAlignment;
-
-
 
 public class GuiComponents {
 	
-	static JSlider getGuiSlider(Font font, int length, int low, int midval, int high) {
+	@SuppressWarnings("unchecked")
+	public static JSlider getGuiSlider(Font font, int length, int low, int midval, int high) {
         JSlider slider = new JSlider(JSlider.HORIZONTAL);
         
         slider.setSize(length,40);
