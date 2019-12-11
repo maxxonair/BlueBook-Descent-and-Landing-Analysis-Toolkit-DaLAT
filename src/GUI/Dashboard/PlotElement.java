@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Dashboard;
 
 import java.awt.BasicStroke;
 import java.awt.BorderLayout;
@@ -42,6 +42,9 @@ import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 
+import GUI.BlueBookVisual;
+import GUI.RotatedIcon;
+import GUI.TextIcon;
 import GUI.DataStructures.InputFileSet;
 
 
@@ -68,7 +71,10 @@ public class PlotElement {
     
     private int crosshairIndx = 0;
     
+    private ChartPanel chartPanel;
+    
     private int ID;
+    private Color backgroundColor;
     
     public PlotElement(int ID, List<String> variableList, List<InputFileSet> analysisFile, ChartSetting chartSetting) {
     	this.variableList = variableList;
@@ -79,35 +85,37 @@ public class PlotElement {
 	
 	public JPanel createPlotElement(PlotElement plotElement) {
 		
+		backgroundColor = BlueBookVisual.getBackgroundColor();
+		
         JPanel panel = new JPanel();
         panel.setLocation(0, 0);
         panel.setPreferredSize(new Dimension(400, 400));
         panel.setLayout(new BorderLayout());
-        panel.setBackground(BlueBookVisual.getBackgroundColor());
+        panel.setBackground(backgroundColor);
         panel.setForeground(BlueBookVisual.getLabelColor());
         
 	    
 	    JPanel FlexibleChartControlPanel = new JPanel();
 	    FlexibleChartControlPanel.setLayout(new BorderLayout());
-	    FlexibleChartControlPanel.setBackground(BlueBookVisual.getBackgroundColor());
+	    FlexibleChartControlPanel.setBackground(backgroundColor);
 	    //FlexibleChartContentPanel.add(FlexibleChartControlPanel, BorderLayout.PAGE_START);
 	    
 	    JPanel xControlPanel = new JPanel();
 	    xControlPanel.setLayout(new BorderLayout());
 	    //xControlPanel.setPreferredSize(new Dimension(1000, 25));
-	    xControlPanel.setBackground(BlueBookVisual.getBackgroundColor());
+	    xControlPanel.setBackground(backgroundColor);
 	    panel.add(xControlPanel, BorderLayout.PAGE_END);
 	    
 	    JPanel yControlPanel = new JPanel();
 	    yControlPanel.setLayout(new BorderLayout());
 	    //yControlPanel.setPreferredSize(new Dimension(400, 25));
-	    yControlPanel.setBackground(BlueBookVisual.getBackgroundColor());
+	    yControlPanel.setBackground(backgroundColor);
 	    panel.add(yControlPanel, BorderLayout.LINE_START);
 
 	      
 	       yAxisIndicator = new JButton();
 	       variableListY =  new VariableList2(yAxisIndicator, "y",plotElement);
-	       yAxisIndicator.setBackground(BlueBookVisual.getBackgroundColor());
+	       yAxisIndicator.setBackground(backgroundColor);
 	       yAxisIndicator.setForeground(BlueBookVisual.getLabelColor());
 	       yAxisIndicator.setOpaque(true);
 	       yAxisIndicator.setBorderPainted(false);
@@ -132,7 +140,7 @@ public class PlotElement {
 	       
 	       xAxisIndicator = new JButton();
 	       variableListX =  new VariableList2(xAxisIndicator, "x",plotElement);
-	       xAxisIndicator.setBackground(BlueBookVisual.getBackgroundColor());
+	       xAxisIndicator.setBackground(backgroundColor);
 	       xAxisIndicator.setForeground(BlueBookVisual.getLabelColor());
 	       xAxisIndicator.setOpaque(true);
 	       xAxisIndicator.setBorderPainted(false);
@@ -161,7 +169,6 @@ public class PlotElement {
 	      yControlPanel.add(yAxisIndicator, BorderLayout.CENTER);
         
 	      
-	      ChartPanel chartPanel;
 	      try {
 			chartPanel = createChartPanel();
 		      panel.add(chartPanel, BorderLayout.CENTER);
@@ -195,13 +202,13 @@ public class PlotElement {
 		plot.getRangeAxis().setLabelPaint(BlueBookVisual.getLabelColor());
 		plot.getDomainAxis().setLabelPaint(BlueBookVisual.getLabelColor());
 		plot.setForegroundAlpha(0.5f);
-		plot.setBackgroundPaint(BlueBookVisual.getBackgroundColor());
+		plot.setBackgroundPaint(backgroundColor);
 		plot.setDomainGridlinePaint(BlueBookVisual.getLabelColor());
 		plot.setRangeGridlinePaint(BlueBookVisual.getLabelColor()); 
-	    renderer.setSeriesPaint( i , resultFile.get(i).getDataColor());
+	    renderer.setSeriesPaint( i , BlueBookVisual.getLabelColor());
 		renderer.setSeriesShape(i, dot);
 	    }
-		chart.setBackgroundPaint(BlueBookVisual.getBackgroundColor()); 	
+		chart.setBackgroundPaint(backgroundColor); 	
 		//chart.getLegend().setBackgroundPaint(backgroundColor);
 		//chart.getLegend().setItemPaint(labelColor);
 		try {
@@ -392,5 +399,19 @@ public class PlotElement {
         }
 		return result;
 	}
+
+	public ChartPanel getChartPanel() {
+		return chartPanel;
+	}
+
+	public VariableList2 getVariableListY() {
+		return variableListY;
+	}
+
+	public VariableList2 getVariableListX() {
+		return variableListX;
+	}
+	
+	
 
 }

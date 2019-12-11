@@ -53,7 +53,7 @@ public class GuiComponents {
 		return slider;
 	}
 	
-	static JSlider getGuiSliderSpeed(Font font, int length, int low, int midval, int high, Color foregroundColor, Color backgroundColor) {
+	public static JSlider getGuiSliderSpeed(Font font, int length, int low, int midval, int high, Color foregroundColor, Color backgroundColor) {
         JSlider slider = new JSlider(JSlider.HORIZONTAL);
         
         slider.setSize(length,40);

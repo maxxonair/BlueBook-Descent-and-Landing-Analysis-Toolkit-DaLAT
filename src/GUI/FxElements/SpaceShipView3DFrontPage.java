@@ -6,6 +6,7 @@ import java.awt.geom.Rectangle2D;
 
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
@@ -13,7 +14,9 @@ import org.jfree.ui.RectangleEdge;
 
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
-import GUI.BlueBookVisual;
+import GUI.Dashboard.DashboardPlotArea;
+import GUI.Dashboard.Data2DPlot;
+import GUI.Dashboard.VariableList2;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -39,40 +42,45 @@ import javafx.stage.Stage;
 
 public class SpaceShipView3DFrontPage {
 	
-	private static double anchorCameraY;
+	private   double anchorCameraY;
 	@SuppressWarnings("unused")
-	private static double anchorCameraYSlider;
-	private static double anchorAngleCameraY=0;
-	private static final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
-	private static final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
+	private   double anchorCameraYSlider;
+	private   double anchorAngleCameraY=0;
+	private   final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
+	private   final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
 	@SuppressWarnings("unused")
-	private static double anchorAngleCameraYSlider=0;
-	private static double anchorX;
-	private static double anchorXCamerSlider=0; 
-	private static final DoubleProperty posCameraX = new SimpleDoubleProperty(0);
-	private static double test ;
+	private   double anchorAngleCameraYSlider=0;
+	@SuppressWarnings("unused")
+	private   double anchorX;
+	@SuppressWarnings("unused")
+	private   double anchorXCamerSlider=0; 
+	private   final DoubleProperty posCameraX = new SimpleDoubleProperty(0);
+	@SuppressWarnings("unused")
+	private   double test ;
 	
-	private static final double WIDTH  = 450;
-	private static final double HEIGHT = 400;
-	private static double mouseWheelZoomSensitivity = 100;
-	private static double mouseSensitivity =0.05;
-	private static double targetBodyInitialDistance = 0.5;
-	public static SmartGroup model;
-	public static SmartGroup coordinateSystem;
-	static double rotX=0;
-	static double rotY=0;
-	static double rotZ=0;
-	private static String modelObjectPath = System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj";
+	private   final double WIDTH  = 450;
+	private   final double HEIGHT = 400;
+	private   double mouseWheelZoomSensitivity = 100;
+	private   double mouseSensitivity =0.05;
+	private   double targetBodyInitialDistance = 0.5;
+	public   SmartGroup model;
+	public   SmartGroup coordinateSystem;
+	  double rotX=0;
+	  double rotY=0;
+	  double rotZ=0;
+	private   String modelObjectPath = System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj";
 	
 	
-	public static void setModelObjectPath(String modelObjectPath) {
-		SpaceShipView3DFrontPage.modelObjectPath = modelObjectPath;
+	public void setModelObjectPath(String modelObjectPath) {
+		this.modelObjectPath = modelObjectPath;
 	}
 
 
-	public static void start(JFXPanel fxpanel) {
+	public  void start(JFXPanel fxpanel, String objectFilePath) {
 		//Box box = prepareBox();
-
+		if(!objectFilePath.isEmpty()) {
+		 modelObjectPath=objectFilePath;
+		}
 		 model =  loadModel(modelObjectPath);
 	    coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
 		
@@ -117,8 +125,13 @@ public class SpaceShipView3DFrontPage {
 		//initMouseControl(model, coordinateSystem, scene, fxpanel);
 		initMouseControl(model, scene, fxpanel, camera);
 		
-		
-		BlueBookVisual.ChartPanel_DashBoardFlexibleChart.addChartMouseListener(new ChartMouseListener() {
+		if( DashboardPlotArea.getContentPanelList().get(0).getID()==1) {
+			Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
+			ChartPanel chartPanel = plotElement.getPlotElement().getChartPanel();
+			VariableList2 varX = plotElement.getPlotElement().getVariableListX();
+			//VariableList2 varY = plotElement.getPlotElement().getVariableListY();
+			
+			chartPanel.addChartMouseListener(new ChartMouseListener() {
 	        @Override
 	        public void chartMouseClicked(ChartMouseEvent event) {
 	            // ignore
@@ -126,65 +139,66 @@ public class SpaceShipView3DFrontPage {
 	
 	        @Override
 	        public void chartMouseMoved(ChartMouseEvent event) {
-		        	if(BlueBookVisual.getVariableListX().getSelectedIndx()==0) {
-		            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
-		            JFreeChart chart = event.getChart();
-		            XYPlot plot = (XYPlot) chart.getPlot();
-		            ValueAxis xAxis = plot.getDomainAxis();
-		            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-		                    RectangleEdge.BOTTOM);
-	
-		            double max = xAxis.getUpperBound();
-		            double min = xAxis.getLowerBound();
-		            int indx = (int) ( (x/(max-min))*BlueBookVisual.getResultSet().size());
-			            if(indx>0 && indx<BlueBookVisual.getResultSet().size()) {
-			                Platform.runLater(new Runnable() {
-			                    @Override
-			                    public void run() {
-	
-			                    	double getRotx = Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerX());
-			                    	//System.out.println(BlueBookVisual.getResultSet().get(indx).getEulerX());
-			                    	double getRoty = Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerY());
-			                    	double getRotz = Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerZ());
-			        				try {
-			                    	if(!Double.isNaN(getRotx)) {
-			        				double drotX = getRotx - rotX;
-			        				setRotationX(drotX);
-			        				rotX = getRotx;
-			                    	}
-			                    	if(!Double.isNaN(getRoty)) {
-			        				double drotY = getRoty - rotZ;
-			        				setRotationZ(drotY);
-			        				rotZ = getRoty;
-			                    	}
-			                    	if(!Double.isNaN(getRotz)){
-			        				double drotZ = getRotz - rotY;
-			        				setRotationY(drotZ);
-			        				rotY = getRotz;
-			                    	}
-
-			        				} catch (Exception e) {
-			        					System.err.println("Error: Rotation not possible");
-			        				}
-					            	/*
-					            	System.out.println(Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerX())+" | "+
-					            					   Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerY())+" | "+
-					            					   Math.toDegrees(BlueBookVisual.getResultSet().get(indx).getEulerZ())+" | ");
-			                    */
-			                    }
-			                });
-			            }
-		        	}
-	        }
-	});
+	        	
+				        	if(varX.getSelectedIndx()==0) {
+				            Rectangle2D dataArea = chartPanel.getScreenDataArea();
+				            JFreeChart chart = event.getChart();
+				            XYPlot plot = (XYPlot) chart.getPlot();
+				            ValueAxis xAxis = plot.getDomainAxis();
+				            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
+				                    RectangleEdge.BOTTOM);
+			
+				            double max = xAxis.getUpperBound();
+				            double min = xAxis.getLowerBound();
+				            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
+					            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
+					                Platform.runLater(new Runnable() {
+					                    @Override
+					                    public void run() {
+			
+					                    	double getRotx = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerX());
+					                    	//System.out.println(BlueBookVisual.getResultSet().get(indx).getEulerX());
+					                    	double getRoty = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerY());
+					                    	double getRotz = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerZ());
+					        				try {
+					                    	if(!Double.isNaN(getRotx)) {
+					        				double drotX = getRotx - rotX;
+					        				setRotationX(drotX);
+					        				rotX = getRotx;
+					                    	}
+					                    	if(!Double.isNaN(getRoty)) {
+					        				double drotY = getRoty - rotZ;
+					        				setRotationZ(drotY);
+					        				rotZ = getRoty;
+					                    	}
+					                    	if(!Double.isNaN(getRotz)){
+					        				double drotZ = getRotz - rotY;
+					        				setRotationY(drotZ);
+					        				rotY = getRotz;
+					                    	}
 		
+					        				} catch (Exception e) {
+					        					System.err.println("Error: Rotation not possible");
+					        				}
+							            	/*
+							            	System.out.println(Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerX())+" | "+
+							            					   Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerY())+" | "+
+							            					   Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerZ())+" | ");
+					                    */
+					                    }
+					                });
+					            }
+				        	}
+			        }
+			});
 		
+		}	
 		fxpanel.setScene(scene);
 
 	}
 	
 	
-	private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
+	private   void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
 		//Rotate xRotate;
 		Rotate yRotate;
 		@SuppressWarnings("unused")
@@ -238,7 +252,7 @@ public class SpaceShipView3DFrontPage {
 
 	}
 
-public static void setRotationX(double deltaRotX) {
+public   void setRotationX(double deltaRotX) {
 	model.rotateByX(deltaRotX);
 	coordinateSystem.rotateByX(deltaRotX);
 	//model.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
@@ -248,7 +262,7 @@ public static void setRotationX(double deltaRotX) {
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 	*/
 }
-public static void setRotationY(double deltaRotY) {
+public   void setRotationY(double deltaRotY) {
 	model.rotateByY(deltaRotY);
 	coordinateSystem.rotateByY(deltaRotY);
 	//model.getTransforms().add(new Rotate(deltaRotY, Rotate.Y_AXIS));
@@ -257,7 +271,7 @@ public static void setRotationY(double deltaRotY) {
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 	*/
 }
-public static void setRotationZ(double deltaRotZ) {
+public   void setRotationZ(double deltaRotZ) {
 	model.rotateByZ(deltaRotZ);
 	coordinateSystem.rotateByZ(deltaRotZ);
 	//model.getTransforms().add(new Rotate(deltaRotZ, Rotate.Z_AXIS));
@@ -267,7 +281,7 @@ public static void setRotationZ(double deltaRotZ) {
 	*/
 }
 
-private static SmartGroup loadModel(String fileString) {
+private   SmartGroup loadModel(String fileString) {
     SmartGroup modelRoot = new SmartGroup();
 	PhongMaterial material = new PhongMaterial();
     material.setDiffuseColor(Color.SILVER);
@@ -286,7 +300,7 @@ modelRoot.setScaleZ(scale);
     return modelRoot;
 }
 
-private static SmartGroup loadCoordinateSystem(String fileString) {
+private   SmartGroup loadCoordinateSystem(String fileString) {
     SmartGroup modelRoot = new SmartGroup();
 	PhongMaterial material = new PhongMaterial();
     material.setDiffuseColor(Color.BLUE);
@@ -307,7 +321,7 @@ modelRoot.setScaleZ(scale);
     return modelRoot;
 }
 
-public static class SmartGroup extends Group {
+public   class SmartGroup extends Group {
 	Rotate r;
 	Transform t = new Rotate();
 	
@@ -331,7 +345,7 @@ public static class SmartGroup extends Group {
 	}
 }
 
-public static Group createGrid(float size, float delta) {
+public static   Group createGrid(float size, float delta) {
     if (delta < 1) {
         delta = 1;
     }
@@ -379,7 +393,7 @@ public static Group createGrid(float size, float delta) {
     return new Group( meshViewXZ/*, meshViewXZ2 , meshViewYZ, meshViewYZ2 */);
 }
 
-private static PolygonMesh createQuadrilateralMesh(float width, float height, int subDivX, int subDivY) {
+private static   PolygonMesh createQuadrilateralMesh(float width, float height, int subDivX, int subDivY) {
     final float minX = - width / 2f;
     final float minY = - height / 2f;
     final float maxX =   width / 2f;
@@ -449,7 +463,7 @@ private static PolygonMesh createQuadrilateralMesh(float width, float height, in
     return mesh;
 }
 
-public static Group getAxes(double scale) {
+public   Group getAxes(double scale) {
     Cylinder axisX = new Cylinder(1, 200);
     axisX.getTransforms().addAll(new Rotate(90, Rotate.Z_AXIS), new Translate(0, -100, 0));
     axisX.setMaterial(new PhongMaterial(Color.RED));
@@ -467,7 +481,7 @@ public static Group getAxes(double scale) {
     return group;
 }
 @SuppressWarnings("unused")
-private static Node prepareAmbientLight(){
+private   Node prepareAmbientLight(){
 	
 	AmbientLight ambientLight = new AmbientLight();
 	ambientLight.setColor(Color.GRAY);

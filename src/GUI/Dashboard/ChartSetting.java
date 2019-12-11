@@ -1,4 +1,4 @@
-package GUI;
+package GUI.Dashboard;
 
 public class ChartSetting {
 

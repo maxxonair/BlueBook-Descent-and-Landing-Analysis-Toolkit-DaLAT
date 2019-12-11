@@ -1,20 +1,21 @@
-package GUI;
+package GUI.Dashboard;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
+import GUI.BlueBookVisual;
+import GUI.RotatedIcon;
+import GUI.TextIcon;
 
 
-
-public class VariableList2 {
+public class VariableList {
 	
 	private static String PROJECT_TITLE = " Axis Variable";
 	private static int xInit = 190;
@@ -25,17 +26,13 @@ public class VariableList2 {
 	
 	private  String axisName;
 	private JButton panel;
-	//private int chartIndx=1;
 	
-	private PlotElement plotElement;
-	
-	public VariableList2(JButton panel, String axis, PlotElement plotElement) {
+	public VariableList(JButton panel, String axis) {
 		this.panel = panel;
 		this.axisName = axis; 
-		this.plotElement = plotElement;
 	}
 	
-	public void getVariableList(List<String> variableList) {
+	public void getVariableList(String[] variableList) {
 
     JFrame.setDefaultLookAndFeelDecorated(false);
     JFrame frame = new JFrame("" +axisName+""+ PROJECT_TITLE);
@@ -56,9 +53,9 @@ public class VariableList2 {
     mainPanel.setBackground(BlueBookVisual.getBackgroundColor());
     mainPanel.setLayout(null);
     int varY=0;
-    JButton[] buttonGroup = new JButton[variableList.size()];
-    for(int i=0;i<variableList.size();i++) {
-	    	buttonGroup[i] = new JButton(variableList.get(i));
+    JButton[] buttonGroup = new JButton[variableList.length];
+    for(int i=0;i<variableList.length;i++) {
+	    	buttonGroup[i] = new JButton(variableList[i]);
 	    	buttonGroup[i].setSize(xInit,elementHeight);
 	    	buttonGroup[i].setFont(BlueBookVisual.getSmall_font());
 	    	buttonGroup[i].setBackground(BlueBookVisual.getBackgroundColor());
@@ -76,27 +73,15 @@ public class VariableList2 {
 					//System.out.println(indx);
 					
 					if(axisName.equals("y")) {
-						// Update Axis Label
 				      TextIcon t1 = new TextIcon(panel, arg0.getActionCommand(), TextIcon.Layout.HORIZONTAL);
 				      RotatedIcon r1 = new RotatedIcon(t1, RotatedIcon.Rotate.UP);
 				      panel.setIcon( r1 );
-				       // Update Chart Setting and Update Chart
-				      ChartSetting chartSetting = plotElement.getChartSetting();
-				      chartSetting.setY(selectedIndx);
-				      plotElement.setChartSetting(chartSetting);
-				     // PlotPanelManager.getChartSettings().get(plotElement.getID()).setY(selectedIndx);
 					} else if(axisName.equals("x")) {
 				      TextIcon t1 = new TextIcon(panel, arg0.getActionCommand(), TextIcon.Layout.HORIZONTAL);
 				      RotatedIcon r1 = new RotatedIcon(t1, RotatedIcon.Rotate.ABOUT_CENTER);
 				      panel.setIcon( r1 );
-				       // Update Chart Setting and Update Chart
-				      ChartSetting chartSetting = plotElement.getChartSetting();
-				      chartSetting.setX(selectedIndx);
-				      plotElement.setChartSetting(chartSetting);
-					 // PlotPanelManager.getChartSettings().get(plotElement.getID()).setX(selectedIndx);
 					}
 
-					plotElement.updateChart();
 				      // Dispose frame
 					frame.dispose();;
 				}
@@ -124,9 +109,9 @@ public class VariableList2 {
 		this.selectedIndx = selectedIndx;
 	}
 
-	public static int getIndx(List<String> variableList, String value) {
-		for(int i=0;i<variableList.size();i++) {
-			if(value.equals(variableList.get(i))) {
+	public static int getIndx(String[] variableList, String value) {
+		for(int i=0;i<variableList.length;i++) {
+			if(value.equals(variableList[i])) {
 				return i;
 			}
 		}

@@ -34,7 +34,6 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
-import java.awt.event.KeyEvent;
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -49,9 +48,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.PrintStream;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
 import java.text.DecimalFormat;
@@ -60,7 +57,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Random;
 import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -70,7 +66,6 @@ import javax.imageio.ImageIO;
 import javax.swing.border.Border;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
-import javax.swing.filechooser.FileFilter;
 
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.basic.BasicArrowButton;
@@ -94,45 +89,35 @@ import org.jfree.chart.plot.Crosshair;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.PolarPlot;
 import org.jfree.chart.plot.XYPlot;
-import org.jfree.chart.renderer.xy.StackedXYAreaRenderer;
-import org.jfree.chart.renderer.xy.StandardXYItemRenderer;
-import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
-import org.jfree.data.general.DatasetUtilities;
 import org.jfree.data.xy.DefaultTableXYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import javax.swing.*;  
 
-import Model.atm_dataset;
 import Sequence.SequenceElement;
 import Simulator_main.DataSets.RealTimeResultSet;
-import GUI.FxElements.SpaceShipView3DFrontPage;
-import GUI.FxElements.TargetView3D;
-import GUI.PostProcessing.CreateCustomChart;
 import GUI.PropulsionDraw.PropulsionDrawEditor;
-import GUI.Settings.Settings;
 import GUI.SimulationSetup.BasicSetup.BasicSetupMain;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
 import VisualEngine.animation.AnimationSet;
-import VisualEngine.engineLauncher.worldGenerator;
-import javafx.application.Platform;
-import javafx.embed.swing.JFXPanel;
-import utils.Mathbox;
 import utils.ReadInput;
-import utils.TextAreaOutputStream;
 
 import com.apple.eawt.Application;
 
+import GUI.Dashboard.DashboardLeftPanel;
+import GUI.Dashboard.DashboardPanel;
+import GUI.Dashboard.DashboardPlotArea;
 import GUI.DataStructures.InputFileSet;
+import GUI.MenuBar.MenuBar;
 
 public class BlueBookVisual implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
-	static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.3 ALPHA";
+	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.3 ALPHA";
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
@@ -218,7 +203,7 @@ public class BlueBookVisual implements  ActionListener {
     static Font small_font			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
     static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
-    static Font targetfont            = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 14);
+    
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     public static DecimalFormat df 	  = new DecimalFormat();
     
@@ -231,15 +216,7 @@ public class BlueBookVisual implements  ActionListener {
     									      "Moon" ,	
     									      "Mars", 	
     										  "Venus"};
-    public static String[] TargetCurve_Options = { "",						// No target curve -> continous burn
-    											   "Parabolic", 
-    											   "SquareRoot" ,	
-    											   "Linear" 	
-			  };	
-    public static String[] TargetCurve_Options_TVC = { 	"",						// No target curve -> continous burn
-    														"SquareRoot" ,	
-    														"Linear" 	
-};
+
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 
     										  "Latitude [deg]" ,
@@ -342,13 +319,6 @@ public class BlueBookVisual implements  ActionListener {
     										  "DeltaV Primary [m/s]"
     										  };
     
-    public static String[] Thrust_switch = { "Universal Module - 3 DoF / 6 DoF"
-    };
-    public static String[] LocalElevation_Resolution = { "4", 
-			  											 "16" , 
-			  											 "64", 
-			  											 "128"};
-    
     public static String[] EventHandler_Type = { "Time [s]", 
 			  									 "Longitude [rad]" , 
 			  									 "Latitude [rad]", 
@@ -358,13 +328,7 @@ public class BlueBookVisual implements  ActionListener {
 			  									 "Azimuth [rad]",
     											     "SC Mass [kg]"};
 
-	public static String[] COLUMS_CONTROLLER = {"ID",
-												"Controller Type",
-												"P gain",
-												"I gain",
-												"D gain",
-												"MIN cmd",
-												"MAX cmd"};
+
 	public static String[] COLUMS_ERROR = 		{"ID",
 												"Error Type",
 												"Trigger Value []",
@@ -378,25 +342,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 							 "Event Value"
 };
 
-public static String[] SequenceENDType = {"Time [s]",
-										  "Altitude [m]",
-										  "Velocity [m/s]",
-										  "FPA ref. Horizon [deg]"
-};
-public static String[] SequenceType = {"Coasting (No Thrust/ FC OFF)",
-									   "Constant Thrust (FC OFF)",
-									   "Controlled Thrust (FC ON)",
-									   "Controlled Pitch (FC ON) RCS Y",
-									   "Controlled Bank (FC ON) RCS X",
-									   "Parachute Deployment",
-									   "Parachute Eject"
-};
-public static String[] SequenceFC    = { ""};
-public static String[] FCTargetCurve = { "Parabolic Velocity-Altitude",
-										 "SquareRoot Velocity-Altitude",
-										 "Hover Parabolic entry"
-};
-public static String[] SequenceTVCFC     = { ""};
 
 
     public static double h_init;
@@ -411,36 +356,34 @@ public static String[] SequenceTVCFC     = { ""};
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main GUI Elements
     //----------------------------------------------------------------------------------------------------------------------------------------- 
+	private int uy_p41 = 10 ;
+    static int extx_main = 1350;
+    public static int exty_main = 800; 
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												GUI Elements
     //----------------------------------------------------------------------------------------------------------------------------------------- 
-    static int extx_main = 1350;
-    public static int exty_main = 800; 
+    
     public static boolean chartA3_fd=true;  
 	static boolean Chart_DashBoardFlexibleChart_fd = true;
 	static boolean CHART_P1_DashBoardOverviewChart_fd = true;
-    public static JTextArea textArea = new JTextArea();
-    public static JFrame frame_CreateLocalElevationFile;
-    public static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, "");     
+  
+       
     private static Crosshair xCrosshair_x;
     private static Crosshair yCrosshair_x; 
-    public static Crosshair xCrosshair_A3_1,xCrosshair_A3_2,xCrosshair_A3_3,xCrosshair_A3_4,yCrosshair_A3_1,yCrosshair_A3_2,yCrosshair_A3_3,yCrosshair_A3_4;
-    public static Crosshair xCrosshair_DashBoardOverviewChart_Altitude_Velocity, yCrosshair_DashBoardOverviewChart_Altitude_Velocity,xCrosshair_DashBoardOverviewChart_Time_FPA, yCrosshair_DashBoardOverviewChart_Time_FPA;
-    private static Crosshair xCH_DashboardFlexibleChart, yCH_DashboardFlexibleChart;
-    public static JPanel PageX04_Dashboard;
+    
+   
+    public static JPanel dashboardPanel;
     public static JPanel PageX04_Map;
     public static JPanel PageX04_3;
     public static JPanel PageX04_SimSetup; 
     public static JPanel PageX04_RawDATA; 
     public static JPanel PageX04_PolarMap;
     public static JPanel PolarMapContainer; 
-    public static JPanel PageX04_GroundClearance; 
-    public static JPanel P1_Plotpanel;
-    public static JPanel P1_SidePanel; 
+    public static JPanel P1_Plotpanel; 
     public static JPanel PageX04_AttitudeSetup;
-    public static JSplitPane SplitPane_Page1_Charts_horizontal; 
-    public static JSplitPane SplitPane_Page1_Charts_vertical; 
-    public static JSplitPane SplitPane_Page1_Charts_vertical2; 
+
+    
+    
     public static JFreeChart Chart_MercatorMap;
     public static JFreeChart Chart_GroundClearance;
 	public static JFreeChart CHART_P1_DashBoardOverviewChart_Altitude_Velocity;
@@ -463,15 +406,15 @@ public static String[] SequenceTVCFC     = { ""};
     public static XYSeriesCollection result11_A3_4 = new XYSeriesCollection();
     public static JCheckBox INPUT_ISPMODEL; 
     public static JTextField INPUT_RCSX, INPUT_RCSY, INPUT_RCSZ;
-    public static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG, INDICATOR_LAT,INDICATOR_LONG,INDICATOR_ALT,INDICATOR_VEL,INDICATOR_FPA,INDICATOR_AZI,INDICATOR_M0,INDICATOR_INTEGTIME, INDICATOR_TARGET;
+    static JLabel INDICATOR_PageMap_LAT,INDICATOR_PageMap_LONG;
     public static JTextField  INPUT_RB; 
     public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
     public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_ISPMIN, INPUT_SURFACEAREA, INPUT_BALLISTICCOEFFICIENT;
-    public static JLabel INDICATOR_VTOUCHDOWN ,INDICATOR_DELTAV, INDICATOR_PROPPERC, INDICATOR_RESPROP, Error_Indicator,Module_Indicator;
+    
     public static JRadioButton RB_SurfaceArea, RB_BallisticCoefficient;
     public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
-    public static JPanel SpaceShip3DControlPanel ;
-    public static List<Object> SpaceShip3DControlPanelContent = new ArrayList<Object>();
+
+
     public static TimerTask task_Update;
     public static JTextField ConstantCD_INPUT;
     public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
@@ -481,19 +424,12 @@ public static String[] SequenceTVCFC     = { ""};
     public static List<JLabel> sequenceProgressBarContent = new ArrayList<JLabel>();
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
-    private static JButton yAxisIndicator, xAxisIndicator, yAxisIndicator2, xAxisIndicator2;
-    private static  VariableList variableListY, variableListX,variableListY2, variableListX2;
+
     
     
-	 static int c_SEQUENCE = 12;
-	 static Object[] ROW_SEQUENCE = new Object[c_SEQUENCE];
-	 static DefaultTableModel MODEL_SEQUENCE;
-	 static JTable TABLE_SEQUENCE;
+
 	 
-	 static int c_CONTROLLER = 12;
-	 static Object[] ROW_CONTROLLER = new Object[c_SEQUENCE];
-	 static DefaultTableModel MODEL_CONTROLLER;
-	 static JTable TABLE_CONTROLLER;
+
 	 
 	 static int c_ERROR = 5;
 	 static Object[] ROW_ERROR = new Object[c_ERROR];
@@ -503,29 +439,13 @@ public static String[] SequenceTVCFC     = { ""};
 	 static int c_EventHanlder = 2;
 	 static Object[] ROW_EventHandler = new Object[c_EventHanlder];
 	 static DefaultTableModel MODEL_EventHandler;
-	 static JTable TABLE_EventHandler;
-		@SuppressWarnings("rawtypes")
-		public static JComboBox EventHandlerTypeCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox SequenceENDTypeCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox SequenceTypeCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox SequenceFCCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox FCTargetCurveCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox SequenceTVCFCCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox TVCFCTargetCurveCombobox = new JComboBox();
-		@SuppressWarnings("rawtypes")
-		public static JComboBox ErrorTypeCombobox= new JComboBox(); 
+
     static Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
     static Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 1);
     static Border Mars_border 	= BorderFactory.createLineBorder(Color.ORANGE, 1);
     static Border Venus_border = BorderFactory.createLineBorder(Color.GREEN, 1);
     public static JCheckBox p421_linp0;
-    private static List<atm_dataset> Page03_storage = new ArrayList<atm_dataset>(); // |1| time |2| altitude |3| velocity
+
     static XYSeriesCollection ResultSet_MercatorMap = new XYSeriesCollection();
     static XYSeriesCollection ResultSet_PolarMap = new XYSeriesCollection();
     	static int page1_plot_y =380;
@@ -544,7 +464,6 @@ public static String[] SequenceTVCFC     = { ""};
      	
      	private static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
 	//-----------------------------------------------------------------------------
-	@SuppressWarnings({ "unchecked" })
 	public JPanel createContentPane () throws IOException{
     	JPanel MainGUI = new JPanel();
     	MainGUI = new JPanel();
@@ -599,12 +518,8 @@ public static String[] SequenceTVCFC     = { ""};
     		      // here we code the action on a change
     		     // System.out.println( "File "+ file.getName() +" have change !" );
           		  UPDATE_Page01(true);
-          		  if(thirdWindowIndx==1) {
-          		refreshTargetView3D();
-          		  } else if(thirdWindowIndx==2) {
-          			  CreateCustomChart.UpdateChart();
-          		  }
-            		refreshSpaceCraftView();
+          		  DashboardPlotArea.updateDashboardPlotArea(DashboardPlotArea.getContentPanelList());
+            		//refreshSpaceCraftView();
     		    }
     		  };
     	   Timer timer = new Timer();
@@ -628,595 +543,20 @@ public static String[] SequenceTVCFC     = { ""};
       //  UIManager.put("MenuItem.background", labelColor);
         UIManager.put("Menu.opaque", true);
         
-      	BackgroundMenuBar menuBar = new BackgroundMenuBar();
-        //menuBar.setLocation(0, 0);
-        menuBar.setColor(new Color(250,250,250));
-        menuBar.setOpaque(true);
-        menuBar.setPreferredSize(new Dimension(1200, 25));
-        MainGUI.add(menuBar, BorderLayout.NORTH);
 
         JTabbedPane Page04_subtabPane = (JTabbedPane) new JTabbedPane();
         Page04_subtabPane.setPreferredSize(new Dimension(extx_main, exty_main));
         Page04_subtabPane.setBackground(backgroundColor);
         Page04_subtabPane.setForeground(Color.BLACK);
         
-     	ImageIcon icon_BlueBook = null;
-     	ImageIcon icon_windowSelect = null;
-     	ImageIcon icon_visualEngine = null;
-     	ImageIcon icon_preProcessing =null;
-     	ImageIcon icon_postProcessing =null;
-     	ImageIcon icon_simulation =null;
-     	int sizeUpperBar=20;
-     	try {
-		icon_BlueBook = new ImageIcon("images/BB_icon2.png","");
-		icon_windowSelect = new ImageIcon("images/windowSelect.png","");
-		icon_visualEngine = new ImageIcon("images/visualEngine.png","");
-		icon_preProcessing = new ImageIcon("images/preprocessingIcon.png","");
-		icon_postProcessing = new ImageIcon("images/postprocessingIcon.png","");
-		icon_simulation = new ImageIcon("images/simulationIcon.jpg","");
-     	if(OS_is==1) {
-        	 icon_BlueBook = new ImageIcon(getScaledImage(icon_BlueBook.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_windowSelect = new ImageIcon(getScaledImage(icon_windowSelect.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_visualEngine = new ImageIcon(getScaledImage(icon_visualEngine.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_simulation = new ImageIcon(getScaledImage(icon_simulation.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_preProcessing = new ImageIcon(getScaledImage(icon_preProcessing.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_postProcessing = new ImageIcon(getScaledImage(icon_postProcessing.getImage(),sizeUpperBar,sizeUpperBar));
-     	} else if(OS_is==2) {
-     	//	For Windows image icons have to be resized
-        	 icon_BlueBook = new ImageIcon(getScaledImage(icon_BlueBook.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_windowSelect = new ImageIcon(getScaledImage(icon_windowSelect.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_visualEngine = new ImageIcon(getScaledImage(icon_visualEngine.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_simulation = new ImageIcon(getScaledImage(icon_simulation.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_preProcessing = new ImageIcon(getScaledImage(icon_preProcessing.getImage(),sizeUpperBar,sizeUpperBar));
-        	 icon_postProcessing = new ImageIcon(getScaledImage(icon_postProcessing.getImage(),sizeUpperBar,sizeUpperBar));
-     	}
-     	} catch (Exception e) {
-     		System.err.println("Error: Loading image icons failed");
-     	}
-        //Build the first menu.
-     	JMenu menu_BlueBook = new JMenu("BlueBook");
-     	menu_BlueBook.setOpaque(true);
-     	menu_BlueBook.setBackground(labelColor);
-        menu_BlueBook.setFont(small_font);
-        menu_BlueBook.setMnemonic(KeyEvent.VK_A);
-        menu_BlueBook.setIcon(icon_BlueBook);
-        menuBar.add(menu_BlueBook);
-        JMenuItem menuItem_OpenResultfile = new JMenuItem("Open Resultfile                 "); 
-        menuItem_OpenResultfile.setForeground(Color.gray);
-        menuItem_OpenResultfile.setFont(small_font);
-        menuItem_OpenResultfile.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_BlueBook.add(menuItem_OpenResultfile);
-        menuItem_OpenResultfile.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   
-                  		
-                    } });
-        menu_BlueBook.addSeparator();
-        JMenuItem menuItem_Import = new JMenuItem("Settings                "); 
-        menuItem_Import.setForeground(labelColor);
-        menuItem_Import.setFont(small_font);
-        menuItem_Import.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_BlueBook.add(menuItem_Import);
-        menuItem_Import.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   Thread thread = new Thread(new Runnable() {
-                 		    public void run() {
-                 		    		// Create new window here 
-                 		    try {
-                 		    			Settings.main();
-  							} catch (IOException e) {
-  								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
-  								e.printStackTrace();
-  							};
-                 		    }
-                 		});
-                 		thread.start();
-                    } });
-        JMenuItem menuItem_Export = new JMenuItem("Results save as                "); 
-        menuItem_Export.setForeground(labelColor);
-        menuItem_Export.setFont(small_font);
-        menuItem_Export.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_BlueBook.add(menuItem_Export);
-        menuItem_Export.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                     	File myfile;
-  	        			myfile = new File(dir+"/RESULTS");
-  		            	JFileChooser fileChooser = new JFileChooser(myfile);
-	  		           	if (fileChooser.showSaveDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
-	  	                File file = fileChooser.getSelectedFile() ;
-	  	                String filePath = file.getAbsolutePath();
-	  	                filePath = filePath.replaceAll(RESULT_FileEnding, "");
-	  	                File source = new File(RES_File);
-	  	                File dest = new File(filePath+RESULT_FileEnding);
-                	   try {
-                	       FileUtils.copyFile(source, dest);
-                	   } catch (IOException eIO) {System.out.println(eIO);}
-                	   System.out.println("Result file "+file.getName()+" saved.");
-                    } });
-        menu_BlueBook.addSeparator();
-        JMenuItem menuItem_Exit = new JMenuItem("Exit                  "); 
-        menuItem_Exit.setForeground(Color.BLACK);
-        menuItem_Exit.setFont(small_font);
-        menuItem_Exit.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_BlueBook.add(menuItem_Exit);
-        menuItem_Exit.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   MAIN_frame.dispose();
-                    } });
-        //--------------------------------------------------------------------------------------------------------------------------------
-        JMenu menu_SIM = new JMenu("Simulation");
-        menu_SIM.setForeground(labelColor);
-        menu_SIM.setBackground(backgroundColor);
-        menu_SIM.setFont(small_font);
-        menu_SIM.setIcon(icon_simulation);
-        menu_SIM.setMnemonic(KeyEvent.VK_A);
-        menuBar.add(menu_SIM);
-        JMenuItem menuItem_SimSettings = new JMenuItem("Run Simulation                 "); 
-        menuItem_SimSettings.setForeground(Color.BLACK);
-        menuItem_SimSettings.setFont(small_font);
-        menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_R, ActionEvent.ALT_MASK));
-        menu_SIM.add(menuItem_SimSettings);
-        menuItem_SimSettings.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-             		  System.out.println("Action: RUN SIMULATION");
-      				try {
-      					String line;
-      					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
-      					InputStream in = proc.getInputStream();
-      					InputStream err = proc.getErrorStream();
-      					System.out.println(in);
-      					System.out.println(err);
-      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-      					  while ((line = input.readLine()) != null) {
-      					    System.out.println(line);
-      					  }
-      					  //UPDATE_Page01();
-      				} catch ( IOException e1) {
-      					// TODO Auto-generated catch block
-      					e1.printStackTrace();
-      					System.out.println("Error:  " + e1);
-      				} 
-                    } });
-        JMenuItem menuItem_Update = new JMenuItem("Update Data                 "); 
-        menuItem_Update.setForeground(Color.BLACK);
-        menuItem_Update.setFont(small_font);
-        menuItem_Update.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_U, ActionEvent.ALT_MASK));
-        menu_SIM.add(menuItem_Update);
-        menuItem_Update.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   UPDATE_Page01(true);
-                    } });
-        
        
-        JMenuItem menuItem_Refresh = new JMenuItem("Refresh Attitude                 "); 
-        menuItem_Refresh.setForeground(Color.BLACK);
-        menuItem_Refresh.setFont(small_font);
-        menu_SIM.add(menuItem_Refresh);
-        menuItem_Refresh.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   refreshSpaceCraftView();
-                    } });
-        
-        menuItem_SimSettings = new JMenuItem("Run RealTime Module              "); 
-        menuItem_SimSettings.setForeground(Color.BLACK);
-        menuItem_SimSettings.setFont(small_font);
-        menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_R, ActionEvent.ALT_MASK));
-        menu_SIM.add(menuItem_SimSettings);
-        menuItem_SimSettings.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-             		  System.out.println("Action: RUN SIMULATION");
-      				try {
-      					String line;
-      					Process proc = Runtime.getRuntime().exec("java -jar SIM2.jar");
-      					InputStream in = proc.getInputStream();
-      					InputStream err = proc.getErrorStream();
-      					System.out.println(in);
-      					System.out.println(err);
-      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-      					  while ((line = input.readLine()) != null) {
-      					    System.out.println(line);
-      					  }
-      					  //UPDATE_Page01();
-      				} catch ( IOException e1) {
-      					// TODO Auto-generated catch block
-      					e1.printStackTrace();
-      					System.out.println("Error:  " + e1);
-      				} 
-                    } });
-        //--------------------------------------------------------------------------------------------------------------------------------
-        JMenu menu_PreProcessing = new JMenu("PreProcessing");
-        menu_PreProcessing.setForeground(labelColor);
-        menu_PreProcessing.setBackground(backgroundColor);
-        menu_PreProcessing.setFont(small_font);
-        menu_PreProcessing.setIcon(icon_preProcessing);
-        menu_PreProcessing.setMnemonic(KeyEvent.VK_A);
-        menuBar.add(menu_PreProcessing);
-        
-        JMenuItem menuItem_ImportScenario = new JMenuItem("Simulation Setup Open               "); 
-        menuItem_ImportScenario.setForeground(labelColor);
-        menuItem_ImportScenario.setFont(small_font);
-        menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_PreProcessing.add(menuItem_ImportScenario);
-        menuItem_ImportScenario.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                      	File myfile;
-   	        			myfile = new File(dir+"/CASES");
-   		            	JFileChooser fileChooser = new JFileChooser(myfile);
-   		           	if (fileChooser.showOpenDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
-   	                File file = fileChooser.getSelectedFile() ;
-   	                String filePath = file.getAbsolutePath();
-   	                filePath = filePath.replaceAll(CASE_FileEnding, "");
-                       file = new File(filePath + CASE_FileEnding);
-               		   CurrentWorkfile_Path = file;
-                       CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
-                       MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
-         
-   					System.out.println("File "+CurrentWorkfile_Name+" opened.");
-
-                	   Page04_subtabPane.setSelectedIndex(1);
-                    } });
-        JMenuItem menuItem_ExportScenario = new JMenuItem("Simulation Setup Save as              "); 
-        menuItem_ExportScenario.setForeground(labelColor);
-        menuItem_ExportScenario.setFont(small_font);
-        menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_PreProcessing.add(menuItem_ExportScenario);
-        menuItem_ExportScenario.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {                	   
-                   	File myfile;
-	        			myfile = new File(dir+"/CASES");
-		            	JFileChooser fileChooser = new JFileChooser(myfile);
-		           	if (fileChooser.showSaveDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
-	                File file = fileChooser.getSelectedFile() ;
-	                String filePath = file.getAbsolutePath();
-	                filePath = filePath.replaceAll(CASE_FileEnding, "");
-                    file = new File(filePath + CASE_FileEnding);
-            		    CurrentWorkfile_Path = file;
-                    CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
-                    MAIN_frame.setTitle("" + PROJECT_TITLE + " | " + CurrentWorkfile_Name.split("[.]")[0]);
-						//EXPORT_Case();
-                    } });
-        //--------------------------------------------------------------------------------------------------------------------------------
-        JMenu menu_PostProcessing = new JMenu("PostProcessing");
-        menu_PostProcessing.setForeground(labelColor);
-        menu_PostProcessing.setBackground(backgroundColor);
-        menu_PostProcessing.setFont(small_font);
-        menu_PostProcessing.setIcon(icon_postProcessing);
-        menu_PostProcessing.setMnemonic(KeyEvent.VK_A);
-        menuBar.add(menu_PostProcessing);
-        
-        JMenuItem menuItem_CreateLocalElevation = new JMenuItem("Create Custom Data Plot               "); 
-        menuItem_CreateLocalElevation.setForeground(Color.BLACK);
-        menuItem_CreateLocalElevation.setFont(small_font);
-        menuItem_CreateLocalElevation.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_PostProcessing.add(menuItem_CreateLocalElevation);
-        menuItem_CreateLocalElevation.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   
-                	   Thread thread = new Thread(new Runnable() {
-               		    public void run() {
-               		    		// Create new window here 
-               		    try {
-               		    	String[] args = {""};
-               		    			CreateCustomChart.main(args);
-							} catch (IOException e) {
-								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
-								e.printStackTrace();
-							};
-               		    }
-               		});
-               		thread.start();
-               		
-                    } });
-        JMenuItem menuItem_DataPlotter = new JMenuItem("Open BlueBook DataPlotter               "); 
-        menuItem_DataPlotter.setForeground(Color.BLACK);
-        menuItem_DataPlotter.setFont(small_font);
-        //menuItem_DataPlotter.setAccelerator(KeyStroke.getKeyStroke(
-       //         KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_PostProcessing.add(menuItem_DataPlotter);
-        menuItem_DataPlotter.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   
-                	   Thread thread = new Thread(new Runnable() {
-               		    public void run() {
-               		    	@SuppressWarnings("unused")
-							Process proc = null;
-               		    try {
-               		    	proc = Runtime.getRuntime().exec("java -jar BlueBookPlot.jar");
-							} catch (IOException e) {
-								System.err.println("Error: Loaden Real Time Simulation Setup Window Failed");
-								e.printStackTrace();
-							};
-               		    }
-               		});
-               		thread.start();
-               		
-                    } });
       //--------------------------------------------------------------------------------------------------------------------------------
-        JMenu menu_VisualEngine = new JMenu("Visual Engine");
-        menu_VisualEngine.setForeground(labelColor);
-        menu_VisualEngine.setBackground(backgroundColor);
-        menu_VisualEngine.setFont(small_font);
-        menu_VisualEngine.setIcon(icon_visualEngine);
-        menu_VisualEngine.setMnemonic(KeyEvent.VK_A);
-        menuBar.add(menu_VisualEngine);
-        
-        JMenuItem menuItem_Open = new JMenuItem("Open VisualEngine                 "); 
-        menuItem_Open.setForeground(Color.gray);
-        menuItem_Open.setFont(small_font);
-        menuItem_Open.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_VisualEngine.add(menuItem_Open);
-        menuItem_Open.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	  /*
-                	   Thread thread = new Thread(new Runnable() {
-                		    public void run() {
-                		    	 worldGenerator.launchVisualEngine();
-                		    }
-                		});
-                		thread.start();
-                		*/
-                    } });
-        
-        JMenuItem menuItem_Animation = new JMenuItem("Create Animation from Results         "); 
-        menuItem_Animation.setForeground(Color.gray);
-        menuItem_Animation.setFont(small_font);
-        menuItem_Animation.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_VisualEngine.add(menuItem_Animation);
-        menuItem_Animation.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	  /*
-                	   Thread thread = new Thread(new Runnable() {
-                		    public void run() {
-                		    	List<AnimationSet> animationSets = READ_AnimationData();
-                		    	worldAnimation.launchVisualEngine(animationSets);
-                		    }
-                		});
-                		thread.start();
-                		*/
-                    } });
-        
-        JMenuItem menuItem_RealTime = new JMenuItem("Open Real Time Simulation Demo     "); 
-        menuItem_RealTime.setForeground(Color.BLACK);
-        menuItem_RealTime.setFont(small_font);
-        menuItem_RealTime.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
-        menu_VisualEngine.add(menuItem_RealTime);
-        menuItem_RealTime.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	  
-                	   Thread thread = new Thread(new Runnable() {
-                		    public void run() {
-                		    		// Create new window here 
-                  				try {
-                  					String line;
-                  					Process proc = null;
-                  					if(OS_is==1) {
-                  						 proc = Runtime.getRuntime().exec("java -jar FlyMeToTheMoon_OSX.jar");
-                  					} else if (OS_is==2){
-                  						 proc = Runtime.getRuntime().exec("java -jar FlyMeToTheMoon_WIN.jar");
-                  					}
-                  					InputStream in = proc.getInputStream();
-                  					InputStream err = proc.getErrorStream();
-                  					System.out.println(in);
-                  					System.out.println(err);
-                  					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-                  					  while ((line = input.readLine()) != null) {
-                  					    System.out.println(line);
-                  					  }
-                  					  //UPDATE_Page01();
-                  				} catch ( IOException e1) {
-                  					// TODO Auto-generated catch block
-                  					e1.printStackTrace();
-                  					System.out.println("Error:  " + e1);
-                  				} 
-                		    }
-                		});
-                		thread.start();
-                    } });
-
-        JMenu menuItem_AddSpacecraft = new JMenu("Add Spacecraft                ");
-        menuItem_AddSpacecraft.setForeground(Color.gray);
-        //menuItem_AddSpacecraft.setBackground(backgroundColor);
-        menuItem_AddSpacecraft.setFont(small_font);
-        menuItem_AddSpacecraft.setMnemonic(KeyEvent.VK_A);
-        menu_VisualEngine.add(menuItem_AddSpacecraft);
-        ButtonGroup group_sc = new ButtonGroup();
-
-        JRadioButtonMenuItem menuItem = new JRadioButtonMenuItem("Gemini");
-        menuItem.setForeground(labelColor);
-        menuItem.setFont(small_font);
-        menuItem_AddSpacecraft.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   worldGenerator.addEntity("gemini", "gray");
-                    } });
-        group_sc.add(menuItem);
-        menuItem_AddSpacecraft.add(menuItem);
-
-        menuItem = new JRadioButtonMenuItem("Mars Global Surveyor");
-        menuItem.setForeground(labelColor);
-        menuItem.setFont(small_font);
-        menuItem_AddSpacecraft.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   worldGenerator.addEntity("MGS", "gray");
-                    } });
-        group_sc.add(menuItem);
-        menuItem_AddSpacecraft.add(menuItem);
-        
-        JMenu menuItem_setEnvironment = new JMenu("Set Environment               ");
-        menuItem_setEnvironment.setForeground(Color.gray);
-        //menuItem_setEnvironment.setBackground(backgroundColor);
-        menuItem_setEnvironment.setFont(small_font);
-        menuItem_setEnvironment.setMnemonic(KeyEvent.VK_A);
-        menu_VisualEngine.add(menuItem_setEnvironment);
-        ButtonGroup group_env = new ButtonGroup();
-        
-        menuItem = new JRadioButtonMenuItem("Space");
-        menuItem.setForeground(labelColor);
-        menuItem.setFont(small_font);
-        menuItem_AddSpacecraft.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   
-                    } });
-        group_env.add(menuItem);
-        menuItem_setEnvironment.add(menuItem);
-
-         menuItem = new JRadioButtonMenuItem("Earth");
-         menuItem.setForeground(labelColor);
-         menuItem.setFont(small_font);
-         menuItem_AddSpacecraft.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                 	   worldGenerator.addEntity("MGS", "gray");
-                     } });
-         group_env.add(menuItem);
-        
-        menuItem_setEnvironment.add(menuItem);
-         menuItem = new JRadioButtonMenuItem("Moon");
-         menuItem.setForeground(labelColor);
-         menuItem.setFont(small_font);
-         menuItem_AddSpacecraft.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                 	   worldGenerator.addEntity("MGS", "gray");
-                     } });
-         group_env.add(menuItem);
-        menuItem_setEnvironment.add(menuItem);
-   //-------------------------------------------------------------------------     
-        JMenu menu_Window = new JMenu();
-        menu_Window.setText("Window");
-       // menu_Window.setForeground(labelColor);
-        //menu_Window.setBackground(backgroundColor);
-        menu_Window.setForeground(Color.black);
-       //menu_Window.setColor(labelColor);
-        menu_Window.setFont(small_font);
-        menu_Window.setIcon(icon_windowSelect);
-        menu_Window.setMnemonic(KeyEvent.VK_A);
-        menuBar.add(menu_Window);
-        
-        JMenu menu_ThirdWindow = new JMenu("Set window 2 content");
-        //menu_ThirdWindow.setForeground(labelColor);
-        //menu_ThirdWindow.setBackground(backgroundColor);
-        menu_ThirdWindow.setFont(small_font);
-        menu_ThirdWindow.setMnemonic(KeyEvent.VK_A);
-        menu_Window.add(menu_ThirdWindow);
-        
-        ButtonGroup thirdWindow = new ButtonGroup();
-        
-        menuItem = new JRadioButtonMenuItem("Third 2D Chart Window");
-       //menuItem.setForeground(labelColor);
-        menuItem.setFont(small_font);
-        menuItem.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-                	   try {
-					   CreateChart_ThirdWindowChart();
-					   SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-					   thirdWindowIndx=0;
-					} catch (IOException e1) {
-					     System.err.println("Error: Thrid window could not be created");
-					}
-                    } });
-        thirdWindow.add(menuItem);
-        menu_ThirdWindow.add(menuItem);
-
-         menuItem = new JRadioButtonMenuItem("3D Trajectory View");
-        // menuItem.setForeground(labelColor);
-         menuItem.setFont(small_font);
-         menuItem.setSelected(true);
-         menuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-
-							createTargetView3D();
-						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-						thirdWindowIndx=1;
-                    	       
-                     } });
-         thirdWindow.add(menuItem);
-         menu_ThirdWindow.add(menuItem);
-         
-         menuItem = new JRadioButtonMenuItem("PostProcessing Area");
-        // menuItem.setForeground(labelColor);
-         menuItem.setFont(small_font);
-         menuItem.setSelected(true);
-         menuItem.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-
-							try {
-								JPanel Content = CreateCustomChart.createContentPane();
-							  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
-							   		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
-							   	    }
-							         SpaceShip3DControlPanel.add(Content,BorderLayout.CENTER);
-							         SpaceShip3DControlPanelContent.add(Content);
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-						thirdWindowIndx=2;
-                    	       
-                     } });
-         thirdWindow.add(menuItem);
-         menu_ThirdWindow.add(menuItem);
-         
-        JMenuItem menuItemSelect3D = new JMenuItem("Select Attitude Indicator");
-       // menuItemSelect3D.setForeground(labelColor);
-         menuItemSelect3D.setFont(small_font);
-         menuItemSelect3D.setForeground(Color.black);
-         //menuItemSelect3D.setSelected(true);
-         menuItemSelect3D.addActionListener(new ActionListener() {
-                    public void actionPerformed(ActionEvent e) {
-                    	// Refresh Object file path
-                    	// refresh SpaceShipView3D
-                    	// refresh SpaceShipView3dFrontPage
-                    File myfile;
-                		myfile = new File(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/");
-                    	JFileChooser fileChooser = new JFileChooser(myfile);
-                    //	fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("*.obj", "obj"));
-                    //	fileChooser.setFileHidingEnabled(true);;
-                    //	fileChooser.setFileFilter(new FileNameExtensionFilter("*.obj", "obj"));
-                    	fileChooser.setFileFilter(new FileFilter() {
-
-                    		   public String getDescription() {
-                    		       return "Wavefront (*.obj)";
-                    		   }
-
-                    		   public boolean accept(File f) {
-                    		       if (f.isDirectory()) {
-                    		           return false;
-                    		       } else {
-                    		           String filename = f.getName().toLowerCase();
-                    		           return filename.endsWith(".obj")  ;
-                    		       }
-                    		   }
-                    		});
-                   	if (fileChooser.showOpenDialog(menuItemSelect3D) == JFileChooser.APPROVE_OPTION) {
-                   		
-                   		File file = fileChooser.getSelectedFile() ;
-                        String filePath = file.getAbsolutePath();
-                        SpaceShipView3DFrontPage.setModelObjectPath(filePath);
-                        refreshSpaceCraftView() ;
-                   	}
-                    	       
-                     } });
-         menu_Window.add(menuItemSelect3D);
-         
-      //--------------------------------------------------------------------------------------------------------------------------------
-        PageX04_Dashboard = new JPanel();
-        PageX04_Dashboard.setLocation(0, 0);
-        PageX04_Dashboard.setPreferredSize(new Dimension(extx_main, exty_main));
-        PageX04_Dashboard.setLayout(new BorderLayout());
-        PageX04_Dashboard.setBackground(backgroundColor);
-        PageX04_Dashboard.setForeground(labelColor);
+        dashboardPanel = new JPanel();
+        dashboardPanel.setLocation(0, 0);
+        dashboardPanel.setPreferredSize(new Dimension(extx_main, exty_main));
+        dashboardPanel.setLayout(new BorderLayout());
+        dashboardPanel.setBackground(backgroundColor);
+        dashboardPanel.setForeground(labelColor);
         PageX04_Map = new JPanel();
         PageX04_Map.setLocation(0, 0);
         PageX04_Map.setPreferredSize(new Dimension(extx_main, exty_main));
@@ -1241,12 +581,6 @@ public static String[] SequenceTVCFC     = { ""};
         PageX04_PolarMap.setLayout(new BorderLayout());
         PageX04_PolarMap.setBackground(backgroundColor);
         PageX04_PolarMap.setForeground(labelColor);
-        PageX04_GroundClearance = new JPanel();
-        PageX04_GroundClearance.setLocation(0, 0);
-        PageX04_GroundClearance.setPreferredSize(new Dimension(extx_main, exty_main));
-        PageX04_GroundClearance.setLayout(new BorderLayout());
-        PageX04_GroundClearance.setBackground(backgroundColor);
-        PageX04_GroundClearance.setForeground(labelColor);
         PageX04_RawDATA = new JPanel();
         PageX04_RawDATA.setLocation(0, 0);
         PageX04_RawDATA.setPreferredSize(new Dimension(extx_main, exty_main));
@@ -1260,640 +594,28 @@ public static String[] SequenceTVCFC     = { ""};
         PageX04_AttitudeSetup.setBackground(backgroundColor);
         PageX04_AttitudeSetup.setForeground(labelColor);
 
-        // Page 4.1
-        P1_SidePanel = new JPanel();
-        P1_SidePanel.setLayout(null);
-        P1_SidePanel.setPreferredSize(new Dimension(385, exty_main));
-        P1_SidePanel.setBackground(backgroundColor);
-        P1_SidePanel.setForeground(labelColor);
-        PageX04_Dashboard.add(P1_SidePanel, BorderLayout.LINE_START);
+
+        /**
+         * 
+         * 			Initialize Dashboard Panel
+         * 
+         * 
+         */
         
-        P1_Plotpanel = new JPanel();
-        P1_Plotpanel.setLayout(new BorderLayout());
-        P1_Plotpanel.setPreferredSize(new Dimension(900, exty_main-100));
-        P1_Plotpanel.setBackground(backgroundColor);
-        P1_Plotpanel.setForeground(Color.white);
-        PageX04_Dashboard.add(P1_Plotpanel,BorderLayout.LINE_END);
-        
-        SplitPane_Page1_Charts_horizontal = new JSplitPane();
-        SplitPane_Page1_Charts_horizontal.setOrientation(JSplitPane.VERTICAL_SPLIT );
-        SplitPane_Page1_Charts_horizontal.setDividerLocation(0.35);
-        SplitPane_Page1_Charts_horizontal.setDividerSize(3);
-        SplitPane_Page1_Charts_horizontal.setUI(new BasicSplitPaneUI() {
-               @SuppressWarnings("serial")
-   			public BasicSplitPaneDivider createDefaultDivider() {
-               return new BasicSplitPaneDivider(this) {
-                   @SuppressWarnings("unused")
-   				public void setBorder( Border b) {
-                   }
-
-                   @Override
-                       public void paint(Graphics g) {
-                       g.setColor(Color.gray);
-                       g.fillRect(0, 0, getSize().width, getSize().height);
-                           super.paint(g);
-                       }
-               };
-               }
-           });
-
-        SplitPane_Page1_Charts_horizontal.addComponentListener(new ComponentListener(){
-
-   			@Override
-   			public void componentHidden(ComponentEvent arg0) {
-   				// TODO Auto-generated method stub
-   				
-   			}
-
-   			@Override
-   			public void componentMoved(ComponentEvent arg0) {
-   				// TODO Auto-generated method stub
-   				//System.out.println("Line moved");	
-   				
-   			}
-
-   			@Override
-   			public void componentResized(ComponentEvent arg0) {
-   				// TODO Auto-generated method stub
-
-   			}
-
-   			@Override
-   			public void componentShown(ComponentEvent arg0) {
-   				// TODO Auto-generated method stub
-   				
-   			}
-       
-       	});
-        SplitPane_Page1_Charts_horizontal.addPropertyChangeListener(JSplitPane.DIVIDER_LOCATION_PROPERTY, 
-    		    new PropertyChangeListener() {
-    		        @Override
-    		        public void propertyChange(PropertyChangeEvent pce) {
-
-    		        }
-    		});
-        SplitPane_Page1_Charts_horizontal.setDividerLocation(400);
-       	P1_Plotpanel.add(SplitPane_Page1_Charts_horizontal, BorderLayout.CENTER);
-        
-       	
-       	
-        SplitPane_Page1_Charts_vertical = new JSplitPane();
-       	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
-        SplitPane_Page1_Charts_vertical.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-       //	SplitPane_Page1_Charts.setForeground(labelColor);
-       //	SplitPane_Page1_Charts.setBackground(Color.gray);
-        SplitPane_Page1_Charts_vertical.setDividerSize(3);
-        SplitPane_Page1_Charts_vertical.setUI(new BasicSplitPaneUI() {
-               @SuppressWarnings("serial")
-   			public BasicSplitPaneDivider createDefaultDivider() {
-               return new BasicSplitPaneDivider(this) {
-                   @SuppressWarnings("unused")
-   				public void setBorder( Border b) {
-                   }
-                   @Override
-                       public void paint(Graphics g) {
-                       g.setColor(Color.gray);
-                       g.fillRect(0, 0, getSize().width, getSize().height);
-                           super.paint(g);
-                       }
-               };
-               }
-           });
-        SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-        SplitPane_Page1_Charts_horizontal.add(SplitPane_Page1_Charts_vertical, JSplitPane.TOP);
-        
-        SplitPane_Page1_Charts_vertical2 = new JSplitPane();
-       	//SplitPane_Page1_Charts.setPreferredSize(new Dimension(1000, 1000));
-        SplitPane_Page1_Charts_vertical2.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
-       //	SplitPane_Page1_Charts.setForeground(labelColor);
-       //	SplitPane_Page1_Charts.setBackground(Color.gray);
-        SplitPane_Page1_Charts_vertical2.setDividerSize(3);
-        SplitPane_Page1_Charts_vertical2.setUI(new BasicSplitPaneUI() {
-               @SuppressWarnings("serial")
-   			public BasicSplitPaneDivider createDefaultDivider() {
-               return new BasicSplitPaneDivider(this) {
-                   @SuppressWarnings("unused")
-   				public void setBorder( Border b) {
-                   }
-                   @Override
-                       public void paint(Graphics g) {
-                       g.setColor(Color.gray);
-                       g.fillRect(0, 0, getSize().width, getSize().height);
-                           super.paint(g);
-                       }
-               };
-               }
-           });
-        SplitPane_Page1_Charts_vertical2.setDividerLocation(500);
-        SplitPane_Page1_Charts_vertical2.setOneTouchExpandable(true);
-        SplitPane_Page1_Charts_vertical2.setContinuousLayout(true);
-        SplitPane_Page1_Charts_vertical2.resetToPreferredSizes();
-        SplitPane_Page1_Charts_horizontal.add(SplitPane_Page1_Charts_vertical2, JSplitPane.BOTTOM);
-       	
-	    SpaceShip3DControlPanel = new JPanel();
-		SpaceShip3DControlPanel.setLayout(new BorderLayout());
-		SpaceShip3DControlPanel.setBackground(backgroundColor);
-		SpaceShip3DControlPanel.setForeground(labelColor);
-		//SpaceShip3DControlPanel.setSize(450, 400);
-		SplitPane_Page1_Charts_vertical.add(SpaceShip3DControlPanel, JSplitPane.RIGHT);
-		
-	    JPanel TargetViewControlPanel = new JPanel();
-	    TargetViewControlPanel.setLayout(new BorderLayout());
-	    TargetViewControlPanel.setPreferredSize(new Dimension(450, 25));
-	    TargetViewControlPanel.setBackground(backgroundColor);
-	    SpaceShip3DControlPanel.add(TargetViewControlPanel, BorderLayout.PAGE_END);
-	    
-     	ImageIcon iconPlayPause =null;
-     	 sizeUpperBar=25;
-     	try {
-     		iconPlayPause = new ImageIcon("images/playPauseIcon.png","");
-     		iconPlayPause = new ImageIcon(getScaledImage(iconPlayPause.getImage(),sizeUpperBar,sizeUpperBar));
-     	} catch (Exception e) {
-     		System.err.println("Error: Dashboard control panel icons could not be loaded."); 
-     	}
-	    
-        JButton ButtonTargetViewControlPlay = new JButton("");
-        ButtonTargetViewControlPlay.setLocation(100, 0);
-        ButtonTargetViewControlPlay.setSize(45,25);
-        ButtonTargetViewControlPlay.setBackground(backgroundColor);
-        ButtonTargetViewControlPlay.setOpaque(true);
-        ButtonTargetViewControlPlay.setBorderPainted(false);
-        ButtonTargetViewControlPlay.setIcon(iconPlayPause);
-        ButtonTargetViewControlPlay.addActionListener(new ActionListener() { 
-        	  public void actionPerformed(ActionEvent e) {
-	                Platform.runLater(new Runnable() {
-	                    @Override
-	                    public void run() {
-	                    			TargetView3D.playPauseAnimation();
-	                    }
-	                    });
-        	}} );
-	    TargetViewControlPanel.add(ButtonTargetViewControlPlay, BorderLayout.CENTER);
-	    
-	    JSlider SpeedSliderTargetViewControl = GuiComponents.getGuiSliderSpeed(small_font, 100, 0, 10, 40, labelColor, backgroundColor);
-	    SpeedSliderTargetViewControl.addChangeListener(new ChangeListener() {
-
-			@Override
-			public void stateChanged(ChangeEvent arg0) {
-				// TODO Auto-generated method stub
-				double rotspeed = ((double) (SpeedSliderTargetViewControl.getValue()))/100;
-				TargetView3D.targetBodyRotSpeed = rotspeed;
-			}
-	    	
-	    });
-	    TargetViewControlPanel.add(SpeedSliderTargetViewControl, BorderLayout.EAST);
-	    
-	    
-	    FlexibleChartContentPanel = new JPanel();
-	    FlexibleChartContentPanel.setLayout(new BorderLayout());
-	    FlexibleChartContentPanel.setBackground(backgroundColor);
-	    FlexibleChartContentPanel.setForeground(labelColor);
-		//SpaceShip3DControlPanel.setSize(450, 400);
-	    SplitPane_Page1_Charts_vertical2.add(FlexibleChartContentPanel, JSplitPane.LEFT);
-	    
-	    JPanel FlexibleChartControlPanel = new JPanel();
-	    FlexibleChartControlPanel.setLayout(new BorderLayout());
-	    FlexibleChartControlPanel.setBackground(backgroundColor);
-	    //FlexibleChartContentPanel.add(FlexibleChartControlPanel, BorderLayout.PAGE_START);
-	    
-	    JPanel xControlPanel = new JPanel();
-	    xControlPanel.setLayout(new BorderLayout());
-	    //xControlPanel.setPreferredSize(new Dimension(1000, 25));
-	    xControlPanel.setBackground(backgroundColor);
-	    FlexibleChartContentPanel.add(xControlPanel, BorderLayout.PAGE_END);
-	    
-	    JPanel yControlPanel = new JPanel();
-	    yControlPanel.setLayout(new BorderLayout());
-	    //yControlPanel.setPreferredSize(new Dimension(400, 25));
-	    yControlPanel.setBackground(backgroundColor);
-	    FlexibleChartContentPanel.add(yControlPanel, BorderLayout.LINE_START);
-
-	      
-	       yAxisIndicator = new JButton();
-	       variableListY =  new VariableList(yAxisIndicator, "y",2);
-	       yAxisIndicator.setBackground(backgroundColor);
-	       yAxisIndicator.setForeground(labelColor);
-	       yAxisIndicator.setOpaque(true);
-	       yAxisIndicator.setBorderPainted(false);
-	      TextIcon t1 = new TextIcon(yAxisIndicator, "Altitude [m]", TextIcon.Layout.HORIZONTAL);
-	      RotatedIcon r1 = new RotatedIcon(t1, RotatedIcon.Rotate.UP);
-	      t1.setFont(small_font);
-	      yAxisIndicator.addActionListener(new ActionListener() {
-
-	
-			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				variableListY.getVariableList(Axis_Option_NR);
-			}
-	    	  
-	      });
-	      yAxisIndicator.setIcon( r1 );
-	      variableListY.setSelectedIndx(4);
-	      
-	       
-	       xAxisIndicator = new JButton();
-	       variableListX =  new VariableList(xAxisIndicator, "x",2);
-	       xAxisIndicator.setBackground(backgroundColor);
-	       xAxisIndicator.setForeground(labelColor);
-	       xAxisIndicator.setOpaque(true);
-	       xAxisIndicator.setBorderPainted(false);
-	       t1 = new TextIcon(xAxisIndicator, "Time [s]", TextIcon.Layout.HORIZONTAL);
-	       r1 = new RotatedIcon(t1, RotatedIcon.Rotate.ABOUT_CENTER);
-	      xAxisIndicator.addActionListener(new ActionListener() {
-
-	
-			@Override
-			public void actionPerformed(ActionEvent arg1) {
-				variableListX.getVariableList(Axis_Option_NR);
-			}
-	    	  
-	      });
-	      xAxisIndicator.setIcon( r1 );
-
-	      xAxisIndicator.setPreferredSize(new Dimension(25,25));
-	      yAxisIndicator.setPreferredSize(new Dimension(25,25));
-	      xAxisIndicator.setMinimumSize(new Dimension(25,25));
-	      yAxisIndicator.setMinimumSize(new Dimension(25,25));
-	      xControlPanel.add(xAxisIndicator, BorderLayout.CENTER);
-	      yControlPanel.add(yAxisIndicator, BorderLayout.CENTER);
-	    
-	    
-	    //---------------------------------------------------------
-	      
-		    FlexibleChartContentPanel2 = new JPanel();
-		    FlexibleChartContentPanel2.setLayout(new BorderLayout());
-		    FlexibleChartContentPanel2.setBackground(backgroundColor);
-		    FlexibleChartContentPanel2.setForeground(labelColor);
-			//SpaceShip3DControlPanel.setSize(450, 400);
-		    SplitPane_Page1_Charts_vertical.add(FlexibleChartContentPanel2, JSplitPane.LEFT);
-		    
-		    JPanel FlexibleChartControlPanel2 = new JPanel();
-		    FlexibleChartControlPanel2.setLayout(new BorderLayout());
-		    FlexibleChartControlPanel2.setBackground(backgroundColor);
-		    FlexibleChartContentPanel2.add(FlexibleChartControlPanel2, BorderLayout.PAGE_START);
-		    
-		    JPanel xControlPanel2 = new JPanel();
-		    xControlPanel2.setLayout(new BorderLayout());
-		    //xControlPanel.setPreferredSize(new Dimension(1000, 25));
-		    xControlPanel2.setBackground(backgroundColor);
-		    FlexibleChartContentPanel2.add(xControlPanel2, BorderLayout.PAGE_END);
-		    
-		    JPanel yControlPanel2 = new JPanel();
-		    yControlPanel2.setLayout(new BorderLayout());
-		    //yControlPanel.setPreferredSize(new Dimension(400, 25));
-		    yControlPanel2.setBackground(backgroundColor);
-		    FlexibleChartContentPanel2.add(yControlPanel2, BorderLayout.LINE_START);
-
-		     
-		       yAxisIndicator2 = new JButton();
-		       variableListY2 =  new VariableList(yAxisIndicator2, "y",1);
-		       yAxisIndicator2.setBackground(backgroundColor);
-		       yAxisIndicator2.setForeground(labelColor);
-		       yAxisIndicator2.setOpaque(true);
-		       yAxisIndicator2.setBorderPainted(false);
-		      TextIcon t2 = new TextIcon(yAxisIndicator2, "Altitude [m]", TextIcon.Layout.HORIZONTAL);
-		      RotatedIcon r2 = new RotatedIcon(t2, RotatedIcon.Rotate.UP);
-		      t2.setFont(small_font);
-		      yAxisIndicator2.addActionListener(new ActionListener() {
-
-		
-				@Override
-				public void actionPerformed(ActionEvent arg2) {
-					variableListY2.getVariableList(Axis_Option_NR);
-				}
-		    	  
-		      });
-		      yAxisIndicator2.setIcon( r2 );
-		      variableListY2.setSelectedIndx(4);
-		      
-		       
-		       xAxisIndicator2 = new JButton();
-		       variableListX2 =  new VariableList(xAxisIndicator2, "x",1);
-		       xAxisIndicator2.setBackground(backgroundColor);
-		       xAxisIndicator2.setForeground(labelColor);
-		       xAxisIndicator2.setOpaque(true);
-		       xAxisIndicator2.setBorderPainted(false);
-		       t2 = new TextIcon(xAxisIndicator2, "Velocity [m/s]", TextIcon.Layout.HORIZONTAL);
-		       r2 = new RotatedIcon(t2, RotatedIcon.Rotate.ABOUT_CENTER);
-		      xAxisIndicator2.addActionListener(new ActionListener() {
-
-		
-				@Override
-				public void actionPerformed(ActionEvent arg3) {
-					variableListX2.getVariableList(Axis_Option_NR);
-				}
-		    	  
-		      });
-		      xAxisIndicator2.setIcon( r2 );
-		      variableListX2.setSelectedIndx(6);
-
-		      xAxisIndicator2.setPreferredSize(new Dimension(25,25));
-		      yAxisIndicator2.setPreferredSize(new Dimension(25,25));
-		      xAxisIndicator2.setMinimumSize(new Dimension(25,25));
-		      yAxisIndicator2.setMinimumSize(new Dimension(25,25));
-		      xControlPanel2.add(xAxisIndicator2, BorderLayout.CENTER);
-		      yControlPanel2.add(yAxisIndicator2, BorderLayout.CENTER);
-		      
-		      
-		
-        JScrollPane scrollPane_P1 = new JScrollPane(P1_SidePanel);
-        scrollPane_P1.setPreferredSize(new Dimension(415, exty_main));
-        scrollPane_P1.getVerticalScrollBar().setUnitIncrement(16);
-        PageX04_Dashboard.add(scrollPane_P1, BorderLayout.LINE_START);
-        JScrollPane scrollPane1_P1 = new JScrollPane(P1_Plotpanel);
-        scrollPane1_P1.getVerticalScrollBar().setUnitIncrement(16);
-        PageX04_Dashboard.add(scrollPane1_P1, BorderLayout.CENTER);
-        
-        int uy_p41 = 10 ; 
-        int y_ext_vel = 10; 
-      
-        JLabel LABEL_LONG = new JLabel(" Longitude [deg]");
-        LABEL_LONG.setLocation(65, uy_p41 + 0 );
-        LABEL_LONG.setSize(150, 20);
-        LABEL_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //LABEL_LONG.setBorder(Moon_border);
-        LABEL_LONG.setBackground(backgroundColor);
-        LABEL_LONG.setForeground(labelColor);
-        LABEL_LONG.setFont(small_font);
-        P1_SidePanel.add(LABEL_LONG);
-        JLabel LABEL_LAT = new JLabel(" Latitude [deg]");
-        LABEL_LAT.setLocation(65, uy_p41 + 25 );
-        LABEL_LAT.setSize(150, 20);
-        LABEL_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_LAT.setFont(small_font);
-        //LABEL_LAT.setBorder(Moon_border);
-        LABEL_LAT.setBackground(backgroundColor);
-        LABEL_LAT.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_LAT);
-        JLabel LABEL_ALT = new JLabel(" Altitude [m]");
-        LABEL_ALT.setLocation(65, uy_p41 + 50 );
-        LABEL_ALT.setSize(150, 20);
-        LABEL_ALT.setFont(small_font);
-        LABEL_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //LABEL_ALT.setBorder(Moon_border);
-        LABEL_ALT.setBackground(backgroundColor);
-        LABEL_ALT.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_ALT);
+        DashboardPanel dashboardPanel = new DashboardPanel();
         
         
-        JLabel LABEL_VEL = new JLabel(" Velocity [m/s]");
-        LABEL_VEL.setLocation(65, uy_p41 + 75 + y_ext_vel);
-        LABEL_VEL.setSize(150, 20);
-        LABEL_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_VEL.setFont(small_font);
-        //LABEL_VEL.setBorder(Moon_border);
-        LABEL_VEL.setBackground(backgroundColor);
-        LABEL_VEL.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_VEL);
-        JLabel LABEL_FPA = new JLabel(" Flight Path Angle [deg]");
-        LABEL_FPA.setLocation(65, uy_p41 + 100 + y_ext_vel);
-        LABEL_FPA.setSize(150, 20);
-        LABEL_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_FPA.setFont(small_font);
-        //LABEL_FPA.setBorder(Moon_border);
-        LABEL_FPA.setBackground(backgroundColor);
-        LABEL_FPA.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_FPA);
-        JLabel LABEL_AZI = new JLabel(" Azimuth [deg]");
-        LABEL_AZI.setLocation(65, uy_p41 + 125 + y_ext_vel);
-        LABEL_AZI.setSize(150, 20);
-        LABEL_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        LABEL_AZI.setFont(small_font);
-        //LABEL_AZI.setBorder(Moon_border);
-        LABEL_AZI.setBackground(backgroundColor);
-        LABEL_AZI.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_AZI);
+        /**
+         * 
+         *  			Setup main menu bar 
+         * 
+         * 
+         */
+        
+        MenuBar menuBar = new MenuBar();
+        MainGUI.add(menuBar.getMainMenu(), BorderLayout.NORTH);
         
         
-        JLabel LABEL_M0 = new JLabel(" Initial Mass [kg]");
-        LABEL_M0.setLocation(65, uy_p41 + 150 + y_ext_vel*2);
-        LABEL_M0.setSize(150, 20);
-        LABEL_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //LABEL_M0.setBorder(Moon_border);
-        LABEL_M0.setFont(small_font);
-        LABEL_M0.setBackground(backgroundColor);
-        LABEL_M0.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_M0);
-        JLabel LABEL_INTEGTIME = new JLabel(" Integration Time [s]");
-        LABEL_INTEGTIME.setLocation(65, uy_p41 + 175 + y_ext_vel*2);
-        LABEL_INTEGTIME.setSize(150, 20);
-        LABEL_INTEGTIME.setFont(small_font);
-        LABEL_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //LABEL_INTEGTIME.setBorder(Moon_border);
-        LABEL_INTEGTIME.setBackground(backgroundColor);
-        LABEL_INTEGTIME.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_INTEGTIME);
-        
-        Error_Indicator = new JLabel("");
-        Error_Indicator.setLocation(225, uy_p41 + 25 * 9);
-        Error_Indicator.setSize(150, 20);
-        //Error_Indicator.setBackground(backgroundColor);
-        Error_Indicator.setFont(labelfont_small);
-        Error_Indicator.setForeground(labelColor);
-        P1_SidePanel.add(Error_Indicator);
-        
-        Module_Indicator = new JLabel("");
-        Module_Indicator.setLocation(225, uy_p41 + 25 * 10);
-        Module_Indicator.setSize(150, 20);
-        Module_Indicator.setFont(labelfont_small);
-        Module_Indicator.setForeground(labelColor);
-        P1_SidePanel.add(Module_Indicator);
-        
-         INDICATOR_LONG = new JLabel();
-        INDICATOR_LONG.setLocation(2, uy_p41 + 25 * 0 );
-        INDICATOR_LONG.setSize(60, 20);
-        INDICATOR_LONG.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-       // INDICATOR_LONG.setBorder(Moon_border);
-        INDICATOR_LONG.setBackground(backgroundColor);
-        INDICATOR_LONG.setForeground(labelColor);
-        INDICATOR_LONG.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_LONG.setFont(small_font);
-        P1_SidePanel.add(INDICATOR_LONG);
-        INDICATOR_LAT = new JLabel();
-        INDICATOR_LAT.setLocation(2, uy_p41 + 25 * 1 );
-        INDICATOR_LAT.setSize(60, 20);
-        INDICATOR_LAT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_LAT.setBorder(Moon_border);
-        INDICATOR_LAT.setBackground(backgroundColor);
-        INDICATOR_LAT.setFont(small_font);
-        INDICATOR_LAT.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_LAT.setForeground(labelColor);
-        P1_SidePanel.add(INDICATOR_LAT);
-         INDICATOR_ALT = new JLabel();
-        INDICATOR_ALT.setLocation(2, uy_p41 + 25 * 2 );
-        INDICATOR_ALT.setSize(60, 20);
-        INDICATOR_ALT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_ALT.setBorder(Moon_border);
-        INDICATOR_ALT.setBackground(backgroundColor);
-        INDICATOR_ALT.setFont(small_font);
-        INDICATOR_ALT.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_ALT.setForeground(labelColor);
-        P1_SidePanel.add(INDICATOR_ALT);
-        INDICATOR_VEL = new JLabel();
-        INDICATOR_VEL.setLocation(2, uy_p41 + 25 * 3 + y_ext_vel);
-        INDICATOR_VEL.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_VEL.setBorder(Moon_border);
-        INDICATOR_VEL.setBackground(backgroundColor);
-        INDICATOR_VEL.setFont(small_font);
-        INDICATOR_VEL.setForeground(labelColor);
-        INDICATOR_VEL.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_VEL.setSize(60, 20);
-        P1_SidePanel.add(INDICATOR_VEL);
-        INDICATOR_FPA = new JLabel();
-        INDICATOR_FPA.setLocation(2, uy_p41 + 25 * 4 + y_ext_vel);
-        INDICATOR_FPA.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_FPA.setBorder(Moon_border);
-        INDICATOR_FPA.setBackground(backgroundColor);
-        INDICATOR_FPA.setFont(small_font);
-        INDICATOR_FPA.setForeground(labelColor);
-        INDICATOR_FPA.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_FPA.setSize(60, 20);
-        P1_SidePanel.add(INDICATOR_FPA);
-        INDICATOR_AZI = new JLabel();
-        INDICATOR_AZI.setLocation(2, uy_p41 + 25 * 5 + y_ext_vel);
-        INDICATOR_AZI.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_AZI.setBorder(Moon_border);
-        INDICATOR_AZI.setBackground(backgroundColor);
-        INDICATOR_AZI.setForeground(labelColor);
-        INDICATOR_AZI.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_AZI.setFont(small_font);
-        INDICATOR_AZI.setSize(60, 20);
-        P1_SidePanel.add(INDICATOR_AZI);        
-        INDICATOR_M0 = new JLabel();
-        INDICATOR_M0.setLocation(2, uy_p41 + 25 * 6 + y_ext_vel*2);
-        INDICATOR_M0.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_M0.setBorder(Moon_border);
-        INDICATOR_M0.setBackground(backgroundColor);
-        INDICATOR_M0.setForeground(labelColor);
-        INDICATOR_M0.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_M0.setFont(small_font);
-        INDICATOR_M0.setSize(60, 20);
-        P1_SidePanel.add(INDICATOR_M0);
-        INDICATOR_INTEGTIME = new JLabel();
-        INDICATOR_INTEGTIME.setLocation(2, uy_p41 + 25 * 7 + y_ext_vel*2);
-        INDICATOR_INTEGTIME.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-        //INDICATOR_INTEGTIME.setBorder(Moon_border);
-        INDICATOR_INTEGTIME.setBackground(backgroundColor);
-        INDICATOR_INTEGTIME.setHorizontalAlignment(JLabel.RIGHT);
-        INDICATOR_INTEGTIME.setForeground(labelColor);
-        INDICATOR_INTEGTIME.setFont(small_font);
-        INDICATOR_INTEGTIME.setSize(60, 20);
-       P1_SidePanel.add(INDICATOR_INTEGTIME);
-       
-       
-       
-       
-       JLabel LABEL_TARGET = new JLabel("Target Body:");
-       LABEL_TARGET.setLocation(5, uy_p41 + 25 * 9  );
-       LABEL_TARGET.setSize(250, 20);
-       LABEL_TARGET.setBackground(backgroundColor);
-       LABEL_TARGET.setForeground(labelColor);
-       P1_SidePanel.add(LABEL_TARGET);
-       INDICATOR_TARGET = new JLabel();
-       INDICATOR_TARGET.setLocation(2, uy_p41 + 25 * 10 );
-       INDICATOR_TARGET.setText("");
-       INDICATOR_TARGET.setSize(100, 25);
-       INDICATOR_TARGET.setBackground(backgroundColor);
-       INDICATOR_TARGET.setForeground(labelColor);
-       INDICATOR_TARGET.setHorizontalAlignment(SwingConstants.CENTER);
-       INDICATOR_TARGET.setVerticalTextPosition(JLabel.CENTER);
-       INDICATOR_TARGET.setFont(targetfont);
-       INDICATOR_TARGET.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-      P1_SidePanel.add(INDICATOR_TARGET);
-        
-      
-      JLabel LABEL_VTOUCHDOWN = new JLabel("  Touchdown velocity [m/s]");
-      LABEL_VTOUCHDOWN.setLocation(55, uy_p41 + 285  + 25 *0 );
-      LABEL_VTOUCHDOWN.setSize(200, 20);
-      LABEL_VTOUCHDOWN.setBackground(Color.black);
-      LABEL_VTOUCHDOWN.setForeground(labelColor);
-      LABEL_VTOUCHDOWN.setFont(small_font);
-      P1_SidePanel.add(LABEL_VTOUCHDOWN);
-      JLabel LABEL_DELTAV = new JLabel("  Total D-V [m/s]");
-      LABEL_DELTAV.setLocation(55, uy_p41 + 285 + 25 *1 );
-      LABEL_DELTAV.setSize(200, 20);
-      LABEL_DELTAV.setBackground(Color.black);
-      LABEL_DELTAV.setForeground(labelColor);
-      LABEL_DELTAV.setFont(small_font);
-      P1_SidePanel.add(LABEL_DELTAV);
-      JLabel LABEL_PROPPERC = new JLabel("  Used Propellant [kg]");
-      LABEL_PROPPERC.setLocation(270, uy_p41 + 285 + 25 *0 );
-      LABEL_PROPPERC.setSize(200, 20);
-      LABEL_PROPPERC.setBackground(Color.black);
-      LABEL_PROPPERC.setForeground(labelColor);
-      LABEL_PROPPERC.setFont(small_font);
-      P1_SidePanel.add(LABEL_PROPPERC);
-      JLabel LABEL_RESPROP = new JLabel("  Residual Propellant [%]");
-      LABEL_RESPROP.setLocation(260, uy_p41 + 285 + 25 *1 );
-      LABEL_RESPROP.setSize(200, 20);
-      LABEL_RESPROP.setBackground(Color.black);
-      LABEL_RESPROP.setForeground(labelColor);
-      LABEL_RESPROP.setFont(small_font);
-      P1_SidePanel.add(LABEL_RESPROP);
-      
-       INDICATOR_VTOUCHDOWN = new JLabel("");
-      INDICATOR_VTOUCHDOWN.setLocation(5, uy_p41 + 285  + 25 *0 );
-      INDICATOR_VTOUCHDOWN.setSize(50, 20);
-      INDICATOR_VTOUCHDOWN.setBackground(Color.black);
-      INDICATOR_VTOUCHDOWN.setForeground(labelColor);
-      P1_SidePanel.add(INDICATOR_VTOUCHDOWN);
-       INDICATOR_DELTAV = new JLabel("");
-      INDICATOR_DELTAV.setLocation(5, uy_p41 + 285 + 25 *1 );
-      INDICATOR_DELTAV.setSize(50, 20);
-      INDICATOR_DELTAV.setBackground(Color.black);
-      INDICATOR_DELTAV.setForeground(labelColor);
-      P1_SidePanel.add(INDICATOR_DELTAV);
-       INDICATOR_PROPPERC = new JLabel("");
-      INDICATOR_PROPPERC.setLocation(225, uy_p41 + 285 + 25 *0 );
-      INDICATOR_PROPPERC.setSize(50, 20);
-      INDICATOR_PROPPERC.setBackground(Color.black);
-      INDICATOR_PROPPERC.setForeground(labelColor);
-      P1_SidePanel.add(INDICATOR_PROPPERC);
-       INDICATOR_RESPROP = new JLabel("");
-      INDICATOR_RESPROP.setLocation(225, uy_p41 + 285 + 25 *1 );
-      INDICATOR_RESPROP.setSize(40, 20);
-      INDICATOR_RESPROP.setBackground(Color.black);
-      INDICATOR_RESPROP.setForeground(labelColor);
-      P1_SidePanel.add(INDICATOR_RESPROP);
-//-----------------------------------------------------------------------------------------------
-//								Console Window        
-//-----------------------------------------------------------------------------------------------
-        int console_size_x = 390;
-        int console_size_y = 270; 
-        JLabel LABEL_CONSOLE = new JLabel("Console:");
-        LABEL_CONSOLE.setLocation(5, uy_p41 + 25 *17 );
-        LABEL_CONSOLE.setSize(200, 20);
-        LABEL_CONSOLE.setBackground(backgroundColor);
-        LABEL_CONSOLE.setForeground(labelColor);
-        P1_SidePanel.add(LABEL_CONSOLE);
-        
-        JPanel JP_EnginModel = new JPanel();
-        JP_EnginModel.setSize(console_size_x,console_size_y);
-        JP_EnginModel.setLocation(5, uy_p41 + 25 * 18);
-        JP_EnginModel.setBackground(backgroundColor);
-        JP_EnginModel.setForeground(labelColor);
-         JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
-        //JP_EnginModel.setBackground(Color.red);
-        taOutputStream = null; 
-        taOutputStream = new TextAreaOutputStream(textArea, ""); 
-        textArea.setForeground(labelColor);
-        textArea.setBackground(backgroundColor);
-        JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        JSP_EnginModel.setBackground(backgroundColor);
-        JSP_EnginModel.setForeground(labelColor);
-        JSP_EnginModel.getVerticalScrollBar().setForeground(labelColor);
-        JSP_EnginModel.getHorizontalScrollBar().setForeground(labelColor);
-        JSP_EnginModel.getHorizontalScrollBar().setBackground(backgroundColor);
-        JSP_EnginModel.getVerticalScrollBar().setBackground(backgroundColor);
-        JSP_EnginModel.setOpaque(true);
-        JSP_EnginModel.setPreferredSize(new Dimension(console_size_x-5,console_size_y-10));
-        JSP_EnginModel.setLocation(5, 5);
-        JP_EnginModel.add(JSP_EnginModel);
-        System.setOut(new PrintStream(taOutputStream));       
-//-----------------------------------------------------------------------------------------------
-        P1_SidePanel.add(JP_EnginModel);
-//-----------------------------------------------------------------------------------------------
 	  //-----------------------------------------------------------------------------------------
 	  // 										Page 4.2
 	  //-----------------------------------------------------------------------------------------
@@ -1932,10 +654,29 @@ public static String[] SequenceTVCFC     = { ""};
 			gravityModelPanel.setPreferredSize(new Dimension(1350, 1350));
 			gravityModelPanel.setLayout(new BorderLayout());
 			
+			//---------------------------------------------------------------------------------------
+			/**			Create Setup panel:
+			 * comprising:
+			 * 				- SidePanelLeft
+			 * 				- CenterPanelRight
+			 * 				-> Parent constructor: BasicSetup Panel 
+			 */
+			//---------------------------------------------------------------------------------------
+			
+			
 			
 			@SuppressWarnings("unused")
 			BasicSetupMain basicSetupMasterPanel = new BasicSetupMain();
 			
+			
+			//---------------------------------------------------------------------------------------
+			/**
+			 * 		Create Setup area tabbed pane structure 
+			 * 
+			 * 
+			 * 
+			 */
+			//---------------------------------------------------------------------------------------
 	     	ImageIcon icon_setup2 = new ImageIcon("images/setup2.png","");
 	     	ImageIcon icon_inertia = new ImageIcon("images/inertia.png","");
 	     	ImageIcon icon_aerodynamic = new ImageIcon("images/aerodynamic.png","");
@@ -1956,12 +697,10 @@ public static String[] SequenceTVCFC     = { ""};
 		TabPane_SimulationSetup.setSelectedIndex(0);
 		TabPane_SimulationSetup.setFont(small_font);
 		TabPane_SimulationSetup.setForeground(Color.black);
-		
+		//---------------------------------------------------------------------------------------
 		
       int INPUT_width = 110;
       int SidePanel_Width = 380; 
-      
-
       
     //------------------------------------------------------------------------------------------------------------------
 	  //   Right side :
@@ -3612,7 +2351,7 @@ public static String[] SequenceTVCFC     = { ""};
 		        BUTTON_AddController.setSize(145,25);
 		        BUTTON_AddController.addActionListener(new ActionListener() { 
 		        	  public void actionPerformed(ActionEvent e) { 
-		        		  AddController();
+		        		 // AddController();
 		        	  } } );
 		        SequenceControlPanel.add(BUTTON_AddController);
 		        JButton BUTTON_DeleteController = new JButton("Delete Controller");
@@ -3620,7 +2359,7 @@ public static String[] SequenceTVCFC     = { ""};
 		        BUTTON_DeleteController.setSize(145,25);
 		        BUTTON_DeleteController.addActionListener(new ActionListener() { 
 		        	  public void actionPerformed(ActionEvent e) { 
-		        		  DeleteController();
+		        		 // DeleteController();
 		        	  } } );
 		        SequenceControlPanel.add(BUTTON_DeleteController);
 		        
@@ -3629,7 +2368,7 @@ public static String[] SequenceTVCFC     = { ""};
 		        BUTTON_AddError.setSize(145,25);
 		        BUTTON_AddError.addActionListener(new ActionListener() { 
 		        	  public void actionPerformed(ActionEvent e) { 
-		        		  AddError();
+		        		 // AddError();
 		        	  } } );
 		        SequenceControlPanel.add(BUTTON_AddError);
 		        JButton BUTTON_DeleteError = new JButton("Delete Error");
@@ -3637,7 +2376,7 @@ public static String[] SequenceTVCFC     = { ""};
 		        BUTTON_DeleteError.setSize(145,25);
 		        BUTTON_DeleteError.addActionListener(new ActionListener() { 
 		        	  public void actionPerformed(ActionEvent e) { 
-		        		  DeleteError();
+		        		 // DeleteError();
 		        	  } } );
 		        SequenceControlPanel.add(BUTTON_DeleteError);
 		        //-----------------------------------------------------------------------------------------------------------------------------
@@ -3715,101 +2454,7 @@ public static String[] SequenceTVCFC     = { ""};
 		        
 		        
 		        
-		        
-		    	    TABLE_CONTROLLER = new JTable(){
-		    	   	 
-		    	    	/**
-		    			 * 
-		    			 */
-		    			private static final long serialVersionUID = 1L;
 
-		    			@Override
-		    	    	public Component prepareRenderer(TableCellRenderer renderer, int row, int col) {
-		    	            Component comp = super.prepareRenderer(renderer, row, col);
-		    	           // String val_TLFC = (String) getModel().getValueAt(row, 1);
-
-
-		    	           // comp.setFont(table_font);
-		    	            
-		    	            return comp;
-		    	        }
-		    	    };
-		    	   // TABLE_SEQUENCE.setFont(table_font);
-		    	    
-		    		Action action4 = new AbstractAction()
-		    	    {
-		    	        /**
-		    			 * 
-		    			 */
-		    			private static final long serialVersionUID = 1L;
-
-		    			public void actionPerformed(ActionEvent e)
-		    	        {WriteControllerINP();}
-		    	    };
-		    	    @SuppressWarnings("unused")
-		    		TableCellListener tcl4 = new TableCellListener(TABLE_CONTROLLER, action4);
-		    	    MODEL_CONTROLLER = new DefaultTableModel(){
-
-		    			private static final long serialVersionUID = 1L;
-
-		    			@Override
-		    	        public boolean isCellEditable(int row, int column) {
-		    	           //all cells false
-		    				String Ctrl_type = (String) MODEL_CONTROLLER.getValueAt(row, 1);
-		    				if (column == 0 ){
-		    					return false;
-		    				} else if (column==5 && Ctrl_type.equals("1") ){
-		    					return false; 
-		    				}  else if (column==6 && Ctrl_type.equals("1") ){
-		    					return false; 
-		    				}  else {
-		    					return true; 
-		    				}
-		    	        }
-		    	    }; 
-		    	    MODEL_CONTROLLER.setColumnIdentifiers(COLUMS_CONTROLLER);
-		    	    TABLE_CONTROLLER.setModel(MODEL_CONTROLLER);
-		    	    TABLE_CONTROLLER.setBackground(backgroundColor);
-		    	    TABLE_CONTROLLER.setBackground(backgroundColor);
-		    	    TABLE_CONTROLLER.setForeground(labelColor);
-		    	    TABLE_CONTROLLER.getTableHeader().setReorderingAllowed(false);
-		    	    TABLE_CONTROLLER.setRowHeight(45);
-
-
-		    		    TableColumn CtrId_colum   			 = TABLE_CONTROLLER.getColumnModel().getColumn(0);
-		    		    TableColumn CtrType_column 	    	 = TABLE_CONTROLLER.getColumnModel().getColumn(1);
-		    		    TableColumn CtrPGain_column  		 = TABLE_CONTROLLER.getColumnModel().getColumn(2);
-		    		    TableColumn CtrIGain_column 	     = TABLE_CONTROLLER.getColumnModel().getColumn(3);
-		    		    TableColumn CtrDGain_column 	  	 = TABLE_CONTROLLER.getColumnModel().getColumn(4);
-		    		    TableColumn CtrMin_column 	  		 = TABLE_CONTROLLER.getColumnModel().getColumn(5);
-		    		    TableColumn CtrMax_column 	  		 = TABLE_CONTROLLER.getColumnModel().getColumn(6);
-
-		    		    
-		    		    TABLE_CONTROLLER.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
-		    		    CtrId_colum.setPreferredWidth(50);
-		    		    CtrType_column.setPreferredWidth(100);
-		    		    CtrPGain_column.setPreferredWidth(100);
-		    		    CtrIGain_column.setPreferredWidth(100);
-		    		    CtrDGain_column.setPreferredWidth(100);
-		    		    CtrMin_column.setPreferredWidth(120);
-		    		    CtrMax_column.setPreferredWidth(120);
-
-		    		    
-		    		    ((JTable) TABLE_CONTROLLER).setFillsViewportHeight(true);
-		    	    
-		    		    TABLE_CONTROLLER.getTableHeader().setBackground(backgroundColor);
-		    		    TABLE_CONTROLLER.getTableHeader().setForeground(labelColor);
-		    		    
-		    		    JScrollPane TABLE_CONTROLLER_ScrollPane = new JScrollPane(TABLE_CONTROLLER,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-		    		    //TABLE_SEQUENCE_ScrollPane.setLayout(null);
-		    		    TABLE_CONTROLLER_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
-		    		    TABLE_CONTROLLER_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
-		    		    TABLE_CONTROLLER_ScrollPane.setBackground(backgroundColor);
-		    		    //TABLE_SEQUENCE_ScrollPane.setSize(tablewidth3,tableheight3);
-		    		    //TABLE_SEQUENCE_ScrollPane.setOpaque(false);
-		    		   // P2_ControllerPane.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
-		    		    //PANEL_RIGHT_InputSection.add(TABLE_CONTROLLER_ScrollPane, BorderLayout.CENTER);
-		    		    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_CONTROLLER_ScrollPane, JSplitPane.LEFT);
 		    		    
 		    		    //---------------------------------------------------------------------------------------------
 		    		    TABLE_ERROR = new JTable(){
@@ -3842,7 +2487,7 @@ public static String[] SequenceTVCFC     = { ""};
 		    				public void actionPerformed(ActionEvent e)
 		    		       {
 		    					WriteErrorINP();	
-		    					Update_ErrorIndicator();
+		    					//Update_ErrorIndicator();
 		    		       }
 		    		    };
 		    		    @SuppressWarnings("unused")
@@ -3888,15 +2533,8 @@ public static String[] SequenceTVCFC     = { ""};
 		    			    TABLE_ERROR.getTableHeader().setBackground(backgroundColor);
 		    			    TABLE_ERROR.getTableHeader().setForeground(labelColor);
 		    			    
-		    			    ErrorTypeCombobox.setBackground(backgroundColor);
-		    			    try {
-		    			    for (int i=0;i<ErrorType.length;i++) {
-		    			    	ErrorTypeCombobox.addItem(ErrorType[i]);
-		    			    }
-		    			    } catch(NullPointerException eNPE) {
-		    			    	System.out.println(eNPE);
-		    			    }
-		    			    ErrorType_column.setCellEditor(new DefaultCellEditor(ErrorTypeCombobox));
+		    		
+		    			 
 		    			    
 		    			    JScrollPane TABLE_ERROR_ScrollPane = new JScrollPane(TABLE_ERROR,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 		    			    TABLE_ERROR_ScrollPane.getVerticalScrollBar().setBackground(backgroundColor);
@@ -3984,11 +2622,11 @@ public static String[] SequenceTVCFC     = { ""};
        
 	//-------------------------------------------------------------------------------------------------------------------------------
         // Create Charts:
-       CreateChart_DashboardOverviewChart_Altitude_Velocity();
+       //CreateChart_DashboardOverviewChart_Altitude_Velocity();
        //CreateChart_DashboardOverviewChart_Time_FPA();
 
-     	CreateChart_DashBoardFlexibleChart();
-     	createChart_3DRotation();
+     	//CreateChart_DashBoardFlexibleChart();
+     	//createChart_3DRotation();
      	CreateChart_MercatorMap();
      	CreateChart_PolarMap();
      	
@@ -4021,7 +2659,7 @@ public static String[] SequenceTVCFC     = { ""};
      		icon_map = new ImageIcon(getScaledImage(icon_map.getImage(),size,size));
      	}
      	// Create Tabs:
-        Page04_subtabPane.addTab("Dashboard" , icon_dashboard, PageX04_Dashboard, null);
+        Page04_subtabPane.addTab("Dashboard" , icon_dashboard, dashboardPanel.getMainPanel(), null);
         Page04_subtabPane.addTab("Simulation Setup"+"\u2713", icon_setup, PageX04_SimSetup, null);
         Page04_subtabPane.addTab("SpaceShip Setup"+"\u2713", icon_scSetup, PageX04_AttitudeSetup, null);
         Page04_subtabPane.addTab("Raw Data", icon_data, PageX04_RawDATA, null);
@@ -4056,17 +2694,18 @@ public static String[] SequenceTVCFC     = { ""};
     	    	System.out.println("Full data import supressed. Filesize prohibits fast startup.");
     	    }
     	    READ_INPUT();
-    	       createTargetView3D();
+    	    DashboardPlotArea.setAnalysisFile(analysisFile);
+    	    DashboardPlotArea.setTargetIndx(indx_target);
+    	   // dashboardPlotArea.updateDashboardPlotArea(dashboardPlotArea.getContentPanelList());
+    	      // createTargetView3D();
     	       CenterPanelRight.createTargetWindow();
-    		READ_CONTROLLER();
-  	      		UpdateFC_LIST();
-    		READ_SEQUENCE();
-    		READ_ERROR();
+   	       
+    	       
     		READ_INERTIA() ;
     		READ_InitialAttitude();
-    		Update_ErrorIndicator();
+    		//Update_ErrorIndicator();
     		  SidePanelLeft.Update_IntegratorSettings();
-    	      Update_DashboardFlexibleChart2();
+    	     // Update_DashboardFlexibleChart2();
     	      try {
     	      READ_sequenceFile();
     	      } catch(Exception e) {
@@ -4091,167 +2730,7 @@ public static String[] SequenceTVCFC     = { ""};
         return resizedImg;
     }
     
-
-    
-    @SuppressWarnings("unchecked")
-	public static void UpdateFC_LIST() {
-    	try {
-    	SequenceTVCFCCombobox.removeAllItems();
-    	SequenceFCCombobox.removeAllItems();
-    	} catch(NullPointerException | java.lang.ArrayIndexOutOfBoundsException eNPE) {
-    		System.out.println("ERROR: Removing Combobox items failed");
-    	}
-    	SequenceTVCFCCombobox.addItem("");
-    	SequenceFCCombobox.addItem("");
-    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {
-    		SequenceTVCFCCombobox.addItem("PID "+(i+1));
-    		SequenceFCCombobox.addItem("PID "+(i+1));
-    		}
-    }
-
-    
-    public static void AddSequence() {
-    	int NumberOfSequences = MODEL_SEQUENCE.getRowCount();
-    	ROW_SEQUENCE[0]  = ""+NumberOfSequences;
-    	ROW_SEQUENCE[1]  = ""+SequenceENDType[0];
-    	ROW_SEQUENCE[2]  = "0";
-    	ROW_SEQUENCE[3]  = ""+SequenceType[0];
-    	ROW_SEQUENCE[4]  = ""+SequenceFC[0];
-    	ROW_SEQUENCE[5]  = "1";
-    	ROW_SEQUENCE[6]  = "1";
-    	ROW_SEQUENCE[7]  = ""+FCTargetCurve[0];	
-    	ROW_SEQUENCE[8]  = ""+SequenceTVCFC[0];
-    	ROW_SEQUENCE[9]  = "1";
-    	ROW_SEQUENCE[10] = "1";
-    	ROW_SEQUENCE[11] = ""+TargetCurve_Options_TVC[0];	
-    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
-    	
-    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}    	
-    	WriteSequenceINP();
-    }
-    
-    public static void DeleteSequence() {
-    	int j = TABLE_SEQUENCE.getSelectedRow();
-    	if (j >= 0){MODEL_SEQUENCE.removeRow(j);}
-    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
-    	
-    	WriteSequenceINP();
-    }
-    public static void DeleteAllSequence() {
-    	for(int j=MODEL_SEQUENCE.getRowCount()-1;j>=0;j--) {MODEL_SEQUENCE.removeRow(j);}
-    	WriteSequenceINP();
-    }
-    
-    public static void UpSequence() {
-        int[] rows2 = TABLE_SEQUENCE.getSelectedRows();
-        MODEL_SEQUENCE.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]-1);
-        TABLE_SEQUENCE.setRowSelectionInterval(rows2[0]-1, rows2[rows2.length-1]-1);
-        for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
-        
-        WriteSequenceINP();
-    }
-    
-    public static void DownSequence() {
-        int[] rows2 = TABLE_SEQUENCE.getSelectedRows();
-        MODEL_SEQUENCE.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]+1);
-        TABLE_SEQUENCE.setRowSelectionInterval(rows2[0]+1, rows2[rows2.length-1]+1);
-        for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);}
-        
-        WriteSequenceINP();
-    }
-    
-    public static void AddController() {
-    	int NumberOfSequences = MODEL_CONTROLLER.getRowCount();
-    	ROW_CONTROLLER[0]  = ""+NumberOfSequences;
-    	ROW_CONTROLLER[1]  = "0";
-    	ROW_CONTROLLER[2]  = "1";
-    	ROW_CONTROLLER[3]  = "1";
-    	ROW_CONTROLLER[4]  = "1";
-    	ROW_CONTROLLER[5]  = "0";
-    	ROW_CONTROLLER[6]  = "1";
-
-    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
-    	
-    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}    	
-    	WriteControllerINP();
-    	UpdateFC_LIST();
-    }
-    
-    public static void DeleteController() {
-    	int j = TABLE_CONTROLLER.getSelectedRow();
-    	if (j >= 0){MODEL_CONTROLLER.removeRow(j);}
-    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
-    	
-    	WriteControllerINP();
-    	UpdateFC_LIST();
-    }
-    public static void DeleteAllController() {
-    	for(int j=TABLE_CONTROLLER.getRowCount()-1;j>=0;j--) {MODEL_CONTROLLER.removeRow(j);}
-    	WriteControllerINP();
-    	UpdateFC_LIST();
-    }
-    
-    public static void UpController() {
-        int[] rows2 = TABLE_CONTROLLER.getSelectedRows();
-        MODEL_CONTROLLER.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]-1);
-        TABLE_CONTROLLER.setRowSelectionInterval(rows2[0]-1, rows2[rows2.length-1]-1);
-        for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
-        
-        WriteControllerINP();
-        UpdateFC_LIST();
-    }
-    
-    public static void DownController() {
-        int[] rows2 = TABLE_SEQUENCE.getSelectedRows();
-        MODEL_CONTROLLER.moveRow(rows2[0],rows2[rows2.length-1],rows2[0]+1);
-        TABLE_CONTROLLER.setRowSelectionInterval(rows2[0]+1, rows2[rows2.length-1]+1);
-        for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);}
-        
-        WriteControllerINP();
-        UpdateFC_LIST();
-    }
-    public static void AddError() {
-    	int NumberOfSequences = MODEL_ERROR.getRowCount();
-    	ROW_ERROR[0]  = ""+NumberOfSequences;
-    	ROW_ERROR[1]  = ""+ErrorType[0];
-    	ROW_ERROR[2]  = "0";
-    	ROW_ERROR[3]  = "0";
-
-    	MODEL_ERROR.addRow(ROW_ERROR);
-    	
-    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);}    	
-    	WriteErrorINP();
-    	Update_ErrorIndicator();
-    }
-    
-    public static void DeleteError() {
-    	int j = TABLE_ERROR.getSelectedRow();
-    	if (j >= 0){MODEL_ERROR.removeRow(j);}
-    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);}
-    	
-    	WriteErrorINP();
-    	Update_ErrorIndicator();
-    }
-    
-    public static void Update_ErrorIndicator() {
-    	if(MODEL_ERROR.getRowCount()>0) {
-    		Error_Indicator.setText("Induced Error ON");
-    		Error_Indicator.setBackground(Color.red);
-    		Error_Indicator.setForeground(Color.red);
-    	} else {
-    		Error_Indicator.setText("Induced Error OFF");
-    		Error_Indicator.setBackground(backgroundColor);
-    		Error_Indicator.setForeground(labelColor);
-    	}
-   // 	Module_Indicator.setText(""+AscentDescent_SwitchChooser.getSelectedItem()); 
-    }
-    
-    
-    
-    public static JButton getxAxisIndicator() {
-		return xAxisIndicator;
-	}
-	public void UPDATE_Page01(boolean fullImport){
+	public static void UPDATE_Page01(boolean fullImport){
 		  try {
 			READ_INPUT();
 			if(fullImport) {
@@ -4262,124 +2741,23 @@ public static String[] SequenceTVCFC     = { ""};
 			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
-	    	Update_DashboardFlexibleChart();
-	    	Update_DashboardFlexibleChart2();
+	   // 	Update_DashboardFlexibleChart();
+	   // 	Update_DashboardFlexibleChart2();
 		  if(fullImport) {
-	    	CHART_P1_DashBoardOverviewChart_Dataset_Time_FPA.removeAllSeries();
-
-	    //	Update_DashboardFlexibleChart2();
 
 	    	ResultSet_MercatorMap.removeAllSeries();
 	    	try {
 	    	ResultSet_MercatorMap = AddDataset_Mercator_MAP();
 	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {}
-	    	Update_DashboardFlexibleChart();
-	    	Update_DashboardFlexibleChart2();
-      	    		try {
-	        	    		result11_A3_1.removeAllSeries();
-	        	    		result11_A3_2.removeAllSeries();
-	        	    		result11_A3_3.removeAllSeries();
-	        	    		result11_A3_4.removeAllSeries();
-							UpdateChart_A01();
-						} catch (ArrayIndexOutOfBoundsException | NullPointerException | IOException
-								| URISyntaxException  e1) {
-							// TODO Auto-generated catch block
-							e1.printStackTrace();
-						}
+
       	    		String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
       	    		System.out.println("Updated "+timeStamp);
 		  }
 	  } 
 
-    public static void READ_SEQUENCE() throws IOException{	
-		BufferedReader br = new BufferedReader(new FileReader(SEQUENCE_File));
-       String strLine;
-       try {
-       while ((strLine = br.readLine()) != null )   {
-	       	String[] tokens = strLine.split(" ");
-	       	int sequence_ID 			= Integer.parseInt(tokens[0]);
-	       	int trigger_end_type 		= Integer.parseInt(tokens[1]);
-	       	double trigger_end_value 	= Double.parseDouble(tokens[2]);
-	       	int sequence_type		 	= Integer.parseInt(tokens[3]);
-	       	int sequence_controller_ID 	= Integer.parseInt(tokens[4]);
-	       	double ctrl_target_vel      = Double.parseDouble(tokens[5]);
-	       	double ctrl_target_alt 		= Double.parseDouble(tokens[6]);
-	       	int ctrl_target_curve       = Integer.parseInt(tokens[7]);
-	    	ROW_SEQUENCE[0] = ""+sequence_ID;
-	       	try {
-	    	ROW_SEQUENCE[1] = ""+SequenceENDType[trigger_end_type];
-	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
-	    	ROW_SEQUENCE[2] = ""+trigger_end_value;
-	       	try {
-	    	ROW_SEQUENCE[3] = ""+SequenceType[sequence_type-1];
-	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
-	       	try {
-	    	ROW_SEQUENCE[4] = ""+SequenceFCCombobox.getItemAt(sequence_controller_ID-1);
-	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
-	    	ROW_SEQUENCE[5] = ""+ctrl_target_vel;
-	    	ROW_SEQUENCE[6] = ""+ctrl_target_alt;
-	       	try {
-	    	ROW_SEQUENCE[7] = ""+FCTargetCurve[ctrl_target_curve-1];		
-	       	} catch ( java.lang.ArrayIndexOutOfBoundsException eAU) {System.out.println("ERROR: Reading sequence file - index out of bounds. " );}
-				       	try {
-					       	int TVCsequence_controller_ID   = Integer.parseInt(tokens[8]);
-					       	double ctrl_target_x_TVC        = Double.parseDouble(tokens[9]);
-					       	double ctrl_target_y_TVC 		= Double.parseDouble(tokens[10]);
-					       	int ctrl_TVC_target_curve       = Integer.parseInt(tokens[11]);
-					    	ROW_SEQUENCE[8]  = "" + SequenceTVCFCCombobox.getItemAt(TVCsequence_controller_ID-1);
-					    	ROW_SEQUENCE[9]  = "" + ctrl_target_x_TVC;
-					    	ROW_SEQUENCE[10] = "" + ctrl_target_y_TVC*rad2deg;
-					    	ROW_SEQUENCE[11] = "" + TargetCurve_Options_TVC[ctrl_TVC_target_curve-1];
-				       	} catch(java.lang.ArrayIndexOutOfBoundsException eAIOOBE) {System.out.println("No TVC controller found in Sequence file.");}
-	       	
-				    	MODEL_SEQUENCE.addRow(ROW_SEQUENCE);
-	    	for(int i=0;i<MODEL_SEQUENCE.getRowCount();i++) {MODEL_SEQUENCE.setValueAt(""+i,i, 0);} // Update numbering
-       }
-       br.close();
-       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-
-   }
     
-    public static void READ_CONTROLLER() throws IOException{	
-		BufferedReader br = new BufferedReader(new FileReader(CONTROLLER_File));
-       String strLine;
-       try {
-       while ((strLine = br.readLine()) != null )   {
-	       	String[] tokens = strLine.split(" ");
-	    	ROW_CONTROLLER[0] = ""+Integer.parseInt(tokens[0]);
-	    	ROW_CONTROLLER[1] = ""+Integer.parseInt(tokens[1]);
-	    	ROW_CONTROLLER[2] = ""+Double.parseDouble(tokens[2]);
-	    	ROW_CONTROLLER[3] = ""+Double.parseDouble(tokens[3]);
-	    	ROW_CONTROLLER[4] = ""+Double.parseDouble(tokens[4]);
-	    	ROW_CONTROLLER[5] = ""+Double.parseDouble(tokens[5]);
-	    	ROW_CONTROLLER[6] = ""+Double.parseDouble(tokens[6]);
-				    	MODEL_CONTROLLER.addRow(ROW_CONTROLLER);
-	    	for(int i=0;i<MODEL_CONTROLLER.getRowCount();i++) {MODEL_CONTROLLER.setValueAt(""+(i+1),i, 0);} // Update numbering
-       }
-       br.close();
-       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-
-   }
     
-    public static void READ_ERROR() throws IOException{	
-		BufferedReader br = new BufferedReader(new FileReader(ERROR_File));
-       String strLine;
-       try {
-       while ((strLine = br.readLine()) != null )   {
-	       	String[] tokens = strLine.split(" ");
-	    	ROW_ERROR[0] = "0";
-	    	try {
-	    	ROW_ERROR[1] = ""+ ErrorType[Integer.parseInt(tokens[0])];
-	    	} catch(java.lang.ArrayIndexOutOfBoundsException eA) { System.out.println("Read Error file failed: Array Index out of Bounds.");}
-	    	ROW_ERROR[2] = ""+Double.parseDouble(tokens[1]);
-	    	ROW_ERROR[3] = ""+Double.parseDouble(tokens[2]);
-				    	MODEL_ERROR.addRow(ROW_ERROR);
-	    	for(int i=0;i<MODEL_ERROR.getRowCount();i++) {MODEL_ERROR.setValueAt(""+(i+1),i, 0);} // Update numbering
-       }
-       br.close();
-       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
 
-   }
     
     public static void READ_sequenceFile() throws IOException{	
 		BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
@@ -4450,7 +2828,7 @@ public static String[] SequenceTVCFC     = { ""};
 	       br.close();
 	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
     }
-    public void READ_INPUT() throws IOException{
+    public static void READ_INPUT() throws IOException{
     	double InitialState = 0;
        	FileInputStream fstream = null; 
 try {
@@ -4468,38 +2846,38 @@ try {
         	String[] tokens = strLine.split(" ");
         if (k==0){
         	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_LONG.setText(decf.format(InitialState));
+         	DashboardLeftPanel.INDICATOR_LONG.setText(decf.format(InitialState));
         		SidePanelLeft.INPUT_LONG_Rs.setText(df_X4.format(InitialState));
         	} else if (k==1){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_LAT.setText(decf.format( InitialState));
+            	DashboardLeftPanel.INDICATOR_LAT.setText(decf.format( InitialState));
         		SidePanelLeft.INPUT_LAT_Rs.setText(df_X4.format( InitialState));
         	} else if (k==2){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_ALT.setText(decf.format( InitialState));
+            	DashboardLeftPanel.INDICATOR_ALT.setText(decf.format( InitialState));
         		SidePanelLeft.INPUT_ALT_Rs.setText(decf.format( InitialState));
         		h_init = InitialState;
         	} else if (k==3){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_VEL.setText(decf.format(InitialState));
+            	DashboardLeftPanel.INDICATOR_VEL.setText(decf.format(InitialState));
         		SidePanelLeft.INPUT_VEL_Rs.setText(decf.format(InitialState));
         		v_init = InitialState;
         	} else if (k==4){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_FPA.setText(decf.format(InitialState));
+            	DashboardLeftPanel.INDICATOR_FPA.setText(decf.format(InitialState));
         		SidePanelLeft.INPUT_FPA_Rs.setText(df_X4.format(InitialState));
         	} else if (k==5){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_AZI.setText(decf.format(InitialState));
+            	DashboardLeftPanel.INDICATOR_AZI.setText(decf.format(InitialState));
         		SidePanelLeft.INPUT_AZI_Rs.setText(df_X4.format(InitialState));
         	} else if (k==6){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_M0.setText(decf.format(InitialState));
+            	DashboardLeftPanel.INDICATOR_M0.setText(decf.format(InitialState));
         		INPUT_M0.setText(decf.format(InitialState));
         		M0=InitialState;
         	} else if (k==7){
             	InitialState = Double.parseDouble(tokens[0]);
-        		INDICATOR_INTEGTIME.setText(decf.format(InitialState));
+            	DashboardLeftPanel.INDICATOR_INTEGTIME.setText(decf.format(InitialState));
         		CenterPanelRight.setGlobalFrequency(InitialState);
         		 //MODEL_EventHandler.setValueAt(decf.format(InitialState), 0, 1);
         	} else if (k==8){
@@ -4511,16 +2889,16 @@ try {
         		int Target_indx = (int) InitialState;
         		indx_target = (int) InitialState; 
         		RM = DATA_MAIN[indx_target][0];
-        		INDICATOR_TARGET.setText(Target_Options[indx_target]);
+        		DashboardLeftPanel.INDICATOR_TARGET.setText(Target_Options[indx_target]);
         		CenterPanelRight.setTargetIndx(Target_indx);
                 if(indx_target==0) {
-                	INDICATOR_TARGET.setBorder(Earth_border);
+                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Earth_border);
                 } else if(indx_target==1){
-                	INDICATOR_TARGET.setBorder(Moon_border);
+                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Moon_border);
                 } else if(indx_target==2){
-                	INDICATOR_TARGET.setBorder(Mars_border);
+                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Mars_border);
                 } else if(indx_target==3){
-                	INDICATOR_TARGET.setBorder(Venus_border);
+                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Venus_border);
                 }
             } else if (k==10){
             	//InitialState = Double.parseDouble(tokens[0]);
@@ -4804,6 +3182,44 @@ fstream.close();
 					}
     }
     
+    public static List<RealTimeResultSet> READ_ResultSet(String RES_File) {
+    	List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
+    	resultSet.clear();
+    	// Read all data from file: 
+	    FileInputStream fstream = null;
+		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+	              DataInputStream in = new DataInputStream(fstream);
+	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
+	              String strLine;
+	              try {
+							while ((strLine = br.readLine()) != null )   {
+								Object[] tokens = strLine.split(" ");
+						     	RealTimeResultSet resultElement = new RealTimeResultSet();
+							    double[] CartesianPosition = {Double.parseDouble((String) tokens[41]),
+			 							   						Double.parseDouble((String) tokens[42]),
+			 							   						Double.parseDouble((String) tokens[43])};
+							    resultElement.setCartesianPosECEF(CartesianPosition);
+							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
+							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
+							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
+							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
+							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
+							    resultElement.setFpa(Double.parseDouble((String) tokens[7]));
+							    resultSet.add(resultElement);
+							  
+							  }
+			       fstream.close();
+			       in.close();
+			       br.close();
+
+	              } catch (NullPointerException | IOException eNPE) { 
+	            	  System.out.println("Read raw data, Nullpointerexception");
+					}catch(IllegalArgumentException eIAE) {
+					  System.out.println("Read raw data, illegal argument error");
+					}
+	 return resultSet;
+    }
+    
     public static void READ_INTEG() {
     	  //--------------------------------------------------------------------------------------------------------
     	  // Integrator settings 
@@ -5051,111 +3467,12 @@ fstream.close();
 	        	wr.write(error_type+" "+error_trigger+" "+error_value+System.getProperty( "line.separator" ));
 	        }
 	        wr.close(); 
-	        Update_ErrorIndicator();
+	       // Update_ErrorIndicator();
 	     } catch (IOException eIO){
 	     	System.out.println(eIO);
 	     }
 	}
-	public static void WriteSequenceINP() {
-	        try {
-	            File fac = new File(SEQUENCE_File);
-	            if (!fac.exists())
-	            {
-	                fac.createNewFile();
-	            } else {
-	            	fac.delete();
-	            	fac.createNewFile();
-	            }
-	            //System.out.println("\n----------------------------------");
-	            //System.out.println("The file has been created.");
-	            //System.out.println("------------------------------------");
-	            FileWriter wr = new FileWriter(fac);
-	            for (int i=0; i<MODEL_SEQUENCE.getRowCount(); i++)
-	            {
-	        			String row ="";
-	        			for(int j=0;j<MODEL_SEQUENCE.getColumnCount();j++) {
-	        				if(j==0) {
-	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					row = row + val + " ";
-	        				}  else if(j==1) {
-	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					int val = 0 ; 
-	        					for(int k=0;k<SequenceENDType.length;k++) { if(str_val.equals(SequenceENDType[k])){val=k;} }
-	        					row = row + val + " ";
-	        				} else if(j==2) {
-	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					row = row + val + " ";
-	        				} else if(j==3) {
-	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					int val = 0 ; 
-	        					for(int k=0;k<SequenceType.length;k++) { if(str_val.equals(SequenceType[k])){val=k+1;} }
-	        					row = row + val + " ";
-	        				} else if(j==4) {
-	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					int val = 0 ; 
-	        					//System.out.println(""+SequenceFC.length);
-	        					try {
-	        					for(int k=0;k<SequenceFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceFCCombobox.getItemAt(k) )){val=k+1;} }
-	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
-	        					row = row + val + " ";
-	        				} else if(j==5) {
-	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					row = row + val + " ";
-	        				} else if(j==6) {
-	        					String val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					row = row + val + " ";
-	        				} else if(j==7) {
-	        					String str_val =  (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					int val = 0 ; 
-	        					for(int k=0;k<FCTargetCurve.length;k++) { if(str_val.equals(FCTargetCurve[k])){val=k+1;} }
-	        					row = row + val + " ";
-	        				} else if(j==8) {
-	        					String str_val =  "";
-	        					try {
-	        					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					} catch (java.lang.NumberFormatException eNFE) {
-	        						System.out.println(eNFE);
-	        					}
-	        					int val = 0 ; 
-	        					try {
-	        					for(int k=0;k<SequenceTVCFCCombobox.getItemCount();k++) { if(str_val.equals(SequenceTVCFCCombobox.getItemAt(k))){val=k+1;} }
-	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
-	        					row = row + val + " ";
-	        				} else if(j==9) {
-	        					double val = 0 ; 
-	        					try {
-	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j));
-	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
-	        						System.out.println(eNFE);
-	        					}
-	        					row = row + val + " ";
-	        				} else if(j==10) {
-	        					double val = 0 ; 
-	        					try {
-	        					 val =  Double.parseDouble((String) MODEL_SEQUENCE.getValueAt(i, j))*deg2rad;
-	        					} catch (java.lang.NumberFormatException | NullPointerException eNFE) {
-	        						System.out.println(eNFE);
-	        					}
-	        					row = row + val + " ";
-	        				} else if(j==11) {
-	        					String str_val =  "";
-	        					try {
-	        					str_val = (String) MODEL_SEQUENCE.getValueAt(i, j);
-	        					} catch (java.lang.NumberFormatException eNFE) {System.out.println(eNFE);}
-	        					int val=0;
-	        					try {
-	        					for(int k=0;k<TargetCurve_Options_TVC.length;k++) { if(str_val.equals(TargetCurve_Options_TVC[k])){val=k+1;} }
-	        					} catch (NullPointerException eNPE) {System.out.println(eNPE);}
-	        					row = row + val + " ";
-	        				} 
-	        		   }
-	        			wr.write(row+System.getProperty( "line.separator" ));
-	            }
-	            wr.close(); 
-	        } catch (IOException eIO){
-	        	System.out.println(eIO);
-	        }
-	}
+	
 	
 	public static void WriteInitialAttitude() {
         try {
@@ -5283,34 +3600,7 @@ fstream.close();
 	     	System.out.println(eIO);
 	     }
 	}
-	public static void WriteControllerINP() {
-	        try {
-	            File fac = new File(CONTROLLER_File);
-	            if (!fac.exists())
-	            {
-	                fac.createNewFile();
-	            } else {
-	            	fac.delete();
-	            	fac.createNewFile();
-	            }
-	            //System.out.println("\n----------------------------------");
-	            //System.out.println("The file has been created.");
-	            //System.out.println("------------------------------------");
-	            FileWriter wr = new FileWriter(fac);
-	            for (int i=0; i<MODEL_CONTROLLER.getRowCount(); i++)
-	            {
-	        			String row ="";
-	        			for(int j=0;j<MODEL_CONTROLLER.getColumnCount();j++) {
-	    					String val =  (String) MODEL_CONTROLLER.getValueAt(i, j);
-	    					row = row + val + " ";
-	        		   }
-	        			wr.write(row+System.getProperty( "line.separator" ));
-	            }
-	            wr.close(); 
-	        } catch (IOException eIO){
-	        	System.out.println(eIO);
-	        }
-	}
+
 	public static void WRITE_INIT() {
         try {
             File fac = new File(Init_File);
@@ -5821,341 +4111,7 @@ fstream.close();
 	return result; 
 	}
 
-	
-	public static void createTargetView3D() {
-        final JFXPanel fxPanel = new JFXPanel();
-        //fxPanel.setSize(400,350);
-  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
-  		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
-  	    }
-        SpaceShip3DControlPanel.add(fxPanel,BorderLayout.CENTER);
-        SpaceShip3DControlPanelContent.add(fxPanel);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-            	TargetView3D.start(fxPanel,indx_target);
-            }
-       });
-      
-	}
-	
-
-	
-	public static void refreshTargetView3D() {
-        SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-            	TargetView3D.TargetBodyGroup.getChildren().removeAll();
-            	TargetView3D.refreshTargetGroup(indx_target);
-            }
-       });
-      
-	}
-	
-	
-	public static void refreshSpaceCraftView() {
-		//SplitPane_Page1_Charts_vertical.remo
-        final JFXPanel fxPanel = new JFXPanel();
-        SplitPane_Page1_Charts_vertical2.add(fxPanel,JSplitPane.RIGHT);
-        SplitPane_Page1_Charts_vertical2.setDividerLocation(500);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-            	SpaceShipView3DFrontPage.model.getChildren().removeAll();
-            	SpaceShipView3DFrontPage.coordinateSystem.getChildren().removeAll();
-            	//SpaceShipView3DFrontPage.root.getChildren().removeAll();
-            	SpaceShipView3DFrontPage.start(fxPanel);
-            }
-       });
-      
-	}
-	
-	public static void CreateChart_DashboardOverviewChart_Altitude_Velocity() throws IOException {
-		//CHART_P1_DashBoardOverviewChart = ChartFactory.createScatterPlot("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
-		CHART_P1_DashBoardOverviewChart_Altitude_Velocity = ChartFactory.createScatterPlot("", "", "", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);//("", "Velocity [m/s]", "Altitude [m] ", CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity, PlotOrientation.VERTICAL, true, false, false); 
-		XYPlot plot = (XYPlot)CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getXYPlot(); 
-	    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-	    plot.setRenderer(0, renderer); 
-	    renderer.setSeriesPaint( 0 , labelColor );	
-	    CHART_P1_DashBoardOverviewChart_Altitude_Velocity.setBackgroundPaint(backgroundColor);
-		Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
-		plot.getDomainAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelFont(font3);
-		plot.getRangeAxis().setLabelPaint(labelColor);
-		plot.getDomainAxis().setLabelPaint(labelColor);
-		plot.setForegroundAlpha(0.8f);
-		plot.setBackgroundPaint(backgroundColor);
-		plot.setDomainGridlinePaint(labelColor);
-		plot.setRangeGridlinePaint(labelColor); 
-		CHART_P1_DashBoardOverviewChart_Altitude_Velocity.removeLegend();
-		//CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getLegend().setBackgroundPaint(backgroundColor);
-		//CHART_P1_DashBoardOverviewChart_Altitude_Velocity.getLegend().setItemPaint(labelColor);;
-		final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-
-		rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-		//domainAxis.setInverted(true);
-		
-		//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
-	    double size = 2.0;
-	    double size2 = 1.0;
-	    double delta = size / 2.0;
-	    double delta2 = size2 / 2.0;
-		Shape dot1 = new Ellipse2D.Double(-delta, -delta, size, size);
-		Shape dot2 = new Ellipse2D.Double(-delta2, -delta2, size2, size2);
-		renderer.setSeriesShape(0, dot1);
-		renderer.setSeriesShape(1, dot2);
-		
-		JPanel PlotPanel_X43 = new JPanel();
-		PlotPanel_X43.setLayout(new BorderLayout());
-		PlotPanel_X43.setPreferredSize(new Dimension(900, page1_plot_y));
-		PlotPanel_X43.setBackground(backgroundColor);
-	
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity = new ChartPanel(CHART_P1_DashBoardOverviewChart_Altitude_Velocity);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMaximumDrawHeight(50000);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMaximumDrawWidth(50000);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMinimumDrawHeight(0);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMinimumDrawWidth(0);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setMouseWheelEnabled(true);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.setPreferredSize(new Dimension(900, page1_plot_y));
-	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelVisible(true);
-	     xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelBackgroundPaint(labelColor);
-	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity = new Crosshair(Double.NaN, Color.RED, new BasicStroke(0f));
-	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelVisible(true);
-	     
-	     yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setLabelBackgroundPaint(labelColor);
-	    crosshairOverlay.addDomainCrosshair(xCrosshair_DashBoardOverviewChart_Altitude_Velocity);
-	    crosshairOverlay.addRangeCrosshair(yCrosshair_DashBoardOverviewChart_Altitude_Velocity);
-		ChartPanel_DashBoardOverviewChart_Altitude_Velocity.addChartMouseListener(new ChartMouseListener() {
-	        @Override
-	        public void chartMouseClicked(ChartMouseEvent event) {
-	            // ignore
-	        }
-	
-	        @Override
-	        public void chartMouseMoved(ChartMouseEvent event) {
-	            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardOverviewChart_Altitude_Velocity.getScreenDataArea();
-	            JFreeChart chart = event.getChart();
-	            XYPlot plot = (XYPlot) chart.getPlot();
-	            ValueAxis xAxis = plot.getDomainAxis();
-	            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-	                    RectangleEdge.BOTTOM);
-	            
-	            //double max = xAxis.getUpperBound();
-	           // double min = xAxis.getLowerBound();
-	            //int indx = (int) ( (1- x/(max-min))*resultSet.size());
-	            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-	            BlueBookVisual.xCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(x);
-	            BlueBookVisual.yCrosshair_DashBoardOverviewChart_Altitude_Velocity.setValue(y);
-	        }
-	});
-	    ChartPanel_DashBoardOverviewChart_Altitude_Velocity.addOverlay(crosshairOverlay);
-	   PlotPanel_X43.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity,BorderLayout.PAGE_START);
-	   // P1_Plotpanel.add(PlotPanel_X43,BorderLayout.PAGE_START);
-	   //SplitPane_Page1_Charts_vertical.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity, JSplitPane.LEFT);
-	   FlexibleChartContentPanel2.add(ChartPanel_DashBoardOverviewChart_Altitude_Velocity, BorderLayout.CENTER);
-	   //P1_Plotpanel.add(ChartPanel_DashBoardOverviewChart,BorderLayout.LINE_START);
-		//jPanel4.validate();	
-		CHART_P1_DashBoardOverviewChart_fd = false;
-	}
-	
-	public static void CreateChart_ThirdWindowChart() throws IOException {
-		ChartSetting chartSetting = new ChartSetting();
-		chartSetting.setX(0);
-		chartSetting.setY(6);
-		List<String> variableList = new ArrayList<String>();
-		for(int i=0;i<Axis_Option_NR.length;i++) {
-			variableList.add(Axis_Option_NR[i]);
-		}
-        PlotElement plotElement = new PlotElement(0, variableList, analysisFile, chartSetting);
-        JPanel plotElementPanel = plotElement.createPlotElement(plotElement);
-  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
-  		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
-  	    }
-	   FlexibleChartContentPanel.add(plotElementPanel, BorderLayout.CENTER);
-	   SpaceShip3DControlPanel.add(plotElementPanel, BorderLayout.CENTER);
-	   SpaceShip3DControlPanelContent.add(plotElementPanel);
-	}
-	public static void CreateChart_DashBoardFlexibleChart() throws IOException {
-		//result1.removeAllSeries();
-				try {
-				ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(4,3, ResultSet_FlexibleChart);
-				} catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF2) {
-					
-				}
-			    //-----------------------------------------------------------------------------------
-			    Chart_DashBoardFlexibleChart = ChartFactory.createScatterPlot("", "", "", ResultSet_FlexibleChart, PlotOrientation.VERTICAL, false, false, false); 
-				XYPlot plot = (XYPlot)Chart_DashBoardFlexibleChart.getXYPlot(); 
-			    XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-			    plot.setRenderer(0, renderer); 
-			    renderer.setSeriesPaint( 0 , labelColor);	
-				Chart_DashBoardFlexibleChart.setBackgroundPaint(backgroundColor);
-				Font font3 = new Font("Dialog", Font.PLAIN, 12); 	
-				plot.getDomainAxis().setLabelFont(font3);
-				plot.getRangeAxis().setLabelFont(font3);
-				plot.getRangeAxis().setLabelPaint(labelColor);
-				plot.getDomainAxis().setLabelPaint(labelColor);
-				plot.setForegroundAlpha(0.5f);
-				plot.setBackgroundPaint(backgroundColor);
-				plot.setDomainGridlinePaint(labelColor);
-				plot.setRangeGridlinePaint(labelColor); 
-				//Chart_DashBoardFlexibleChart.getLegend().setBackgroundPaint(backgroundColor);
-				//Chart_DashBoardFlexibleChart.getLegend().setItemPaint(labelColor);
-				final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-				rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-				//final NumberAxis domainAxis = (NumberAxis) plot.getDomainAxis();
-				//domainAxis.setInverted(true);
-
-				
-				//Shape cross = ShapeUtilities.createDiagonalCross(1, 1) ;
-			    double size = 2.0;
-			    double delta = size / 2.0;
-				Shape dot = new Ellipse2D.Double(-delta, -delta, size, size);
-				renderer.setSeriesShape(0, dot);
-
-			
-				ChartPanel_DashBoardFlexibleChart = new ChartPanel(Chart_DashBoardFlexibleChart);
-				ChartPanel_DashBoardFlexibleChart.setMaximumDrawHeight(50000);
-				ChartPanel_DashBoardFlexibleChart.setMaximumDrawWidth(50000);
-				ChartPanel_DashBoardFlexibleChart.setMinimumDrawHeight(0);
-				ChartPanel_DashBoardFlexibleChart.setMinimumDrawWidth(0);
-				ChartPanel_DashBoardFlexibleChart.setMouseWheelEnabled(true);
-				//ChartPanel_DashBoardFlexibleChart.setPreferredSize(new Dimension(900, page1_plot_y));
-				ChartPanel_DashBoardFlexibleChart.addChartMouseListener(new ChartMouseListener() {
-			        @Override
-			        public void chartMouseClicked(ChartMouseEvent event) {
-			            // ignore
-			        }
-			
-			        @Override
-			        public void chartMouseMoved(ChartMouseEvent event) {
-			            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
-			            JFreeChart chart = event.getChart();
-			            XYPlot plot = (XYPlot) chart.getPlot();
-			            ValueAxis xAxis = plot.getDomainAxis();
-			            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-			                    RectangleEdge.BOTTOM);
-			            double y = DatasetUtilities.findYValue(plot.getDataset(), 0, x);
-			            BlueBookVisual.xCH_DashboardFlexibleChart.setValue(x);
-			            BlueBookVisual.yCH_DashboardFlexibleChart.setValue(y);
-			        }
-			});
-			    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
-			    xCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.RED, new BasicStroke(0f));
-			    xCH_DashboardFlexibleChart.setLabelVisible(true);
-			    xCH_DashboardFlexibleChart.setLabelPaint(labelColor);
-			    xCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
-			    yCH_DashboardFlexibleChart = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-			    yCH_DashboardFlexibleChart.setLabelVisible(true);
-			    yCH_DashboardFlexibleChart.setLabelBackgroundPaint(labelColor);
-			    crosshairOverlay.addDomainCrosshair(xCH_DashboardFlexibleChart);
-			    crosshairOverlay.addRangeCrosshair(yCH_DashboardFlexibleChart);
-			    ChartPanel_DashBoardFlexibleChart.addOverlay(crosshairOverlay);
-			   //PlotPanel_X44.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.PAGE_START);
-			    //P1_Plotpanel.add(PlotPanel_X44,BorderLayout.LINE_END);
-			    //P1_Plotpanel.add(ChartPanel_DashBoardFlexibleChart,BorderLayout.CENTER);
-			   FlexibleChartContentPanel.add(ChartPanel_DashBoardFlexibleChart, BorderLayout.CENTER);
-				//jPanel4.validate();	
-				Chart_DashBoardFlexibleChart_fd = false;
-	}
-
-	public static void Update_DashboardFlexibleChart(){
-	    	ResultSet_FlexibleChart.removeAllSeries();
-	    	try {
-	    	ResultSet_FlexibleChart = AddDataset_DashboardFlexibleChart(variableListX.getSelectedIndx(),variableListY.getSelectedIndx(), 
-	    			ResultSet_FlexibleChart);
-	   //	Chart_DashBoardFlexibleChart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
-	    //	Chart_DashBoardFlexibleChart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
-	    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
-	    	}
-	}
-	
-	public static void Update_DashboardFlexibleChart2(){
-		CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity.removeAllSeries();
-    	try {
-    		CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity = AddDataset_DashboardFlexibleChart(variableListX2.getSelectedIndx(),
-    				variableListY2.getSelectedIndx(), CHART_P1_DashBoardOverviewChart_Dataset_Altitude_Velocity);
-    	} catch(ArrayIndexOutOfBoundsException | IOException eFNF2) {
-    	}
-    	
-}
-	
-	public static VariableList getVariableListY() {
-		return variableListY;
-	}
-	public static VariableList getVariableListX() {
-		return variableListX;
-	}
-	public static void createChart_3DRotation() {
-		JPanel SpaceShip3DPanel = new JPanel();
-		SpaceShip3DPanel.setLayout(new BorderLayout());
-		SpaceShip3DPanel.setLocation(765, 10);
-		//SpaceShip3DPanel.setBackground(backgroundColor);
-		//SpaceShip3DPanel.setForeground(labelColor);
-		SpaceShip3DPanel.setSize(450, 400);
-		//SpaceShip3DPanel.setBorder(Moon_border);
-		
-        final JFXPanel fxPanel = new JFXPanel();
-        SpaceShip3DPanel.add(fxPanel, BorderLayout.CENTER);
-        SplitPane_Page1_Charts_vertical2.add(SpaceShip3DPanel, JSplitPane.RIGHT);
-        Platform.runLater(new Runnable() {
-            @Override
-            public void run() {
-            	SpaceShipView3DFrontPage.start(fxPanel);
-            }
-       });
-	}
-	public static XYSeriesCollection AddDataset_DashboardFlexibleChart(int x, int y, XYSeriesCollection XYSeries) throws IOException , IIOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
-	   			  XYSeries xyseries10 = new XYSeries("", false, true); 
-	              FileInputStream fstream = null;
-	      		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
-	              DataInputStream in = new DataInputStream(fstream);
-	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	              String strLine;
-	              try {
-			                  while ((strLine = br.readLine()) != null )   {
-						            String[] tokens = strLine.split(" ");
-						            double xx=0; double yy=0; 
-						            if(x==3) {
-						             xx = Double.parseDouble(tokens[x]); } else {
-						            	 @SuppressWarnings("static-access")
-										String x_axis_label = Axis_Option_NR[variableListX.getSelectedIndx()];
-						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
-						            	 boolean isangle2 = x_axis_label.indexOf("[deg/s]") !=-1? true: false;
-						            	 if(isangle || isangle2) {xx = Double.parseDouble(tokens[x])*rad2deg;} else {
-						            		 		  xx = Double.parseDouble(tokens[x]);} 
-						            	 }
-						            if(y==3) {
-						             yy = Double.parseDouble(tokens[y]);} else {
-						            	 @SuppressWarnings("static-access")
-										String x_axis_label = Axis_Option_NR[variableListY.getSelectedIndx()];
-						            	 boolean isangle = x_axis_label.indexOf("[deg]") !=-1? true: false;
-						            	 boolean isangle2 = x_axis_label.indexOf("[deg/s]") !=-1? true: false;
-						            	 if(isangle || isangle2) {yy = Double.parseDouble(tokens[y])*rad2deg;} else {
-						             yy = Double.parseDouble(tokens[y]);	}
-						             }
-						            
-							           try {
-								           INDICATOR_VTOUCHDOWN.setText(""+decf.format(Double.parseDouble(tokens[6])));
-								           INDICATOR_DELTAV.setText(""+decf.format(Double.parseDouble(tokens[99])));
-								           INDICATOR_PROPPERC.setText(""+decf.format(Double.parseDouble(tokens[93]))); 
-								           INDICATOR_RESPROP.setText(""+decf.format(Double.parseDouble(tokens[73])));
-								           } catch (NumberFormatException e) {
-								        	   System.err.println("Error: Emtpy String detected - Indicator Dashboard");
-								           }
-						         	xyseries10.add(xx , yy);
-					           }
-	       in.close();
-	       XYSeries.addSeries(xyseries10); 
-	              } catch (NullPointerException eNPE) { 
-	            	 // System.out.println(eNPE);
-	            	  }
-	    return XYSeries;
-	   }
-	public void SET_MAP(int TARGET) throws URISyntaxException, IOException{
+	public static void SET_MAP(int TARGET) throws URISyntaxException, IOException{
 		final XYPlot plot2 = (XYPlot) Chart_MercatorMap.getPlot();
 		final PolarPlot plot_polar = (PolarPlot) chart_PolarMap.getPlot();
 		  if (TARGET==0){ 
@@ -6193,98 +4149,7 @@ fstream.close();
 		  }
 	}
 	
-	public static DefaultTableXYDataset AddDataset_GroundClearance() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
-       	XYSeries xyseries_FlightPath = new XYSeries("Flight Path", false, false); 
-       	XYSeries xyseries_Delta = new XYSeries("Ground clearance", false, false); 
-       	XYSeries xyseries_Elevation = new XYSeries("Local Elevation", false, false); 
-       	@SuppressWarnings("unused")
-		Random rand = new Random();
-            FileInputStream fstream = null;
-            FileInputStream fstream_LocalElev=null; 
-            		try{ fstream = new FileInputStream(RES_File);fstream_LocalElev = new FileInputStream(LOCALELEVATIONFILE);} catch(IOException eIO) { System.out.println(eIO);}
-                  DataInputStream in = new DataInputStream(fstream);
-                  DataInputStream in2 = new DataInputStream(fstream_LocalElev);
-                  BufferedReader br = new BufferedReader(new InputStreamReader(in));
-                  BufferedReader br2 = new BufferedReader(new InputStreamReader(in2));
-                  String strLine;
-                  String strLine_2;
-                  try {
-                  while ((strLine = br.readLine()) != null )   {
-                   strLine_2 =  br2.readLine();
-		           String[] tokens = strLine.split(" ");
-		           String[] tokens2 = strLine_2.split(" ");
-		           double y = Double.parseDouble(tokens[4]);     			 // Altitude 	[m]
-		           double x = Double.parseDouble(tokens[40]);	 			 // Groundtrack [m]
-		           try{
-		           xyseries_FlightPath.add(x,y);
-		           } catch ( org.jfree.data.general.SeriesException eSE){
-		        	 // System.out.println(eSE); 
-		           }
-		           try{
-		           double local_elevation = Double.parseDouble(tokens2[0]);
-		           xyseries_Elevation.add(x,local_elevation);
-		           xyseries_Delta.add(x,y-local_elevation);
-		           } catch ( org.jfree.data.general.SeriesException eSE){
-		        	  //System.out.println(eSE); 
-		           }
-                  }
-           in.close();
-           br.close();
-           fstream.close();
-           ResultSet_GroundClearance_FlightPath.addSeries(xyseries_FlightPath); 
-           ResultSet_GroundClearance_FlightPath.addSeries(xyseries_Delta); 
-           ResultSet_GroundClearance_Elevation.addSeries(xyseries_Elevation); 
-                  } catch(NullPointerException eNPI) { System.out.print(eNPI); }
-        return ResultSet_GroundClearance_FlightPath;          
-       }
-	public static void CreateChart_GroundClearance() throws IOException{
-		ResultSet_GroundClearance_FlightPath.removeAllSeries();
-		ResultSet_GroundClearance_Elevation.removeAllSeries();
-		 try {
-			 ResultSet_GroundClearance_FlightPath = AddDataset_GroundClearance(); 
-		        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {System.out.println(" Error read for plot X40");}
-		        Chart_GroundClearance = ChartFactory.createXYAreaChart("", "Ground Track [km]", "Altitude/Elevation [m] ", ResultSet_GroundClearance_FlightPath, PlotOrientation.VERTICAL, true, false, false); 
-				XYPlot plot = (XYPlot)Chart_GroundClearance.getXYPlot(); 
-				StackedXYAreaRenderer renderer_Area = new StackedXYAreaRenderer( );
-		        XYItemRenderer renderer_Line = new StandardXYItemRenderer();
-		        renderer_Line.setSeriesPaint(0,Color.black);
-		        renderer_Line.setSeriesPaint(1,Color.orange);
-		        renderer_Area.setSeriesPaint(0,Color.gray);
-
-		        plot.setRenderer(0, renderer_Line);  
- 
-		        plot.setDataset(1, ResultSet_GroundClearance_Elevation);
-		        plot.setRenderer(1, renderer_Area);
-			
-		        Chart_GroundClearance.setBackgroundPaint(Color.white);
-				
-		        plot.getDomainAxis().setLabelFont(labelfont_small);
-		        plot.getRangeAxis().setLabelFont(labelfont_small);
-				
-		       final XYPlot plot2 = (XYPlot) Chart_GroundClearance.getPlot();
-		       plot2.setForegroundAlpha(0.5f);
-		       plot2.setBackgroundPaint(Color.white);
-		       plot2.setDomainGridlinePaint(Color.black);
-		       plot2.setRangeGridlinePaint(new Color(220,220,220));
-
-		       ValueAxis domain2 = plot.getDomainAxis();
-		       //domain2.setRange(-180, 180);
-		       domain2.setInverted(true);
-		       // change the auto tick unit selection to integer units only...
-		       final NumberAxis rangeAxis2 = (NumberAxis) plot2.getRangeAxis();
-		       rangeAxis2.setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-		       //rangeAxis2.setRange(-90, 90);
-		       ChartPanel CPXX4 = new ChartPanel(Chart_GroundClearance);
-		       CPXX4.setBackground(backgroundColor);
-		       //CPXX4.setDomainZoomable(false);
-		       //CPXX4.setRangeZoomable(false);
-		       CPXX4.setMaximumDrawHeight(50000);
-		       CPXX4.setMaximumDrawWidth(50000);
-		       CPXX4.setMinimumDrawHeight(0);
-		       CPXX4.setMinimumDrawWidth(0);
-		       CPXX4.setPreferredSize(new Dimension(1300, 660));
-		       PageX04_GroundClearance.add(CPXX4, BorderLayout.CENTER);	
-	}
+	
 	public static XYSeriesCollection AddDataset_Mercator_MAP() throws IOException, FileNotFoundException, ArrayIndexOutOfBoundsException{
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
@@ -6427,9 +4292,6 @@ fstream.close();
 		       PageX04_Map.add(CPXX4, BorderLayout.CENTER);	
 	}
 	
-	public static JButton getyAxisIndicator() {
-		return yAxisIndicator;
-	}
 	public static void CreateChart_PolarMap() throws IOException {
 		ResultSet_PolarMap.removeAllSeries();
         try {
@@ -6580,479 +4442,13 @@ fstream.close();
 		}
 		return ELEVATION;
 	}
-	/*
-    public JPanel WINDOW_CreateLocalElevationFile() throws IOException, SQLException{
-    	//---------------------------------------------------
-    	// 				Data Select 
-    	//---------------------------------------------------
-    	// data_select == 1 => Export Requirements
-    	// data_select == 2 => Export Change Log
-    	//---------------------------------------------------
-	   	JPanel MainGUI = new JPanel();
-	   	MainGUI = new JPanel();
-	   	//MainGUI.setLayout(new BorderLayout());
-	   	MainGUI.setLayout(null);
-	   	MainGUI.setBackground(backgroundColor);	
-   		int extx = 370;
-   		int exty = 400;
-	  //----------------------------------------------------------------
-   		
-        JLabel Title = new JLabel("Select Resolution: ");
-        Title.setLocation(5, 2 );
-        Title.setSize(250, 15);
-        Title.setBackground(backgroundColor);
-        Title.setForeground(labelColor);
-        MainGUI.add(Title);
-        
-	  	  @SuppressWarnings({ "rawtypes", "unchecked" })
-		JComboBox ResolutionChooser = new JComboBox(LocalElevation_Resolution);
-	  	ResolutionChooser.setLocation(30,20);
-	  	ResolutionChooser.setSize(230,25);
-	  	ResolutionChooser.setSelectedIndex(0);
-	  	ResolutionChooser.setBorder(BorderFactory.createLineBorder(Color.black));
-	  	ResolutionChooser.addActionListener(new ActionListener() { 
-	    	  public void actionPerformed(ActionEvent e) {
-	    		  // Get selected File Resolution from ResolutionChooser:
-	    		  int Resoltuion = Integer.parseInt((String) ResolutionChooser.getSelectedItem());
-	    		  // Create Elevation File:
-	    		  
-              	try {
-						CreateLocalElevationFile(Resoltuion);
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-					
-              	// Update Ground Clearance Chart with generated data:
-              	ResultSet_GroundClearance_FlightPath.removeAllSeries();
-        		ResultSet_GroundClearance_Elevation.removeAllSeries();
-       		 try {
-       			 ResultSet_GroundClearance_FlightPath = AddDataset_GroundClearance(); 
-       		        } catch(FileNotFoundException | ArrayIndexOutOfBoundsException eFNF) {System.out.println(" Error read for plot X40");} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-       		 // Dispose frame
-       		frame_CreateLocalElevationFile.dispose();
-	    	  }});
-			  	  MainGUI.add(ResolutionChooser); 
-	   	//----------------------------------------------------------------
-	    //MainGUI.setOpaque(true);
-        MainGUI.setSize(extx,exty);
-	    return MainGUI;
-    }
-    */
-	public static List<atm_dataset> INITIALIZE_Page03_storage_DATA() throws URISyntaxException{
-    	   try{ // Temperature
-    	       	FileInputStream fstream = null; 
-    	       	try {
-    	       	              fstream = new FileInputStream(RES_File);
-    	       	} catch(IOException eIIO) { System.out.println(eIIO); } 
-    		          DataInputStream in = new DataInputStream(fstream);
-    		          BufferedReader br = new BufferedReader(new InputStreamReader(in));
-    		          String strLine;
-    		          int k = 0;
-    		          while ((strLine = br.readLine()) != null )   {
-			    if (k==0){
-			    // Head line -> skip 	
-			    } else {
-    		        	  double time = 0;
-    		        	  double velocity = 0 ; 
 
-    		   String[] tokens = strLine.split(" ");
-    		   time = Double.parseDouble(tokens[0]);		// Altitude
-    		   velocity = Double.parseDouble(tokens[4]);		// density
-    		   atm_dataset insert = new atm_dataset( time,  velocity, 0, 0,  0); 
-    		   Page03_storage.add(insert);
-    }
-    		   k++;
-    		   }
-    		   in.close();
-    		   }catch (Exception e){
-    		     System.err.println("Error: " + e.getMessage());
-    		   }
-    	   return Page03_storage;	
-    }
-    
-    public static void UpdateChart_A01() throws IOException , IIOException, FileNotFoundException, ArrayIndexOutOfBoundsException, NullPointerException, URISyntaxException{
-    	result11_A3_1.removeAllSeries();
-    	result11_A3_2.removeAllSeries();
-    	result11_A3_3.removeAllSeries();
-    	result11_A3_4.removeAllSeries();
-    	
-    	Page03_storage.removeAll(Page03_storage);
-    	INITIALIZE_Page03_storage_DATA();
-    	
-       	XYSeries xyseries10 = new XYSeries("", false, true); 
-       	XYSeries xyseries20 = new XYSeries("", false, true); 
-       	XYSeries xyseries30 = new XYSeries("", false, true); 
-       	XYSeries xyseries40 = new XYSeries("", false, true); 
-       	FileInputStream fstream = null; 
-try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { System.out.println(eIIO); } 
-              DataInputStream in = new DataInputStream(fstream);
-              BufferedReader br = new BufferedReader(new InputStreamReader(in));
-              String strLine;
-              try {
-              while ((strLine = br.readLine()) != null )   {
-	           String[] tokens = strLine.split(" ");
-	           double x1 = Double.parseDouble(tokens[4]);
-	           double y1 = Double.parseDouble(tokens[3])-RM;
-	           
-	           double x2 = Double.parseDouble(tokens[0]);
-	           double y2 = Double.parseDouble(tokens[3])-RM;
-	          
-	           double x3 = Double.parseDouble(tokens[0]);
-	           double y3 = Double.parseDouble(tokens[5])*rad2deg;
-	           
-	           double x4 = 0 , y4=0;
-	           if (chartA3_fd==true){
-	           x4 = Double.parseDouble(tokens[0]);
-	           y4 = Double.parseDouble(tokens[Axis_Option_NR.length-2]);
-	           } else {
-		       x4 = Double.parseDouble(tokens[axis_chooser3.getSelectedIndex()]);
-		       y4 = Double.parseDouble(tokens[axis_chooser4.getSelectedIndex()]);   
-		       chartA3_4.getXYPlot().getDomainAxis().setLabel(Axis_Option_NR[axis_chooser3.getSelectedIndex()]);
-		       chartA3_4.getXYPlot().getRangeAxis().setLabel(Axis_Option_NR[axis_chooser4.getSelectedIndex()]);
-	           }
 
-	         	xyseries10.add(x1 , y1);
-	         	xyseries20.add(x2 , y2);
-	         	xyseries30.add(x3 , y3);
-	         	xyseries40.add(x4 , y4);
-	         	//System.out.println(x1);
-	           }
-       in.close();
-       result11_A3_1.addSeries(xyseries10); 
-       result11_A3_2.addSeries(xyseries20);
-       result11_A3_3.addSeries(xyseries30);
-       result11_A3_4.addSeries(xyseries40);
-              } catch (NullPointerException eNPE) { System.out.println(eNPE);}
-    }
+    
+   
     
     
-	public static void CreateChart_A01() {
 	
-				try {
-					try {
-						UpdateChart_A01();
-					} catch (IOException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-				} catch (ArrayIndexOutOfBoundsException | NullPointerException | URISyntaxException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-	
-	    	
-	    	try {
-	    		Page03_storage.removeAll(Page03_storage);
-				INITIALIZE_Page03_storage_DATA();
-			} catch (URISyntaxException e) {
-				// TODO Auto-generated catch block
-				System.out.println("storage list init error");
-				e.printStackTrace();
-			}
-	        //-----------------------------------------------------------------------------------
-	    	//AddDataset_101();
-	        //-----------------------------------------------------------------------------------
-	    	String x_str_01 = "Velocity [m/s]";
-	    	String y_str_01 = "Altitude [m]";
-	    	String x_str_02 = "Time [s]";
-	    	String y_str_02 = "Altitude [m]";
-	    	String x_str_03 = "Time [s]";
-	    	String y_str_03 = "Flight Path Angle [deg]";
-	    	String x_str_04 = "Time [s]";
-	    	String y_str_04 = "Normaliced Acceleration [-]";
-	    	//int xplot = 670;
-	    	int yplot = 350; 
-			JPanel TopPanel = new JPanel();
-			TopPanel.setLayout(new BorderLayout());
-			TopPanel.setPreferredSize(new Dimension(extx_main, yplot));
-			TopPanel.setBackground(backgroundColor);
-			JPanel BottomPanel = new JPanel();
-			BottomPanel.setLayout(new BorderLayout());
-			BottomPanel.setPreferredSize(new Dimension(extx_main, yplot));
-			BottomPanel.setBackground(backgroundColor);
-	    	
-			JPanel PlotPanel_01 = new JPanel();
-			PlotPanel_01.setLayout(new BorderLayout());
-			//PlotPanel_01.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_01.setBackground(backgroundColor);
-			JPanel PlotPanel_02 = new JPanel();
-			PlotPanel_02.setLayout(new BorderLayout());
-			//PlotPanel_02.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_02.setBackground(backgroundColor);
-			JPanel PlotPanel_03 = new JPanel();
-			PlotPanel_03.setLayout(new BorderLayout());
-			//PlotPanel_03.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_03.setBackground(backgroundColor);
-			JPanel PlotPanel_04 = new JPanel();
-			PlotPanel_04.setLayout(new BorderLayout());
-			//PlotPanel_04.setPreferredSize(new Dimension(xplot, yplot));
-			PlotPanel_04.setBackground(backgroundColor);
-			
-			JPanel Midpanel = new JPanel();
-			Midpanel.setLayout(null);
-			//Midpanel.setPreferredSize(new Dimension(155, 300));
-			Midpanel.setSize(155,300);
-			Midpanel.setBackground(backgroundColor);
-			BottomPanel.add(Midpanel, BorderLayout.CENTER);
-			
-		      JLabel p41_linp8 = new JLabel("X-Axis");
-		      p41_linp8.setLocation(5, 10 + 25 * 1 );
-		      //p41_linp8.setPreferredSize(new Dimension(150, 20));
-		      p41_linp8.setHorizontalAlignment(0);
-		      p41_linp8.setSize(150,20);
-		      p41_linp8.setBackground(backgroundColor);
-		      p41_linp8.setForeground(labelColor);
-		      Midpanel.add(p41_linp8);
-		      JLabel p41_linp9 = new JLabel("Y-Axis");
-		      p41_linp9.setLocation(5, 10 + 25 * 4 );
-		      //p41_linp9.setPreferredSize(new Dimension(150, 20));
-		      p41_linp9.setSize(150, 20);
-		      p41_linp9.setHorizontalAlignment(0);
-		      p41_linp9.setBackground(backgroundColor);
-		      p41_linp9.setForeground(labelColor);
-		      Midpanel.add(p41_linp9);
-			  axis_chooser3 = new JComboBox<Object>(Axis_Option_NR);
-			  axis_chooser4 = new JComboBox<Object>(Axis_Option_NR);
-		      axis_chooser4.setLocation(5, 10 + 25 * 5);
-		      //axis_chooser2.setPreferredSize(new Dimension(150,25));
-		     // axis_chooser4.setPreferredSize(new Dimension(150,25));
-		      axis_chooser4.setSize(150,25);
-		      axis_chooser4.setSelectedIndex(28);
-		      axis_chooser4.addActionListener(new ActionListener() { 
-		    	  public void actionPerformed(ActionEvent e) {
-		    		  try {
-						UpdateChart_A01();
-					} catch (ArrayIndexOutOfBoundsException | NullPointerException | IOException | URISyntaxException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-		    	  }
-		  	  } );
-		      axis_chooser3.setLocation(5, 10 + 25 * 2);
-		      //axis_chooser.setPreferredSize(new Dimension(150,25));
-		      //axis_chooser3.setPreferredSize(new Dimension(150,25));
-		      axis_chooser3.setSize(150,25);
-		      axis_chooser3.setSelectedIndex(0);
-		      axis_chooser3.addActionListener(new ActionListener() { 
-		    	  public void actionPerformed(ActionEvent e) {
-		    		  try {
-						UpdateChart_A01();
-					} catch (ArrayIndexOutOfBoundsException | NullPointerException | IOException | URISyntaxException e1) {
-						// TODO Auto-generated catch block
-						e1.printStackTrace();
-					}
-		    	  }
-		  	  } );
-		      Midpanel.add(axis_chooser3);
-		      Midpanel.add(axis_chooser4);
-	//--------------------------------------------------------------------------------------------------------------------------------------
-	    	chartA3_1 = ChartFactory.createScatterPlot("", x_str_01, y_str_01, result11_A3_1, PlotOrientation.VERTICAL, false, false, false); 
-	        XYLineAndShapeRenderer renderer131 = new XYLineAndShapeRenderer( );
-	        renderer131.setSeriesPaint( 0 , Color.BLACK );
-			Font font3 = new Font("Dialog", Font.PLAIN, 12); 
-			renderer131.setSeriesPaint( 2 , Color.gray );
-			chartA3_1.getXYPlot().getDomainAxis().setLabelFont(font3);
-			chartA3_1.getXYPlot().getRangeAxis().setLabelFont(font3);
-			chartA3_1.getXYPlot().setRenderer(0, renderer131); 
-			chartA3_1.setBackgroundPaint(Color.white);
-			chartA3_1.getXYPlot().setForegroundAlpha(0.5f);
-			chartA3_1.getXYPlot().setBackgroundPaint(Color.white);
-			chartA3_1.getXYPlot().setDomainGridlinePaint(new Color(220,220,220));
-			chartA3_1.getXYPlot().setRangeGridlinePaint(new Color(220,220,220));
-			chartA3_1.getXYPlot().getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-			CP_A31 = new ChartPanel(chartA3_1);
-			//CP_A31.setSize(586,350);
-			//CP_A31.setLocation(2, 5);
-			TopPanel.add(CP_A31,BorderLayout.CENTER);
-	
-	        //-----------------------------------------------------------------------------------
-	    	chartA3_2 = ChartFactory.createScatterPlot("", x_str_02, y_str_02, result11_A3_2, PlotOrientation.VERTICAL, false, false, false); 
-	    	 XYLineAndShapeRenderer renderer132 = new XYLineAndShapeRenderer( );
-	    	renderer132.setSeriesPaint( 0 , Color.BLACK );	
-			chartA3_2.getXYPlot().getDomainAxis().setLabelFont(font3);
-			chartA3_2.getXYPlot().getRangeAxis().setLabelFont(font3);
-			chartA3_2.getXYPlot().setRenderer(0, renderer132); 
-			chartA3_2.setBackgroundPaint(Color.white);
-			chartA3_2.getXYPlot().setForegroundAlpha(0.5f);
-			chartA3_2.getXYPlot().setBackgroundPaint(Color.white);
-			chartA3_2.getXYPlot().setDomainGridlinePaint(new Color(220,220,220));
-			chartA3_2.getXYPlot().setRangeGridlinePaint(new Color(220,220,220));
-			chartA3_2.getXYPlot().getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-			CP_A32 = new ChartPanel(chartA3_2);
-			//CP_A32.setSize(736,350);
-			//CP_A32.setLocation(590, 5);
-			TopPanel.add(CP_A32,BorderLayout.EAST);
-			//PageX04_3.add(PlotPanel_02);
-	        //-----------------------------------------------------------------------------------
-	    	chartA3_3 = ChartFactory.createScatterPlot("", x_str_03, y_str_03, result11_A3_3, PlotOrientation.VERTICAL, false, false, false); 
-	    	 XYLineAndShapeRenderer renderer133 = new XYLineAndShapeRenderer( );
-	    	 renderer133.setSeriesPaint( 0 , Color.BLACK );
-	    	 renderer133.setSeriesPaint( 2 , Color.gray );
-	        chartA3_3.getXYPlot().getDomainAxis().setLabelFont(font3);
-	        chartA3_3.getXYPlot().getRangeAxis().setLabelFont(font3);
-	        chartA3_3.getXYPlot().setRenderer(0, renderer133); 
-	        chartA3_3.setBackgroundPaint(Color.white);
-	        chartA3_3.getXYPlot().setForegroundAlpha(0.5f);
-	        chartA3_3.getXYPlot().setBackgroundPaint(Color.white);
-	        chartA3_3.getXYPlot().setDomainGridlinePaint(new Color(220,220,220));
-	        chartA3_3.getXYPlot().setRangeGridlinePaint(new Color(220,220,220));
-	        chartA3_3.getXYPlot().getRangeAxis().setStandardTickUnits(NumberAxis.createIntegerTickUnits());
-	        CP_A33 = new ChartPanel(chartA3_3);
-	        //CP_A33.setSize(586,350);
-	        //CP_A33.setLocation(2, 370);
-	        BottomPanel.add(CP_A33,BorderLayout.WEST);
-			//PageX04_3.add(PlotPanel_03);
-			//-----------------------------------------------------------------------------------
-	        chartA3_4 = ChartFactory.createScatterPlot("", x_str_04, y_str_04, result11_A3_4, PlotOrientation.VERTICAL, false, false, false); 
-			XYPlot xyplot = (XYPlot)chartA3_4.getPlot(); 
-	        XYLineAndShapeRenderer renderer = new XYLineAndShapeRenderer( );
-	        xyplot.setRenderer(0, renderer); 
-	        renderer.setSeriesPaint( 0 , Color.BLACK );
-	        chartA3_4.setBackgroundPaint(Color.white);		
-			xyplot.getDomainAxis().setLabelFont(font3);
-			xyplot.getRangeAxis().setLabelFont(font3);
-			
-			final XYPlot plot = (XYPlot) chartA3_4.getPlot();
-			plot.setForegroundAlpha(0.5f);
-			//plot.setBackgroundPaint(new Color(238,238,238));
-			plot.setBackgroundPaint(Color.white);
-			plot.setDomainGridlinePaint(new Color(220,220,220));
-			plot.setRangeGridlinePaint(new Color(220,220,220));
-			final NumberAxis rangeAxis = (NumberAxis) plot.getRangeAxis();
-			rangeAxis.setStandardTickUnits(NumberAxis.createIntegerTickUnits());	
-		    //plot.setDataset(0, result11_A3_4);
-	
-		    
-		    //XYLineAndShapeRenderer splinerenderer_1 = new XYLineAndShapeRenderer();
-		    //splinerenderer_1.setSeriesPaint(0, Color.BLACK);
-	
-	
-	
-			    CP_A34 = new ChartPanel(chartA3_4);
-			    //CP_A34.setSize(780,360);
-			    //CP_A34.setLocation(588, 370);
-			    BottomPanel.add(CP_A34,BorderLayout.EAST);
-			   // PageX04_3.add(CP_A34);
-	
-	        CP_A31.addChartMouseListener(new ChartMouseListener() {
-	            @Override
-	            public void chartMouseClicked(ChartMouseEvent event) {
-	                // Update inforboard
-	               // Rectangle2D dataArea = BB_AddOn_3DOF.CP_A31.getScreenDataArea();
-	                //JFreeChart chart = event.getChart();
-	             //   XYPlot plot = chartA3_1.getXYPlot();
-	              //  ValueAxis xAxis = plot.getDomainAxis();
-	            //    double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-	              //          RectangleEdge.BOTTOM);
-	              //  double y = DatasetUtilities.findYValue(chartA3_1.getXYPlot().getDataset(), 0, x);
-	               // BlueBook_main.xCrosshair_A3_1.setValue(x);
-	               // BlueBook_main.yCrosshair_A3_1.setValue(y);
-	                //===================================================
-	                //double xx = xCrosshair_A3_1.getValue();
-	              //  double yy = DatasetUtilities.findYValue((chartA3_2.getXYPlot()).getDataset(), 0, x);
-	                //BlueBook_main.xCrosshair_A3_2.setValue(xx);
-	               // BlueBook_main.yCrosshair_A3_2.setValue(yy);
-	                //===================================================
-	                //double xxx = xCrosshair_A3_1.getValue();
-	               // double yyy = DatasetUtilities.findYValue((chartA3_3.getXYPlot()).getDataset(), 0, x);
-	               // BlueBook_main.xCrosshair_A3_3.setValue(xxx);
-	               // BlueBook_main.yCrosshair_A3_3.setValue(yyy);
-	                //===================================================
-	                //double xxxx = xCrosshair_A3_1.getValue();
-	               // double yyyy = DatasetUtilities.findYValue((chartA3_4.getXYPlot()).getDataset(), 0, x);
-	               // BlueBook_main.xCrosshair_A3_4.setValue(xxxx);
-	               // BlueBook_main.yCrosshair_A3_4.setValue(yyyy);
-	                //===================================================
-	            	
-	            }
-	
-	            @Override
-	            public void chartMouseMoved(ChartMouseEvent event) {
-	                Rectangle2D dataArea = BlueBookVisual.CP_A31.getScreenDataArea();
-	                //JFreeChart chart = event.getChart();
-	                XYPlot plot = chartA3_1.getXYPlot();
-	                ValueAxis xAxis = plot.getDomainAxis();
-	                double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-	                        RectangleEdge.BOTTOM);
-	                double y = DatasetUtilities.findYValue(chartA3_1.getXYPlot().getDataset(), 0, x);
-	                BlueBookVisual.xCrosshair_A3_1.setValue(x);
-	                BlueBookVisual.yCrosshair_A3_1.setValue(y);
-	                //===================================================
-	                double time = get_time(x);
-	                double xx = time ;//xCrosshair_A3_1.getValue();
-	                double yy = DatasetUtilities.findYValue((chartA3_2.getXYPlot()).getDataset(), 0, time);
-	                BlueBookVisual.xCrosshair_A3_2.setValue(xx);
-	                BlueBookVisual.yCrosshair_A3_2.setValue(yy);
-	                //===================================================
-	                double xxx = time ; xCrosshair_A3_1.getValue();
-	                double yyy = DatasetUtilities.findYValue((chartA3_3.getXYPlot()).getDataset(), 0, time);
-	                BlueBookVisual.xCrosshair_A3_3.setValue(xxx);
-	                BlueBookVisual.yCrosshair_A3_3.setValue(yyy);
-	                //===================================================
-	                double xxxx = time ; // xCrosshair_A3_1.getValue();
-	                double yyyy = DatasetUtilities.findYValue((chartA3_4.getXYPlot()).getDataset(), 0, time);
-	                BlueBookVisual.xCrosshair_A3_4.setValue(xxxx);
-	                BlueBookVisual.yCrosshair_A3_4.setValue(yyyy);
-	                //===================================================
-	            }
-	    });
-	        CrosshairOverlay crosshairOverlay3 = new CrosshairOverlay();
-	        xCrosshair_A3_1 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        xCrosshair_A3_1.setLabelVisible(true);
-	        yCrosshair_A3_1 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        yCrosshair_A3_1.setLabelVisible(true);
-	        crosshairOverlay3.addDomainCrosshair(xCrosshair_A3_1);
-	        crosshairOverlay3.addRangeCrosshair(yCrosshair_A3_1);
-	        CP_A31.addOverlay(crosshairOverlay3);
-	      //===================================================
-	        CrosshairOverlay crosshairOverlay4 = new CrosshairOverlay();
-	        xCrosshair_A3_2 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        xCrosshair_A3_2.setLabelVisible(true);
-	        yCrosshair_A3_2 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        yCrosshair_A3_2.setLabelVisible(true);
-	        crosshairOverlay4.addDomainCrosshair(xCrosshair_A3_2);
-	        crosshairOverlay4.addRangeCrosshair(yCrosshair_A3_2);
-	        CP_A32.addOverlay(crosshairOverlay4); 
-	        //===================================================
-	        CrosshairOverlay crosshairOverlay5 = new CrosshairOverlay();
-	        xCrosshair_A3_3 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        xCrosshair_A3_3.setLabelVisible(true);
-	        yCrosshair_A3_3 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        yCrosshair_A3_3.setLabelVisible(true);
-	        crosshairOverlay5.addDomainCrosshair(xCrosshair_A3_3);
-	        crosshairOverlay5.addRangeCrosshair(yCrosshair_A3_3);
-	        CP_A33.addOverlay(crosshairOverlay5); 
-	        //===================================================
-	        CrosshairOverlay crosshairOverlay6 = new CrosshairOverlay();
-	        xCrosshair_A3_4 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        xCrosshair_A3_4.setLabelVisible(true);
-	        yCrosshair_A3_4 = new Crosshair(Double.NaN, Color.GRAY, new BasicStroke(0f));
-	        yCrosshair_A3_4.setLabelVisible(true);
-	        crosshairOverlay6.addDomainCrosshair(xCrosshair_A3_4);
-	        crosshairOverlay6.addRangeCrosshair(yCrosshair_A3_4);
-	        CP_A34.addOverlay(crosshairOverlay6); 
-	        //===================================================
-	        chartA3_fd = false;
-			PageX04_3.add(TopPanel, BorderLayout.CENTER);
-			PageX04_3.add(BottomPanel, BorderLayout.PAGE_END);
-	    }
-	public static double get_time(double velocity) {
-		double time = 0;
-		int leng = Page03_storage.size();
-		double data_x[] = new double[leng];
-		double data_y[] = new double[leng];
-			for (int i = 0;i<leng;i++){
-				data_y[i] = Page03_storage.get(i).get_altitude();  // time 
-				data_x[i] = Page03_storage.get(i).get_density();   // velocity
-			}
-		time = Mathbox.LinearInterpolate( data_x , data_y , velocity);
-//System.out.println(velocity + " | " + time);
-		return time;
-	}
     
 	private static void createAndShowGUI() throws IOException {
         JFrame.setDefaultLookAndFeelDecorated(false);
@@ -7141,26 +4537,6 @@ try { fstream = new FileInputStream(RES_File);  } catch(IOException eIIO) { Syst
 		    }
 		}
 		
-		public class BackgroundMenu extends JMenu {
-		    /**
-			 * 
-			 */
-			private static final long serialVersionUID = 1L;
-			Color bgColor=Color.WHITE;
-
-		    public void setColor(Color color) {
-		        bgColor=color;
-		    }
-
-		    @Override
-		    protected void paintComponent(Graphics g) {
-		        super.paintComponent(g);
-		        Graphics2D g2d = (Graphics2D) g;
-		        g2d.setColor(bgColor);
-		        g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
-
-		    }
-		}
 		
 		public static class CustomRenderer extends DefaultListCellRenderer {
 

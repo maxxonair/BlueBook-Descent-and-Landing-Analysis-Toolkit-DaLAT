@@ -5,17 +5,19 @@ import java.awt.event.MouseWheelListener;
 import java.awt.geom.Rectangle2D;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
+import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.ui.RectangleEdge;
 
-import GUI.BlueBookVisual;
+import GUI.Dashboard.DashboardPlotArea;
+import GUI.Dashboard.Data2DPlot;
+import GUI.Dashboard.VariableList2;
 import Simulator_main.DataSets.RealTimeResultSet;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -23,7 +25,6 @@ import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.embed.swing.JFXPanel;
-import javafx.geometry.Point3D;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Scene;
@@ -36,55 +37,67 @@ import javafx.scene.AmbientLight;
 import javafx.scene.Camera;
 import javafx.scene.PerspectiveCamera;
 import javafx.scene.PointLight;
-import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
-import javafx.scene.transform.Affine;
 import javafx.scene.transform.Rotate;
 import javafx.scene.paint.PhongMaterial;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.KeyEvent;
 
 public class TargetView3D extends Application{
 	
-	private static final double WIDTH  = 400;
-	private static final double HEIGHT = 350;
+	private   final double WIDTH  = 400;
+	private   final double HEIGHT = 350;
 	
-	private static double anchorCameraY;
-	private static double anchorCameraYSlider;
-	private static double anchorCameraX;
-	private static double anchorAngleCameraY=0;
-	private static double anchorAngleCameraYSlider=0;
-	private static double anchorAngleCameraX=0;
-	private static final DoubleProperty angleCameraX = new SimpleDoubleProperty(0);
-	private static final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
-	private static final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
+	private   double anchorCameraY;
+	@SuppressWarnings("unused")
+	private   double anchorCameraYSlider;
+	@SuppressWarnings("unused")
+	private   double anchorCameraX;
+	private   double anchorAngleCameraY=0;
+	@SuppressWarnings("unused")
+	private   double anchorAngleCameraYSlider=0;
+	@SuppressWarnings("unused")
+	private   double anchorAngleCameraX=0;
+	@SuppressWarnings("unused")
+	private   final DoubleProperty angleCameraX = new SimpleDoubleProperty(0);
+	private   final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
+	private   final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
 	
-	private static double mouseSensitivity =0.05;
-	private static double mouseWheelZoomSensitivity = 300;
-	private static double targetBodyRadius = 6000;
-	private static double targetBodyInitialDistance;
-	public static double targetBodyRotSpeed = 0.08;
+	private   double mouseSensitivity =0.05;
+	private   double mouseWheelZoomSensitivity = 300;
+	private   double targetBodyRadius = 6000;
+	private   double targetBodyInitialDistance;
+	public   double targetBodyRotSpeed = 0.08;
 	
-	private static String[] Target = {"earth.jpg",
+	private   String[] Target = {"earth.jpg",
 							          "moon.jpg",
 							          "mars.jpg",
 							          "venus.jpg",
 							          "mercury.jpg"
 	};
-	public static SmartGroup TargetBodyGroup= new SmartGroup();
-	static ImageView imageView = null ;
-	static Image backgroundImage;
-	static Slider slider ;
-	public static SmartGroup Spacecraft = new SmartGroup();
-	//static AnimationTimer timer;
-	static boolean animationSwitch=true; 
-	static AnimationTimer timer ;
+	public   SmartGroup TargetBodyGroup= new SmartGroup();
+	  ImageView imageView = null ;
+	  Image backgroundImage;
+	  Slider slider ;
+	   static SmartGroup Spacecraft = new SmartGroup();
+	//  AnimationTimer timer;
+	  boolean animationSwitch=true; 
+	  AnimationTimer timer ;
+	  private int targetInd;
+	  
+	  private static List<RealTimeResultSet> resultSet;
 	
+	
+	public TargetView3D(int targetInd, List<RealTimeResultSet> resultSett) {
+		this.targetInd = targetInd;
+		resultSet = resultSett;
+
+	}
 	
 
-	public static void start(JFXPanel fxpanel, int targetInd) {
-    	TargetView3D.TargetBodyGroup.getChildren().clear();;
+	public   void start(JFXPanel fxpanel) {
+		
+    	this.TargetBodyGroup.getChildren().clear();;
 		Sphere targetBody = prepareTargetBody(targetInd);
 		SmartGroup trajectorySet = prepareTrajectory();
 		 Spacecraft = prepareSpacecraft(0);
@@ -128,39 +141,46 @@ public class TargetView3D extends Application{
 		
 	    timer = prepareAnimation();
 	    
-		BlueBookVisual.ChartPanel_DashBoardFlexibleChart.addChartMouseListener(new ChartMouseListener() {
-	        @Override
-	        public void chartMouseClicked(ChartMouseEvent event) {
-	            // ignore
-	        }
-	
-	        @Override
-	        public void chartMouseMoved(ChartMouseEvent event) {
-		        	if(BlueBookVisual.getVariableListX().getSelectedIndx()==0) {
-		            Rectangle2D dataArea = BlueBookVisual.ChartPanel_DashBoardFlexibleChart.getScreenDataArea();
-		            JFreeChart chart = event.getChart();
-		            XYPlot plot = (XYPlot) chart.getPlot();
-		            ValueAxis xAxis = plot.getDomainAxis();
-		            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-		                    RectangleEdge.BOTTOM);
-	
-		            double max = xAxis.getUpperBound();
-		            double min = xAxis.getLowerBound();
-		            int indx = (int) ( (x/(max-min))*BlueBookVisual.getResultSet().size());
-			            if(indx>0 && indx<BlueBookVisual.getResultSet().size()) {
-			                Platform.runLater(new Runnable() {
-			                    @Override
-			                    public void run() {
-			                    	 TargetView3D.prepareSpacecraft(indx);
-			                    }
-			                });
-			            }
-		        	}
-	        }
-	});
+		if( DashboardPlotArea.getContentPanelList().get(0).getID()==1) {
+			
+			Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
+			ChartPanel chartPanel = plotElement.getPlotElement().getChartPanel();
+			VariableList2 varX = plotElement.getPlotElement().getVariableListX();
+			
+			chartPanel.addChartMouseListener(new ChartMouseListener() {
+			        @Override
+			        public void chartMouseClicked(ChartMouseEvent event) {
+			            // ignore
+			        }
+			
+			        @Override
+			        public void chartMouseMoved(ChartMouseEvent event) {
+				        	if(varX.getSelectedIndx()==0) {
+				            Rectangle2D dataArea = chartPanel.getScreenDataArea();
+				            JFreeChart chart = event.getChart();
+				            XYPlot plot = (XYPlot) chart.getPlot();
+				            ValueAxis xAxis = plot.getDomainAxis();
+				            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
+				                    RectangleEdge.BOTTOM);
+			
+				            double max = xAxis.getUpperBound();
+				            double min = xAxis.getLowerBound();
+				            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
+					            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
+					                Platform.runLater(new Runnable() {
+					                    @Override
+					                    public void run() {
+					                    	 TargetView3D.prepareSpacecraft(indx);
+					                    }
+					                });
+					            }
+				        	}
+			        }
+			});
+		}
 	}
 	
-	public static void playPauseAnimation() {
+	public   void playPauseAnimation() {
 		if(animationSwitch) {
 			timer.stop();
 		} else {
@@ -168,9 +188,10 @@ public class TargetView3D extends Application{
 		}
 		animationSwitch = !animationSwitch;
 	}
-private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
+private   void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
 	//Rotate xRotate;
 	Rotate yRotate;
+	@SuppressWarnings("unused")
 	Rotate yRotateSlider;
 
 	camera.getTransforms().addAll(
@@ -220,31 +241,8 @@ private static void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpa
 
 }
 
-public static class SmartGroup extends Group {
-	Rotate r;
-	Transform t = new Rotate();
-	
-	void rotateByX(double angle) {
-		r = new Rotate(angle, Rotate.X_AXIS);
-		t = t.createConcatenation(r);
-		this.getTransforms().clear();
-		this.getTransforms().addAll(t);
-	}
-	void rotateByY(double angle) {
-		r = new Rotate(angle, Rotate.Y_AXIS);
-		t = t.createConcatenation(r);
-		this.getTransforms().clear();
-		this.getTransforms().addAll(t);
-	}
-	void rotateByZ(double angle) {
-		r = new Rotate(angle, Rotate.Z_AXIS);
-		t = t.createConcatenation(r);
-		this.getTransforms().clear();
-		this.getTransforms().addAll(t);
-	}
-}
 
-private static AnimationTimer prepareAnimation() {
+private   AnimationTimer prepareAnimation() {
 	
 	AnimationTimer timer = new AnimationTimer() {
 
@@ -265,8 +263,8 @@ private static AnimationTimer prepareAnimation() {
 	return timer;
 }
 
-public static void refreshTargetGroup(int targetInd) {
-	TargetView3D.TargetBodyGroup.getChildren().clear();;
+public   void refreshTargetGroup(int targetInd) {
+	this.TargetBodyGroup.getChildren().clear();;
 	Sphere targetBody = prepareTargetBody(targetInd);
 	SmartGroup trajectorySet = prepareTrajectory();
 	 Spacecraft = prepareSpacecraft(0);
@@ -275,7 +273,8 @@ public static void refreshTargetGroup(int targetInd) {
 	TargetBodyGroup.getChildren().add(Spacecraft);
 }
 
-private static void rotatePlanet(boolean direction) {
+@SuppressWarnings("unused")
+private   void rotatePlanet(boolean direction) {
 	double rotSpeed=0.03;
 	if(direction) {
 		rotSpeed =  1  ;
@@ -290,7 +289,7 @@ private static void rotatePlanet(boolean direction) {
 	}	
 }
 
-private static ImageView prepareImageView() {
+private   ImageView prepareImageView() {
 	try {
 	backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
 	imageView = new ImageView(backgroundImage);
@@ -308,9 +307,9 @@ private static ImageView prepareImageView() {
 	return imageView;
 }
 
-private static SmartGroup prepareTrajectory() {
-	List<RealTimeResultSet> resultSet = BlueBookVisual.getResultSet();
-	int trajectoryElementSize  = 9;
+private   SmartGroup prepareTrajectory() {
+	//List<RealTimeResultSet> resultSet = DashboardPlotArea.getResultSet();
+	int trajectoryElementSize  = 90;
 	SmartGroup trajectorySet = new SmartGroup();
 	
 		for(int i=0;i<resultSet.size();i+=10) {
@@ -319,6 +318,7 @@ private static SmartGroup prepareTrajectory() {
 	    material.setSpecularColor(Color.GREEN); 	
 	    material.setDiffuseColor(Color.GREEN);
 	    	sphere.setMaterial(material);	
+	    //	System.out.println( (resultSet.get(i).getCartesianPosECEF()[0]/1000)  );
 	    	sphere.translateXProperty().set( (resultSet.get(i).getCartesianPosECEF()[0]/1000) );
 	    	sphere.translateYProperty().set( (-resultSet.get(i).getCartesianPosECEF()[2]/1000) );
 	    	sphere.translateZProperty().set( (resultSet.get(i).getCartesianPosECEF()[1]/1000) );
@@ -328,12 +328,12 @@ private static SmartGroup prepareTrajectory() {
 	return trajectorySet;
 }
 
-public static SmartGroup prepareSpacecraft(int indx) {
+public static   SmartGroup prepareSpacecraft(int indx) {
     Platform.runLater(new Runnable() {
         @Override
         public void run() {
-				TargetView3D.Spacecraft.getChildren().clear();
-				List<RealTimeResultSet> resultSet = BlueBookVisual.getResultSet();
+				Spacecraft.getChildren().clear();
+				
 				int trajectoryElementSize  = 15;
 				
 				    	Sphere sphere = new Sphere(trajectoryElementSize);
@@ -341,16 +341,21 @@ public static SmartGroup prepareSpacecraft(int indx) {
 				    material.setSpecularColor(Color.RED); 	
 				    material.setDiffuseColor(Color.RED);
 				    	sphere.setMaterial(material);	
-				    	sphere.translateXProperty().set( (resultSet.get(indx).getCartesianPosECEF()[0]/1000) );
+				    	try {
+				    	sphere.translateXProperty().set( ( resultSet.get(indx).getCartesianPosECEF()[0]/1000) );
 				    	sphere.translateYProperty().set( (-resultSet.get(indx).getCartesianPosECEF()[2]/1000) );
-				    	sphere.translateZProperty().set( (resultSet.get(indx).getCartesianPosECEF()[1]/1000) );
+				    	sphere.translateZProperty().set( ( resultSet.get(indx).getCartesianPosECEF()[1]/1000) );
 				    	Spacecraft.getChildren().add(sphere);
+				    	} catch (IndexOutOfBoundsException exception) {
+				    		System.out.println("Error/TargetView3D: Index out of bound > result set empty.");
+				    	}
         }
     });	
 	return Spacecraft;		
 }
 
-private static Node prepareAmbientLight(){
+@SuppressWarnings("unused")
+private   Node prepareAmbientLight(){
 	
 	AmbientLight ambientLight = new AmbientLight();
 	ambientLight.setColor(Color.WHITE);
@@ -359,7 +364,7 @@ private static Node prepareAmbientLight(){
 }
 
 @SuppressWarnings("unused")
-private static Node prepareSun(){
+private   Node prepareSun(){
 	
 	PointLight sun = new PointLight();
 	sun.setColor(Color.WHITE);
@@ -372,8 +377,8 @@ private static Node prepareSun(){
 	return sun;
 }
     
-    public static Sphere prepareTargetBody(int targetInd) {
-    	targetBodyRadius = BlueBookVisual.getRM()/1000;
+    public   Sphere prepareTargetBody(int targetInd) {
+   // 	targetBodyRadius = BlueBookVisual.getRM()/1000;
     	Sphere sphere = new Sphere(targetBodyRadius);
     	PhongMaterial material = new PhongMaterial();
 
@@ -387,6 +392,7 @@ private static Node prepareSun(){
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
+			System.out.println("Loading surface texture failed.");
 		}
    //material.setSpecularColor(Color.valueOf("#222222"));
     	//material.setDiffuseMap( new Image(dir+"/resources/moonTexture.jpg") );

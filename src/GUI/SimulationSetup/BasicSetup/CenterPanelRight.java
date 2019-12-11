@@ -773,7 +773,8 @@ public class CenterPanelRight {
 	    Platform.runLater(new Runnable() {
 	        @Override
 	        public void run() {
-	        	SpaceShipView3D.start(fxPanel);
+	        	SpaceShipView3D indicator = new SpaceShipView3D();
+	        	indicator.start(fxPanel);
 	        }
 	   });	
 	}

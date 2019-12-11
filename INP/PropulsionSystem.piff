@@ -46,7 +46,7 @@ MEOP [Pa]|2200000
 Mean Temp. [K]|230
 Propellant Capacity [kg]|271.3
 Filling Level [kg]|0.0
-Box_54*&^{}|He1|4|241|135|899c82f8-16bb-4cb9-84d0-b5fcb6af1510|0.0
+Box_54*&^{}|He1|4|241|134|899c82f8-16bb-4cb9-84d0-b5fcb6af1510|0.0
 Name|He1
 Description|
 System mass [kg]|0.0
@@ -151,7 +151,7 @@ Box_54*&^{}|FD_He1|8|242|35|fb080a26-63fb-4a16-a24f-6435bf1e4ed1|0.0
 Name|FD_He1
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|RV5|9|1|387|81cf67aa-8a30-4797-aa83-b315230e7b30|0.0
+Box_54*&^{}|RV5|9|1|391|81cf67aa-8a30-4797-aa83-b315230e7b30|0.0
 Name|RV5
 Description|
 System mass [kg]|0.0
@@ -221,7 +221,7 @@ Box_54*&^{}|PT2|14|346|91|7a2674aa-8da5-4e96-96b7-f7895cdc548a|0.0
 Name|PT2
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|PT1|14|312|137|0e4c45c6-f68d-427d-8637-f2382d94b889|0.0
+Box_54*&^{}|PT1|14|312|133|0e4c45c6-f68d-427d-8637-f2382d94b889|0.0
 Name|PT1
 Description|
 System mass [kg]|0.0
