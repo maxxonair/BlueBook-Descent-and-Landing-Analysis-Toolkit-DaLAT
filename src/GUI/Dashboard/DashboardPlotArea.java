@@ -83,7 +83,7 @@ public class DashboardPlotArea {
 		} catch (Exception exception) {
 			
 		}
-        JSplitPane horizontalSplitUp = SplitPane.getSplitPane("horizontal");
+		JSplitPane horizontalSplitUp = SplitPane.getSplitPane("horizontal");
         JSplitPane splitPane2 = SplitPane.getSplitPane("vertical");
         JSplitPane horizontalSplitDown = SplitPane.getSplitPane("horizontal");
         splitPane2.add(horizontalSplitUp,JSplitPane.TOP);

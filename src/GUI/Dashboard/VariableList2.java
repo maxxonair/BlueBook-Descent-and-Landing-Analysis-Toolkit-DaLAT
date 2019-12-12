@@ -2,6 +2,8 @@ package GUI.Dashboard;
 
 import java.awt.BorderLayout;
 import java.awt.Dimension;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -46,11 +48,15 @@ public class VariableList2 {
     frame.setPreferredSize(new java.awt.Dimension(xInit+10,yInit));
     frame.setLayout(new BorderLayout());
     frame.pack();
-    frame.setLocationRelativeTo(null);
+    //frame.setLocationRelativeTo(null);
     //frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
     frame.setVisible(true);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setResizable(false);
+    Point location = MouseInfo.getPointerInfo().getLocation(); 
+    int x = (int) location.getX();
+    int y = (int) location.getY();
+    frame.setLocation(x, y);
     //frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
     
     JPanel mainPanel = new JPanel();

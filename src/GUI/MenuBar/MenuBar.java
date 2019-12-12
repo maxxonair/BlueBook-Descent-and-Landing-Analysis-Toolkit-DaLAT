@@ -55,6 +55,8 @@ public class MenuBar {
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	   int OS_is=0;
+	   private File CurrentWorkfile_Path;
+	   private String CurrentWorkfile_Name="";
 	
 	public MenuBar(){
 		
@@ -294,11 +296,11 @@ public class MenuBar {
    	                String filePath = file.getAbsolutePath();
    	                filePath = filePath.replaceAll(BlueBookVisual.CASE_FileEnding, "");
                        file = new File(filePath + BlueBookVisual.CASE_FileEnding);
-                       BlueBookVisual.CurrentWorkfile_Path = file;
-                       BlueBookVisual.CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
-                       BlueBookVisual.MAIN_frame.setTitle("" + BlueBookVisual.PROJECT_TITLE + " | " + BlueBookVisual.CurrentWorkfile_Name.split("[.]")[0]);
+                       CurrentWorkfile_Path = file;
+                      CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
+                       BlueBookVisual.MAIN_frame.setTitle("" + BlueBookVisual.PROJECT_TITLE + " | " +CurrentWorkfile_Name.split("[.]")[0]);
          
-   					System.out.println("File "+BlueBookVisual.CurrentWorkfile_Name+" opened.");
+   					System.out.println("File "+CurrentWorkfile_Name+" opened.");
 
    					//BlueBookVisual.Page04_subtabPane.setSelectedIndex(1);
                     } });
@@ -318,9 +320,9 @@ public class MenuBar {
 	                String filePath = file.getAbsolutePath();
 	                filePath = filePath.replaceAll(BlueBookVisual.CASE_FileEnding, "");
                     file = new File(filePath + BlueBookVisual.CASE_FileEnding);
-                    BlueBookVisual.CurrentWorkfile_Path = file;
-                    BlueBookVisual.CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
-                    BlueBookVisual.MAIN_frame.setTitle("" + BlueBookVisual.PROJECT_TITLE + " | " + BlueBookVisual.CurrentWorkfile_Name.split("[.]")[0]);
+                    CurrentWorkfile_Path = file;
+                   CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
+                    BlueBookVisual.MAIN_frame.setTitle("" + BlueBookVisual.PROJECT_TITLE + " | " +CurrentWorkfile_Name.split("[.]")[0]);
 						//EXPORT_Case();
                     } });
         //--------------------------------------------------------------------------------------------------------------------------------
@@ -635,5 +637,17 @@ public class MenuBar {
 
 	    }
 	}
+
+
+
+	public File getCurrentWorkfile_Path() {
+		return CurrentWorkfile_Path;
+	}
+
+	public String getCurrentWorkfile_Name() {
+		return CurrentWorkfile_Name;
+	}
+	
+	
 
 }

@@ -139,7 +139,7 @@ public class BlueBookVisual implements  ActionListener {
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String SC_file 				= "/INP/SC/sc.inp";
-    public static String ICON_File   	 		= "/images/BB_icon2.png";
+    public static String ICON_File   	 		= "/images/BB_icon3.png";
     public static String ERROR_File 				= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
     public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
@@ -177,8 +177,8 @@ public class BlueBookVisual implements  ActionListener {
 	 };
 	
 	public static String BB_delimiter = " ";
-	public static String CurrentWorkfile_Name = "";
-	public static File CurrentWorkfile_Path = new File("");
+	//public static String CurrentWorkfile_Name = "";
+	//public static File CurrentWorkfile_Path = new File("");
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //											Styles, Fonts, Colors
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -187,10 +187,10 @@ public class BlueBookVisual implements  ActionListener {
     public static Color labelColor = new Color(220,220,220);    					// Label Color
    	public static Color backgroundColor = new Color(41,41,41);				    // Background Color
    	public static Color valueColor =  new Color(65,105,225);
-   	public static Color valueColor2 =  new Color(255,140,0);
-   	public static Color w_c = new Color(gg,gg,gg);					            // Box background color
+   	//public static Color valueColor2 =  new Color(255,140,0);
+   	//public static Color w_c = new Color(gg,gg,gg);					            // Box background color
    //	public static Color t_c = new Color(255,255,255);				        // Table background color
-   	public static Color t_c = new Color(61,61,61);				                // Table background color
+   	//public static Color t_c = new Color(61,61,61);				                // Table background color
    	
    	
    	public static Color light_gray = new Color(230,230,230);
@@ -199,10 +199,10 @@ public class BlueBookVisual implements  ActionListener {
     static DecimalFormat decAngularRate =  new DecimalFormat("##.####");
     static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
     static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
-    static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
+    //static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
     static Font small_font			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
     static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
-    static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
+    //static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
     
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     public static DecimalFormat df 	  = new DecimalFormat();
@@ -344,11 +344,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 
 
-    public static double h_init;
-    public static double v_init;
-    public static double v_touchdown;
-	public static double Propellant_Mass=0;
-	public static double M0;
 	
 	public static double rotX=0;
 	public static double rotY=0;
@@ -2856,12 +2851,10 @@ try {
             	InitialState = Double.parseDouble(tokens[0]);
             	DashboardLeftPanel.INDICATOR_ALT.setText(decf.format( InitialState));
         		SidePanelLeft.INPUT_ALT_Rs.setText(decf.format( InitialState));
-        		h_init = InitialState;
         	} else if (k==3){
             	InitialState = Double.parseDouble(tokens[0]);
             	DashboardLeftPanel.INDICATOR_VEL.setText(decf.format(InitialState));
         		SidePanelLeft.INPUT_VEL_Rs.setText(decf.format(InitialState));
-        		v_init = InitialState;
         	} else if (k==4){
             	InitialState = Double.parseDouble(tokens[0]);
             	DashboardLeftPanel.INDICATOR_FPA.setText(decf.format(InitialState));
@@ -2874,11 +2867,10 @@ try {
             	InitialState = Double.parseDouble(tokens[0]);
             	DashboardLeftPanel.INDICATOR_M0.setText(decf.format(InitialState));
         		INPUT_M0.setText(decf.format(InitialState));
-        		M0=InitialState;
         	} else if (k==7){
             	InitialState = Double.parseDouble(tokens[0]);
             	DashboardLeftPanel.INDICATOR_INTEGTIME.setText(decf.format(InitialState));
-        		CenterPanelRight.setGlobalFrequency(InitialState);
+        		CenterPanelRight.setGlobalTime(InitialState);
         		 //MODEL_EventHandler.setValueAt(decf.format(InitialState), 0, 1);
         	} else if (k==8){
             	InitialState = Double.parseDouble(tokens[0]);
@@ -2903,6 +2895,8 @@ try {
             } else if (k==10){
             	//InitialState = Double.parseDouble(tokens[0]);
 	            //	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
+	        	InitialState = Double.parseDouble(tokens[0]);
+		    	CenterPanelRight.setGlobalFrequency(InitialState);
             } else if (k==11){
             	InitialState = Double.parseDouble(tokens[0]);
             	SidePanelLeft.INPUT_REFELEV.setText(decf.format(InitialState));       // Reference Elevation
@@ -2969,7 +2963,6 @@ try {
   		INPUT_THRUSTMAX.setText(df_X4.format(InitialState));
   	} else if (k==3){
   		INPUT_THRUSTMIN.setText(df_X4.format(InitialState)); 
-  		Propellant_Mass=InitialState;
   	} else if (k==4){
   		int value = (int) InitialState; 
   		if(value==1) {INPUT_ISPMODEL.setSelected(true);}else {INPUT_ISPMODEL.setSelected(false);}
@@ -3640,9 +3633,8 @@ fstream.close();
             		} else if (i == 6 ){
                 	r = Double.parseDouble(INPUT_M0.getText()) ;
                 	wr.write(r+System.getProperty( "line.separator" ));	
-            		} else if (i == 7 ){
-                     
-                    wr.write(CenterPanelRight.getGlobalTime()+System.getProperty( "line.separator" ));	
+            		} else if (i == 7 ){     
+                wr.write(CenterPanelRight.getGlobalTime()+System.getProperty( "line.separator" ));	
 		    		} else if (i == 8 ){
 		            rr =  	SidePanelLeft.Integrator_chooser.getSelectedIndex() ;
 		            wr.write(rr+System.getProperty( "line.separator" ));	

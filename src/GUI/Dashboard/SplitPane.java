@@ -11,7 +11,7 @@ import javax.swing.plaf.basic.BasicSplitPaneUI;
 public class SplitPane {
 	
 	public static JSplitPane getSplitPane(String orientation) {
-        JSplitPane splitPane = new JSplitPane();
+		JSplitPane splitPane = new JSplitPane();
 	        if(orientation.equals("horizontal")) {
 	        		//splitPane.setOrientation(JSplitPane.HORIZONTAL_SPLIT );
 	                splitPane.setDividerLocation(600);

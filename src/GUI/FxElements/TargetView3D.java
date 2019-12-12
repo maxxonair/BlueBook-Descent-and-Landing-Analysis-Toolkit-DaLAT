@@ -65,7 +65,7 @@ public class TargetView3D extends Application{
 	
 	private   double mouseSensitivity =0.05;
 	private   double mouseWheelZoomSensitivity = 300;
-	private   double targetBodyRadius = 6000;
+	private   double targetBodyRadius = 0;
 	private   double targetBodyInitialDistance;
 	public   double targetBodyRotSpeed = 0.08;
 	
@@ -75,6 +75,14 @@ public class TargetView3D extends Application{
 							          "venus.jpg",
 							          "mercury.jpg"
 	};
+	
+    private static double[][] dataMain = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
+			{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
+			{1737400,4903E9,2.661861E-6,320},						// Moon (Earth)
+			{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
+			{0,0,0,0},												// Venus
+	 };
+	
 	public   SmartGroup TargetBodyGroup= new SmartGroup();
 	  ImageView imageView = null ;
 	  Image backgroundImage;
@@ -91,16 +99,18 @@ public class TargetView3D extends Application{
 	public TargetView3D(int targetInd, List<RealTimeResultSet> resultSett) {
 		this.targetInd = targetInd;
 		resultSet = resultSett;
-
+		targetBodyRadius = dataMain[targetInd][0]/1000;
 	}
 	
 
 	public   void start(JFXPanel fxpanel) {
 		
-    	this.TargetBodyGroup.getChildren().clear();;
+    	this.TargetBodyGroup.getChildren().clear();
+    	
 		Sphere targetBody = prepareTargetBody(targetInd);
 		SmartGroup trajectorySet = prepareTrajectory();
 		 Spacecraft = prepareSpacecraft(0);
+		 
 		TargetBodyGroup.getChildren().add(targetBody);
 		TargetBodyGroup.getChildren().add(trajectorySet);
 		TargetBodyGroup.getChildren().add(Spacecraft);
@@ -142,42 +152,45 @@ public class TargetView3D extends Application{
 	    timer = prepareAnimation();
 	    
 		if( DashboardPlotArea.getContentPanelList().get(0).getID()==1) {
-			
-			Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
-			ChartPanel chartPanel = plotElement.getPlotElement().getChartPanel();
-			VariableList2 varX = plotElement.getPlotElement().getVariableListX();
-			
-			chartPanel.addChartMouseListener(new ChartMouseListener() {
-			        @Override
-			        public void chartMouseClicked(ChartMouseEvent event) {
-			            // ignore
-			        }
-			
-			        @Override
-			        public void chartMouseMoved(ChartMouseEvent event) {
-				        	if(varX.getSelectedIndx()==0) {
-				            Rectangle2D dataArea = chartPanel.getScreenDataArea();
-				            JFreeChart chart = event.getChart();
-				            XYPlot plot = (XYPlot) chart.getPlot();
-				            ValueAxis xAxis = plot.getDomainAxis();
-				            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
-				                    RectangleEdge.BOTTOM);
-			
-				            double max = xAxis.getUpperBound();
-				            double min = xAxis.getLowerBound();
-				            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
-					            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
-					                Platform.runLater(new Runnable() {
-					                    @Override
-					                    public void run() {
-					                    	 TargetView3D.prepareSpacecraft(indx);
-					                    }
-					                });
-					            }
-				        	}
-			        }
-			});
+			addMouseLink();
 		}
+	}
+	
+	public void addMouseLink() {
+		Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
+		ChartPanel chartPanel = plotElement.getPlotElement().getChartPanel();
+		VariableList2 varX = plotElement.getPlotElement().getVariableListX();
+		
+		chartPanel.addChartMouseListener(new ChartMouseListener() {
+		        @Override
+		        public void chartMouseClicked(ChartMouseEvent event) {
+		            // ignore
+		        }
+		
+		        @Override
+		        public void chartMouseMoved(ChartMouseEvent event) {
+			        	if(varX.getSelectedIndx()==0) {
+			            Rectangle2D dataArea = chartPanel.getScreenDataArea();
+			            JFreeChart chart = event.getChart();
+			            XYPlot plot = (XYPlot) chart.getPlot();
+			            ValueAxis xAxis = plot.getDomainAxis();
+			            double x = xAxis.java2DToValue(event.getTrigger().getX(), dataArea, 
+			                    RectangleEdge.BOTTOM);
+		
+			            double max = xAxis.getUpperBound();
+			            double min = xAxis.getLowerBound();
+			            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
+				            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
+				                Platform.runLater(new Runnable() {
+				                    @Override
+				                    public void run() {
+				                    	 TargetView3D.prepareSpacecraft(indx);
+				                    }
+				                });
+				            }
+			        	}
+		        }
+		});
 	}
 	
 	public   void playPauseAnimation() {
@@ -309,7 +322,7 @@ private   ImageView prepareImageView() {
 
 private   SmartGroup prepareTrajectory() {
 	//List<RealTimeResultSet> resultSet = DashboardPlotArea.getResultSet();
-	int trajectoryElementSize  = 90;
+	int trajectoryElementSize  = 9;
 	SmartGroup trajectorySet = new SmartGroup();
 	
 		for(int i=0;i<resultSet.size();i+=10) {

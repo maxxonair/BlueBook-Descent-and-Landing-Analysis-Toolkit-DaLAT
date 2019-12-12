@@ -314,7 +314,7 @@ public class CenterPanelRight {
 
 		@Override
 		public void focusLost(FocusEvent e) {
-			BlueBookVisual.WRITE_INIT();
+			//BlueBookVisual.WRITE_INIT();
 		}
 		  
 	  });
@@ -862,7 +862,6 @@ public class CenterPanelRight {
 
 	public static void setGlobalFrequency(double globalFrequency) {
 		CenterPanelRight.globalFrequency = globalFrequency;
-		INPUT_GlobalTime.setText(decf.format(globalFrequency));
 	}
 
 	public static void setTargetIndx(int targetIndx) {
@@ -890,6 +889,7 @@ public class CenterPanelRight {
 
 	public static void setGlobalTime(double globalTime) {
 		CenterPanelRight.globalTime = globalTime;
+		INPUT_GlobalTime.setText(decf.format(globalTime));
 	}
 	
 
