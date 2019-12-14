@@ -199,7 +199,7 @@ O/F [-]|0.0
 Momentum [Nm]|0.0
 Max. Pulse Time [ms]|0.0
 Min. Pulse Time [ms]|0.0
-Box_54*&^{}|RCS X|3|886|624|02dd12fc-cabf-495f-aa3e-b40f9029d789|0.0
+Box_54*&^{}|RCS X|3|888|641|02dd12fc-cabf-495f-aa3e-b40f9029d789|0.0
 Name|RCS X
 Description|
 System mass [kg]|0.0
@@ -285,7 +285,7 @@ Box_54*&^{}|LV_RCS_X|11|797|515|d1d57920-d0d6-4b7c-b265-1b4dccc46525|0.0
 Name|LV_RCS_X
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|LV_RCS_X|11|800|623|2a0a7d68-a5a9-4a58-8a88-743a57416f4a|0.0
+Box_54*&^{}|LV_RCS_X|11|799|640|2a0a7d68-a5a9-4a58-8a88-743a57416f4a|0.0
 Name|LV_RCS_X
 Description|
 System mass [kg]|0.0

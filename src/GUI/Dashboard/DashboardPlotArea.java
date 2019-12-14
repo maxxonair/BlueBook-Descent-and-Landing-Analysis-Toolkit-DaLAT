@@ -62,6 +62,10 @@ public class DashboardPlotArea {
         //-------------------------------------------------------------------------------
 
         contentPanelList.add( (new Data2DPlot(analysisFile)) );
+      ChartSetting chartSetting = ((Data2DPlot) (contentPanelList.get(0))).getPlotElement().getChartSetting();
+      chartSetting.setX(0);
+      chartSetting.setX(4);
+      ((Data2DPlot) (contentPanelList.get(0))).getPlotElement().setChartSetting(chartSetting);
         contentPanelList.add( (new Data2DPlot(analysisFile)) );
         //contentPanelList.add( (new JPanel() ));
         contentPanelList.add( (new AttitudeView(Model3DFilePath)));

@@ -55,8 +55,8 @@ public class Data2DPlot extends DashboardPlotPanel {
 	
 	public  void createChart(List<InputFileSet> analysisFile) throws IOException {
 		ChartSetting chartSetting = new ChartSetting();
-		chartSetting.setX(0);
-		chartSetting.setY(6);
+		chartSetting.setX(6);
+		chartSetting.setY(4);
 		List<String> variableList = new ArrayList<String>();
 		for(int i=0;i<BlueBookVisual.Axis_Option_NR.length;i++) {
 			variableList.add(BlueBookVisual.Axis_Option_NR[i]);
@@ -89,8 +89,8 @@ public class Data2DPlot extends DashboardPlotPanel {
 
 		try {
 			analysisFile = BlueBookVisual.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
-		Data2DPlot dataplot = new Data2DPlot(analysisFile);
-		frame.add(dataplot.getMainPanel(), BorderLayout.CENTER);
+			Data2DPlot dataplot = new Data2DPlot(analysisFile);
+			frame.add(dataplot.getMainPanel(), BorderLayout.CENTER);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
