@@ -153,9 +153,9 @@ public class ReadWrite {
 
 	       }
 	       br.close();
-	       System.out.println("Read complete");
-	       System.out.println(addedElements+" Elements added.");
-	       System.out.println(addedRelations+" Relations added");
+	       System.out.println("Propulsion Editor - Read complete");
+	       System.out.println(addedElements+" Propulsion Elements.");
+	       System.out.println(addedRelations+" Propulsion Relations.");
 	       } catch(NullPointerException | IOException eNPE) {
 	    	   System.out.println("ERROR: FileReader Nullpointerexception.");
 	       }

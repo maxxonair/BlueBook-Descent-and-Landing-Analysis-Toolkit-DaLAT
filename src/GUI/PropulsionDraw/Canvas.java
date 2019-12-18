@@ -84,7 +84,7 @@ public class Canvas extends JPanel {
 
             Point2D p1 = new Point2D.Double(relationship.getParent().getElement().getBounds().getCenterX(), relationship.getParent().getElement().getBounds().getCenterY());
             Point2D p2 = new Point2D.Double(relationship.getChild().getElement().getBounds().getCenterX(), relationship.getChild().getElement().getBounds().getCenterY());
-            g2.setStroke(new BasicStroke(5));
+            g2.setStroke(new BasicStroke(3));
             g2.setColor(Color.WHITE);
             Line2D line = new Line2D.Float(p1, p2);
             

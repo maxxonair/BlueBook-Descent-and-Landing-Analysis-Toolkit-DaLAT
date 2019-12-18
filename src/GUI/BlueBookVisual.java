@@ -1,4 +1,5 @@
 package GUI; 
+import java.awt.AlphaComposite;
 //-----------------------------------------------------------------------------------------------------------------------------------------
 //															BlueBook DaLAT Graphical User Interface
 //
@@ -18,12 +19,15 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.GridBagLayout;
 import java.awt.Image;
+
 import java.awt.RenderingHints;
 import java.awt.Shape;
+import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -34,6 +38,7 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.awt.event.ItemEvent;
 import java.awt.event.ItemListener;
+
 import java.awt.geom.Ellipse2D;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -51,6 +56,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -118,6 +124,7 @@ public class BlueBookVisual implements  ActionListener {
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
 	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.3 ALPHA";
+	static boolean darkTheme = true; 
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
@@ -186,6 +193,7 @@ public class BlueBookVisual implements  ActionListener {
     //public static Color labelColor = new Color(0,0,0);    					    // Label Color
     public static Color labelColor = new Color(220,220,220);    					// Label Color
    	public static Color backgroundColor = new Color(41,41,41);				    // Background Color
+
    	public static Color valueColor =  new Color(65,105,225);
    	//public static Color valueColor2 =  new Color(255,140,0);
    	//public static Color w_c = new Color(gg,gg,gg);					            // Box background color
@@ -505,6 +513,11 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	 } else if(System.getProperty("os.name").contains("Lin")) {
     		 OS_is = 3;
     	 }
+    	 
+    	   	if(!darkTheme) {
+    	        labelColor = new Color(20,20,20);    					// Label Color
+    	        backgroundColor = new Color(241,241,241);				// Background Color
+    	     }
      // ---------------------------------------------------------------------------------
     	 //       Define Task (FileWatcher) Update Result Overview
     	 // ---------------------------------------------------------------------------------
@@ -719,7 +732,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 				JPanel SequenceRightPanel = new JPanel();
 				SequenceRightPanel.setLocation(0, 0);
 				SequenceRightPanel.setBackground(backgroundColor);
-				SequenceRightPanel.setForeground(labelColor);
+				SequenceRightPanel.setForeground(labelColor); 
 				SequenceRightPanel.setSize(400, 600);
 				SequenceRightPanel.setLayout(null); 
 
@@ -4437,12 +4450,56 @@ fstream.close();
 
 
     
-   
+    static void renderSplashFrame(Graphics2D g, int frame) {
+        final String[] comps = {"foo", "bar", "baz"};
+        g.setComposite(AlphaComposite.Clear);
+        g.fillRect(120,140,200,40);
+        g.setPaintMode();
+        g.setColor(Color.GREEN);
+        g.drawString("Loading "+comps[(frame/5)%3]+"...", 120, 150);
+        Image image = Toolkit.getDefaultToolkit().getImage(BlueBookVisual.ICON_File);
+        g.drawImage(image, frame, frame, Color.RED, null);
+    }
     
-    
-	
     
 	private static void createAndShowGUI() throws IOException {
+		/*
+		JWindow window = new JWindow();
+		JLabel label = new JLabel("", new ImageIcon(ICON_File), SwingConstants.CENTER);
+		label.setSize(500, 500);
+		label.setVisible(true);
+		window.getContentPane().add(label, BorderLayout.CENTER);
+		//window.setBounds(800, 150, 800, 200);
+		window.setSize(600,500);
+		window.setLocationRelativeTo(null);
+		window.setVisible(true);
+		 */
+		
+		boolean splashLoad=true;
+        final SplashScreen splash = SplashScreen.getSplashScreen();
+        if (splash == null) {
+            System.out.println("SplashScreen.getSplashScreen() returned null");
+            splashLoad=false;
+           // return;
+        } else {
+	        Graphics2D g = splash.createGraphics();
+	        if (g == null) {
+	            System.out.println("g is null");
+	           // return;
+	        }
+	        for(int i=0; i<100; i++) {
+	            renderSplashFrame(g, i);
+	            splash.update();
+	            try {
+	                Thread.sleep(10);
+	            }
+	            catch(InterruptedException e) {
+	            }
+	        }
+        }
+		
+
+
         JFrame.setDefaultLookAndFeelDecorated(false);
         MAIN_frame = new JFrame("" + PROJECT_TITLE);
         MAIN_frame.setFont(small_font);
@@ -4452,6 +4509,9 @@ fstream.close();
         MAIN_frame.add(tp, BorderLayout.CENTER);
         MAIN_frame.pack();
         MAIN_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        if(splashLoad) { splash.close();}
+        
         MAIN_frame.setLocationRelativeTo(null);
         MAIN_frame.setExtendedState(MAIN_frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
         MAIN_frame.setVisible(true);
@@ -4472,6 +4532,10 @@ fstream.close();
          }
          }
     }
+	
+
+
+
     
     public static void main(String[] args) throws IOException {
         SwingUtilities.invokeLater(new Runnable() {

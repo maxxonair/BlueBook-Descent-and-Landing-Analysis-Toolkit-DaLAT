@@ -322,7 +322,7 @@ private   ImageView prepareImageView() {
 
 private   SmartGroup prepareTrajectory() {
 	//List<RealTimeResultSet> resultSet = DashboardPlotArea.getResultSet();
-	int trajectoryElementSize  = 9;
+	int trajectoryElementSize  = 4;
 	SmartGroup trajectorySet = new SmartGroup();
 	
 		for(int i=0;i<resultSet.size();i+=10) {

@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project BlueBook_DaLAT">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="/Users/x/eclipse-workspace"/>
+    <property name="dir.jarfile" value="/Users/x/Documents/003_Tools/006_ControlledLandingSim/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT"/>
+    <target name="create_run_jar">
+		<fileset dir="{dir.jarfile}/resourcs"/>
+        <jar destfile="${dir.jarfile}/BlueBook_DaLAT.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="GUI.BlueBookVisual"/>
+                <attribute name="Class-Path" value="."/>
+                <attribute name="SplashScreen-Image" value="splashscreen.png"/>
+            </manifest>
+            <fileset dir="${dir.jarfile}/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jcommon-1.0.23.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jfreechart-1.0.19.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-javadoc.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-test-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-tests.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/slick-util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/lwjgl_util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/lwjgl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/lwjgl-glfw.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-javadoc.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-test-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-tests.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-tools.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/PNGDecoder.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jimObjModelImporterJFX.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.jupiter.api_5.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.jupiter.engine_5.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.jupiter.migrationsupport_5.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.jupiter.params_5.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.platform.commons_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.platform.engine_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.platform.launcher_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.platform.runner_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.platform.suite.api_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit.vintage.engine_4.12.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.opentest4j_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.apiguardian_1.0.0.v20170910-2246.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.junit_4.12.0.v201504281640/junit.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Applications/SpaceStuff/Eclipse.app/Contents/Eclipse/plugins/org.hamcrest.core_1.3.0.v201303031735.jar"/>
+        </jar>
+    </target>
+</project>

@@ -102,7 +102,7 @@ Box_54*&^{}|FD_MMH Clone|8|893|313|11a4970a-7ea5-4e16-8eff-0e608cb6c989|0.0
 Name|FD_MMH Clone
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|RV2|9|899|145|7fa5e398-4f27-48b9-bec3-b101e039d73e|90.0
+Box_54*&^{}|RV2|9|887|115|7fa5e398-4f27-48b9-bec3-b101e039d73e|90.0
 Name|RV2
 Description|
 System mass [kg]|0.09
@@ -124,7 +124,7 @@ System mass [kg]|120
 Thrust [N]|5500
 ISP [s]|328
 O/F [-]|2.1
-Box_54*&^{}|ME3|0|651|651|c6dac8c0-9e9c-4ab2-bf40-54557803d3ae|0.0
+Box_54*&^{}|ME3|0|653|654|c6dac8c0-9e9c-4ab2-bf40-54557803d3ae|0.0
 Name|ME3
 Description|
 System mass [kg]|120
@@ -229,7 +229,7 @@ Box_54*&^{}|pipe|15|109|460|866f6333-0f36-4de7-97f5-780d550ecaae|0.0
 Name|pipe
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|BurstDisk|13|780|145|17e65af1-2b61-4d5c-8a0f-195578291ae0|270.0
+Box_54*&^{}|BurstDisk|13|778|115|17e65af1-2b61-4d5c-8a0f-195578291ae0|270.0
 Name|BurstDisk
 Description|
 System mass [kg]|0.0
@@ -261,7 +261,7 @@ Box_54*&^{}|LV_RCS_X|11|797|401|490ec57e-2ef0-487b-b79e-faaa0f65e2fa|0.0
 Name|LV_RCS_X
 Description|
 System mass [kg]|0.0
-Box_54*&^{}||16|684|473|1bfc268f-6d46-472e-a80e-9a8dac702a3a|0.0
+Box_54*&^{}||16|685|473|1bfc268f-6d46-472e-a80e-9a8dac702a3a|0.0
 Name|
 Description|
 System mass [kg]|0.0

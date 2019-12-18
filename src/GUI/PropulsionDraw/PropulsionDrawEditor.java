@@ -44,7 +44,7 @@ import GUI.PostProcessing.CreateCustomChart.BackgroundMenuBar;
 
 public class PropulsionDrawEditor {
 	
-	private static String frameTitle = "Propulsion Subsystem Editor -  Mk1";
+	private static String frameTitle = "Propulsion Sub-system Editor -  Mk1";
 	
 	static JFrame frame = new JFrame(frameTitle);
 	
