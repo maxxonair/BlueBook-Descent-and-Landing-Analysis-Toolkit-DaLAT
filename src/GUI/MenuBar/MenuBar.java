@@ -38,7 +38,7 @@ import VisualEngine.engineLauncher.worldGenerator;
 public class MenuBar {
 	//-------------------------------------------------------------------------------------------------------------
 	
-	private BackgroundMenuBar menuBar;
+	private JMenuBar menuBar;
 	//-------------------------------------------------------------------------------------------------------------
 	// Formatting valules (Fonts, Borders, decimalLayouts etc):	
 	
@@ -108,9 +108,9 @@ public class MenuBar {
      	}
 		
      	
-      	 menuBar = new BackgroundMenuBar();
+      	 menuBar = new JMenuBar();
         //menuBar.setLocation(0, 0);
-        menuBar.setColor(new Color(250,250,250));
+       // menuBar.setColor(new Color(250,250,250));
         menuBar.setOpaque(true);
         menuBar.setPreferredSize(new Dimension(1200, 25));
         
@@ -600,7 +600,7 @@ public class MenuBar {
         menu_Window.add(menuItemSelect3D);
 	}
 
-	public BackgroundMenuBar getMainMenu() {
+	public JMenuBar getMainMenu() {
 		return menuBar;
 	}
 	

@@ -53,6 +53,7 @@ public class VariableList2 {
     frame.setVisible(true);
     frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
     frame.setResizable(false);
+    frame.setAlwaysOnTop( true );
     Point location = MouseInfo.getPointerInfo().getLocation(); 
     int x = (int) location.getX();
     int y = (int) location.getY();
