@@ -146,7 +146,7 @@ public class BlueBookVisual implements  ActionListener {
     public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
     public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
     public static String SC_file 				= "/INP/SC/sc.inp";
-    public static String ICON_File   	 		= "/images/BB_icon3.png";
+    public static String ICON_File   	 		= "/images/BB_icon4.png";
     public static String ERROR_File 				= "/INP/ErrorFile.inp";
     public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
     public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
@@ -4379,7 +4379,7 @@ fstream.close();
        double longitude = Double.parseDouble(tokens[1])*rad2deg;     // Longitude 	[deg]
        double latitude  = Double.parseDouble(tokens[2])*rad2deg;     // Latitude 	[deg]
        double local_elevation = GetLocalElevation(Elevation_File, longitude, latitude);
-       //System.out.println(local_elevation);
+
        steps.add(local_elevation+" ");
       }
       	String resultpath="";
