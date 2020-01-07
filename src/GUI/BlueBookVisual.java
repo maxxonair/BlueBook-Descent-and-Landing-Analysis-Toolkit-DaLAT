@@ -105,6 +105,7 @@ import javax.swing.*;
 import Sequence.SequenceElement;
 import Simulator_main.DataSets.RealTimeResultSet;
 import GUI.PropulsionDraw.PropulsionDrawEditor;
+import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.BasicSetupMain;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
@@ -3299,13 +3300,13 @@ fstream.close();
 	       while ((strLine = br.readLine()) != null )   {
 		       	String[] tokens = strLine.split(" ");
 		       	if(j==0) {
-		       		CenterPanelRight.INPUT_Quarternion1.setText(tokens[0]);
+		       		AttitudeSetting.INPUT_Quarternion1.setText(tokens[0]);
 		       	} else if (j==1) {
-		       		CenterPanelRight.INPUT_Quarternion2.setText(tokens[0]);
+		       		AttitudeSetting.INPUT_Quarternion2.setText(tokens[0]);
 		       	} else if (j==2) {
-		       		CenterPanelRight.INPUT_Quarternion3.setText(tokens[0]);
+		       		AttitudeSetting.INPUT_Quarternion3.setText(tokens[0]);
 		       	} else if (j==3) {
-		       		CenterPanelRight.INPUT_Quarternion4.setText(tokens[0]);
+		       		AttitudeSetting.INPUT_Quarternion4.setText(tokens[0]);
 		       	}	       	
 		       	j++;
 	       }
@@ -3495,28 +3496,28 @@ fstream.close();
             {
         			double value =0;
 				if(i==0) { 
-					 if(CenterPanelRight.INPUT_Quarternion1.getText().equals("")) {
+					 if(AttitudeSetting.INPUT_Quarternion1.getText().equals("")) {
 						 value =0;
 					 } else {
-						 value = Double.parseDouble(CenterPanelRight.INPUT_Quarternion1.getText()); 
+						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion1.getText()); 
 					 }
 				} else if(i==1) {
-					 if(CenterPanelRight.INPUT_Quarternion2.getText().equals("")) {
+					 if(AttitudeSetting.INPUT_Quarternion2.getText().equals("")) {
 						 value =0;
 					 } else {
-						 value = Double.parseDouble(CenterPanelRight.INPUT_Quarternion2.getText()); 
+						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion2.getText()); 
 					 }
 				}else if(i==2) {
-					 if(CenterPanelRight.INPUT_Quarternion3.getText().equals("")) {
+					 if(AttitudeSetting.INPUT_Quarternion3.getText().equals("")) {
 						 value =0;
 					 } else {
-						 value = Double.parseDouble(CenterPanelRight.INPUT_Quarternion3.getText()); 
+						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion3.getText()); 
 					 }
 				} else if(i==3) {
-					 if(CenterPanelRight.INPUT_Quarternion4.getText().equals("")) {
+					 if(AttitudeSetting.INPUT_Quarternion4.getText().equals("")) {
 						 value =0;
 					 } else {
-						 value = Double.parseDouble(CenterPanelRight.INPUT_Quarternion4.getText()); 
+						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion4.getText()); 
 					 } 
 				}
         			wr.write(value+System.getProperty( "line.separator" ));

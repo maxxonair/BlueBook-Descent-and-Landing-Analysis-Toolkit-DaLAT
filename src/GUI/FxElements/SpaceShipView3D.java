@@ -8,7 +8,8 @@ import javax.swing.event.ChangeListener;
 
 import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 
-import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
+import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
+import GUI.SimulationSetup.BasicSetup.Vector3;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -38,6 +39,8 @@ public class SpaceShipView3D extends Application{
 	  double rotX=0;
 	  double rotY=0;
 	  double rotZ=0;
+	  
+	  Vector3 rotState = new Vector3(0,0,0);
 	
 	
 	public   void start(JFXPanel fxpanel) {
@@ -78,7 +81,7 @@ public class SpaceShipView3D extends Application{
 		
 		initMouseControl(model, coordinateSystem, scene, fxpanel);
 
-		CenterPanelRight.sliderEuler1.addChangeListener(new ChangeListener() {
+		AttitudeSetting.sliderEuler1.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -87,9 +90,9 @@ public class SpaceShipView3D extends Application{
                     @Override
                     public void run() {
                     	
-				double drotX = CenterPanelRight.sliderEuler1.getValue() - rotX;
-				rotX=CenterPanelRight.sliderEuler1.getValue();
-				setRotationX( drotX);
+				//double drotX = AttitudeSetting.sliderEuler1.getValue() - rotX;
+				rotX=AttitudeSetting.sliderEuler1.getValue();
+				setRotationX( rotX);
 				//new TurnAction(model.rz, 15);
 
                     }
@@ -97,7 +100,7 @@ public class SpaceShipView3D extends Application{
 			}
 			
 		});
-		CenterPanelRight.sliderEuler2.addChangeListener(new ChangeListener() {
+		AttitudeSetting.sliderEuler2.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -106,16 +109,16 @@ public class SpaceShipView3D extends Application{
                     @Override
                     public void run() {
                     	
-				double drotZ = CenterPanelRight.sliderEuler2.getValue() - rotZ;
-				rotZ=CenterPanelRight.sliderEuler2.getValue();
-				setRotationZ( drotZ);
+				//double drotZ = AttitudeSetting.sliderEuler2.getValue() - rotZ;
+				rotZ=AttitudeSetting.sliderEuler2.getValue();
+				setRotationZ( rotZ);
 				
                     }
                 });
 			}
 			
 		});
-		CenterPanelRight.sliderEuler3.addChangeListener(new ChangeListener() {
+		AttitudeSetting.sliderEuler3.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
@@ -124,10 +127,10 @@ public class SpaceShipView3D extends Application{
                     @Override
                     public void run() {
                     	
-				double drotY = CenterPanelRight.sliderEuler3.getValue() - rotY;
-				rotY=CenterPanelRight.sliderEuler3.getValue();
+				//double drotY = AttitudeSetting.sliderEuler3.getValue() - rotY;
+				rotY=AttitudeSetting.sliderEuler3.getValue();
 				
-				setRotationY( drotY);
+				setRotationY( rotY);
 				
                     }
                 });
@@ -180,7 +183,16 @@ public   void setRotationZ(double deltaRotZ) {
 	model.translateZProperty().set(model.getTranslateZ() + 0.1);
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 }
-
+/*
+public   void setRotation(double rotX, double rotY, double rotZ) {
+	model.rotateByX(deltaRotX);
+	coordinateSystem.rotateByX(deltaRotX);
+	//model.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
+	//coordinateSystem.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
+	model.translateZProperty().set(model.getTranslateZ() + 0.1);
+	model.translateZProperty().set(model.getTranslateZ() - 0.1);
+}
+*/
 
 private   SmartGroup loadModel(String fileString) {
 	SmartGroup modelRoot = new SmartGroup();
@@ -225,24 +237,78 @@ modelRoot.setScaleZ(scale);
 	Rotate r;
 	Transform t = new Rotate();
 	
+	void rotBack() {
+		r = new Rotate(-rotState.z, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(-rotState.y, Rotate.Y_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(-rotState.x, Rotate.X_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+	}
 	void rotateByX(double angle) {
+		rotBack();
 		r = new Rotate(angle, Rotate.X_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.y, Rotate.Y_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.z, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		rotState.x = angle;
 	}
+	
 	void rotateByY(double angle) {
+		rotBack();
+		r = new Rotate(rotState.x, Rotate.X_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
 		r = new Rotate(angle, Rotate.Y_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.z, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		
+		rotState.y = angle;
 	}
 	void rotateByZ(double angle) {
+		rotBack();
+		r = new Rotate(rotState.x, Rotate.X_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.y, Rotate.Y_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(angle, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		rotState.z = angle;
+	}
+	/*
+	void rotateBy(double x, double y, double z) {
 		r = new Rotate(angle, Rotate.Z_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
 	}
+	*/
 }
 
 
