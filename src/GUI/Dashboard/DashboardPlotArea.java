@@ -24,6 +24,8 @@ public class DashboardPlotArea {
 	
     private Color backgroundColor;
     private Color labelColor;
+    
+    private int numberOfCharts = 4;
     //-------------------------------------------------------------------------------------------------------------
     // Global GUI components:
 
@@ -31,18 +33,20 @@ public class DashboardPlotArea {
     // Content Lists 
     private static List<DashboardPlotPanel> contentPanelList;	
     static List<RealTimeResultSet> resultSet;
+    private static List<ChartSetting> chartSettings;
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
     private static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
     private static  int targetIndx=1;
     private static String Model3DFilePath="";
+    
 
 
 	public DashboardPlotArea() {
-		
+		chartSettings = initList(chartSettings);
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		labelColor = BlueBookVisual.getLabelColor();
-	   resultSet = BlueBookVisual.READ_ResultSet(System.getProperty("user.dir") + "/results.txt");
+	    resultSet  = BlueBookVisual.READ_ResultSet(System.getProperty("user.dir") + "/results.txt");
 		
 		try {
 			analysisFile = BlueBookVisual.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
@@ -51,7 +55,7 @@ public class DashboardPlotArea {
 			e.printStackTrace();
 		}
 		
-		contentPanelList = new ArrayList<>(4);
+		contentPanelList = new ArrayList<>(numberOfCharts);
 		
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -61,12 +65,8 @@ public class DashboardPlotArea {
 
         //-------------------------------------------------------------------------------
 
-        contentPanelList.add( (new Data2DPlot(analysisFile)) );
-      ChartSetting chartSetting = ((Data2DPlot) (contentPanelList.get(0))).getPlotElement().getChartSetting();
-      chartSetting.setX(0);
-      chartSetting.setX(4);
-      ((Data2DPlot) (contentPanelList.get(0))).getPlotElement().setChartSetting(chartSetting);
-        contentPanelList.add( (new Data2DPlot(analysisFile)) );
+        contentPanelList.add( (new Data2DPlot(0, analysisFile)) );
+        contentPanelList.add( (new Data2DPlot(1, analysisFile)) );
         //contentPanelList.add( (new JPanel() ));
         contentPanelList.add( (new AttitudeView(Model3DFilePath)));
         contentPanelList.add( (new Planet3DView(resultSet)) );
@@ -87,6 +87,9 @@ public class DashboardPlotArea {
 		} catch (Exception exception) {
 			
 		}
+		
+		updateResultSet();
+		
 		JSplitPane horizontalSplitUp = SplitPane.getSplitPane("horizontal");
         JSplitPane splitPane2 = SplitPane.getSplitPane("vertical");
         JSplitPane horizontalSplitDown = SplitPane.getSplitPane("horizontal");
@@ -96,7 +99,6 @@ public class DashboardPlotArea {
 			
 			contentPanelList.get(i).refresh();
 
-			
 					if(i==0) {
 				//System.out.println(i);
 				horizontalSplitUp.add(contentPanelList.get(i).getMainPanel(), JSplitPane.LEFT);
@@ -115,7 +117,7 @@ public class DashboardPlotArea {
         splitPane2.setDividerLocation(370);
         horizontalSplitDown.setDividerLocation(0.5);
         mainPanel.add(splitPane2);
-      //  mainPanel.repaint();
+        
 	}
 
 	public static List<InputFileSet> getAnalysisFile() {
@@ -172,6 +174,31 @@ public class DashboardPlotArea {
 		return resultSet;
 	}
 	
-	
+	public static void updateResultSet() {
+		resultSet = BlueBookVisual.READ_ResultSet(System.getProperty("user.dir") + "/results.txt");
+	}
 
+	public static List<ChartSetting> getChartSettings() {
+		return chartSettings;
+	}
+
+	public static void setChartSettings(List<ChartSetting> chartSettings) {
+		DashboardPlotArea.chartSettings = chartSettings;
+	}
+
+	private List<ChartSetting> initList(List<ChartSetting> chartSettings){
+		chartSettings = new ArrayList<ChartSetting>(numberOfCharts);
+			for(int i=0;i<numberOfCharts;i++) {
+				ChartSetting chartSetting = new ChartSetting();
+				if(i==0) {
+					chartSetting.x = 0;
+					chartSetting.y = 4;
+				} else {
+					chartSetting.x = 6;
+					chartSetting.y = 4;
+				}
+				chartSettings.add(chartSetting);
+			}
+		return chartSettings; 
+	}
 }

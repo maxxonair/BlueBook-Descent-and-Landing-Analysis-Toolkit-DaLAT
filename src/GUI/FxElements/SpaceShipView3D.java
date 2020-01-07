@@ -183,16 +183,7 @@ public   void setRotationZ(double deltaRotZ) {
 	model.translateZProperty().set(model.getTranslateZ() + 0.1);
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
 }
-/*
-public   void setRotation(double rotX, double rotY, double rotZ) {
-	model.rotateByX(deltaRotX);
-	coordinateSystem.rotateByX(deltaRotX);
-	//model.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
-	//coordinateSystem.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
-	model.translateZProperty().set(model.getTranslateZ() + 0.1);
-	model.translateZProperty().set(model.getTranslateZ() - 0.1);
-}
-*/
+
 
 private   SmartGroup loadModel(String fileString) {
 	SmartGroup modelRoot = new SmartGroup();

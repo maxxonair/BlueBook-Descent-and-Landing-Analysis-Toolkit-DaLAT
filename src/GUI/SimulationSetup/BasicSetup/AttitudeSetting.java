@@ -81,22 +81,15 @@ public class AttitudeSetting {
 		InitialAttitudePanel.setSize(400, 400);
 		mainPanel.add(InitialAttitudePanel);
 		
-	      JLabel LABEL_Quarternions = new JLabel("Quarternion Representation");
+		
+	      JLabel LABEL_Quarternions =  newLabel("Quarternion Representation");
 	      LABEL_Quarternions.setLocation(2, 2);
 	      LABEL_Quarternions.setSize(150, 20);
-	      LABEL_Quarternions.setBackground(backgroundColor);
-	      LABEL_Quarternions.setForeground(labelColor);
-	      LABEL_Quarternions.setFont(smallFont);
-	      LABEL_Quarternions.setHorizontalAlignment(0);
 	      InitialAttitudePanel.add(LABEL_Quarternions);
 		
-	      JLabel LABEL_Quarternion1 = new JLabel("Quarternion e1");
+	      JLabel LABEL_Quarternion1 = newLabel("Quarternion e1");
 	      LABEL_Quarternion1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*0 - 15+45);
 	      LABEL_Quarternion1.setSize(box_size_InitialAttitude_x, 20);
-	      LABEL_Quarternion1.setBackground(backgroundColor);
-	      LABEL_Quarternion1.setForeground(labelColor);
-	      LABEL_Quarternion1.setFont(smallFont);
-	      LABEL_Quarternion1.setHorizontalAlignment(0);
 	      InitialAttitudePanel.add(LABEL_Quarternion1);
 
 	    
@@ -251,22 +244,19 @@ public class AttitudeSetting {
 	    InitialAttitudePanel.add(INPUT_Quarternion4);
 	    
 	    
-	      JLabel LABEL_Euler = new JLabel("Euler Angle Representation");
+		JLabel rotLeg1 = newLabel("Rotational Sequence 123:");
+		rotLeg1.setLocation(200, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*4 +45);
+		rotLeg1.setSize(150, 20);
+	    InitialAttitudePanel.add(rotLeg1);
+	    
+	      JLabel LABEL_Euler = newLabel("Euler Angle Representation");
 	      LABEL_Euler.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*4 +45);
 	      LABEL_Euler.setSize(150, 20);
-	      LABEL_Euler.setBackground(backgroundColor);
-	      LABEL_Euler.setForeground(labelColor);
-	      LABEL_Euler.setFont(smallFont);
-	      LABEL_Euler.setHorizontalAlignment(0);
 	      InitialAttitudePanel.add(LABEL_Euler);
 	    
-	      JLabel LABEL_Euler1 = new JLabel("Euler E1 - Roll [deg]");
+	      JLabel LABEL_Euler1 = newLabel("Euler E1 - Roll [deg]");
 	      LABEL_Euler1.setLocation(gap_size_x+(box_size_InitialAttitude_x + gap_size_x)*0, gap_size_y + (gap_size_y + box_size_InitialAttitude_y)*5 - 15+45);
 	      LABEL_Euler1.setSize(box_size_InitialAttitude_x, 20);
-	      LABEL_Euler1.setBackground(backgroundColor);
-	      LABEL_Euler1.setForeground(labelColor);
-	      LABEL_Euler1.setFont(smallFont);
-	      LABEL_Euler1.setHorizontalAlignment(0);
 	      InitialAttitudePanel.add(LABEL_Euler1);
 
 	         sliderEuler1 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
@@ -483,6 +473,16 @@ public class AttitudeSetting {
 
 	public JPanel getMainPanel() {
 		return mainPanel;
+	}
+	
+	private JLabel newLabel(String labelContent) {
+		JLabel label = new JLabel(labelContent);
+		label.setSize(150, 20);
+		label.setBackground(backgroundColor);
+		label.setForeground(labelColor);
+		label.setFont(smallFont);
+		label.setHorizontalAlignment(0);
+		return label;
 	}
 	
 	public static void main(String[] args) {

@@ -524,11 +524,10 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	 // ---------------------------------------------------------------------------------
     	  task_Update = new FileWatcher( new File(RES_File) ) {
     		    protected void onChange( File file ) {
-    		      // here we code the action on a change
-    		     // System.out.println( "File "+ file.getName() +" have change !" );
+
           		  UPDATE_Page01(true);
           		  DashboardPlotArea.updateDashboardPlotArea(DashboardPlotArea.getContentPanelList());
-            		//refreshSpaceCraftView();
+
     		    }
     		  };
     	   Timer timer = new Timer();

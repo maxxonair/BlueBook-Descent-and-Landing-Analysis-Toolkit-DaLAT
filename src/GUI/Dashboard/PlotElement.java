@@ -59,7 +59,6 @@ public class PlotElement {
     private VariableList2 variableListY, variableListX;
     
     private List<InputFileSet> resultFile = new ArrayList<InputFileSet>(); 
-
     
     private XYSeriesCollection resultSet = new XYSeriesCollection();
     
@@ -76,14 +75,16 @@ public class PlotElement {
     private int ID;
     private Color backgroundColor;
     
-    public PlotElement(int ID, List<String> variableList, List<InputFileSet> analysisFile, ChartSetting chartSetting) {
+    public PlotElement(int ID, List<String> variableList, List<InputFileSet> analysisFile) {
     	this.variableList = variableList;
-    	this.resultFile = analysisFile;
-    	this.chartSetting = chartSetting; 
+    	this.resultFile = analysisFile; 
     	this.ID = ID;
+    	this.chartSetting = DashboardPlotArea.getChartSettings().get(ID);
     }
 	
 	public JPanel createPlotElement(PlotElement plotElement) {
+		
+		chartSetting = DashboardPlotArea.getChartSettings().get(ID);
 		
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		
@@ -133,19 +134,23 @@ public class PlotElement {
 	    	  
 	      });
 	      yAxisIndicator.setIcon( r1 );
-	      variableListY.setSelectedIndx(4);
+	      variableListY.setSelectedIndx(chartSetting.y);
 	       } catch(Exception e) {
 	    	   
 	       }
 	       
 	       xAxisIndicator = new JButton();
 	       variableListX =  new VariableList2(xAxisIndicator, "x",plotElement);
+	       if(ID==0 && chartSetting.x==0) {
+		       xAxisIndicator.setForeground(Color.BLUE);
+	       } else {
+		       xAxisIndicator.setForeground(BlueBookVisual.getLabelColor());
+	       }
 	       xAxisIndicator.setBackground(backgroundColor);
-	       xAxisIndicator.setForeground(BlueBookVisual.getLabelColor());
 	       xAxisIndicator.setOpaque(true);
 	       xAxisIndicator.setBorderPainted(false);
 	       try {
-	       TextIcon t1 = new TextIcon(xAxisIndicator, variableList.get(plotElement.getChartSetting().x), TextIcon.Layout.HORIZONTAL);
+	       TextIcon t1 = new TextIcon(xAxisIndicator, variableList.get(chartSetting.x), TextIcon.Layout.HORIZONTAL);
 	       RotatedIcon r1 = new RotatedIcon(t1, RotatedIcon.Rotate.ABOUT_CENTER);
 	      xAxisIndicator.addActionListener(new ActionListener() {
 
@@ -212,9 +217,9 @@ public class PlotElement {
 		//chart.getLegend().setBackgroundPaint(backgroundColor);
 		//chart.getLegend().setItemPaint(labelColor);
 		try {
-		if(!resultFile.get(0).isLegend()) {
-			chart.removeLegend();
-		}
+			if(!resultFile.get(0).isLegend()) {
+				chart.removeLegend();
+			}
 		} catch (Exception e) {
 			System.err.println("ERROR: PlotElement/Loading Legend Failed");
 		}
@@ -310,7 +315,9 @@ public class PlotElement {
 	public void updateChart(){
     	resultSet.removeAllSeries();
     	try {
-    	resultSet = addDataSet(variableListX.getSelectedIndx(),variableListY.getSelectedIndx(), 
+   // 	resultSet = addDataSet(variableListX.getSelectedIndx(),variableListY.getSelectedIndx(), 
+    	//		resultSet, variableList);
+    	resultSet = addDataSet(chartSetting.x,chartSetting.y, 
     			resultSet, variableList);
    //	chart.getXYPlot().getDomainAxis().setAttributedLabel(String.valueOf(axis_chooser.getSelectedItem()));
     //	chart.getXYPlot().getRangeAxis().setAttributedLabel(String.valueOf(axis_chooser2.getSelectedItem()));
@@ -372,6 +379,12 @@ public class PlotElement {
 
 	public void setChartSetting(ChartSetting chartSetting) {
 		this.chartSetting = chartSetting;
+		DashboardPlotArea.getChartSettings().set(ID, chartSetting);
+	       if(ID==0 && chartSetting.x==0) {
+		       xAxisIndicator.setForeground(Color.BLUE);
+	       } else {
+		       xAxisIndicator.setForeground(BlueBookVisual.getLabelColor());
+	       }
 		updateChart();
 	}
 

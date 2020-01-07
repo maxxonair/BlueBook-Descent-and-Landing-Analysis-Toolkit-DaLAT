@@ -38,6 +38,7 @@ public class AttitudeView extends DashboardPlotPanel{
 	public AttitudeView(String objectFilePath) {
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		//labelColor = BlueBookVisual.getLabelColor();
+		super.type = 2;
 		
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());

@@ -32,11 +32,15 @@ public class Data2DPlot extends DashboardPlotPanel {
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	 private static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
-	 private int ID=1;
+	 private int ID;
 	 private PlotElement plotElement;
 	 
 	 
-	public Data2DPlot(List<InputFileSet> analysisFile) {
+	public Data2DPlot(int ID, List<InputFileSet> analysisFile) {
+		
+		this.ID = ID;
+		
+		super.type = 0;
 		
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		
@@ -49,23 +53,29 @@ public class Data2DPlot extends DashboardPlotPanel {
 			createChart(analysisFile);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
-			e.printStackTrace();
+			System.err.println("Error: create chart failed.");
 		}
 	}
 	
 	public  void createChart(List<InputFileSet> analysisFile) throws IOException {
-		ChartSetting chartSetting = new ChartSetting();
-		chartSetting.setX(6);
-		chartSetting.setY(4);
 		List<String> variableList = new ArrayList<String>();
 		for(int i=0;i<BlueBookVisual.Axis_Option_NR.length;i++) {
 			variableList.add(BlueBookVisual.Axis_Option_NR[i]);
 		}
-         plotElement = new PlotElement(0, variableList, analysisFile, chartSetting);
+         plotElement = new PlotElement(ID, variableList, analysisFile);
         JPanel plotElementPanel = plotElement.createPlotElement(plotElement);
 
 	   mainPanel.add(plotElementPanel, BorderLayout.CENTER);
 
+	}
+	
+	
+	@Override 
+	public void refresh() {
+		plotElement.updateChart();
+		
+		mainPanel.revalidate();
+		mainPanel.repaint();
 	}
 
 	@Override
@@ -81,7 +91,12 @@ public class Data2DPlot extends DashboardPlotPanel {
 	public PlotElement getPlotElement() {
 		return plotElement;
 	}
-
+/**
+ * 
+ * 
+ * Component Tester
+ * @param args
+ */
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester");
 		frame.setSize(400,400);
@@ -89,7 +104,7 @@ public class Data2DPlot extends DashboardPlotPanel {
 
 		try {
 			analysisFile = BlueBookVisual.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
-			Data2DPlot dataplot = new Data2DPlot(analysisFile);
+			Data2DPlot dataplot = new Data2DPlot(0, analysisFile);
 			frame.add(dataplot.getMainPanel(), BorderLayout.CENTER);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

@@ -55,7 +55,7 @@ public class Planet3DView extends DashboardPlotPanel {
 		labelColor = BlueBookVisual.getLabelColor();
 		
 		this.resultSet = resultSet;
-		
+		super.type = 1;
 		
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());

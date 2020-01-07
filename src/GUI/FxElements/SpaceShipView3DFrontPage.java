@@ -17,6 +17,7 @@ import com.interactivemesh.jfx.importer.obj.ObjModelImporter;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.Dashboard.Data2DPlot;
 import GUI.Dashboard.VariableList2;
+import GUI.SimulationSetup.BasicSetup.Vector3;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
@@ -65,11 +66,9 @@ public class SpaceShipView3DFrontPage {
 	private   double targetBodyInitialDistance = 0.5;
 	public   SmartGroup model;
 	public   SmartGroup coordinateSystem;
-	  double rotX=0;
-	  double rotY=0;
-	  double rotZ=0;
+
 	private   String modelObjectPath = System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj";
-	
+	 Vector3 rotState = new Vector3(0,0,0);
 	
 	public void setModelObjectPath(String modelObjectPath) {
 		this.modelObjectPath = modelObjectPath;
@@ -91,6 +90,9 @@ public class SpaceShipView3DFrontPage {
 		Camera camera = new PerspectiveCamera();
 		camera.setNearClip(.001);
 		camera.setFarClip(100);	
+		
+		camera.translateYProperty().set(0.1);
+		camera.translateYProperty().set(-0.1);
 		
 		//final Group axes = getAxes(2.5);
 		final Group grid = createGrid(2000, 100);
@@ -125,7 +127,7 @@ public class SpaceShipView3DFrontPage {
 		//initMouseControl(model, coordinateSystem, scene, fxpanel);
 		initMouseControl(model, scene, fxpanel, camera);
 		
-		if( DashboardPlotArea.getContentPanelList().get(0).getID()==1) {
+		if( DashboardPlotArea.getContentPanelList().get(0).getID()==0) {
 			Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
 			ChartPanel chartPanel = plotElement.getPlotElement().getChartPanel();
 			VariableList2 varX = plotElement.getPlotElement().getVariableListX();
@@ -162,19 +164,19 @@ public class SpaceShipView3DFrontPage {
 					                    	double getRotz = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerZ());
 					        				try {
 					                    	if(!Double.isNaN(getRotx)) {
-					        				double drotX = getRotx - rotX;
-					        				setRotationX(drotX);
-					        				rotX = getRotx;
+					        				//double drotX = getRotx - rotX;
+					        				setRotationX(getRotx);
+					        				//rotX = getRotx;
 					                    	}
 					                    	if(!Double.isNaN(getRoty)) {
-					        				double drotY = getRoty - rotZ;
-					        				setRotationZ(drotY);
-					        				rotZ = getRoty;
+					        				//double drotY = getRoty - rotZ;
+					        				setRotationZ(getRoty);
+					        				//rotZ = getRoty;
 					                    	}
 					                    	if(!Double.isNaN(getRotz)){
-					        				double drotZ = getRotz - rotY;
-					        				setRotationY(drotZ);
-					        				rotY = getRotz;
+					        				//double drotZ = getRotz - rotY;
+					        				setRotationY(getRotz);
+					        				//rotY = getRotz;
 					                    	}
 		
 					        				} catch (Exception e) {
@@ -230,6 +232,7 @@ public class SpaceShipView3DFrontPage {
 			camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
 			camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
 			//camera.translateXProperty().set(anchorXCamerSlider + (anchorX - mouseSensitivity*event.getSceneX()));
+			//System.out.println(camera.getTranslateZ()+"|"+camera.getTranslateY());
 		});
 		
 		fxpanel.addMouseWheelListener(new MouseWheelListener() {
@@ -255,30 +258,22 @@ public class SpaceShipView3DFrontPage {
 public   void setRotationX(double deltaRotX) {
 	model.rotateByX(deltaRotX);
 	coordinateSystem.rotateByX(deltaRotX);
-	//model.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
-	//coordinateSystem.getTransforms().add(new Rotate(deltaRotX, Rotate.X_AXIS));
-	/*
 	model.translateZProperty().set(model.getTranslateZ() + 0.1);
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
-	*/
+
 }
 public   void setRotationY(double deltaRotY) {
 	model.rotateByY(deltaRotY);
 	coordinateSystem.rotateByY(deltaRotY);
-	//model.getTransforms().add(new Rotate(deltaRotY, Rotate.Y_AXIS));
-	/*
 	model.translateZProperty().set(model.getTranslateZ() + 0.1);
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
-	*/
+
 }
 public   void setRotationZ(double deltaRotZ) {
 	model.rotateByZ(deltaRotZ);
 	coordinateSystem.rotateByZ(deltaRotZ);
-	//model.getTransforms().add(new Rotate(deltaRotZ, Rotate.Z_AXIS));
-	/*
 	model.translateZProperty().set(model.getTranslateZ() + 0.1);
 	model.translateZProperty().set(model.getTranslateZ() - 0.1);
-	*/
 }
 
 private   SmartGroup loadModel(String fileString) {
@@ -325,23 +320,69 @@ public   class SmartGroup extends Group {
 	Rotate r;
 	Transform t = new Rotate();
 	
+	void rotBack() {
+		r = new Rotate(-rotState.z, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(-rotState.y, Rotate.Y_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(-rotState.x, Rotate.X_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+	}
 	void rotateByX(double angle) {
+		rotBack();
 		r = new Rotate(angle, Rotate.X_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.y, Rotate.Y_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.z, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		rotState.x = angle;
 	}
+	
 	void rotateByY(double angle) {
+		rotBack();
+		r = new Rotate(rotState.x, Rotate.X_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
 		r = new Rotate(angle, Rotate.Y_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.z, Rotate.Z_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		
+		rotState.y = angle;
 	}
 	void rotateByZ(double angle) {
+		rotBack();
+		r = new Rotate(rotState.x, Rotate.X_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
+		r = new Rotate(rotState.y, Rotate.Y_AXIS);
+		t = t.createConcatenation(r);
+		this.getTransforms().clear();
+		this.getTransforms().addAll(t);
 		r = new Rotate(angle, Rotate.Z_AXIS);
 		t = t.createConcatenation(r);
 		this.getTransforms().clear();
 		this.getTransforms().addAll(t);
+		rotState.z = angle;
 	}
 }
 

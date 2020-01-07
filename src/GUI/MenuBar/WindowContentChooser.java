@@ -46,7 +46,7 @@ public class WindowContentChooser {
                    public void actionPerformed(ActionEvent e) {
 	                	  // System.out.println("Action: "+windowIndx);
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
-	                	   contentPanelList.set(windowIndx, (new Data2DPlot(DashboardPlotArea.getAnalysisFile())) );
+	                	   contentPanelList.set(windowIndx, (new Data2DPlot(windowIndx, DashboardPlotArea.getAnalysisFile())) );
 	                	   DashboardPlotArea.setContentPanelList(contentPanelList);
                     } });
         thirdWindow.add(menuPoint);

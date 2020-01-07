@@ -448,7 +448,7 @@ public static List<SequenceContent> READ_sequenceFile() throws IOException{
     	    } else if (flightControllerIndex==2) { // yaw control
     	    	sequenceContent.addYawControl();
     	    } else if (flightControllerIndex==3) { // pitch control
-    	    	
+    	    	sequenceContent.addPitchControl();
     	    } else if (flightControllerIndex==4) { // roll stabilisation
     	    	sequenceContent.addRollControl();
     	    } else if (flightControllerIndex==5) { // full thrust
