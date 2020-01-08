@@ -38,7 +38,7 @@ public class DashboardPlotArea {
     // Class Values:
     private static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
     private static  int targetIndx=1;
-    private static String Model3DFilePath="";
+    private static String Model3DFilePath=System.getProperty("user.dir") + "/resourcs/models3D/millenium-falcon.obj";
     
 
 

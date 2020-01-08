@@ -46,7 +46,7 @@ public class SpaceShipView3D extends Application{
 	public   void start(JFXPanel fxpanel) {
 		//Box box = prepareBox();
 
-		 model =  loadModel(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj");
+		 model =  loadModel(System.getProperty("user.dir")+"/resourcs/models3D/millenium-falcon.obj");
 	    coordinateSystem =  loadCoordinateSystem(System.getProperty("user.dir")+"/images/coordinateSystem2.obj");
 		//model.getChildren().add(prepareAmbientLight());
 		//group.getChildren().add(prepareSun());

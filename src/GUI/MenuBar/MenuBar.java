@@ -1,5 +1,6 @@
 package GUI.MenuBar;
 
+import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -13,6 +14,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -20,9 +22,11 @@ import java.io.InputStreamReader;
 import javax.swing.ButtonGroup;
 import javax.swing.ImageIcon;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JRadioButtonMenuItem;
 import javax.swing.KeyStroke;
 import javax.swing.filechooser.FileFilter;
@@ -55,8 +59,10 @@ public class MenuBar {
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	   int OS_is=0;
-	   private File CurrentWorkfile_Path;
-	   private String CurrentWorkfile_Name="";
+	   private File CurrentWorkfilePath;
+	   private String CurrentWorkfileName="";
+	   private String caseFolder = System.getProperty("user.dir")  + "/CASES/";
+	   private String inputFolder = System.getProperty("user.dir") + "/INP/";
 	
 	public MenuBar(){
 		
@@ -244,33 +250,6 @@ public class MenuBar {
                 	   DashboardPlotArea.updateDashboardPlotArea(DashboardPlotArea.getContentPanelList());
                     } });
         
-        menuItem_SimSettings = new JMenuItem("Run RealTime Module              "); 
-        menuItem_SimSettings.setForeground(Color.BLACK);
-        menuItem_SimSettings.setFont(smallFont);
-        menuItem_SimSettings.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_R, ActionEvent.ALT_MASK));
-        menu_SIM.add(menuItem_SimSettings);
-        menuItem_SimSettings.addActionListener(new ActionListener() {
-                   public void actionPerformed(ActionEvent e) {
-             		  System.out.println("Action: RUN SIMULATION");
-      				try {
-      					String line;
-      					Process proc = Runtime.getRuntime().exec("java -jar SIM2.jar");
-      					InputStream in = proc.getInputStream();
-      					InputStream err = proc.getErrorStream();
-      					System.out.println(in);
-      					System.out.println(err);
-      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-      					  while ((line = input.readLine()) != null) {
-      					    System.out.println(line);
-      					  }
-      					  //UPDATE_Page01();
-      				} catch ( IOException e1) {
-      					// TODO Auto-generated catch block
-      					e1.printStackTrace();
-      					System.out.println("Error:  " + e1);
-      				} 
-                    } });
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PreProcessing = new JMenu("PreProcessing");
         menu_PreProcessing.setForeground(labelColor);
@@ -280,51 +259,41 @@ public class MenuBar {
         menu_PreProcessing.setMnemonic(KeyEvent.VK_A);
         menuBar.add(menu_PreProcessing);
         
-        JMenuItem menuItem_ImportScenario = new JMenuItem("Simulation Setup Open               "); 
-        menuItem_ImportScenario.setForeground(labelColor);
+        JMenuItem menuItem_ImportScenario = new JMenuItem("Load Simulation from Cases               "); 
+        menuItem_ImportScenario.setForeground(Color.black);
         menuItem_ImportScenario.setFont(smallFont);
         menuItem_ImportScenario.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+                KeyEvent.VK_L, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ImportScenario);
         menuItem_ImportScenario.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                      	File myfile;
-   	        			myfile = new File(dir+"/CASES");
-   		            	JFileChooser fileChooser = new JFileChooser(myfile);
-   		           	if (fileChooser.showOpenDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
-   	                File file = fileChooser.getSelectedFile() ;
-   	                String filePath = file.getAbsolutePath();
-   	                filePath = filePath.replaceAll(BlueBookVisual.CASE_FileEnding, "");
-                       file = new File(filePath + BlueBookVisual.CASE_FileEnding);
-                       CurrentWorkfile_Path = file;
-                      CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
-                       BlueBookVisual.MAIN_frame.setTitle("" + BlueBookVisual.PROJECT_TITLE + " | " +CurrentWorkfile_Name.split("[.]")[0]);
-         
-   					System.out.println("File "+CurrentWorkfile_Name+" opened.");
 
+                	   loadFromCases();
    					//BlueBookVisual.Page04_subtabPane.setSelectedIndex(1);
                     } });
-        JMenuItem menuItem_ExportScenario = new JMenuItem("Simulation Setup Save as              "); 
-        menuItem_ExportScenario.setForeground(labelColor);
+        menu_PreProcessing.addSeparator();
+        JMenuItem menuItem_ExportScenario = new JMenuItem("Save As              "); 
+        menuItem_ExportScenario.setForeground(Color.black);
         menuItem_ExportScenario.setFont(smallFont);
-        menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
-                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+       // menuItem_ExportScenario.setAccelerator(KeyStroke.getKeyStroke(
+       //         KeyEvent.VK_S, ActionEvent.ALT_MASK));
         menu_PreProcessing.add(menuItem_ExportScenario);
         menuItem_ExportScenario.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {                	   
-                   	File myfile;
-	        			myfile = new File(dir+"/CASES");
-		            	JFileChooser fileChooser = new JFileChooser(myfile);
-		           	if (fileChooser.showSaveDialog(menuItem_Export) == JFileChooser.APPROVE_OPTION) {}
-	                File file = fileChooser.getSelectedFile() ;
-	                String filePath = file.getAbsolutePath();
-	                filePath = filePath.replaceAll(BlueBookVisual.CASE_FileEnding, "");
-                    file = new File(filePath + BlueBookVisual.CASE_FileEnding);
-                    CurrentWorkfile_Path = file;
-                   CurrentWorkfile_Name = fileChooser.getSelectedFile().getName();
-                    BlueBookVisual.MAIN_frame.setTitle("" + BlueBookVisual.PROJECT_TITLE + " | " +CurrentWorkfile_Name.split("[.]")[0]);
-						//EXPORT_Case();
+                	   	saveAs();
                     } });
+        
+        JMenuItem menuItem_ExportScenario2 = new JMenuItem("Save               "); 
+        menuItem_ExportScenario2.setForeground(Color.black);
+        menuItem_ExportScenario2.setFont(smallFont);
+        menuItem_ExportScenario2.setAccelerator(KeyStroke.getKeyStroke(
+                KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_PreProcessing.add(menuItem_ExportScenario2);
+        menuItem_ExportScenario2.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {                	   
+                	   	save();
+                    } });
+        //----------------
         //--------------------------------------------------------------------------------------------------------------------------------
         JMenu menu_PostProcessing = new JMenu("PostProcessing");
         menu_PostProcessing.setForeground(labelColor);
@@ -550,12 +519,15 @@ public class MenuBar {
          * 
          */
         
-        
-        for(int i=0;i<DashboardPlotArea.getContentPanelList().size();i++) {
-	        	WindowContentChooser windowChooser = new WindowContentChooser(i);
-	        	menu_Window.add(windowChooser.getMenuItem());
+        try {
+	        for(int i=0;i<DashboardPlotArea.getContentPanelList().size();i++) {
+		        	WindowContentChooser windowChooser = new WindowContentChooser(i);
+		        	menu_Window.add(windowChooser.getMenuItem());
+	        }
+        } catch(Exception eww) {
+        		System.err.println("Error: creating dashboard chart window select failed.");
+        		System.err.println(eww);
         }
-        
         //-----------------------------------------------------------------------
        JMenuItem menuItemSelect3D = new JMenuItem("Select 3D Spaceship File");
       // menuItemSelect3D.setForeground(labelColor);
@@ -568,7 +540,7 @@ public class MenuBar {
                    	// refresh SpaceShipView3D
                    	// refresh SpaceShipView3dFrontPage
                    File myfile;
-               		myfile = new File(System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/");
+               		myfile = new File(System.getProperty("user.dir")+"/resourcs/models3D/");
                    	JFileChooser fileChooser = new JFileChooser(myfile);
                    //	fileChooser.addChoosableFileFilter(new FileNameExtensionFilter("*.obj", "obj"));
                    //	fileChooser.setFileHidingEnabled(true);;
@@ -638,16 +610,159 @@ public class MenuBar {
 	    }
 	}
 
+		private void loadFromCases() {
+            Object[] possibilities = getCaseNames( caseFolder );
+            String s = (String)JOptionPane.showInputDialog(
+                                new JFrame(),
+                                "Select Case to load:",
+                                "BlueBook File System - Select existing case",
+                                JOptionPane.PLAIN_MESSAGE,
+                                null,
+                                possibilities,
+                                "");
 
+            //If a string was returned, say so.
+            if ((s != null) && (s.length() > 0)) {
+            		// Load File 
+            		CurrentWorkfileName = s;
+            		
+	            	String source = caseFolder+"/"+CurrentWorkfileName+"/";
+	            	String destination = inputFolder;
 
-	public File getCurrentWorkfile_Path() {
-		return CurrentWorkfile_Path;
+	            	copyFile(source ,  destination);
+	            	
+	            	updateBBFrameTitle();
+            }
+		}
+		
+		private void saveAs() {
+			
+            String s = (String)JOptionPane.showInputDialog(
+                    new JFrame(),
+                    "Please enter a case name:",
+                    "BlueBook File System - Save As",
+                    JOptionPane.PLAIN_MESSAGE,
+                    null,
+                    null, "Enter Case Name");
+
+				//If a string was returned, say so.
+				if ((s != null) && (s.length() > 0)) {
+					// Check if CurrentFileName exists
+					if(fileExistsInFolder(s, caseFolder)) {
+						// Dialog: Override?
+	                    int n = JOptionPane.showConfirmDialog(
+	                            new JFrame(), "This file does already exist. Do you wish to overwride the file?",
+	                            "BlueBook File System - File Exists",
+	                            JOptionPane.YES_NO_OPTION);
+	                    if (n == JOptionPane.YES_OPTION) {
+							CurrentWorkfileName =  s;
+							updateBBFrameTitle();
+							String destination = caseFolder+"/"+CurrentWorkfileName+"/";
+							copyFile(inputFolder, destination);
+	                    } else if (n == JOptionPane.NO_OPTION) {
+	                        // void 
+	                    } else {
+	                       // void 
+	                    }
+					} else {
+						CurrentWorkfileName =  s;
+						updateBBFrameTitle();
+						String destination = caseFolder+"/"+CurrentWorkfileName+"/";
+						copyFile(inputFolder, destination);
+					}
+				}
+			
+		}
+		
+		private void copyFile(String source, String destination) {
+			//String source = inputFolder;
+			File srcDir = new File(source);
+
+			//String destination = caseFolder+"/"+FileName+"/";
+			File destDir = new File(destination);
+
+			try {
+			    FileUtils.copyDirectory(srcDir, destDir);
+			} catch (IOException e) {
+			    e.printStackTrace();
+			}
+		}
+		
+		private boolean fileExistsInFolder(String fileName, String folder) {
+			boolean exists= false;
+			String[] directories = getCaseNames(folder);
+			for(int i=0;i<directories.length;i++) {
+				if(fileName.equals(directories[i])) {
+					exists=true;
+				}
+			}
+			return exists;
+		}
+		
+		private String[] getCaseNames(String folder) {
+			File file = new File(folder);
+			String[] directories = file.list(new FilenameFilter() {
+			  @Override
+			  public boolean accept(File current, String name) {
+			    return new File(current, name).isDirectory();
+			  }
+			});
+			return directories;
+		}
+		
+		private void save() {
+			if(CurrentWorkfileName.length()==0) {
+				// File Path not set 
+				JOptionPane.showMessageDialog(new JFrame(""),
+					    "No project setup yet. Please select an existing project or create a new one.", "BlueBook File System",
+					    JOptionPane.WARNING_MESSAGE);
+				// Message and link to save as 
+				saveAs();
+				
+			} else {
+				String destination = caseFolder+"/"+CurrentWorkfileName+"/";
+				copyFile(inputFolder, destination);
+			}			
+		}
+
+	public File getCurrentWorkfilePath() {
+		return CurrentWorkfilePath;
 	}
 
-	public String getCurrentWorkfile_Name() {
-		return CurrentWorkfile_Name;
+	public String getCurrentWorkfileName() {
+		return CurrentWorkfileName;
 	}
 	
-	
+	private void updateBBFrameTitle() {
+		BlueBookVisual.MAIN_frame.setTitle(BlueBookVisual.PROJECT_TITLE + " - Scenario: " + CurrentWorkfileName);
+		BlueBookVisual.UPDATE_Page01(true);
+	      try {
+			  BlueBookVisual.READ_INPUT();	       
+			  BlueBookVisual.READ_INERTIA() ;
+			  BlueBookVisual.READ_InitialAttitude();
+		    	  BlueBookVisual.READ_sequenceFile();
+	      } catch(Exception e) {
+	    	  		System.out.println("ERROR: Reading input section after Case updated failed.");
+	      }
+	}
+	/**
+	 * 
+	 * 
+	 * Tester Unit
+	 * @param args
+	 */
+	public static void main(String[] args) {
+		JFrame frame = new JFrame("Component Tester");
+		frame.setSize(400,400);
+		frame.setLayout(new BorderLayout());
+
+		MenuBar menu = new MenuBar();
+		frame.add(menu.getMainMenu(), BorderLayout.NORTH);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+		frame.pack();
+	}
 
 }

@@ -62,7 +62,7 @@ public class Loader {
 		Texture texture = null;
 		try {
 			texture = TextureLoader.getTexture("PNG",
-					new FileInputStream("INP/SpacecraftModelLibrary/" + fileName + ".png"));
+					new FileInputStream("VisualEngine/textures/" + fileName + ".png"));
 		} catch (Exception e) {
 			e.printStackTrace();
 			System.err.println("Tried to load texture " + fileName + ".png , didn't work");

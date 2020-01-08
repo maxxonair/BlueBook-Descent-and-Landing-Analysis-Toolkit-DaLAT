@@ -2810,7 +2810,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
    }
     
-    public void READ_INERTIA() throws NumberFormatException, IOException {
+    public static void READ_INERTIA() throws NumberFormatException, IOException {
 		BufferedReader br = new BufferedReader(new FileReader(INERTIA_File));
 	       String strLine;
 	       int j=0;

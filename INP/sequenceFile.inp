@@ -5,3 +5,9 @@
 4 HeatShieldSeparation |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 4 |EventManagementElements |EndElement| 1 2.0 |EndElement| 
 5 FreeFall |FlightControllerElements| 5 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 10.0 |EndElement| 
 6 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0.0 |EndElement| 
+7 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0.0 |EndElement| 
+8 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0.0 |EndElement| 
+9 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0.0 |EndElement| 
+10 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0.0 |EndElement| 
+11 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0.0 |EndElement| 
+12 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0 |EndElement| 

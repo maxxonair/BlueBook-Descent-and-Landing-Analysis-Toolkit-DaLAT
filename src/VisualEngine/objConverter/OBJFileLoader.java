@@ -13,7 +13,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 public class OBJFileLoader {
 	
-	private static final String RES_LOC = "INP/SpacecraftModelLibrary/";
+	private static final String RES_LOC = "resourcs/models3D/";
 
 	public static ModelData loadOBJ(String objFileName) {
 		FileReader isr = null;

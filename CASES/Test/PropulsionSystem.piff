@@ -1,0 +1,347 @@
+Box_54*&^{}|MMH1|4|490|315|1da3bcef-bc2b-49f1-a8bc-868f2efb730b|0.0
+Name|MMH1
+Description|OST 25-0
+System mass [kg]|17.5
+Propellant [-]|MMH
+Volume [litre]|198
+Current Pressure [Pa]|0
+Operating Pressure [Pa]|500000
+MEOP [Pa]|2200000
+Mean Temp. [K]|250
+Propellant Capacity [kg]|174.24
+Filling Level [kg]|0.0
+Box_54*&^{}|MON1|4|156|310|4beccbe9-6a79-4e2d-b518-8b5ec806087a|0.0
+Name|MON1
+Description|OST 25-0
+System mass [kg]|17.5
+Propellant [-]|MON
+Volume [litre]|198
+Current Pressure [Pa]|0
+Operating Pressure [Pa]|500000
+MEOP [Pa]|2200000
+Mean Temp. [K]|250
+Propellant Capacity [kg]|271.3
+Filling Level [kg]|0.0
+Box_54*&^{}|MMH2|4|647|314|e5696e60-1b23-4510-bc90-766cc1088ec1|0.0
+Name|MMH2
+Description|OST 25-0
+System mass [kg]|17.5
+Propellant [-]|MMH
+Volume [litre]|198
+Current Pressure [Pa]|0.0
+Operating Pressure [Pa]|500000
+MEOP [Pa]|2200000
+Mean Temp. [K]|260
+Propellant Capacity [kg]|174.24
+Filling Level [kg]|0.0
+Box_54*&^{}|MON2|4|298|311|428cce31-4d4c-4351-964c-680842178401|0.0
+Name|MON2
+Description|OST 25-0
+System mass [kg]|17.5
+Propellant [-]|MON
+Volume [litre]|198
+Current Pressure [Pa]|500000
+Operating Pressure [Pa]|500000
+MEOP [Pa]|2200000
+Mean Temp. [K]|230
+Propellant Capacity [kg]|271.3
+Filling Level [kg]|0.0
+Box_54*&^{}|He1|4|241|134|899c82f8-16bb-4cb9-84d0-b5fcb6af1510|0.0
+Name|He1
+Description|
+System mass [kg]|0.0
+Propellant [-]|null
+Volume [litre]|0.0
+Current Pressure [Pa]|0.0
+Operating Pressure [Pa]|0.0
+MEOP [Pa]|0.0
+Mean Temp. [K]|0.0
+Propellant Capacity [kg]|0.0
+Filling Level [kg]|0.0
+Box_54*&^{}|He2|4|418|92|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c|0.0
+Name|He2
+Description|
+System mass [kg]|0.0
+Propellant [-]|null
+Volume [litre]|0.0
+Current Pressure [Pa]|0.0
+Operating Pressure [Pa]|0.0
+MEOP [Pa]|0.0
+Mean Temp. [K]|0.0
+Propellant Capacity [kg]|0.0
+Filling Level [kg]|0.0
+Box_54*&^{}|Filter2|5|622|91|6e27635e-8bf9-47ec-ac5a-72dcb4c9e1c2|0.0
+Name|Filter2
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Filter|5|99|133|74117d84-cfa1-4f0e-a0c4-94c0a495e9de|0.0
+Name|Filter
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PyroValve2|7|521|91|a9902324-faae-44d8-baef-81e0725c485f|0.0
+Name|PyroValve2
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PyroValve|7|151|134|e2bfc27c-b4a1-4bae-9d92-e6832409ecbc|0.0
+Name|PyroValve
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|CV2|10|489|178|b5484b0a-6ae7-42be-a628-d0cdb8cc8105|0.0
+Name|CV2
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PCA2|6|624|178|096cc519-cc07-4513-bfc0-10140d961998|0.0
+Name|PCA2
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|FD_He2|8|419|1|9d4cd017-f90b-45f6-bcec-a73d26d16e5b|0.0
+Name|FD_He2
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|FD_MMH Clone|8|893|313|11a4970a-7ea5-4e16-8eff-0e608cb6c989|0.0
+Name|FD_MMH Clone
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RV2|9|887|115|7fa5e398-4f27-48b9-bec3-b101e039d73e|90.0
+Name|RV2
+Description|
+System mass [kg]|0.09
+Box_54*&^{}|AV_MMH|6|506|438|44407990-31c2-4965-8e82-3430cdbe64c4|0.0
+Name|AV_MMH
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|ME 1|0|203|640|60d620b8-8a7d-405e-9111-f0eda851502f|0.0
+Name|ME 1
+Description|
+System mass [kg]|120
+Thrust [N]|5500
+ISP [s]|328
+O/F [-]|2.1
+Box_54*&^{}|ME 2|0|411|645|3f69e377-7e7f-4c6a-bdb5-d736d8342713|0.0
+Name|ME 2
+Description|
+System mass [kg]|120
+Thrust [N]|5500
+ISP [s]|328
+O/F [-]|2.1
+Box_54*&^{}|ME3|0|653|654|c6dac8c0-9e9c-4ab2-bf40-54557803d3ae|0.0
+Name|ME3
+Description|
+System mass [kg]|120
+Thrust [N]|5500
+ISP [s]|328
+O/F [-]|2.1
+Box_54*&^{}|PCA1|6|96|215|b597a317-9966-4223-afca-a05c363e5511|0.0
+Name|PCA1
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|CV1|10|157|214|c7761cb0-7b76-4425-b341-08093195a4af|0.0
+Name|CV1
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|AV_MON|6|301|460|296e2606-1837-48c7-9d2e-5b2405a02b29|0.0
+Name|AV_MON
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|FD_MON|8|3|309|d0b9c357-356c-418e-83fd-3e07c329683a|0.0
+Name|FD_MON
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|FD_He1|8|242|35|fb080a26-63fb-4a16-a24f-6435bf1e4ed1|0.0
+Name|FD_He1
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RV5|9|1|391|81cf67aa-8a30-4797-aa83-b315230e7b30|0.0
+Name|RV5
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Me1_MON|6|110|640|f3154c99-8fec-4dbc-bccb-c718dc6c8779|0.0
+Name|Me1_MON
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Me1_MMH|6|275|639|669cb946-1ce5-4405-8218-163c0b5cca50|0.0
+Name|Me1_MMH
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Me2_MMH|6|506|645|27fa092c-379c-48a7-9f27-31c08478c67c|0.0
+Name|Me2_MMH
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Me2_MON|6|301|566|e0aa4806-de52-4e2f-b454-04e80815352f|0.0
+Name|Me2_MON
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Me3_MON|6|573|584|e38369a1-98f0-41d7-a066-b0fb5959dffa|0.0
+Name|Me3_MON
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Me3_MMH|6|653|532|06d1f5bd-ccda-428c-b8cd-5f4cc2074c1d|0.0
+Name|Me3_MMH
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RCS Y|3|890|401|a334dcaf-44b2-4a29-85c0-de7d038b484c|0.0
+Name|RCS Y
+Description|
+System mass [kg]|0.0
+Thrust [N]|0.0
+ISP [s]|0.0
+O/F [-]|0.0
+Momentum [Nm]|0.0
+Max. Pulse Time [ms]|0.0
+Min. Pulse Time [ms]|0.0
+Box_54*&^{}|RCS Z|3|889|516|3c42d8de-c496-4a1f-ae24-c9e65963be59|0.0
+Name|RCS Z
+Description|
+System mass [kg]|0.0
+Thrust [N]|0.0
+ISP [s]|0.0
+O/F [-]|0.0
+Momentum [Nm]|0.0
+Max. Pulse Time [ms]|0.0
+Min. Pulse Time [ms]|0.0
+Box_54*&^{}|RCS X|3|888|641|02dd12fc-cabf-495f-aa3e-b40f9029d789|0.0
+Name|RCS X
+Description|
+System mass [kg]|0.0
+Thrust [N]|0.0
+ISP [s]|0.0
+O/F [-]|0.0
+Momentum [Nm]|0.0
+Max. Pulse Time [ms]|0.0
+Min. Pulse Time [ms]|0.0
+Box_54*&^{}|PT4|14|414|313|2de72459-0ee6-4383-8186-e47282b4897c|0.0
+Name|PT4
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PT3|14|805|313|781472e9-db9f-4fb4-a171-0ac738ecdfc9|0.0
+Name|PT3
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PT2|14|346|91|7a2674aa-8da5-4e96-96b7-f7895cdc548a|0.0
+Name|PT2
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PT1|14|312|133|0e4c45c6-f68d-427d-8637-f2382d94b889|0.0
+Name|PT1
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|pipe|15|109|460|866f6333-0f36-4de7-97f5-780d550ecaae|0.0
+Name|pipe
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|BurstDisk|13|778|115|17e65af1-2b61-4d5c-8a0f-195578291ae0|270.0
+Name|BurstDisk
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|BurstDisk|13|48|215|6468f508-8b1b-43e7-b858-1f61b1b049bf|90.0
+Name|BurstDisk
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RV6|9|241|212|1d7c02f0-b6a1-437a-a688-6b545b01577e|0.0
+Name|RV6
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RV7|9|418|219|dc75024e-327d-4fd9-b4ca-00628164c495|0.0
+Name|RV7
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RV4|9|3|215|9bfcc112-f0fc-49ae-bb47-ba82846736da|0.0
+Name|RV4
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|LatchValve|11|111|532|d0057db8-a361-40fd-8e90-662d8be0613e|0.0
+Name|LatchValve
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PT5|14|68|313|18bd41db-0b60-45af-872c-81ce32d7dc1b|0.0
+Name|PT5
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|LV_RCS_X|11|797|401|490ec57e-2ef0-487b-b79e-faaa0f65e2fa|0.0
+Name|LV_RCS_X
+Description|
+System mass [kg]|0.0
+Box_54*&^{}||16|685|473|1bfc268f-6d46-472e-a80e-9a8dac702a3a|0.0
+Name|
+Description|
+System mass [kg]|0.0
+Box_54*&^{}||16|685|476|19dd11f8-1a43-4cd2-9f27-325f51f7cb56|0.0
+Name|
+Description|
+System mass [kg]|0.0
+Box_54*&^{}||16|546|567|53f1c9ea-b0af-428e-9a4a-794982fae655|0.0
+Name|
+Description|
+System mass [kg]|0.0
+Box_54*&^{}| |16|338|425|f3164632-8c10-42fa-baa2-62867a69852a|0.0
+Name| 
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|PT8|14|372|311|474c641a-9990-49e7-a86e-dcd19420a41d|0.0
+Name|PT8
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|LV_RCS_X|11|797|515|d1d57920-d0d6-4b7c-b265-1b4dccc46525|0.0
+Name|LV_RCS_X
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|LV_RCS_X|11|799|640|2a0a7d68-a5a9-4a58-8a88-743a57416f4a|0.0
+Name|LV_RCS_X
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|RV3|9|893|210|90d88774-bc3c-4235-9217-9b2e904a0a6b|270.0
+Name|RV3
+Description|
+System mass [kg]|0.0
+Relation_74*&^{}|1da3bcef-bc2b-49f1-a8bc-868f2efb730b|e5696e60-1b23-4510-bc90-766cc1088ec1
+Relation_74*&^{}|4beccbe9-6a79-4e2d-b518-8b5ec806087a|428cce31-4d4c-4351-964c-680842178401
+Relation_74*&^{}|a9902324-faae-44d8-baef-81e0725c485f|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c
+Relation_74*&^{}|a9902324-faae-44d8-baef-81e0725c485f|6e27635e-8bf9-47ec-ac5a-72dcb4c9e1c2
+Relation_74*&^{}|096cc519-cc07-4513-bfc0-10140d961998|6e27635e-8bf9-47ec-ac5a-72dcb4c9e1c2
+Relation_74*&^{}|b5484b0a-6ae7-42be-a628-d0cdb8cc8105|096cc519-cc07-4513-bfc0-10140d961998
+Relation_74*&^{}|9d4cd017-f90b-45f6-bcec-a73d26d16e5b|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c
+Relation_74*&^{}|11a4970a-7ea5-4e16-8eff-0e608cb6c989|e5696e60-1b23-4510-bc90-766cc1088ec1
+Relation_74*&^{}|b5484b0a-6ae7-42be-a628-d0cdb8cc8105|1da3bcef-bc2b-49f1-a8bc-868f2efb730b
+Relation_74*&^{}|e2bfc27c-b4a1-4bae-9d92-e6832409ecbc|899c82f8-16bb-4cb9-84d0-b5fcb6af1510
+Relation_74*&^{}|74117d84-cfa1-4f0e-a0c4-94c0a495e9de|e2bfc27c-b4a1-4bae-9d92-e6832409ecbc
+Relation_74*&^{}|b597a317-9966-4223-afca-a05c363e5511|74117d84-cfa1-4f0e-a0c4-94c0a495e9de
+Relation_74*&^{}|c7761cb0-7b76-4425-b341-08093195a4af|b597a317-9966-4223-afca-a05c363e5511
+Relation_74*&^{}|c7761cb0-7b76-4425-b341-08093195a4af|4beccbe9-6a79-4e2d-b518-8b5ec806087a
+Relation_74*&^{}|296e2606-1837-48c7-9d2e-5b2405a02b29|428cce31-4d4c-4351-964c-680842178401
+Relation_74*&^{}|d0b9c357-356c-418e-83fd-3e07c329683a|4beccbe9-6a79-4e2d-b518-8b5ec806087a
+Relation_74*&^{}|fb080a26-63fb-4a16-a24f-6435bf1e4ed1|899c82f8-16bb-4cb9-84d0-b5fcb6af1510
+Relation_74*&^{}|669cb946-1ce5-4405-8218-163c0b5cca50|60d620b8-8a7d-405e-9111-f0eda851502f
+Relation_74*&^{}|f3154c99-8fec-4dbc-bccb-c718dc6c8779|60d620b8-8a7d-405e-9111-f0eda851502f
+Relation_74*&^{}|27fa092c-379c-48a7-9f27-31c08478c67c|44407990-31c2-4965-8e82-3430cdbe64c4
+Relation_74*&^{}|06d1f5bd-ccda-428c-b8cd-5f4cc2074c1d|c6dac8c0-9e9c-4ab2-bf40-54557803d3ae
+Relation_74*&^{}|27fa092c-379c-48a7-9f27-31c08478c67c|3f69e377-7e7f-4c6a-bdb5-d736d8342713
+Relation_74*&^{}|e0aa4806-de52-4e2f-b454-04e80815352f|296e2606-1837-48c7-9d2e-5b2405a02b29
+Relation_74*&^{}|e0aa4806-de52-4e2f-b454-04e80815352f|3f69e377-7e7f-4c6a-bdb5-d736d8342713
+Relation_74*&^{}|e38369a1-98f0-41d7-a066-b0fb5959dffa|296e2606-1837-48c7-9d2e-5b2405a02b29
+Relation_74*&^{}|e38369a1-98f0-41d7-a066-b0fb5959dffa|c6dac8c0-9e9c-4ab2-bf40-54557803d3ae
+Relation_74*&^{}|2de72459-0ee6-4383-8186-e47282b4897c|1da3bcef-bc2b-49f1-a8bc-868f2efb730b
+Relation_74*&^{}|781472e9-db9f-4fb4-a171-0ac738ecdfc9|e5696e60-1b23-4510-bc90-766cc1088ec1
+Relation_74*&^{}|7a2674aa-8da5-4e96-96b7-f7895cdc548a|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c
+Relation_74*&^{}|0e4c45c6-f68d-427d-8637-f2382d94b889|899c82f8-16bb-4cb9-84d0-b5fcb6af1510
+Relation_74*&^{}|f3154c99-8fec-4dbc-bccb-c718dc6c8779|866f6333-0f36-4de7-97f5-780d550ecaae
+Relation_74*&^{}|866f6333-0f36-4de7-97f5-780d550ecaae|296e2606-1837-48c7-9d2e-5b2405a02b29
+Relation_74*&^{}|19dd11f8-1a43-4cd2-9f27-325f51f7cb56|490ec57e-2ef0-487b-b79e-faaa0f65e2fa
+Relation_74*&^{}|1bfc268f-6d46-472e-a80e-9a8dac702a3a|e5696e60-1b23-4510-bc90-766cc1088ec1
+Relation_74*&^{}|17e65af1-2b61-4d5c-8a0f-195578291ae0|096cc519-cc07-4513-bfc0-10140d961998
+Relation_74*&^{}|17e65af1-2b61-4d5c-8a0f-195578291ae0|7fa5e398-4f27-48b9-bec3-b101e039d73e
+Relation_74*&^{}|6468f508-8b1b-43e7-b858-1f61b1b049bf|b597a317-9966-4223-afca-a05c363e5511
+Relation_74*&^{}|9bfcc112-f0fc-49ae-bb47-ba82846736da|6468f508-8b1b-43e7-b858-1f61b1b049bf
+Relation_74*&^{}|1bfc268f-6d46-472e-a80e-9a8dac702a3a|44407990-31c2-4965-8e82-3430cdbe64c4
+Relation_74*&^{}|53f1c9ea-b0af-428e-9a4a-794982fae655|06d1f5bd-ccda-428c-b8cd-5f4cc2074c1d
+Relation_74*&^{}|f3164632-8c10-42fa-baa2-62867a69852a|428cce31-4d4c-4351-964c-680842178401
+Relation_74*&^{}|f3164632-8c10-42fa-baa2-62867a69852a|81cf67aa-8a30-4797-aa83-b315230e7b30
+Relation_74*&^{}|781472e9-db9f-4fb4-a171-0ac738ecdfc9|e5696e60-1b23-4510-bc90-766cc1088ec1
+Relation_74*&^{}|474c641a-9990-49e7-a86e-dcd19420a41d|428cce31-4d4c-4351-964c-680842178401
+Relation_74*&^{}|490ec57e-2ef0-487b-b79e-faaa0f65e2fa|a334dcaf-44b2-4a29-85c0-de7d038b484c
+Relation_74*&^{}|1bfc268f-6d46-472e-a80e-9a8dac702a3a|d1d57920-d0d6-4b7c-b265-1b4dccc46525
+Relation_74*&^{}|1bfc268f-6d46-472e-a80e-9a8dac702a3a|2a0a7d68-a5a9-4a58-8a88-743a57416f4a
+Relation_74*&^{}|d1d57920-d0d6-4b7c-b265-1b4dccc46525|3c42d8de-c496-4a1f-ae24-c9e65963be59
+Relation_74*&^{}|2a0a7d68-a5a9-4a58-8a88-743a57416f4a|02dd12fc-cabf-495f-aa3e-b40f9029d789
+Relation_74*&^{}|dc75024e-327d-4fd9-b4ca-00628164c495|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c
+Relation_74*&^{}|1d7c02f0-b6a1-437a-a688-6b545b01577e|899c82f8-16bb-4cb9-84d0-b5fcb6af1510
+Relation_74*&^{}|90d88774-bc3c-4235-9217-9b2e904a0a6b|e5696e60-1b23-4510-bc90-766cc1088ec1
