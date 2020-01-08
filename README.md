@@ -1,7 +1,7 @@
 BlueBook Descent and Landing Analysis Toolkit
 
 
-![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage.png)
+![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage.png)
 
 BlueBook Descent and Landing Analysis Tool 
 27/09/2019
@@ -19,31 +19,31 @@ This project is divided in three core modules:
 
 1) The Simulation module (SIM): The SIM.jar is the core simulation. >>java -jar SIM.jar will start the simulation. This setup allows to shift pre- and postprocessing to a different environment (e.g. Matlab, python a.s.o). The folder INP/ contains all relevant input files to start the simulation
 
-![Github SIM](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/FlowChart/flowchart.png)
+![Github SIM](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/FlowChart/flowchart.png)
 
 2) The GUI module (GUI): The GUI BlueBook_DaLAT.jar allows to perform pre- and postprocessing and visualise results. 
 
-![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage4.png)
+![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage4.png)
 
-![Github GUI2](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage3.png)
+![Github GUI2](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage3.png)
 
 The images show a quick preview of the user interface dashboard. The chart area on the right hand side is adjustable. The user can select from a variety of 2D charts and 3D content. Currently there are two 3D windows implemented. The first image shows the target body view in the upper right corner. This window also shows the computed trajectory and the respective position of the spacecraft on the trajectory that corresponds to the selected position on the graph in the lower left corner (Note this only works if time is selected as the x-value). The second 3D content (in the lower right corner) shows the attitude of the spacecraft with respect to the local North-East-Down system.
 
 The GUI is designed to simplify pre- and postprocessing work and allow to set up simulations from low to high levels of complexity in a streamlined manner and interpret the results quickly. 
 
-![Github GUI3](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage5.png)
+![Github GUI3](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage5.png)
 
 The image shows the simulation input section to prepare a simulation. For more clarity this section is devided in subtabs. The shown basic setup section allows to setup the initial state of the spacecraft including position, velocity and attitude  vectors. Furthermore settings concerning the integration method, the used coordinate systems and the time resolution can be made here. 
 
 To model the propulsion sub-system a graphical block modelling approach is currently tested. The editor library for this has been developed for this GUI. 
 
-![Github GUI7](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/GUIImage7.png)
+![Github GUI7](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage7.png)
 
 The image shows a simple propulsion system setup created with this editor. 
 
 3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations (using the SIM module) with user inputs (pilot in the loop). The VE is currently in early development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
 
-![Github VisualEngine](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/INP/INPUT_Documentation/VisualEngine.png)
+![Github VisualEngine](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/VisualEngine.png)
 
 Note: 
 
