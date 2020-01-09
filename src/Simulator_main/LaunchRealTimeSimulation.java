@@ -192,7 +192,8 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    	    	realTimeContainer, realTimeResultSet.getSpaceShip(), sensorSet, SequenceSet, Frequency);
 		    	   //---------------------------------------------------------------------------------------
 		    	   //				  Start incremental integration
-		    	   //---------------------------------------------------------------------------------------		
+		    	   //---------------------------------------------------------------------------------------	
+
 		    	    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
 								integratorData, 
 								realTimeResultSet.getSpaceShip(),				 
@@ -208,7 +209,8 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		  sensorSet.setGlobalTime(tIS);
 	    		    	   SensorModel.addVelocitySensorUncertainty(sensorSet,  4);
 	    		    			//SensorModel.addAltitudeSensorUncertainty(sensorSet,  5);
-	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);   
+	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);  
+	    		    	   
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------

@@ -1,4 +1,11 @@
+/Controller/
+/DateTime/
+/FlightElement/
 /GUI/
-/VisualEngine/
-/models3D/
-/splashscreen.paint
+/Model/
+/NeuralNetwork/
+/Noise/
+/NoiseSet/
+/Plotter/
+/Sequence/
+/Simulator_main/

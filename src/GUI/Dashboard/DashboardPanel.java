@@ -65,7 +65,7 @@ public class DashboardPanel {
 		return mainPanel;
 	}
 	
-	public void main(String[] args) {
+	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester");
 		frame.setSize(400,400);
 		frame.setLayout(new BorderLayout());

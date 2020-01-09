@@ -41,6 +41,16 @@ import javafx.scene.transform.Transform;
 import javafx.scene.transform.Translate;
 import javafx.stage.Stage;
 
+
+/**
+ * In JavaFX, the camera coordinate system is as follows:
+
+		• X-axis pointing to the right
+		
+		• Y-axis pointing down
+		
+		• Z-axis pointing away from the viewer or into the screen.
+ */
 public class SpaceShipView3DFrontPage {
 	
 	private   double anchorCameraY;
@@ -61,9 +71,11 @@ public class SpaceShipView3DFrontPage {
 	
 	private   final double WIDTH  = 450;
 	private   final double HEIGHT = 400;
+	
 	private   double mouseWheelZoomSensitivity = 100;
 	private   double mouseSensitivity =0.05;
-	private   double targetBodyInitialDistance = 0.5;
+	
+	private   double cameraToTargetDistance = 10;
 	public   SmartGroup model;
 	public   SmartGroup coordinateSystem;
 
@@ -91,8 +103,11 @@ public class SpaceShipView3DFrontPage {
 		camera.setNearClip(.001);
 		camera.setFarClip(100);	
 		
-		camera.translateYProperty().set(0.1);
-		camera.translateYProperty().set(-0.1);
+		//camera.translateYProperty().set(0.1);
+		//camera.translateYProperty().set(-0.1);
+		camera.translateXProperty().set(-WIDTH/2);
+		camera.translateYProperty().set(-HEIGHT/2);
+		camera.translateZProperty().set(-cameraToTargetDistance);
 		
 		//final Group axes = getAxes(2.5);
 		final Group grid = createGrid(2000, 100);
@@ -101,9 +116,9 @@ public class SpaceShipView3DFrontPage {
 		//environment.getChildren().add(axes);
 		environment.getChildren().add(grid);
 		
-		environment.translateXProperty().set(WIDTH);
-		environment.translateYProperty().set(HEIGHT*2/3);
-		environment.translateZProperty().set(targetBodyInitialDistance);
+		environment.translateXProperty().set(0);
+		environment.translateYProperty().set(20);
+		environment.translateZProperty().set(0);
 		
 		root.getChildren().add(environment);
 		
@@ -111,14 +126,10 @@ public class SpaceShipView3DFrontPage {
 		scene.setFill(Color.color(0.15,0.15,0.15));
 		scene.setCamera(camera);
 		
-		double dis = targetBodyInitialDistance;
-		model.translateXProperty().set(WIDTH/2);
-		model.translateYProperty().set(HEIGHT/2);
-		model.translateZProperty().set(targetBodyInitialDistance);
 		
-		coordinateSystem.translateXProperty().set(WIDTH*4/5);
-		coordinateSystem.translateYProperty().set(HEIGHT/5);
-		coordinateSystem.translateZProperty().set(dis/2);
+		coordinateSystem.translateXProperty().set(0);
+		coordinateSystem.translateYProperty().set(0);
+		coordinateSystem.translateZProperty().set(0);
 		/*
 		SmartGroup modelCoord = new SmartGroup();
 		modelCoord.getChildren().add(model);
@@ -205,16 +216,16 @@ public class SpaceShipView3DFrontPage {
 		Rotate yRotate;
 		@SuppressWarnings("unused")
 		Rotate yRotateSlider;
-		Translate translateX;
+		//Translate translateX;
 
 		camera.getTransforms().addAll(
 				//xRotate = new Rotate(0, Rotate.Y_AXIS),
 				yRotate = new Rotate(0, Rotate.X_AXIS)	,
-				yRotateSlider = new Rotate(0, Rotate.X_AXIS),
-				translateX = new Translate(0,0,0)
+				yRotateSlider = new Rotate(0, Rotate.X_AXIS)
+				//translateX = new Translate(0,0,0)
 				);
 		yRotate.angleProperty().bind(angleCameraY);
-		translateX.xProperty().bind(posCameraX);
+		//translateX.xProperty().bind(posCameraX);
 		
 		scene.setOnMousePressed(event -> {
 			//anchorCameraX = event.getSceneX();
@@ -223,14 +234,15 @@ public class SpaceShipView3DFrontPage {
 			//anchorAngleCameraX = angleCameraX.get();
 			anchorAngleCameraY = angleCameraY.get();
 			anchorAngleCameraYSlider = angleCameraYSlider.get();
+			
 			anchorXCamerSlider = posCameraX.get();
 			anchorX = event.getSceneX();
 		});
 		scene.setOnMouseDragged(event ->{
 			//angleCameraX.set(anchorAngleCameraX - (anchorCameraX - event.getSceneX())*mouseSensitivity); 
-			angleCameraY.set(anchorAngleCameraY + (anchorCameraY - event.getSceneY())*mouseSensitivity); 
-			camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
-			camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
+			angleCameraY.set( anchorAngleCameraY + (anchorCameraY - event.getSceneY())*mouseSensitivity); 
+			camera.translateZProperty().set(cameraToTargetDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
+			camera.translateYProperty().set(cameraToTargetDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
 			//camera.translateXProperty().set(anchorXCamerSlider + (anchorX - mouseSensitivity*event.getSceneX()));
 			//System.out.println(camera.getTranslateZ()+"|"+camera.getTranslateY());
 		});
@@ -242,13 +254,13 @@ public class SpaceShipView3DFrontPage {
 				// TODO Auto-generated method stub
 					double wheelSpeed = arg0.getPreciseWheelRotation();
 						if(wheelSpeed>0) {
-							targetBodyInitialDistance += mouseWheelZoomSensitivity;
+							cameraToTargetDistance += mouseWheelZoomSensitivity;
 						} else {
-							targetBodyInitialDistance -= mouseWheelZoomSensitivity;
+							cameraToTargetDistance -= mouseWheelZoomSensitivity;
 						}
-						group.translateZProperty().set(targetBodyInitialDistance);
-						camera.translateZProperty().set(targetBodyInitialDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
-						camera.translateYProperty().set(targetBodyInitialDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
+						//group.translateZProperty().set(cameraToTargetDistance);
+						camera.translateYProperty().set(cameraToTargetDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
+						camera.translateZProperty().set(cameraToTargetDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
 			}
 			
 		});

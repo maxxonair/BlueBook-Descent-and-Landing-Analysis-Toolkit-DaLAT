@@ -421,15 +421,28 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    	V_NED_ECEF_spherical = Mathbox.Cartesian2Spherical_Velocity(V_NED_ECEF_cartesian);
 	    	
 		    }	    
-		    // System mass [kg]
-		    dxdt[6]  = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) 
+		    /**
+		     * 
+		     * 				System mass properties 
+		     * 
+		     */
+		    // Overall system mass 
+		  
+		    dxdt[6]  = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0)
 		    			   - forceMomentumSet.getRCSThrustX()/(actuatorSet.getRCS_X_ISP()*g0) 
 		    			   - forceMomentumSet.getRCSThrustY()/(actuatorSet.getRCS_Y_ISP()*g0)
 		    			   - forceMomentumSet.getRCSThrustZ()/(actuatorSet.getRCS_Z_ISP()*g0); 
+		    			   
+		    // Main propulsion repository
+		    			   
 		    dxdt[14] = - forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) ; 
+		    
+		    // RCS and AUX repository 
+		    
 		    dxdt[15] = - forceMomentumSet.getRCSThrustX()/(actuatorSet.getRCS_X_ISP()*g0) 
 		    			   - forceMomentumSet.getRCSThrustY()/(actuatorSet.getRCS_Y_ISP()*g0)
 		    		       - forceMomentumSet.getRCSThrustZ()/(actuatorSet.getRCS_Z_ISP()*g0); 
+		    
 		    spaceShip.setMass(x[6]);
 		    spaceShip.getPropulsion().setPrimaryPropellantFillingLevel(x[14]);
 		    spaceShip.getPropulsion().setSecondaryPropellantFillingLevel(x[15]);
@@ -740,6 +753,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                double   t     = interpolator.getCurrentTime();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double[] y     = interpolator.getInterpolatedState();
+	               // System.out.println(y[6]);
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
 	         	    double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
 	             	RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
@@ -755,7 +769,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setVelocity( V_NED_ECEF_spherical[0]);
 	                	
 	                	realTimeResultSet.setCurrentDataSet(currentDataSet);
-	                	
+	                	masterSet.getSpaceShip().setMass(y[6]);
 	                	realTimeResultSet.setSCMass(y[6]);
 	                	if(spherical) {
 	                	realTimeResultSet.setNormalizedDeceleration(Math.abs(ymo[3])/9.80665);
@@ -803,7 +817,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	        	//double t=  0.1;
 	        	IntegratorModule.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
-	        	System.out.println("ERROR: Integrator failed:");
+	        		System.out.println("ERROR: Integrator failed:");
 	        }
 
 			return realTimeContainer;
