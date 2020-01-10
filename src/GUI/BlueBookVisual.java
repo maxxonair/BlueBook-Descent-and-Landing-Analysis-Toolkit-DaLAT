@@ -2695,6 +2695,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
         //------------------------------------------------------------------------
         	// Check filesize 
     	    long filesize = 	new File(RES_File).length()/1000000;
+    	    try {
     	    if(filesize<10) {
     		UPDATE_Page01(true);
     	    } else {
@@ -2719,7 +2720,10 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	      } catch(Exception e) {
     	    	  System.out.println("ERROR: Reading sequenceFile.inp failed.");
     	      }
-
+    	    } catch(Exception excpM) {
+    	    	System.out.println("Error: Reading input failed. ");
+    	    	System.out.println(excpM);
+    	    }
         MainGUI.setOpaque(true);
         return MainGUI;
 	}

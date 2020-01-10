@@ -10,8 +10,10 @@ public class FlightController_PitchControl extends FlightController {
 	private double Ki=0.0001;		// Integrative Coefficient
 	private double Kd=3;		// Derivative Coefficient
 	
+	PID pitch;
+	
 	public FlightController_PitchControl() {
-		
+		 pitch =  new PID(0.8, 0.001,3,-1, 1);
 	}
 	
 	@Override
@@ -35,7 +37,7 @@ public class FlightController_PitchControl extends FlightController {
 			   RCS_Y_CMD = response;
 	   	} else { // pitch angle to 0
 			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerY() ;
-			   double response  = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, 0.8, 0.0001, 3, 1, -1);
+			   double response  = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
 			   if(Double.isNaN(response)) {
 				   response =0;
 				   System.err.println("Cntrl error > returned NaN");

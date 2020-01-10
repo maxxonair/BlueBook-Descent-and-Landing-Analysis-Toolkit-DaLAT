@@ -53,31 +53,31 @@ import javafx.stage.Stage;
  */
 public class SpaceShipView3DFrontPage {
 	
-	private   double anchorCameraY;
-	@SuppressWarnings("unused")
-	private   double anchorCameraYSlider;
+	private boolean isZoom = false;
+	
+	double holdValx=0;
+	double holdValy=0;
+	
+	double ref1 = ( - 450*1.2/2);
+	double ref2 = ( - 450/2);
+
 	private   double anchorAngleCameraY=0;
-	private   final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);
-	private   final DoubleProperty angleCameraYSlider = new SimpleDoubleProperty(0);
-	@SuppressWarnings("unused")
-	private   double anchorAngleCameraYSlider=0;
-	@SuppressWarnings("unused")
-	private   double anchorX;
-	@SuppressWarnings("unused")
-	private   double anchorXCamerSlider=0; 
-	private   final DoubleProperty posCameraX = new SimpleDoubleProperty(0);
-	@SuppressWarnings("unused")
-	private   double test ;
+	private   double anchorAngleCameraX=0;
+	private   final DoubleProperty angleCameraY = new SimpleDoubleProperty(0);	
+	private   final DoubleProperty angleCameraX = new SimpleDoubleProperty(0);
 	
-	private   final double WIDTH  = 450;
-	private   final double HEIGHT = 400;
-	
-	private   double mouseWheelZoomSensitivity = 100;
+	private   double mouseWheelZoomSensitivity = 0.5;
 	private   double mouseSensitivity =0.05;
 	
-	private   double cameraToTargetDistance = 10;
+	private   double cameraToTargetDistance = 0;
 	public   SmartGroup model;
 	public   SmartGroup coordinateSystem;
+	
+    private Translate translate;
+    private Rotate rotateX,rotateY,rotateZ;
+	
+    double gridScale=5;
+    double modelScale=3;
 
 	private   String modelObjectPath = System.getProperty("user.dir")+"/INP/SpacecraftModelLibrary/millenium-falcon.obj";
 	 Vector3 rotState = new Vector3(0,0,0);
@@ -99,15 +99,25 @@ public class SpaceShipView3DFrontPage {
 		root.getChildren().add(model);
 		root.getChildren().add(coordinateSystem);
 		
-		Camera camera = new PerspectiveCamera();
+		PerspectiveCamera camera = new PerspectiveCamera();
 		camera.setNearClip(.001);
 		camera.setFarClip(100);	
 		
-		//camera.translateYProperty().set(0.1);
-		//camera.translateYProperty().set(-0.1);
-		camera.translateXProperty().set(-WIDTH/2);
-		camera.translateYProperty().set(-HEIGHT/2);
-		camera.translateZProperty().set(-cameraToTargetDistance);
+		SmartGroup cameraGroup = new SmartGroup();
+		cameraGroup.getChildren().add(camera);
+		/*
+		double gamma = 0;
+		double theta =45;
+		double CY = - cameraToTargetDistance*Math.sin(Math.toRadians(-theta));
+		double CZ = - cameraToTargetDistance*(Math.cos(Math.toRadians(-theta)));
+		double CX = CZ / Math.sin(Math.toRadians(-gamma));
+		 */
+		camera.getTransforms().addAll(
+                rotateY = new Rotate(0, Rotate.Y_AXIS),
+                rotateX = new Rotate(0, Rotate.X_AXIS),
+                rotateZ = new Rotate(0, Rotate.Z_AXIS),
+                translate = new Translate(ref1, ref2, -cameraToTargetDistance)
+        );
 		
 		//final Group axes = getAxes(2.5);
 		final Group grid = createGrid(2000, 100);
@@ -117,26 +127,22 @@ public class SpaceShipView3DFrontPage {
 		environment.getChildren().add(grid);
 		
 		environment.translateXProperty().set(0);
-		environment.translateYProperty().set(20);
+		environment.translateYProperty().set(0);
 		environment.translateZProperty().set(0);
 		
 		root.getChildren().add(environment);
+		root.getChildren().add(camera);
 		
-		Scene scene = new Scene(root, WIDTH, HEIGHT, true, SceneAntialiasing.BALANCED);
+		Scene scene = new Scene(root, 450, 450, true, SceneAntialiasing.BALANCED);
 		scene.setFill(Color.color(0.15,0.15,0.15));
-		scene.setCamera(camera);
-		
+		scene.setCamera(camera);		
 		
 		coordinateSystem.translateXProperty().set(0);
 		coordinateSystem.translateYProperty().set(0);
 		coordinateSystem.translateZProperty().set(0);
-		/*
-		SmartGroup modelCoord = new SmartGroup();
-		modelCoord.getChildren().add(model);
-		modelCoord.getChildren().add(coordinateSystem);
-		*/
+
 		//initMouseControl(model, coordinateSystem, scene, fxpanel);
-		initMouseControl(model, scene, fxpanel, camera);
+		initMouseControl(scene, fxpanel, camera);
 		
 		if( DashboardPlotArea.getContentPanelList().get(0).getID()==0) {
 			Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
@@ -170,10 +176,10 @@ public class SpaceShipView3DFrontPage {
 					                    public void run() {
 			
 					                    	double getRotx = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerX());
-					                    	//System.out.println(BlueBookVisual.getResultSet().get(indx).getEulerX());
 					                    	double getRoty = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerY());
 					                    	double getRotz = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerZ());
-					        				try {
+					        				//System.out.println(getRoty);
+					                    	try {
 					                    	if(!Double.isNaN(getRotx)) {
 					        				//double drotX = getRotx - rotX;
 					        				setRotationX(getRotx);
@@ -211,60 +217,80 @@ public class SpaceShipView3DFrontPage {
 	}
 	
 	
-	private   void initMouseControl(SmartGroup group, Scene scene,JFXPanel fxpanel, Camera camera) {
-		//Rotate xRotate;
-		Rotate yRotate;
-		@SuppressWarnings("unused")
-		Rotate yRotateSlider;
-		//Translate translateX;
+	private   void initMouseControl(Scene scene,JFXPanel fxpanel, Camera camera) {
+		
+		/**
+		 * 
+		 *  		Camera movement using smartgroup camera 
+		 *  
+		 *  
+		 */
+		
 
-		camera.getTransforms().addAll(
-				//xRotate = new Rotate(0, Rotate.Y_AXIS),
-				yRotate = new Rotate(0, Rotate.X_AXIS)	,
-				yRotateSlider = new Rotate(0, Rotate.X_AXIS)
-				//translateX = new Translate(0,0,0)
-				);
-		yRotate.angleProperty().bind(angleCameraY);
-		//translateX.xProperty().bind(posCameraX);
+		rotateX.angleProperty().bind(angleCameraY);
+		rotateY.angleProperty().bind(angleCameraX);
 		
 		scene.setOnMousePressed(event -> {
-			//anchorCameraX = event.getSceneX();
-			anchorCameraY = event.getSceneY();
-			anchorCameraYSlider = event.getSceneY();
-			//anchorAngleCameraX = angleCameraX.get();
+			holdValx = event.getSceneX();
+			holdValy = event.getSceneY();
 			anchorAngleCameraY = angleCameraY.get();
-			anchorAngleCameraYSlider = angleCameraYSlider.get();
-			
-			anchorXCamerSlider = posCameraX.get();
-			anchorX = event.getSceneX();
+			anchorAngleCameraX = angleCameraX.get();
 		});
 		scene.setOnMouseDragged(event ->{
 			//angleCameraX.set(anchorAngleCameraX - (anchorCameraX - event.getSceneX())*mouseSensitivity); 
-			angleCameraY.set( anchorAngleCameraY + (anchorCameraY - event.getSceneY())*mouseSensitivity); 
-			camera.translateZProperty().set(cameraToTargetDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
-			camera.translateYProperty().set(cameraToTargetDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
-			//camera.translateXProperty().set(anchorXCamerSlider + (anchorX - mouseSensitivity*event.getSceneX()));
-			//System.out.println(camera.getTranslateZ()+"|"+camera.getTranslateY());
-		});
-		
-		fxpanel.addMouseWheelListener(new MouseWheelListener() {
-
-			@Override
-			public void mouseWheelMoved(MouseWheelEvent arg0) {
-				// TODO Auto-generated method stub
-					double wheelSpeed = arg0.getPreciseWheelRotation();
-						if(wheelSpeed>0) {
-							cameraToTargetDistance += mouseWheelZoomSensitivity;
-						} else {
-							cameraToTargetDistance -= mouseWheelZoomSensitivity;
-						}
-						//group.translateZProperty().set(cameraToTargetDistance);
-						camera.translateYProperty().set(cameraToTargetDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
-						camera.translateZProperty().set(cameraToTargetDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
-			}
+			double cameraAngleX = anchorAngleCameraY + (holdValy - event.getSceneY())*mouseSensitivity ; 
+			angleCameraY.set(cameraAngleX);
+			double cameraAngleY = anchorAngleCameraX - (holdValx - event.getSceneX())*mouseSensitivity ;
+			angleCameraX.set(cameraAngleY);
+			//setCameraRotationX(camera, cameraAngleX);
+			
+			//System.out.println(cameraAngleX+"|"+cameraAngleY);
+			
+			//camera.translateZProperty().set(cameraToTargetDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
+			//camera.translateYProperty().set(cameraToTargetDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
+			double CY = - cameraToTargetDistance*Math.sin(Math.toRadians(-cameraAngleX));
+			double CZ = - cameraToTargetDistance*(Math.cos(Math.toRadians(-cameraAngleX)));
+			double CX =  CZ / Math.sin(Math.toRadians(-cameraAngleY));
+			
+			camera.translateZProperty().set(CZ);
+			camera.translateYProperty().set(CY);
+			camera.translateXProperty().set(CX);
+			//System.out.println(cameraToTargetDistance+"|"+CX+"|"+CY+"|"+CZ);
 			
 		});
-
+		
+		if(isZoom) {
+			fxpanel.addMouseWheelListener(new MouseWheelListener() {
+	
+				@Override
+				public void mouseWheelMoved(MouseWheelEvent arg0) {
+					// TODO Auto-generated method stub
+						double wheelSpeed = arg0.getPreciseWheelRotation();
+							if(wheelSpeed>0) {
+								cameraToTargetDistance += mouseWheelZoomSensitivity;
+							} else {
+								if(cameraToTargetDistance>0.5) {
+									cameraToTargetDistance -= mouseWheelZoomSensitivity;
+								}
+							}
+							//group.translateZProperty().set(cameraToTargetDistance);
+							//camera.translateZProperty().set(cameraToTargetDistance*(1-Math.cos(Math.toRadians(-angleCameraY.getValue()))));
+							//camera.translateYProperty().set(cameraToTargetDistance*Math.sin(Math.toRadians(angleCameraY.getValue())));
+				double CY = - cameraToTargetDistance*Math.sin(Math.toRadians(-angleCameraY.get()));
+				double CZ = - cameraToTargetDistance*(Math.cos(Math.toRadians(-angleCameraY.get())));
+				double CX = CZ / Math.sin(Math.toRadians(-angleCameraX.get()));
+				camera.translateZProperty().set(CZ);
+				camera.translateYProperty().set(CY);
+				camera.translateXProperty().set(CX);
+				System.out.println(cameraToTargetDistance+"|"+CX+"|"+CY+"|"+CZ);
+				}
+				
+			});
+		}
+	}
+	
+	public   void setCameraRotationX(SmartGroup camera, double angleX) {
+		camera.rotateByX(angleX);
 	}
 
 public   void setRotationX(double deltaRotX) {
@@ -300,10 +326,10 @@ private   SmartGroup loadModel(String fileString) {
         modelRoot.getChildren().add(view);
         view.setMaterial(material);
     }
-    double scale=3;
-modelRoot.setScaleX(scale);
-modelRoot.setScaleY(scale);
-modelRoot.setScaleZ(scale);
+
+modelRoot.setScaleX(modelScale);
+modelRoot.setScaleY(modelScale);
+modelRoot.setScaleZ(modelScale);
     return modelRoot;
 }
 
@@ -321,10 +347,9 @@ private   SmartGroup loadCoordinateSystem(String fileString) {
     }
 	//material.setDiffuseMap( new Image(dir+"/resources/moonTexture.jpg") );
 	
-    double scale=5;
-modelRoot.setScaleX(scale);
-modelRoot.setScaleY(scale);
-modelRoot.setScaleZ(scale);
+modelRoot.setScaleX(gridScale);
+modelRoot.setScaleY(gridScale);
+modelRoot.setScaleZ(gridScale);
     return modelRoot;
 }
 
@@ -547,4 +572,6 @@ private   Node prepareAmbientLight(){
 		// TODO Auto-generated method stub
 		
 	}
+	
+
 }

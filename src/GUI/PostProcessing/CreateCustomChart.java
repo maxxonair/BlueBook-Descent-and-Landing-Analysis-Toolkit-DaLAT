@@ -427,7 +427,7 @@ public class CreateCustomChart {
         MAIN_frame.setLocationRelativeTo(null);
         //MAIN_frame.setExtendedState(MAIN_frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
         MAIN_frame.setVisible(true);
-        MAIN_frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        MAIN_frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         MAIN_frame.setExtendedState(MAIN_frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
         //splitPaneVertical.setDividerLocation(1600); 
         // Create Icon image  -  top left for windows

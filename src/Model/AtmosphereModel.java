@@ -79,7 +79,8 @@ if (k==0){
 		   in.close();
 		   br.close();
 		   }catch (Exception e){
-		     System.err.println("Error: " + e.getMessage());
+			  // System.err.println("Error initialising ATM data.");
+			   //System.err.println(e);
 		   }
 	   return ATM_DATA;	
 }

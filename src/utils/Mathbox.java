@@ -209,7 +209,7 @@ public class Mathbox{
 		double c = Quaternions[2][0];
 		double d = Quaternions[3][0];
 		EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
-		double range = 0.01;
+		double range = 0.00001;
 		if(EulerAngles[1][0] > PI/2 - range) {
 			double delta = Math.atan2(2*(c*d + a*b) - 2*(b*c + a*d) , 2*(b*d + a*c) + (a*a - b*b + c*c - d*d));
 			EulerAngles[0][0] = delta + Psi;
@@ -255,6 +255,27 @@ public class Mathbox{
         	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
         }	    
 			return EulerAngles;
+	}
+	
+	public static double[][] Quaternions2Euler3(double[][] Quaternions){
+		double[][] EulerAngles = {{0},{0},{0}};
+		double w = Quaternions[0][0];
+		double x = Quaternions[1][0];
+		double y = Quaternions[2][0];
+		double z = Quaternions[3][0];
+		
+		double a1 = w*w + x*x - y*y - z*z;
+		double a2 = 2* ( x*y - w*z);
+		double a3 = 2* ( w*y + x*z);
+		double b3 = 2*(y*z - w*x);
+		double c3 = w*w - x*x - y*y + z*z;
+		
+	    EulerAngles[1][0] = Math.asin(-a3);
+	    		
+		EulerAngles[0][0] = Math.acos(a1/Math.cos(EulerAngles[1][0])) * Math.signum(a2);
+		EulerAngles[2][0] = Math.acos(c3 / Math.cos(EulerAngles[1][0])) * Math.signum(b3);
+		
+		return EulerAngles;
 	}
 	
 	public static double[][] Euler2Quarternions(double[][] E){
