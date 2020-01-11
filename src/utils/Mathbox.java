@@ -7,6 +7,7 @@ public class Mathbox{
     public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 	
     private static double Psi=0;
+    private static double Theta=0;
     
     
     public static double LinearInterpolate( double atm_x[] , double atm_y[] , double xx)
@@ -204,12 +205,20 @@ public class Mathbox{
 	
 	public static double[][] Quaternions2Euler(double[][] Quaternions){
 		double[][] EulerAngles = {{0},{0},{0}};
+		
 		double a = Quaternions[0][0];
 		double b = Quaternions[1][0];
 		double c = Quaternions[2][0];
 		double d = Quaternions[3][0];
+		
 		EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
-		double range = 0.00001;
+		if(Double.isNaN(EulerAngles[1][0])){
+			EulerAngles[1][0] = Theta;
+		} else {
+			Theta = EulerAngles[1][0] ;
+		}
+		double range = 0.1;
+		
 		if(EulerAngles[1][0] > PI/2 - range) {
 			double delta = Math.atan2(2*(c*d + a*b) - 2*(b*c + a*d) , 2*(b*d + a*c) + (a*a - b*b + c*c - d*d));
 			EulerAngles[0][0] = delta + Psi;
@@ -219,10 +228,18 @@ public class Mathbox{
 			EulerAngles[0][0] = delta - Psi;
 			EulerAngles[2][0] = Psi;		
 		} else {
-			EulerAngles[0][0] = Math.atan2( 2*(c*d+a*b),(a*a-b*b-c*c+d*d));
-			EulerAngles[2][0] = Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));	
+			EulerAngles[0][0] =   Math.atan2( 2*(c*d+a*b),(a*a-b*b-c*c+d*d));
+			EulerAngles[2][0] = - Math.atan2( 2*(b*c + a*d),(a*a + b*b - c*c - d*d));	
 		}
-		Psi = EulerAngles[2][0];
+		
+		if(Double.isNaN(EulerAngles[0][0])){
+			EulerAngles[0][0] = 0;
+		}
+		if(Double.isNaN(EulerAngles[2][0])){
+			EulerAngles[2][0] = 0;
+		} else {
+			Psi = EulerAngles[2][0];	
+		}
 		return EulerAngles;
 	}
 	
@@ -289,7 +306,7 @@ public class Mathbox{
 		Quarternions[2][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
 				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
 		
-		Quarternions[3][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2)) 
+		Quarternions[3][0] =  Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2)) 
 				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2));
 		
 		return Quarternions;

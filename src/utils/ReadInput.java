@@ -10,12 +10,18 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.List;
 
+import GUI.Dashboard.ChartSetting;
 import Sequence.SequenceContent;
 import Sequence.SequenceElement;
 import Simulator_main.StopCondition;
 
 public class ReadInput {
-
+/**
+ * 
+ * 		File path setting for each input file: 
+ * 		The following file path setting will be used for the Read AND the Write class
+ * 
+ */
    	public static String[] IntegratorInputPath = {System.getProperty("user.dir") + "/INP/INTEG/00_DormandPrince853Integrator.inp",
    			System.getProperty("user.dir") + "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
    			System.getProperty("user.dir") + "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp",
@@ -32,7 +38,8 @@ public class ReadInput {
 	public static String EventHandler_File			= System.getProperty("user.dir") + "/INP/eventhandler.inp";
     public static String SEQUENCE_File   			= System.getProperty("user.dir") + "/INP/sequence_1.inp";
     public static String sequenceFile 		    = System.getProperty("user.dir") + "/INP/sequenceFile.inp";
-	
+    public static String dashboardSettingFile 		    = System.getProperty("user.dir") + "/INP/GUI/dashboardSetting.inp";
+//------------------------------------------------------	-----------------------------------------------------
 	public static void updateSequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
 		   if (SEQUENCE_DATA.size()==0){
 				  SEQUENCE_DATA.add(NewElement); 
@@ -488,6 +495,49 @@ public static List<SequenceContent> READ_sequenceFile() throws IOException{
    SequenceContent sequenceContent = new SequenceContent();
    SequenceSet.add(sequenceContent);
  return SequenceSet; 
+}
+//---------------------------------------------------------------------------------------------------
+public static List<ChartSetting> readChartLayout(int numberOfCharts) throws IOException {
+	List<ChartSetting> settings = new ArrayList<>();
+	for(int i=0;i<numberOfCharts;i++) {
+		settings.add(new ChartSetting());
+	}
+    FileInputStream fstream = null;
+    try{
+    		fstream = new FileInputStream(dashboardSettingFile);
+    } catch(IOException eIO) { System.out.println(eIO);}
+    DataInputStream in = new DataInputStream(fstream);
+	BufferedReader br = new BufferedReader(new InputStreamReader(in));
+    String strLine;
+    int k = 0;
+    try {
+    while ((strLine = br.readLine()) != null )   {
+    	String[] tokens = strLine.split(" ");
+
+    	try {
+    	settings.get(k).type = Integer.parseInt(tokens[0]);
+    	} catch (java.lang.NumberFormatException eNFE) {
+    		System.out.println("ERROR: Read Dashboard chart Setting failed. Index: "+k );
+    	}
+    	try {
+    	settings.get(k).x 	 = Integer.parseInt(tokens[1]);
+    	} catch (java.lang.NumberFormatException eNFE) {
+    		System.out.println("ERROR: Read Dashboard chart Setting failed. Index: "+k );
+    	}
+    	try {
+    	settings.get(k).y 	 = Integer.parseInt(tokens[2]);
+    	} catch (java.lang.NumberFormatException eNFE) {
+    		System.out.println("ERROR: Read Dashboard chart Setting failed. Index: "+k );
+    	}
+    	k++;
+    }
+    fstream.close();
+    in.close();
+    br.close();
+    
+   // System.out.println("READ: Propulsion setup successful.");
+    } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: Read Dashboard chart Setting failed.");}
+    return settings;
 }
 //---------------------------------------------------------------------------------------------------
 public static String[] getIntegratorInputPath() {

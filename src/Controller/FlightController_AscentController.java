@@ -10,7 +10,7 @@ public class FlightController_AscentController extends FlightController {
 	PID pitch;
 	
 	public FlightController_AscentController() {
-		 pitch =  new PID(1.6, 0.001,3,-1, 1);
+		 pitch =  new PID(2.6, 0.001,3,-1, 1);
 	}
 	
 	@Override

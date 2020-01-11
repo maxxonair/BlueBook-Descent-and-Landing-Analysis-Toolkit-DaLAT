@@ -14,6 +14,8 @@ import javax.swing.JSplitPane;
 import GUI.BlueBookVisual;
 import GUI.DataStructures.InputFileSet;
 import Simulator_main.DataSets.RealTimeResultSet;
+import utils.ReadInput;
+import utils.WriteInput;
 
 public class DashboardPlotArea {
 	//-------------------------------------------------------------------------------------------------------------
@@ -43,7 +45,8 @@ public class DashboardPlotArea {
 
 
 	public DashboardPlotArea() {
-		chartSettings = initList(chartSettings);
+		
+		
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		labelColor = BlueBookVisual.getLabelColor();
 	    resultSet  = BlueBookVisual.READ_ResultSet(System.getProperty("user.dir") + "/results.txt");
@@ -56,6 +59,7 @@ public class DashboardPlotArea {
 		}
 		
 		contentPanelList = new ArrayList<>(numberOfCharts);
+		chartSettings = initList();
 		
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -65,11 +69,6 @@ public class DashboardPlotArea {
 
         //-------------------------------------------------------------------------------
 
-        contentPanelList.add( (new Data2DPlot(0, analysisFile)) );
-        contentPanelList.add( (new Data2DPlot(1, analysisFile)) );
-        //contentPanelList.add( (new JPanel() ));
-        contentPanelList.add( (new AttitudeView(Model3DFilePath)));
-        contentPanelList.add( (new Planet3DView(resultSet)) );
         
         /**
          *  Draw all 4 areas 
@@ -184,10 +183,24 @@ public class DashboardPlotArea {
 
 	public static void setChartSettings(List<ChartSetting> chartSettings) {
 		DashboardPlotArea.chartSettings = chartSettings;
+		WriteInput.writeDashboradSetting(chartSettings);
 	}
 
-	private List<ChartSetting> initList(List<ChartSetting> chartSettings){
+	private List<ChartSetting> initList(){
+		/**
+		 *  Read Chart layout from file 
+		 */
+		chartSettings = new ArrayList<>();
+
+		try {
+			chartSettings = ReadInput.readChartLayout(numberOfCharts);	
+		} catch(Exception readExcp) {
+			System.out.println("Error: Reading chart layout failed");
+			System.out.println(readExcp);
+		}
+		if( chartSettings.isEmpty() ) { // chartLayout not initialized
 		chartSettings = new ArrayList<ChartSetting>(numberOfCharts);
+		
 			for(int i=0;i<numberOfCharts;i++) {
 				ChartSetting chartSetting = new ChartSetting();
 				if(i==0) {
@@ -199,6 +212,26 @@ public class DashboardPlotArea {
 				}
 				chartSettings.add(chartSetting);
 			}
+			chartSettings.get(0).type =0;
+			chartSettings.get(1).type =0;
+			chartSettings.get(2).type =2;
+			chartSettings.get(3).type =1;
+	        contentPanelList.add( (new Data2DPlot(0, analysisFile)) );
+	        contentPanelList.add( (new Data2DPlot(1, analysisFile)) );
+	        //contentPanelList.add( (new JPanel() ));
+	        contentPanelList.add( (new AttitudeView(Model3DFilePath)));
+	        contentPanelList.add( (new Planet3DView(resultSet)) );
+		} else {
+				for(int i=0;i<numberOfCharts;i++) {
+					if(chartSettings.get(i).type==0) {
+				        contentPanelList.add( (new Data2DPlot(i, analysisFile)) );
+					} else if (chartSettings.get(i).type == 1) {
+				        contentPanelList.add( (new Planet3DView(resultSet)) );
+					} else if (chartSettings.get(i).type == 2) {
+				        contentPanelList.add( (new AttitudeView(Model3DFilePath)));
+					}
+				}
+		}
 		return chartSettings; 
 	}
 }

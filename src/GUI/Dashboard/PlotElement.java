@@ -380,6 +380,11 @@ public class PlotElement {
 	public void setChartSetting(ChartSetting chartSetting) {
 		this.chartSetting = chartSetting;
 		DashboardPlotArea.getChartSettings().set(ID, chartSetting);
+		
+		List<ChartSetting> settings = DashboardPlotArea.getChartSettings();
+		settings.set(ID, chartSetting);
+		DashboardPlotArea.setChartSettings(settings);
+		
 	       if(ID==0 && chartSetting.x==0) {
 		       xAxisIndicator.setForeground(Color.BLUE);
 	       } else {

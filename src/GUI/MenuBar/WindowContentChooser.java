@@ -11,6 +11,7 @@ import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
 
 import GUI.Dashboard.AttitudeView;
+import GUI.Dashboard.ChartSetting;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.Dashboard.DashboardPlotPanel;
 import GUI.Dashboard.Data2DPlot;
@@ -46,6 +47,11 @@ public class WindowContentChooser {
                    public void actionPerformed(ActionEvent e) {
 	                	  // System.out.println("Action: "+windowIndx);
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
+		               //----------------------------------------------------------
+	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
+	                	   chartSetting.get(windowIndx).setType(0);
+	                	   DashboardPlotArea.setChartSettings(chartSetting);
+	                	   //----------------------------------------------------------
 	                	   contentPanelList.set(windowIndx, (new Data2DPlot(windowIndx, DashboardPlotArea.getAnalysisFile())) );
 	                	   DashboardPlotArea.setContentPanelList(contentPanelList);
                     } });
@@ -63,6 +69,11 @@ public class WindowContentChooser {
                     public void actionPerformed(ActionEvent e) {
                     	
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
+		                	  //----------------------------------------------------------
+	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
+	                	   chartSetting.get(windowIndx).setType(1);
+	                	   DashboardPlotArea.setChartSettings(chartSetting);
+	                	   //----------------------------------------------------------
 	                	   contentPanelList.set(windowIndx, (new Planet3DView(DashboardPlotArea.getResultSet())) );
 	                	   DashboardPlotArea.setContentPanelList(contentPanelList);
                     	       
@@ -81,6 +92,11 @@ public class WindowContentChooser {
                     public void actionPerformed(ActionEvent e) {
 
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
+	                	  //----------------------------------------------------------
+	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
+	                	   chartSetting.get(windowIndx).setType(2);
+	                	   DashboardPlotArea.setChartSettings(chartSetting);
+	                	   //----------------------------------------------------------
 	                	   contentPanelList.set(windowIndx, (new AttitudeView(DashboardPlotArea.getModel3DFilePath())) );
 	                	   DashboardPlotArea.setContentPanelList(contentPanelList);
                     	       

@@ -4,6 +4,7 @@ public class ChartSetting {
 
 	public int x=0;
 	public int y=0;
+	public int type=0;
 	
 	public ChartSetting() {
 		
@@ -23,6 +24,14 @@ public class ChartSetting {
 
 	public void setY(int y) {
 		this.y = y;
+	}
+
+	public int getType() {
+		return type;
+	}
+
+	public void setType(int type) {
+		this.type = type;
 	}
 	
 	
