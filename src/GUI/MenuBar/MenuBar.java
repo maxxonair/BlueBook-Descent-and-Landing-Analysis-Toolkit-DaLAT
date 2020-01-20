@@ -7,6 +7,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.MouseInfo;
+import java.awt.Point;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -35,6 +37,7 @@ import org.apache.commons.io.FileUtils;
 
 import GUI.BlueBookVisual;
 import GUI.Dashboard.DashboardPlotArea;
+import GUI.GeometryModel.GeometryFrame;
 import GUI.PostProcessing.CreateCustomChart;
 import GUI.Settings.Settings;
 import VisualEngine.engineLauncher.worldGenerator;
@@ -292,6 +295,29 @@ public class MenuBar {
         menuItem_ExportScenario2.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {                	   
                 	   	save();
+                    } });
+        menu_PreProcessing.addSeparator();
+        JMenuItem menuItem_Draw = new JMenuItem("Open Drawing Tool               "); 
+        menuItem_Draw.setForeground(Color.black);
+        menuItem_Draw.setFont(smallFont);
+       // menuItem_Draw.setAccelerator(KeyStroke.getKeyStroke(
+       //         KeyEvent.VK_S, ActionEvent.ALT_MASK));
+        menu_PreProcessing.add(menuItem_Draw);
+        menuItem_Draw.addActionListener(new ActionListener() {
+                   public void actionPerformed(ActionEvent e) {                	   
+		               		JFrame frame = new JFrame(BlueBookVisual.PROJECT_TITLE + " - Geometry model ");
+			            		frame.setSize(1100,600);
+			            		frame.setLayout(new BorderLayout());
+			
+			            		GeometryFrame window = new GeometryFrame();
+			            		window.getMainPanel().setSize(500,500);
+			            		frame.add(window.getMainPanel(), BorderLayout.CENTER);
+			            		
+			            		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+		                    frame.setLocationRelativeTo(null);
+		                    Point p = MouseInfo.getPointerInfo().getLocation() ;
+		                    frame.setLocation(p);
+		                    frame.setVisible(true);
                     } });
         //----------------
         //--------------------------------------------------------------------------------------------------------------------------------

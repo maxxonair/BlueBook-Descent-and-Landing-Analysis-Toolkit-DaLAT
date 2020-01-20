@@ -596,6 +596,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 		AngularRate[2][0] = x[13];
 		//atmosphere.getAngleOfAttack() = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 		}
+		    currentDataSet.setEulerAngle(EulerAngle);
 
 	}
 	//********************************************************************************************************************************** 
@@ -654,7 +655,7 @@ actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
 
 phimin=integratorData.getInitLongitude();
 tetamin=integratorData.getInitLatitude();
-groundtrack=0;
+groundtrack=integratorData.getGroundtrack();
 ref_ELEVATION =  integratorData.getRefElevation();
 //----------------------------------------------------------------------------------------------
 //Sequence Setup	
@@ -785,7 +786,8 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setQuarternions(q_vector);
 	                	realTimeResultSet.setCartesianPosECEF(r_ECEF_cartesian);
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
-	                	integratorData.setGroundtrack(integratorData.getGroundtrack()+groundtrack);
+	                	realTimeResultSet.setGroundtrack(groundtrack);
+	                	integratorData.setGroundtrack(groundtrack);
 	                //if(masterSet.getActuatorSet().getPrimaryThrust_is()>10 && masterSet.getActuatorSet().getPrimaryThrust_is()<6000){	System.out.println(masterSet.getActuatorSet().getPrimaryThrust_is()); }
 	                	realTimeResultSet.setMasterSet(masterSet);
 	                	realTimeResultSet.setIntegratorData(integratorData);

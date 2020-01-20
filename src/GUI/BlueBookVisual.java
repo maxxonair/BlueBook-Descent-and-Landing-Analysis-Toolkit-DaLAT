@@ -118,6 +118,7 @@ import GUI.Dashboard.DashboardLeftPanel;
 import GUI.Dashboard.DashboardPanel;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.DataStructures.InputFileSet;
+import GUI.GeometryModel.GeometryFrame;
 import GUI.MenuBar.MenuBar;
 
 public class BlueBookVisual implements  ActionListener {
@@ -1146,6 +1147,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     Separator_Page2_2.setForeground(labelColor);
     massAndInertiaPanel.add(Separator_Page2_2);
 
+    /*
       String path3 = "images/mercuryBlueprint.png";
       File file3 = new File(path3);
       try {
@@ -1160,7 +1162,13 @@ public static String[] COLUMS_EventHandler = {"Event Type",
       }
 	  // Space intended for advanced integrator settings 
       
-      
+      */
+    
+	GeometryFrame window = new GeometryFrame();
+	window.getMainPanel().setSize(1000,700);
+	window.getMainPanel().setLocation(400, 5);
+	massAndInertiaPanel.add(window.getMainPanel());
+	
 		int box_size_x = 60;
 		int box_size_y = 25;
 		int gap_size_x =  4;

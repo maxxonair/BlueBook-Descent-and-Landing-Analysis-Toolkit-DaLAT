@@ -40,6 +40,12 @@ public class AerodynamicModel {
 		aerodynamicSet.setLiftForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getLiftCoefficient() * cos( aerodynamicSet.getAerodynamicBankAngle() ) );               // Aerodynamic lift Force 		   [N]
 		aerodynamicSet.setSideForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getC_SF() * sin( aerodynamicSet.getAerodynamicBankAngle() )); 	                  // Aerodynamic side Force 		   [N]
 		//----------------------------------------------------------------------------------------------
+		/**
+		 *  Condition no wind! 
+		 */
+		//System.out.println(currentDataSet.getEulerAngle()[1][0]*180/PI+"|"+currentDataSet.getV_NED_ECEF_spherical()[1]*180/PI);
+		aerodynamicSet.setAerodynamicAngleOfAttack(currentDataSet.getEulerAngle()[1][0] - currentDataSet.getV_NED_ECEF_spherical()[1] );
+		//----------------------------------------------------------------------------------------------
 		if(actuatorSet.isParachuteDeployed() && !actuatorSet.isParachuteEject()) {
 			//System.out.println(integratorData.getAeroParachuteModel()+"|"+integratorData.getConstParachuteCd());
 

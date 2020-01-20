@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Dimension;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.List;
@@ -55,9 +56,15 @@ public class VariableList2 {
     frame.setResizable(false);
     frame.setAlwaysOnTop( true );
     Point location = MouseInfo.getPointerInfo().getLocation(); 
-    int x = (int) location.getX();
-    int y = (int) location.getY();
-    frame.setLocation(x, y);
+    Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+    //int width = (int) screenSize.getWidth();
+    double height =  screenSize.getHeight();
+    double x =  location.getX();
+    double y =  location.getY();
+   // double px = x/width;
+    double py = y/height;
+    if(py>0.6) { y = (y - frame.getHeight());}
+    frame.setLocation((int) x , (int) y);
     //frame.setExtendedState(frame.getExtendedState()|JFrame.MAXIMIZED_BOTH );
     
     JPanel mainPanel = new JPanel();

@@ -292,6 +292,12 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	dataContainer.setxAxisLabel("Time");
 	dataContainer.setyAxisLabel("Noise");
 	}
+	
+	double quatNorm = Math.sqrt(realTimeResultSet.getQuarternions()[0][0] * realTimeResultSet.getQuarternions()[0][0]
+							  + realTimeResultSet.getQuarternions()[1][0] * realTimeResultSet.getQuarternions()[1][0]
+						      + realTimeResultSet.getQuarternions()[2][0] * realTimeResultSet.getQuarternions()[2][0]
+							  + realTimeResultSet.getQuarternions()[3][0] * realTimeResultSet.getQuarternions()[3][0]);
+							  
 	//System.out.println(realTimeContainer.getRealTimeSet().size());
 	// integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime())
 	steps.add(realTimeResultSet.getGlobalTime() + " " + 
@@ -341,10 +347,10 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
       		  0 + " " + 
       		  0 + " " + 
       		  0 + " " +       	 	  
-  		  realTimeResultSet.getQuarternions()[0][0]+" "+
-  		  realTimeResultSet.getQuarternions()[1][0]+" "+
-  		  realTimeResultSet.getQuarternions()[2][0]+" "+
-  		  realTimeResultSet.getQuarternions()[3][0]+" "+
+  		  realTimeResultSet.getQuarternions()[0][0]/quatNorm+" "+
+  		  realTimeResultSet.getQuarternions()[1][0]/quatNorm+" "+
+  		  realTimeResultSet.getQuarternions()[2][0]/quatNorm+" "+
+  		  realTimeResultSet.getQuarternions()[3][0]/quatNorm+" "+
   		  realTimeResultSet.getPQR()[0][0]+" "+
   		  realTimeResultSet.getPQR()[1][0]+" "+
   		  realTimeResultSet.getPQR()[2][0]+" "+
@@ -359,7 +365,8 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
   		  0+ " " + 
   		  realTimeResultSet.getVelocity()*Math.cos(realTimeResultSet.getFpa())+" "+
   		  realTimeResultSet.getVelocity()*Math.sin(realTimeResultSet.getFpa())+" "+
-  		  realTimeContainer.getRealTimeList().get(subIndx).getIntegratorData().getGroundtrack()/1000+" "+ 	  
+  		  //realTimeContainer.getRealTimeList().get(subIndx).getIntegratorData().getGroundtrack()/1000+" "+ 
+  		  realTimeResultSet.getGroundtrack()/1000+" "+ 
   		  controlCommandSet.getActiveSequence()+" "+
   		  sensorSet.getControllerTime()+" "+
   		  aerodynamicSet.getDragCoefficientParachute()+" "+

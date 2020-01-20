@@ -58,7 +58,7 @@ MEOP [Pa]|0.0
 Mean Temp. [K]|0.0
 Propellant Capacity [kg]|0.0
 Filling Level [kg]|0.0
-Box_54*&^{}|He2|4|418|92|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c|0.0
+Box_54*&^{}|He2|4|406|85|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c|0.0
 Name|He2
 Description|
 System mass [kg]|0.0
@@ -70,7 +70,7 @@ MEOP [Pa]|0.0
 Mean Temp. [K]|0.0
 Propellant Capacity [kg]|0.0
 Filling Level [kg]|0.0
-Box_54*&^{}|Filter2|5|622|91|6e27635e-8bf9-47ec-ac5a-72dcb4c9e1c2|0.0
+Box_54*&^{}|Filter2|5|624|83|6e27635e-8bf9-47ec-ac5a-72dcb4c9e1c2|0.0
 Name|Filter2
 Description|
 System mass [kg]|0.0
@@ -78,7 +78,7 @@ Box_54*&^{}|Filter|5|99|133|74117d84-cfa1-4f0e-a0c4-94c0a495e9de|0.0
 Name|Filter
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|PyroValve2|7|521|91|a9902324-faae-44d8-baef-81e0725c485f|0.0
+Box_54*&^{}|PyroValve2|7|520|84|a9902324-faae-44d8-baef-81e0725c485f|0.0
 Name|PyroValve2
 Description|
 System mass [kg]|0.0
@@ -217,7 +217,7 @@ Box_54*&^{}|PT3|14|805|313|781472e9-db9f-4fb4-a171-0ac738ecdfc9|0.0
 Name|PT3
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|PT2|14|346|91|7a2674aa-8da5-4e96-96b7-f7895cdc548a|0.0
+Box_54*&^{}|PT2|14|346|88|7a2674aa-8da5-4e96-96b7-f7895cdc548a|0.0
 Name|PT2
 Description|
 System mass [kg]|0.0
@@ -241,7 +241,7 @@ Box_54*&^{}|RV6|9|241|212|1d7c02f0-b6a1-437a-a688-6b545b01577e|0.0
 Name|RV6
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|RV7|9|418|219|dc75024e-327d-4fd9-b4ca-00628164c495|0.0
+Box_54*&^{}|RV7|9|406|219|dc75024e-327d-4fd9-b4ca-00628164c495|0.0
 Name|RV7
 Description|
 System mass [kg]|0.0

@@ -52,8 +52,18 @@ public class RealTimeResultSet {
 	
 	private double globalTime=0;
 	
+	private double groundtrack;
 	
 	
+	
+
+	public double getGroundtrack() {
+		return groundtrack;
+	}
+
+	public void setGroundtrack(double groundtrack) {
+		this.groundtrack = groundtrack;
+	}
 
 	public double getGlobalTime() {
 		return globalTime;

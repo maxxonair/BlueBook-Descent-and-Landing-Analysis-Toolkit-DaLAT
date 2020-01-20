@@ -217,7 +217,7 @@ public class Mathbox{
 		} else {
 			Theta = EulerAngles[1][0] ;
 		}
-		double range = 0.1;
+		double range = 0.0;
 		
 		if(EulerAngles[1][0] > PI/2 - range) {
 			double delta = Math.atan2(2*(c*d + a*b) - 2*(b*c + a*d) , 2*(b*d + a*c) + (a*a - b*b + c*c - d*d));
@@ -246,52 +246,94 @@ public class Mathbox{
 	public static double[][] Quaternions2Euler2(double[][] Quaternions){
 		
 		double[][] EulerAngles = {{0},{0},{0}};
+		
 		double w = Quaternions[0][0];
 		double x = Quaternions[1][0];
 		double y = Quaternions[2][0];
 		double z = Quaternions[3][0];
 
-        double sqw = w * w;
-        double sqx = x * x;
-        double sqy = y * y;
-        double sqz = z * z;
-        double unit = sqx + sqy + sqz + sqw; // if normalized is one, otherwise
-        // is correction factor
-        double test = x * y + z * w;
-        if (test > 0.499 * unit) { // singularity at north pole
-        	EulerAngles[1][0] = 2 * Math.atan2(x, w);
-        	EulerAngles[0][0] = FastMath.PI/2;
-        	EulerAngles[2][0] = 0;
-        } else if (test < -0.499 * unit) { // singularity at south pole
-        	EulerAngles[1][0] = -2 * FastMath.atan2(x, w);
-        	EulerAngles[0][0] = -FastMath.PI/2;
-        	EulerAngles[2][0] = 0;
-        } else {
-        	EulerAngles[1][0] = FastMath.atan2(2 * y * w - 2 * x * z, sqx - sqy - sqz + sqw); // roll or heading 
-        	EulerAngles[0][0] = FastMath.asin(2 * test / unit); // pitch or attitude
-        	EulerAngles[2][0] = FastMath.atan2(2 * x * w - 2 * y * z, -sqx + sqy - sqz + sqw); // yaw or bank
-        }	    
+		
+		double r11 = -2*(y*z - w*x);
+		double r12 = w*w - x*x - y*y + z*z;
+		double r21 = 2*(x*z + w*y);
+		double r31 = -2*(x*y - w*z);
+		double r32 = w*w + x*x - y*y - z*z;
+	/**	
+	case xyz:
+	      threeaxisrot( -2*(q.y*q.z - q.w*q.x),
+	                    q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z,
+	                    2*(q.x*q.z + q.w*q.y),
+	                   -2*(q.x*q.y - q.w*q.z),
+	                    q.w*q.w + q.x*q.x - q.y*q.y - q.z*q.z,
+	                    res);
+		**/
+		double[][] result = {{0},{0},{0}};
+		EulerAngles  = threeaxisrot(r11, r12, r21, r31, r32);
+		EulerAngles[0][0] = result[2][0];
+		EulerAngles[1][0] = result[1][0];
+		EulerAngles[2][0] = result[0][0];
+				
 			return EulerAngles;
 	}
 	
+	private static double[][] threeaxisrot(double r11, double r12, double r21, double r31, double r32){
+		  double[][] res = {{0},{0},{0}};
+		  res[0][0] = Math.atan2( r31, r32 );
+		  res[1][0] = Math.asin ( r21 );
+		  res[2][0] = Math.atan2( r11, r12 );
+		  return res;
+		}
+	
 	public static double[][] Quaternions2Euler3(double[][] Quaternions){
 		double[][] EulerAngles = {{0},{0},{0}};
+		
 		double w = Quaternions[0][0];
 		double x = Quaternions[1][0];
 		double y = Quaternions[2][0];
 		double z = Quaternions[3][0];
 		
-		double a1 = w*w + x*x - y*y - z*z;
-		double a2 = 2* ( x*y - w*z);
-		double a3 = 2* ( w*y + x*z);
-		double b3 = 2*(y*z - w*x);
-		double c3 = w*w - x*x - y*y + z*z;
+		double C11 = w*w + x*x - y*y - z*z;
+		double C12 = 2* ( x*y - w*z );
+		double C13 = 2* ( x*z + w*y );		
+		double C21 = 2* ( x*y + w*z );
+		double C33 = w*w - x*x - y*y + z*z;
+		double C32 = 2* ( y*z + w*x );
+		double C31 = 2* ( x*z - w*y );
 		
-	    EulerAngles[1][0] = Math.asin(-a3);
-	    		
-		EulerAngles[0][0] = Math.acos(a1/Math.cos(EulerAngles[1][0])) * Math.signum(a2);
-		EulerAngles[2][0] = Math.acos(c3 / Math.cos(EulerAngles[1][0])) * Math.signum(b3);
+		double E1=0;
+		double E2=0;
+		double E3=0;
 		
+		if(C31!=1 || C31!=-1) {
+			E2 = - Math.asin(C31);
+			//E2 = PI + Math.asin(C31);
+			E1 = Math.atan2(C32/Math.cos(E2), C33/Math.cos(E2));
+			//E3 = Math.atan2(C32/Math.cos(E2), C33/Math.cos(E2));
+			E3 = Math.atan2(C21/Math.cos(E2), C11/Math.cos(E2));
+			//E1 = Math.atan2(C21/Math.cos(E2), C11/Math.cos(E2));
+			//System.out.println("case 1");
+		} else {
+			 E3 = 0;//Theta;
+			if(C31 == -1) {
+				E2 = PI/2;
+				E1 = E3 + Math.atan2(C12, C13);
+			} else {
+				E2 = - PI/2;
+				E1 = -E3 + Math.atan2(-C12,  -C13);
+			}
+		}
+
+		Theta = E3;
+		
+		if(!Double.isNaN(E1)) {
+		EulerAngles[0][0] = E1;
+		}
+		if(!Double.isNaN(E2)) {
+		EulerAngles[1][0] = E2;
+		}
+		if(!Double.isNaN(E3)) {
+		EulerAngles[2][0] = E3;
+		}
 		return EulerAngles;
 	}
 	

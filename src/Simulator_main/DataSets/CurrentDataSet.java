@@ -30,8 +30,6 @@ public class CurrentDataSet {
 	public  double[][] EulerAngle      = {{0},{0},{0}};
 	
 	
-	
-
 	public double getSequenceTime() {
 		return sequenceTime;
 	}
