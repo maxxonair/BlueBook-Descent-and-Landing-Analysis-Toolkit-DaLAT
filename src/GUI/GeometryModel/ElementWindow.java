@@ -48,6 +48,14 @@ public class ElementWindow {
 	String setlowerDiamter = "Set lower diameter";
 	String setDiamter = "Set diameter:";
 	String setLength = "Set length:";
+	int low =10;
+	int high = 5000;
+	int midval = 1000;
+	int length = 1000;
+	
+	int s1Setting = midval;
+	int s2Setting = midval;
+	int s3Setting = midval;
 	
 	public ElementWindow(int classType, int elementIndx) {
 		
@@ -57,33 +65,34 @@ public class ElementWindow {
 		frame.setLayout(new BorderLayout());
 
 		JPanel mainPanel = new JPanel();
-		mainPanel.setPreferredSize(new Dimension(400,150));
-		mainPanel.setLayout(new GridLayout(2,2));
+		mainPanel.setPreferredSize(new Dimension(400,450));
+		mainPanel.setLayout(new GridLayout(6,1));
 		frame.add(mainPanel, BorderLayout.CENTER);
 		
 		Canvas canvas = GeometryFrame.getCanvas();
 
 			final int  indxN = canvas.getElementList().size();
-			if(elementIndx==-1) { // add new element
+			if(elementIndx == -1) { // add new element
 				try {
 					//indx = canvas.getElementList().size();
-					int diameter = 150;
+					double diameter = 1;
 					if(canvas.getElementList().size()>0) {
-						diameter = (int) canvas.getElementList().get(canvas.getElementList().size()-1).getDiameter1();
+						diameter =  canvas.getElementList().get(canvas.getElementList().size()-1).getDiameter1();
 					} else {
 						
 					}
-					canvas.addElement( diameter , diameter, 80. , classType) ;
+					canvas.addElement( diameter , diameter, 1 , classType) ;
 					((JPanel) canvas).repaint();
 				} catch (NullPointerException npe) {
 					System.out.println(npe);
 				}
+			} else {
+				s1Setting = (int) (canvas.getElementList().get(elementIndx).getDiameter1() * 1000);
+				s2Setting = (int) (canvas.getElementList().get(elementIndx).getDiameter2() * 1000);
+				s3Setting = (int) (canvas.getElementList().get(elementIndx).getLength() * 1000);
+				frame.setTitle(canvas.getElementList().get(elementIndx).getName());
 			}
 
-		int low =5;
-		int high = 300;
-		int midval = 100;
-		int length = 150;
 		
 		JPanel p1 = new JPanel();
 		p1.setLayout(new BorderLayout());
@@ -93,23 +102,25 @@ public class ElementWindow {
 		        sliderDiameter1Label.setAlignmentX(Component.CENTER_ALIGNMENT);
 		        p1.add(sliderDiameter1Label, BorderLayout.NORTH);
 		        
-		        int high2 = canvas.getHeight() -20;
+		        int unit = canvas.getUnit();
+		        int high2 = ( (canvas.getHeight() -20)/unit)*1000;
 		       
 				
 				JSlider sliderDiameter1 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high2);
-				sliderDiameter1.setValue(midval);
+				sliderDiameter1.setValue(s1Setting);
 				sliderDiameter1.addChangeListener(new ChangeListener() {
 		
 					@Override
 					public void stateChanged(ChangeEvent sliderDia) {
 						List<Element> elementList = canvas.getElementList();
-						double diameter = ((JSlider) sliderDia.getSource()).getValue();
-						if(elementIndx==-1) {
-						elementList.get(indxN).setDiameter1(diameter);
+						double diameter = (double) (((JSlider) sliderDia.getSource()).getValue())/1000;
+						if(elementIndx == -1) {
+							elementList.get(indxN).setDiameter1(diameter);
 						} else {
 							elementList.get(elementIndx).setDiameter1(diameter);	
 						}
 						canvas.setElementList(elementList);
+						//System.out.println(diameter);
 						canvas.repaint();
 					}
 					
@@ -126,13 +137,13 @@ public class ElementWindow {
 		        p2.add(sliderDiameter2Label, BorderLayout.NORTH);
 		
 				JSlider sliderDiameter2 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high2);
-				sliderDiameter2.setValue(midval);
+				sliderDiameter2.setValue(s2Setting);
 				sliderDiameter2.addChangeListener(new ChangeListener() {
 		
 					@Override
 					public void stateChanged(ChangeEvent sliderDia) {
 						List<Element> elementList = canvas.getElementList();
-						double diameter = ((JSlider) sliderDia.getSource()).getValue();
+						double diameter = (double) (((JSlider) sliderDia.getSource()).getValue())/1000;
 						if(elementIndx==-1) {
 						elementList.get(indxN).setDiameter2(diameter);
 						} else {
@@ -149,15 +160,18 @@ public class ElementWindow {
 	        JLabel sliderDiameter1Label = new JLabel("Set diamter: ", JLabel.CENTER);
 	        sliderDiameter1Label.setAlignmentX(Component.CENTER_ALIGNMENT);
 	        p1.add(sliderDiameter1Label, BorderLayout.NORTH);
-			
-			JSlider sliderDiameter1 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high);
-			sliderDiameter1.setValue(midval);
+	        
+	        int unit = canvas.getUnit();
+	        int high2 = ( (canvas.getHeight() -20)/unit)*1000;
+	        
+			JSlider sliderDiameter1 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high2);
+			sliderDiameter1.setValue(s1Setting);
 			sliderDiameter1.addChangeListener(new ChangeListener() {
 
 				@Override
 				public void stateChanged(ChangeEvent sliderDia) {
 					List<Element> elementList = canvas.getElementList();
-					double diameter = ((JSlider) sliderDia.getSource()).getValue();
+					double diameter = (double) (((JSlider) sliderDia.getSource()).getValue())/1000;
 					if(elementIndx==-1) {
 						elementList.get(indxN).setDiameter1(diameter);
 						elementList.get(indxN).setDiameter2(diameter);
@@ -181,13 +195,14 @@ public class ElementWindow {
         sliderDiameter3Label.setAlignmentX(Component.CENTER_ALIGNMENT);
         p3.add(sliderDiameter3Label, BorderLayout.NORTH);
 		
-		JSlider sliderLength = GuiComponents.getGuiSlider(smallFont, length, low, midval, 600);
+		JSlider sliderLength = GuiComponents.getGuiSlider(smallFont, length, low, midval, 10000);
+		sliderLength.setValue(s3Setting);
 		sliderLength.addChangeListener(new ChangeListener() {
 
 			@Override
 			public void stateChanged(ChangeEvent sliderDia) {
 				List<Element> elementList = canvas.getElementList();
-				double Length = ((JSlider) sliderDia.getSource()).getValue();
+				double Length = (double) (((JSlider) sliderDia.getSource()).getValue())/1000;
 				if(elementIndx==-1) {
 				elementList.get(indxN).setLength(Length);
 				} else {
@@ -204,6 +219,18 @@ public class ElementWindow {
 		if(elementIndx==-1) {
 			List<Element> elementList = canvas.getElementList();
 		JTextField nameField = new JTextField("Box "+elementList.size());
+		
+		/**
+		 *  		If <create new element> then <set default name> 
+		 */
+				if(elementIndx == -1 ) { 
+					Element element = elementList.get(elementList.size()-1);
+					element.setName("Box "+elementList.size());
+					elementList.set(elementList.size()-1, element);
+					canvas.setElementList(elementList);
+				}
+				
+				
 		nameField.addFocusListener(new FocusListener() {
 
 			@Override
@@ -281,9 +308,10 @@ public class ElementWindow {
         frame.pack();
 	}
 	
-	
+	/*
 	public static void main(String[] args) {
+		
 		new ElementWindow(1 , -1);
 	}
-
+*/
 }

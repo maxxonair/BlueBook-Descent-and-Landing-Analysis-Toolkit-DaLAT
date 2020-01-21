@@ -2,6 +2,7 @@ package GUI.GeometryModel;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -16,7 +17,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTextField;
 
 import GUI.BlueBookVisual;
 
@@ -38,6 +41,8 @@ public class ControlPanel {
     // Global GUI components:
 	@SuppressWarnings("rawtypes")
 	public JComboBox elementBox;
+	@SuppressWarnings("rawtypes")
+	public JComboBox unitBox;
 	//-------------------------------------------------------------------------------------------------------------
     // Content Lists 
 
@@ -47,11 +52,14 @@ public class ControlPanel {
 	private String elementList;
 	private String coneFrustumFilepath = System.getProperty("user.dir") + "/images/conicalFrustum.png";
 	private String cylinderFilepath = System.getProperty("user.dir") + "/images/cylinder.png";
+
 	
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ControlPanel(Canvas canvas) {
 		
 		this.canvas = canvas;
 		backgroundColor = BlueBookVisual.getBackgroundColor();
+		labelColor = BlueBookVisual.getLabelColor();
 		
 		controlPanel = new JPanel();
 		controlPanel.setLayout(null);
@@ -94,11 +102,9 @@ public class ControlPanel {
 		image = new ImageIcon(getScaledImage(image.getImage(),100,100));
 		Cone.setIcon(image);
 		controlPanel.add(Cone);	
-		
-		
-		@SuppressWarnings("rawtypes")
-		JComboBox elementBox = new JComboBox();
-		elementBox.setSize(100,25);
+				
+		elementBox = new JComboBox();
+		elementBox.setSize(300,25);
 		elementBox.setLocation(220,5);
 		elementBox.addActionListener(new ActionListener() {
 
@@ -109,7 +115,62 @@ public class ControlPanel {
 			
 		});
 		controlPanel.add(elementBox);
+		
+		unitBox = new JComboBox(canvas.getStrUnits());
+		unitBox.setSize(new Dimension(100,25) );
+		unitBox.setLocation(5,120);
+		unitBox.addActionListener(new ActionListener() {
 
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				//System.out.println(unitBox.getSelectedIndex());
+				canvas.setUnitSetting(unitBox.getSelectedIndex());
+			}
+			
+		});
+		controlPanel.add(unitBox);
+		
+		JTextField CoMInput = new JTextField("");
+		CoMInput.setSize(new Dimension(100,25) );
+		CoMInput.setLocation(530,5);
+		CoMInput.setHorizontalAlignment(JTextField.RIGHT);
+		CoMInput.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.setCoM(Double.parseDouble(CoMInput.getText()));
+			}
+			
+		});
+		controlPanel.add(CoMInput);
+		
+		JLabel comLabel = new JLabel("Set CoM "+canvas.getStrUnits()[canvas.getUnitSetting()]);
+		comLabel.setSize(new Dimension(100,25) );
+		comLabel.setForeground(labelColor);
+		comLabel.setFont(smallFont);
+		comLabel.setLocation(632,5);
+		controlPanel.add(comLabel);
+		
+		JTextField CoPrInput = new JTextField("");
+		CoPrInput.setSize(new Dimension(100,25) );
+		CoPrInput.setLocation(530,35);
+		CoPrInput.setHorizontalAlignment(JTextField.RIGHT);
+		CoPrInput.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				canvas.setCoPr(Double.parseDouble(CoPrInput.getText()));
+			}
+			
+		});
+		controlPanel.add(CoPrInput);
+		
+		JLabel coprLabel = new JLabel("Set Center of propulsive forces "+canvas.getStrUnits()[canvas.getUnitSetting()]);
+		coprLabel.setSize(new Dimension(200,25) );
+		coprLabel.setForeground(labelColor);
+		coprLabel.setFont(smallFont);
+		coprLabel.setLocation(632,35);
+		controlPanel.add(coprLabel);
 	}
 	
 	

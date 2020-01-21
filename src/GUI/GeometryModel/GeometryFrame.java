@@ -6,7 +6,10 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -29,13 +32,15 @@ public class GeometryFrame {
 	Font smallFont			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
     //-------------------------------------------------------------------------------------------------------------
     // Global GUI components:
-	
+	@SuppressWarnings("rawtypes")
+	public JComboBox unitBox;
 	//-------------------------------------------------------------------------------------------------------------
     // Content Lists 
 
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public GeometryFrame() {
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		
@@ -48,6 +53,19 @@ public class GeometryFrame {
 		canvas.setLayout(null);
 		canvas.setBackground(canvasColor);
 		mainPanel.add(canvas, BorderLayout.CENTER);
+		
+		unitBox = new JComboBox(canvas.getStrUnits());
+		unitBox.setPreferredSize(new Dimension(100,25) );
+		unitBox.setLocation(100,100);
+		unitBox.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				System.out.println(unitBox.getSelectedIndex());
+			}
+			
+		});
+		canvas.add(unitBox);
 		
 		controlPanel = new ControlPanel(canvas);
 		//controlPanel.getControlPanel().setLayout(null);
@@ -67,7 +85,7 @@ public class GeometryFrame {
  * @param args
  */
 	public static void main(String[] args) {
-		
+        
 		JFrame frame = new JFrame("Component Tester - Geometry model ");
 		frame.setSize(1100,600);
 		frame.setLayout(new BorderLayout());
@@ -82,7 +100,6 @@ public class GeometryFrame {
         frame.setLocation(p);
         frame.setVisible(true);
 		//frame.pack();
-		 
 		 
 		//new YourFrame();
 	}
