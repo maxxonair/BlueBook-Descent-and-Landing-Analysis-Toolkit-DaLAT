@@ -3085,7 +3085,7 @@ fstream.close();
   	String[] tokens = strLine3.split(" ");
   	InitialState = Double.parseDouble(tokens[0]);
     if (k==0){
-    		SidePanelLeft.	INPUT_IntegratorSetting_01.setText(""+(InitialState)); 
+    		SidePanelLeft.INPUT_IntegratorSetting_01.setText(""+(InitialState)); 
   	} else if (k==1){
   		SidePanelLeft.INPUT_IntegratorSetting_02.setText(""+(InitialState)); 
   	} else if (k==2){
@@ -3136,11 +3136,11 @@ while ((strLine3 = br6.readLine()) != null )   {
 	} else if (k==2){
 		
 	} else if (k==3){
-
+		GeometryFrame.setCoM(InitialState);
 	} else if (k==4){
-	
+		GeometryFrame.setCoPr(InitialState);
 	} else if (k==5){
-
+		GeometryFrame.setCoP(InitialState);
 	} else if (k==6){
 
 	} else if (k==7){
@@ -3793,7 +3793,19 @@ fstream.close();
 		        			 r = 0;
 		        			wr.write(r+System.getProperty( "line.separator" ));
         				}
-        			}
+        			} else if (i==3) {
+        				// Center of Mass 
+	        			 r = GeometryFrame.getCoM();
+	        			wr.write(r+System.getProperty( "line.separator" ));
+        			} else if (i==4) {
+        				// Center of propulsife Forces CoPr 
+	        			 r = GeometryFrame.getCoPr();
+	        			wr.write(r+System.getProperty( "line.separator" ));
+       			} else if (i==5) {
+    				// Center of (aerodynamic) Pressure 
+       			 r = GeometryFrame.getCoP();
+       			wr.write(r+System.getProperty( "line.separator" ));
+   			}
             }
             wr.close();
       } catch (IOException eIO) {

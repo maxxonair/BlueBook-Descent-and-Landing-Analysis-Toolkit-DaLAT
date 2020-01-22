@@ -10,7 +10,6 @@ import java.awt.Point;
 import java.awt.Polygon;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Ellipse2D;
@@ -76,7 +75,7 @@ public class Canvas extends JPanel {
 				// TODO Auto-generated method stub
 				e.getUnitsToScroll();
 				int  scale = scaleFactor + e.getUnitsToScroll();
-				if(scale <3) { scale =3;}
+				if(scale <2) { scale =2;}
 				setScaleFactor( scale ); 
 			}
 			
@@ -157,22 +156,24 @@ public class Canvas extends JPanel {
     }
     
     private Graphics2D drawMeasureHorizontal(Graphics2D g2d) {
-       // double height = 	this.getHeight();
      	double width  = this.getWidth();
+     	int lineCor = 0;
      	
-     	int leng = 4;
-     	int leng1 = 7;
-     	int leng2 = 12;
-     	int prog =0;
+     	int leng = 4;		// Length short marker  [px]
+     	int leng1 = 7;		// Length middle marker [px]
+     	int leng2 = 12;		// Length main marker   [px]
+     	
+     	int prog =0; 		// running position to relative zero
      	int k=0;
      	int labelcount=1;
-     	int labelDist = 13;
+     	int labelDist = 13;	// Distance label to marker [px] 
      	int maxDistance = (int) (width - 2*boxGap - zeroGap);
      	
     	g2d.drawString("0", (int) (width - boxGap - zeroGap)-3, (int) (boxGap+leng2 + labelDist)); 	// Zero marker
-    	g2d.drawString(""+strUnits[unitSetting], (int) (2*boxGap), (int) (5*boxGap));
+    	g2d.drawString(""+strUnits[unitSetting], (int) (2*boxGap), (int) (5*boxGap)); // unit marker
+    	g2d.setStroke(new BasicStroke(lineCor+1));
     	while(prog < maxDistance) {
-    		int zeroAt = (int) (width - boxGap - zeroGap);
+    		int zeroAt = (int) (width - boxGap - zeroGap);	// relative zero
     		int x = zeroAt - prog;
 
     		if(k==5) {
@@ -186,10 +187,10 @@ public class Canvas extends JPanel {
     		} else {
     			g2d.drawLine(x, (int) (boxGap), x, (int) (boxGap+leng) ); // Short
     		}
-    		prog += (scaleFactor-1);
+    		prog += (scaleFactor-lineCor);
     		k++;
     	}
-   // 	int minDistance = (int) (width + boxGap + zeroGap);
+
     	prog = 0;
     	labelcount=1;
     	k=0;
@@ -206,7 +207,7 @@ public class Canvas extends JPanel {
     		} else {
     			g2d.drawLine(x, (int) (boxGap), x, (int) (boxGap+leng) ); // Short
     		}
-    		prog += (scaleFactor-1);
+    		prog += (scaleFactor-lineCor);
     		k++;
     	}
     	return g2d;
@@ -242,7 +243,7 @@ public class Canvas extends JPanel {
     		} else {
     			g2d.drawLine(x, prog, x-leng, prog ); // Short
     		}
-    		prog += (scaleFactor-1);
+    		prog += (scaleFactor);
     		k++;
     	}
     	
@@ -267,7 +268,7 @@ public class Canvas extends JPanel {
     		} else {
     			g2d.drawLine(x, prog, x-leng, prog ); // Short
     		}
-    		prog -= (scaleFactor-1);
+    		prog -= (scaleFactor);
     		k++;
     	}
    
@@ -387,6 +388,7 @@ public class Canvas extends JPanel {
         g2d.drawString("Center of propulsive forces: "+indicatorFormat.format(CoPr)+" "+strUnits[unitSetting], x, y); 								// Stability
         int diameter=10;
         x = (int) (width - zeroGap - boxGap - (CoP*unit) - diameter/2);
+        GeometryFrame.setCoP(CoP);
         y = height/2-diameter/2;
         
         g2d.setColor(Color.RED);
@@ -434,17 +436,17 @@ public class Canvas extends JPanel {
             //Create polygon
        // 	this.ID = ID;
 
-        	int diameter1 = (int) (d1 * unit);
-        	int diameter2 = (int) (d2 * unit);
-        	int length 	  = (int) (len * unit);
+        	int diameter1 = (int) ((double) (d1 * unit));
+        	int diameter2 = (int) ((double) (d2 * unit));
+        	int length 	  = (int) ((double) (len * unit));
         	
         	int sizeY=0;
         	if(diameter1>diameter2) { 
         		sizeY=diameter1;
              	polygon = new Polygon();
-             	polygon.addPoint(0, (int) 0);				// top left 
-             	polygon.addPoint(length, (diameter1 - diameter2)/2);		// top right
-             	polygon.addPoint(length,  (diameter1 - diameter2)/2 + diameter2);		// bottom right
+             	polygon.addPoint(0, (int) 0);										// top left 
+             	polygon.addPoint(length, (diameter1 - diameter2)/2);					// top right
+             	polygon.addPoint(length,  (diameter1 - diameter2)/2 + diameter2); 	// bottom right
              	polygon.addPoint(0,        diameter1);		// bottom left
         	} else {   
         		sizeY = diameter2;
@@ -470,22 +472,13 @@ public class Canvas extends JPanel {
 				}
 
 				@Override
-				public void mouseEntered(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void mouseEntered(MouseEvent arg0) {}
 
 				@Override
-				public void mouseExited(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void mouseExited(MouseEvent arg0) {}
 
 				@Override
-				public void mousePressed(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
+				public void mousePressed(MouseEvent arg0) {}
 
 				@Override
 				public void mouseReleased(MouseEvent arg0) {
@@ -495,27 +488,7 @@ public class Canvas extends JPanel {
 				
             	
             });
-            addMouseMotionListener(new MouseMotionListener() {
 
-				@Override
-				public void mouseDragged(MouseEvent e) {				
-					/*
-					int newLength =   - e.getX();
-					if(newLength<0) {
-						newLength = 10;
-					}
-					System.out.println(" "+newLength);
-					elementList.get(ID).setLength(newLength);
-						*/
-				}
-
-				@Override
-				public void mouseMoved(MouseEvent arg0) {
-					// TODO Auto-generated method stub
-					
-				}
-            	
-            });
 
             //Set size to make sure that the whole triangle is shown
             setPreferredSize(new Dimension(length, sizeY));

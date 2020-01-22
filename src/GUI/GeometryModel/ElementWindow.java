@@ -65,11 +65,15 @@ public class ElementWindow {
 		frame.setLayout(new BorderLayout());
 
 		JPanel mainPanel = new JPanel();
-		mainPanel.setPreferredSize(new Dimension(400,450));
-		mainPanel.setLayout(new GridLayout(6,1));
+		mainPanel.setPreferredSize(new Dimension(400,280));
+		mainPanel.setLayout(new GridLayout(5,2));
 		frame.add(mainPanel, BorderLayout.CENTER);
 		
 		Canvas canvas = GeometryFrame.getCanvas();
+		
+		JTextField sliderDiameter1Indicator = new JTextField();
+		JTextField sliderDiameter2Indicator = new JTextField();
+		JTextField sliderLengthIndicator    = new JTextField();
 
 			final int  indxN = canvas.getElementList().size();
 			if(elementIndx == -1) { // add new element
@@ -91,8 +95,76 @@ public class ElementWindow {
 				s2Setting = (int) (canvas.getElementList().get(elementIndx).getDiameter2() * 1000);
 				s3Setting = (int) (canvas.getElementList().get(elementIndx).getLength() * 1000);
 				frame.setTitle(canvas.getElementList().get(elementIndx).getName());
+				sliderDiameter1Indicator.setText(""+canvas.getElementList().get(elementIndx).getDiameter1());
+				sliderDiameter2Indicator.setText(""+canvas.getElementList().get(elementIndx).getDiameter2());
+				sliderLengthIndicator.setText(""+canvas.getElementList().get(elementIndx).getLength());
 			}
+			
+			
+			sliderDiameter1Indicator.addFocusListener(new FocusListener() {
 
+				@Override
+				public void focusGained(FocusEvent arg0) {}
+
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					List<Element> elementList = canvas.getElementList();
+					double diameter = Double.parseDouble(sliderDiameter1Indicator.getText());
+					if(elementIndx == -1) {
+						elementList.get(indxN).setDiameter1(diameter);
+					} else {
+						elementList.get(elementIndx).setDiameter1(diameter);	
+					}
+					canvas.setElementList(elementList);
+					//System.out.println(diameter);
+					canvas.repaint();
+					
+				}
+				
+			});
+			sliderDiameter2Indicator.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) {}
+
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					List<Element> elementList = canvas.getElementList();
+					double diameter = Double.parseDouble(sliderDiameter2Indicator.getText());
+					if(elementIndx == -1) {
+						elementList.get(indxN).setDiameter2(diameter);
+					} else {
+						elementList.get(elementIndx).setDiameter2(diameter);	
+					}
+					canvas.setElementList(elementList);
+					//System.out.println(diameter);
+					canvas.repaint();
+					
+				}
+				
+			});
+			sliderLengthIndicator.addFocusListener(new FocusListener() {
+
+				@Override
+				public void focusGained(FocusEvent arg0) {}
+
+				@Override
+				public void focusLost(FocusEvent arg0) {
+					List<Element> elementList = canvas.getElementList();
+					double diameter = Double.parseDouble(sliderLengthIndicator.getText());
+					if(elementIndx == -1) {
+						elementList.get(indxN).setLength(diameter);
+					} else {
+						elementList.get(elementIndx).setLength(diameter);	
+					}
+					canvas.setElementList(elementList);
+					//System.out.println(diameter);
+					canvas.repaint();
+					
+				}
+				
+			});
+			
 		
 		JPanel p1 = new JPanel();
 		p1.setLayout(new BorderLayout());
@@ -107,6 +179,7 @@ public class ElementWindow {
 		       
 				
 				JSlider sliderDiameter1 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high2);
+				sliderDiameter1.setPaintLabels(false);
 				sliderDiameter1.setValue(s1Setting);
 				sliderDiameter1.addChangeListener(new ChangeListener() {
 		
@@ -122,11 +195,14 @@ public class ElementWindow {
 						canvas.setElementList(elementList);
 						//System.out.println(diameter);
 						canvas.repaint();
+						sliderDiameter1Indicator.setText(""+diameter);
 					}
 					
 				});
 				p1.add(sliderDiameter1, BorderLayout.CENTER);
 				mainPanel.add(p1);
+				mainPanel.add(sliderDiameter1Indicator);
+				
 				
 				
 				JPanel p2 = new JPanel();
@@ -137,6 +213,7 @@ public class ElementWindow {
 		        p2.add(sliderDiameter2Label, BorderLayout.NORTH);
 		
 				JSlider sliderDiameter2 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high2);
+				sliderDiameter2.setPaintLabels(false);
 				sliderDiameter2.setValue(s2Setting);
 				sliderDiameter2.addChangeListener(new ChangeListener() {
 		
@@ -151,11 +228,13 @@ public class ElementWindow {
 						}
 						canvas.setElementList(elementList);
 						canvas.repaint();
+						sliderDiameter2Indicator.setText(""+diameter);
 					}
 					
 				});
 				p2.add(sliderDiameter2, BorderLayout.CENTER);
 				mainPanel.add(p2);
+				mainPanel.add(sliderDiameter2Indicator);
 		} else {
 	        JLabel sliderDiameter1Label = new JLabel("Set diamter: ", JLabel.CENTER);
 	        sliderDiameter1Label.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -165,6 +244,7 @@ public class ElementWindow {
 	        int high2 = ( (canvas.getHeight() -20)/unit)*1000;
 	        
 			JSlider sliderDiameter1 = GuiComponents.getGuiSlider(smallFont, length, low, midval, high2);
+			sliderDiameter1.setPaintLabels(false);
 			sliderDiameter1.setValue(s1Setting);
 			sliderDiameter1.addChangeListener(new ChangeListener() {
 
@@ -181,11 +261,13 @@ public class ElementWindow {
 					}
 					canvas.setElementList(elementList);
 					canvas.repaint();
+					sliderDiameter1Indicator.setText(""+diameter);
 				}
 				
 			});
 			p1.add(sliderDiameter1, BorderLayout.CENTER);
 			mainPanel.add(p1);
+			mainPanel.add(sliderDiameter1Indicator);
 		}
 		
 		JPanel p3 = new JPanel();
@@ -196,6 +278,7 @@ public class ElementWindow {
         p3.add(sliderDiameter3Label, BorderLayout.NORTH);
 		
 		JSlider sliderLength = GuiComponents.getGuiSlider(smallFont, length, low, midval, 10000);
+		sliderLength.setPaintLabels(false);
 		sliderLength.setValue(s3Setting);
 		sliderLength.addChangeListener(new ChangeListener() {
 
@@ -210,11 +293,13 @@ public class ElementWindow {
 				}
 				canvas.setElementList(elementList);
 				canvas.repaint();
+				sliderLengthIndicator.setText(""+Length);
 			}
 			
 		});
 		p3.add(sliderLength, BorderLayout.CENTER);
 		mainPanel.add(p3);
+		mainPanel.add(sliderLengthIndicator);
 		
 		if(elementIndx==-1) {
 			List<Element> elementList = canvas.getElementList();

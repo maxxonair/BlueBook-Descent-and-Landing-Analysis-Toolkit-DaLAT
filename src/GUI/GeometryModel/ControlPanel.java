@@ -52,7 +52,9 @@ public class ControlPanel {
 	private String elementList;
 	private String coneFrustumFilepath = System.getProperty("user.dir") + "/images/conicalFrustum.png";
 	private String cylinderFilepath = System.getProperty("user.dir") + "/images/cylinder.png";
-
+	
+	public static JTextField CoPrInput;
+	public static JTextField CoMInput;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public ControlPanel(Canvas canvas) {
@@ -130,7 +132,7 @@ public class ControlPanel {
 		});
 		controlPanel.add(unitBox);
 		
-		JTextField CoMInput = new JTextField("");
+		 CoMInput = new JTextField("");
 		CoMInput.setSize(new Dimension(100,25) );
 		CoMInput.setLocation(530,5);
 		CoMInput.setHorizontalAlignment(JTextField.RIGHT);
@@ -139,6 +141,7 @@ public class ControlPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.setCoM(Double.parseDouble(CoMInput.getText()));
+				GeometryFrame.setCoM(Double.parseDouble(CoMInput.getText()));
 			}
 			
 		});
@@ -151,7 +154,7 @@ public class ControlPanel {
 		comLabel.setLocation(632,5);
 		controlPanel.add(comLabel);
 		
-		JTextField CoPrInput = new JTextField("");
+		 CoPrInput = new JTextField("");
 		CoPrInput.setSize(new Dimension(100,25) );
 		CoPrInput.setLocation(530,35);
 		CoPrInput.setHorizontalAlignment(JTextField.RIGHT);
@@ -160,6 +163,11 @@ public class ControlPanel {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				canvas.setCoPr(Double.parseDouble(CoPrInput.getText()));
+				try {
+					GeometryFrame.setCoPr(Double.parseDouble(CoPrInput.getText()));
+				} catch (Exception e) {
+					System.out.println(e);
+				}
 			}
 			
 		});

@@ -39,6 +39,9 @@ public class GeometryFrame {
 
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
+	private static double CoM=0;
+	private static double CoPr=0;
+	private static double CoP=0;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public GeometryFrame() {
@@ -107,6 +110,56 @@ public class GeometryFrame {
 
 public static Canvas getCanvas() {
 	return canvas;
+}
+
+
+public static double getCoM() {
+	return CoM;
+}
+
+
+public static void setCoM(double coM) {
+	CoM = coM;
+	ControlPanel.CoMInput.setText(""+coM);
+	canvas.setCoM(Double.parseDouble(ControlPanel.CoMInput.getText()));
+	try {
+		BlueBookVisual.WRITE_SC();
+	} catch (Exception e) {
+		System.out.println(e);
+	}
+}
+
+
+public static double getCoPr() {
+	return CoPr;
+	
+}
+
+
+public static void setCoPr(double coPr) {
+	CoPr = coPr;
+	ControlPanel.CoPrInput.setText(""+coPr);
+	canvas.setCoPr(Double.parseDouble(ControlPanel.CoPrInput.getText()));
+	try {
+		BlueBookVisual.WRITE_SC();
+	} catch (Exception e) {
+		System.out.println(e);
+	}
+}
+
+
+public static double getCoP() {
+	return CoP;
+}
+
+
+public static void setCoP(double coP) {
+	CoP = coP;
+	try {
+		BlueBookVisual.WRITE_SC();
+	} catch (Exception e) {
+		System.out.println(e);
+	}
 }
 	
 	
