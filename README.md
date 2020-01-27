@@ -41,6 +41,10 @@ To model the propulsion sub-system a graphical block modelling approach is curre
 
 The image shows a simple propulsion system setup created with this editor. 
 
+To generate basic geometry input data (vital for 6DoF propusive flight) a small geometry module can be used. 
+
+![Github GUI8](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage8.png)
+
 3) The VisualEngine (VE). The VisualEngine is a game engine environment (based on the LWJGL 2 library) developed to visualise simulation results and allow real time simulations (using the SIM module) with user inputs (pilot in the loop). The VE is currently in early development and has only a short real time flight demo implemented (FlyMeToTheMoon.jar). 
 
 ![Github VisualEngine](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/VisualEngine.png)
