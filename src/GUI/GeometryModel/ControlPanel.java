@@ -44,8 +44,9 @@ public class ControlPanel {
 	@SuppressWarnings("rawtypes")
 	public JComboBox unitBox;
 	//-------------------------------------------------------------------------------------------------------------
-    // Content Lists 
-
+    // Panel Strings:
+	private String strCoM = "Set CoM ";
+	private String strCoT = "Set CoT ";
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	@SuppressWarnings("unused")
@@ -53,7 +54,7 @@ public class ControlPanel {
 	private String coneFrustumFilepath = System.getProperty("user.dir") + "/images/conicalFrustum.png";
 	private String cylinderFilepath = System.getProperty("user.dir") + "/images/cylinder.png";
 	
-	public static JTextField CoPrInput;
+	public static JTextField CoTInput;
 	public static JTextField CoMInput;
 	
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -68,7 +69,7 @@ public class ControlPanel {
 		controlPanel.setSize(500, 200);
 		controlPanel.setBackground(backgroundColor);
 		
-		JButton cylinder = new JButton("Add Cylinder");
+		JButton cylinder = new JButton("");
 		cylinder.setSize(100,100);
 		cylinder.setLocation(5,5);
 		cylinder.addActionListener(new ActionListener() {
@@ -147,33 +148,33 @@ public class ControlPanel {
 		});
 		controlPanel.add(CoMInput);
 		
-		JLabel comLabel = new JLabel("Set CoM "+canvas.getStrUnits()[canvas.getUnitSetting()]);
+		JLabel comLabel = new JLabel(strCoM+canvas.getStrUnits()[canvas.getUnitSetting()]);
 		comLabel.setSize(new Dimension(100,25) );
 		comLabel.setForeground(labelColor);
 		comLabel.setFont(smallFont);
 		comLabel.setLocation(632,5);
 		controlPanel.add(comLabel);
 		
-		 CoPrInput = new JTextField("");
-		CoPrInput.setSize(new Dimension(100,25) );
-		CoPrInput.setLocation(530,35);
-		CoPrInput.setHorizontalAlignment(JTextField.RIGHT);
-		CoPrInput.addActionListener(new ActionListener() {
+		 CoTInput = new JTextField("");
+		CoTInput.setSize(new Dimension(100,25) );
+		CoTInput.setLocation(530,35);
+		CoTInput.setHorizontalAlignment(JTextField.RIGHT);
+		CoTInput.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				canvas.setCoPr(Double.parseDouble(CoPrInput.getText()));
+				canvas.setCoT(Double.parseDouble(CoTInput.getText()));
 				try {
-					GeometryFrame.setCoPr(Double.parseDouble(CoPrInput.getText()));
+					GeometryFrame.setCoT(Double.parseDouble(CoTInput.getText()));
 				} catch (Exception e) {
 					System.out.println(e);
 				}
 			}
 			
 		});
-		controlPanel.add(CoPrInput);
+		controlPanel.add(CoTInput);
 		
-		JLabel coprLabel = new JLabel("Set Center of propulsive forces "+canvas.getStrUnits()[canvas.getUnitSetting()]);
+		JLabel coprLabel = new JLabel(strCoT+canvas.getStrUnits()[canvas.getUnitSetting()]);
 		coprLabel.setSize(new Dimension(200,25) );
 		coprLabel.setForeground(labelColor);
 		coprLabel.setFont(smallFont);

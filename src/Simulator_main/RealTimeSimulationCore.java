@@ -242,6 +242,8 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	        public static CurrentDataSet currentDataSet = new CurrentDataSet();
 	        public static ErrorSet errorSet = new ErrorSet();
 	        public static MasterSet masterSet = new MasterSet();
+	        
+	        //private static RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
 	    		return 16; // 6 DOF model 
@@ -322,6 +324,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
 	    	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
 	    	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+	    	currentDataSet.setEulerAngle(EulerAngle);
 		coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphereSet, aerodynamicSet, EulerAngle, 
 																 q_vector, r_ECEF_spherical, V_NED_ECEF_spherical);
 		currentDataSet.setCoordinateTransformation(coordinateTransformation);
@@ -757,7 +760,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	               // System.out.println(y[6]);
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
 	         	    double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
-	             	RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
+	         	   RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	                	realTimeResultSet.setTime(t);
 	                	realTimeResultSet.setGlobalTime(currentTime);
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);

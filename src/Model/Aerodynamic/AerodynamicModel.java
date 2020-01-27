@@ -20,8 +20,64 @@ public class AerodynamicModel {
     private static int sequenceIs=-1;
     private static double lastTimeMark=0;
     
+    private 	static	int aeroModel =2 ; // <---- !!!
+    
 	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
+
+		if(aeroModel == 1) { // standard model 
+		return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
+		} else if (aeroModel == 2) { // launcher model 
+			return getAerodynamicSetLauncher( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
+		} else { // fallback standard model 
+			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
+		}
 		
+	}
+	
+	private static AerodynamicSet getAerodynamicSetLauncher(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
+		AerodynamicSet aerodynamicSet = new AerodynamicSet();
+		//-------------------------------------------------------------------------------------------
+		if(sequenceIs!=controlCommandSet.getActiveSequence()) {
+			sequenceIs=controlCommandSet.getActiveSequence();
+			lastTimeMark = currentDataSet.getGlobalTime();
+		}
+		currentDataSet.setSequenceTime(currentDataSet.getGlobalTime()-lastTimeMark);
+		//-------------------------------------------------------------------------------------------
+		aerodynamicSet.setDragCoefficient(AerodynamicKitLauncher.getCD(atmosphereSet, currentDataSet));
+		aerodynamicSet.setLiftCoefficient(AerodynamicKitLauncher.getCL(currentDataSet));
+		
+		double alpha = currentDataSet.getEulerAngle()[1][0] - currentDataSet.getV_NED_ECEF_spherical()[1];
+		aerodynamicSet.setAerodynamicAngleOfAttack(alpha);
+		//-----------------------------------------------------------------------------------------------
+		aerodynamicSet.setDragForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getDragCoefficient());  		// Aerodynamic drag Force 		   [N]
+		aerodynamicSet.setLiftForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getLiftCoefficient() * cos( aerodynamicSet.getAerodynamicBankAngle() ) );               // Aerodynamic lift Force 		   [N]
+		aerodynamicSet.setSideForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getC_SF() * sin( aerodynamicSet.getAerodynamicBankAngle() )); 	                  // Aerodynamic side Force 		   [N]
+		//----------------------------------------------------------------------------------------------
+		/**
+		 * 
+		 * No parachute model implemented in this mode 
+		 */
+		//-----------------------------------------------------------------------------------------------
+		double referenceLength = 1;
+		/**
+		 * 
+		 * Simplified aerodynamic momentum model 
+		 * -> no wind 
+		 * -> no bank angle 
+		 */
+		double leverAero = AerodynamicKitLauncher.getCoP(spaceShip.getVehicleLength(), currentDataSet) - spaceShip.getCoM();
+		double My = (aerodynamicSet.getDragForce() * Math.sin(alpha) + aerodynamicSet.getLiftForce() * Math.cos(alpha)) 
+				    * ( leverAero );
+		//System.out.println(AerodynamicKitLauncher.getCoP(spaceShip.getVehicleLength(), currentDataSet)+"|"+My);
+		aerodynamicSet.setMx(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMx());  		
+		aerodynamicSet.setMy(My);              
+		aerodynamicSet.setMz(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMz()); 	                 
+		//----------------------------------------------------------------------------------------------
+		
+		return aerodynamicSet;
+	}
+	
+	private static AerodynamicSet getAerodynamicSetStandard(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
 		if(sequenceIs!=controlCommandSet.getActiveSequence()) {
 			sequenceIs=controlCommandSet.getActiveSequence();
 			lastTimeMark = currentDataSet.getGlobalTime();
@@ -84,8 +140,6 @@ public class AerodynamicModel {
 		//----------------------------------------------------------------------------------------------
 		return aerodynamicSet;
 	}
-	
-
 	//----------------------------------------------------------------------------------------------------------------------------
 	//
 	//	                                        Calculate Drag with three flowzone approach

@@ -86,6 +86,9 @@ public class LaunchRealTimeSimulation {
 	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_X(ReadInput.readPropulsionInput()[9]);
 	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_Y(ReadInput.readPropulsionInput()[10]);
 	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_Z(ReadInput.readPropulsionInput()[11]);
+	    	spaceShip.setCoM(ReadInput.readSCFile()[3]);
+	    	spaceShip.setCoT(ReadInput.readSCFile()[4]);
+	    	spaceShip.setVehicleLength(20);
 	    	
 	    	spaceShip.getAeroElements().setParachuteSurfaceArea(ReadInput.readSCFile()[2]);
 	    	
@@ -383,10 +386,10 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 		  actuatorSet.getMomentumRCS_Y_is()+" "+
 		  actuatorSet.getMomentumRCS_Z_is()+" "+
 		  realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel()/realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
-  		  0+" "+
-  		  0+" "+
-  		  0+" "+
-  		  0+" "+
+  		  controlCommandSet.getTVC_alpha()+" "+
+  		  controlCommandSet.getTVC_beta()+" "+
+		  actuatorSet.getTVC_alpha()+" "+
+  		  actuatorSet.getTVC_beta()+" "+
 		  forceMomentumSet.getF_Thrust_B()[0][0]+" "+
 		  forceMomentumSet.getF_Thrust_B()[1][0]+" "+
 		  forceMomentumSet.getF_Thrust_B()[2][0]+" "+

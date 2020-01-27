@@ -62,7 +62,7 @@ public class Canvas extends JPanel {
  	
     double CoP =0;
     double CoM =0;
-    double CoPr =0;
+    double CoT =0;
 	
 	
 	public Canvas() {
@@ -385,7 +385,7 @@ public class Canvas extends JPanel {
         y = height - 40;
         g2d.drawString("CoM: " + indicatorFormat.format(CoM)+" "+strUnits[unitSetting], x, y); 					// Center of Mass 
         y = height - 20;
-        g2d.drawString("Center of propulsive forces: "+indicatorFormat.format(CoPr)+" "+strUnits[unitSetting], x, y); 								// Stability
+        g2d.drawString("CoT: "+indicatorFormat.format(CoT)+" "+strUnits[unitSetting], x, y); 								// Stability
         int diameter=10;
         x = (int) (width - zeroGap - boxGap - (CoP*unit) - diameter/2);
         GeometryFrame.setCoP(CoP);
@@ -414,7 +414,7 @@ public class Canvas extends JPanel {
         x = (int) (boxGap);
         Ellipse2D.Double circle6 = new Ellipse2D.Double(x, y, diameter, diameter);
         g2d.fill(circle6);
-        x = (int) (width - zeroGap - boxGap - (CoPr*unit) - diameter/2);
+        x = (int) (width - zeroGap - boxGap - (CoT*unit) - diameter/2);
         y = height/2-diameter/2;
         Ellipse2D.Double circle7 = new Ellipse2D.Double(x, y, diameter, diameter);
         g2d.fill(circle7);
@@ -557,12 +557,12 @@ public class Canvas extends JPanel {
 		repaint();
 	}
 
-	public double getCoPr() {
-		return CoPr;
+	public double getCoT() {
+		return CoT;
 	}
 
-	public void setCoPr(double coPr) {
-		CoPr = coPr;
+	public void setCoT(double coPr) {
+		CoT = coPr;
 		repaint();
 	}
 

@@ -309,10 +309,10 @@ public class BlueBookVisual implements  ActionListener {
     										  "RCS Momentum Y [Nm]",
     										  "RCS Momentum Z [Nm]",
     										  "RCS tank filling level [%]",
-    										  "TM CNTRL Error [m/s]",
-    										  "TVC CNTRL Error [deg]",
-    										  "Thrust Elevation [deg]",
-    										  "Thrust Elevation Angel Rate [deg/s]",
+    										  "TVC alpha cmd [-]",
+    										  "TVC beta cmd [-]",
+    										  "TVC alpha [deg]",
+    										  "TVC beta [deg]",
     										  "Thrust Force x B [N]",
     										  "Thrust Force y B [N]",
     										  "Thrust Force z B [N]",
@@ -1128,7 +1128,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 			         	icon_aerodynamic = new ImageIcon(getScaledImage(icon_aerodynamic.getImage(),size,size));
 			      }
 			      
-				TabPane_SCDefinition.addTab("Mass and Inertia" , icon_setup2, massAndInertiaPanel, null);
+				TabPane_SCDefinition.addTab("Mass, Inertia and Geometry" , icon_setup2, massAndInertiaPanel, null);
 				TabPane_SCDefinition.addTab("Propulsion" , icon_inertia, propulsionInputPanel, null);
 				TabPane_SCDefinition.addTab("Aerodynamic" , icon_aerodynamic, AerodynamicInputPanel, null);
 				TabPane_SCDefinition.addTab("GNC" , icon_aerodynamic, guidanceNavigationAndControlPanel, null);
@@ -3138,7 +3138,7 @@ while ((strLine3 = br6.readLine()) != null )   {
 	} else if (k==3){
 		GeometryFrame.setCoM(InitialState);
 	} else if (k==4){
-		GeometryFrame.setCoPr(InitialState);
+		GeometryFrame.setCoT(InitialState);
 	} else if (k==5){
 		GeometryFrame.setCoP(InitialState);
 	} else if (k==6){
@@ -3799,7 +3799,7 @@ fstream.close();
 	        			wr.write(r+System.getProperty( "line.separator" ));
         			} else if (i==4) {
         				// Center of propulsife Forces CoPr 
-	        			 r = GeometryFrame.getCoPr();
+	        			 r = GeometryFrame.getCoT();
 	        			wr.write(r+System.getProperty( "line.separator" ));
        			} else if (i==5) {
     				// Center of (aerodynamic) Pressure 

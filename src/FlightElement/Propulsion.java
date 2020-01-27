@@ -32,6 +32,9 @@ public class Propulsion {
 	
 	private double massFlowPrimary=0;
 	
+    private  double tvc_alpha_MAX_deg = 5;
+    private  double tvc_beta_MAX_deg  = 5;
+	
 	
 	public double getMassFlowPrimary() {
 		return massFlowPrimary;
@@ -270,6 +273,26 @@ public class Propulsion {
 	public void setSecondaryPropellant(double secondaryPropellant) {
 		this.secondaryPropellant = secondaryPropellant;
 		this.secondaryPropellantFillingLevel = secondaryPropellant;
+	}
+
+
+	public  double getTvc_alpha_MAX_deg() {
+		return tvc_alpha_MAX_deg;
+	}
+
+
+	public  void setTvc_alpha_MAX_deg(double tvc_alpha_MAX_deg) {
+		this.tvc_alpha_MAX_deg = tvc_alpha_MAX_deg;
+	}
+
+
+	public  double getTvc_beta_MAX_deg() {
+		return tvc_beta_MAX_deg;
+	}
+
+
+	public  void setTvc_beta_MAX_deg(double tvc_beta_MAX_deg) {
+		this.tvc_beta_MAX_deg = tvc_beta_MAX_deg;
 	}
 
 

@@ -12,7 +12,21 @@ public class SpaceShip {
 	Propulsion propulsion = new Propulsion();
 	AeroElements aeroElements = new AeroElements();
 	
+	double CoM  = 0;		// Center of Mass (on the center line with respect to the set zero)
+	double CoT  = 0;		// Center of thrust forces (on the center line with respect to the set zero)
+	double CoP  = 0;    // Center of (aerodynamic) Pressure; 
 	
+	double vehicleLength = 0;  // Vehicle length [m]
+	
+
+	public double getCoP() {
+		return CoP;
+	}
+
+
+	public void setCoP(double coP) {
+		CoP = coP;
+	}
 
 
 	public SpaceShip() {
@@ -67,6 +81,36 @@ public class SpaceShip {
 
 	public void setAeroElements(AeroElements aeroElements) {
 		this.aeroElements = aeroElements;
+	}
+
+
+	public double getCoM() {
+		return CoM;
+	}
+
+
+	public void setCoM(double coM) {
+		CoM = coM;
+	}
+
+
+	public double getCoT() {
+		return CoT;
+	}
+
+
+	public void setCoT(double coPr) {
+		CoT = coPr;
+	}
+
+
+	public double getVehicleLength() {
+		return vehicleLength;
+	}
+
+
+	public void setVehicleLength(double vehicleLength) {
+		this.vehicleLength = vehicleLength;
 	}
 	
 	

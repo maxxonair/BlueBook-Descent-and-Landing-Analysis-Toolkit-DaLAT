@@ -103,8 +103,8 @@ public class CenterPanelRight {
 	    mainPanel.setLayout(null);
 	    
 	    targetWindow = new JPanel();
-	    targetWindow.setSize(300, 300);
-	    targetWindow.setLocation(540, verticalSizer + 25 * 0   );
+	    targetWindow.setSize(250, 250);
+	    targetWindow.setLocation(417, verticalSizer + 25 * 0 -3  );
 	    targetWindow.setBackground(Color.GREEN);
 	    targetWindow.setForeground(labelColor);
 	    targetWindow.setBorder(Mars_border);
@@ -112,7 +112,7 @@ public class CenterPanelRight {
 	    mainPanel.add(targetWindow);
 	    
 	    JLabel LABEL_TARGETBODY = new JLabel("Target Body");
-	    LABEL_TARGETBODY.setLocation(163, verticalSizer + 25 * 2   );
+	    LABEL_TARGETBODY.setLocation(163, verticalSizer + 25 * 0   );
 	    LABEL_TARGETBODY.setSize(150, 20);
 	    LABEL_TARGETBODY.setBackground(backgroundColor);
 	    LABEL_TARGETBODY.setForeground(labelColor);
@@ -120,7 +120,7 @@ public class CenterPanelRight {
 	    
 		 Target_chooser = new JComboBox(Target_Options);
 		  //Target_chooser.setBackground(backgroundColor);
-		  Target_chooser.setLocation(2, verticalSizer + 25 * 2 );
+		  Target_chooser.setLocation(2, verticalSizer + 25 * 0 );
 		  Target_chooser.setSize(150,25);
 		  Target_chooser.setRenderer(new CustomRenderer());
 		  Target_chooser.setSelectedIndex(3);
@@ -151,7 +151,7 @@ public class CenterPanelRight {
 	    
 	    
 	    JLabel LABEL_VCoordinateSystem = new JLabel("Select Coordinate System to solve the Velocity Vector");
-	    LABEL_VCoordinateSystem.setLocation(5, verticalSizer + 25 * 3   );
+	    LABEL_VCoordinateSystem.setLocation(5, verticalSizer + 25 * 1   );
 	    LABEL_VCoordinateSystem.setSize(350, 20);
 	    LABEL_VCoordinateSystem.setBackground(backgroundColor);
 	    LABEL_VCoordinateSystem.setForeground(labelColor);
@@ -159,12 +159,12 @@ public class CenterPanelRight {
 	    
 	     SELECT_VelocityCartesian =new JRadioButton("Cartesian Velocity Coordinates");    
 	     SELECT_VelocitySpherical =new JRadioButton("Spherical Velocity Coordinates");      
-	    SELECT_VelocitySpherical.setLocation(5, verticalSizer + 25 * 4 );
+	    SELECT_VelocitySpherical.setLocation(5, verticalSizer + 25 * 2 );
 	    SELECT_VelocitySpherical.setSize(220,20);
 	    SELECT_VelocitySpherical.setBackground(backgroundColor);
 	    SELECT_VelocitySpherical.setForeground(labelColor);
 	    SELECT_VelocitySpherical.setFont(smallFont);
-	    SELECT_VelocityCartesian.setLocation(5, verticalSizer + 25 * 5);
+	    SELECT_VelocityCartesian.setLocation(5, verticalSizer + 25 * 3);
 	    SELECT_VelocityCartesian.setSize(220,20);
 	    SELECT_VelocityCartesian.setBackground(backgroundColor);
 	    SELECT_VelocityCartesian.setForeground(labelColor);
@@ -203,7 +203,7 @@ public class CenterPanelRight {
 	   });
 	   
 	   JLabel LABEL_SelectDoF = new JLabel("Select Degrees of Freedom");
-	   LABEL_SelectDoF.setLocation(5, verticalSizer + 25 * 6   );
+	   LABEL_SelectDoF.setLocation(5, verticalSizer + 25 * 4   );
 	   LABEL_SelectDoF.setSize(350, 20);
 	   LABEL_SelectDoF.setBackground(backgroundColor);
 	   LABEL_SelectDoF.setForeground(labelColor);
@@ -211,12 +211,12 @@ public class CenterPanelRight {
 	   
 	    SELECT_3DOF =new JRadioButton("3DOF Model");    
 	    SELECT_6DOF =new JRadioButton("6DOF Model");      
-	   SELECT_3DOF.setLocation(5, verticalSizer + 25 * 7 );
+	   SELECT_3DOF.setLocation(5, verticalSizer + 25 * 5 );
 	   SELECT_3DOF.setSize(220,20);
 	   SELECT_3DOF.setBackground(backgroundColor);
 	   SELECT_3DOF.setForeground(labelColor);
 	   SELECT_3DOF.setFont(smallFont);
-	   SELECT_6DOF.setLocation(5, verticalSizer + 25 * 8);
+	   SELECT_6DOF.setLocation(5, verticalSizer + 25 * 6);
 	   SELECT_6DOF.setSize(220,20);
 	   SELECT_6DOF.setBackground(backgroundColor);
 	   SELECT_6DOF.setForeground(labelColor);
@@ -254,7 +254,7 @@ public class CenterPanelRight {
 	  }); 
 	  
 	  JLabel LABEL_ControllerFrequency = new JLabel("Set Control Loop Frequency [Hz]");
-	  LABEL_ControllerFrequency.setLocation(INPUT_width, verticalSizer + 25 * 10 );
+	  LABEL_ControllerFrequency.setLocation(INPUT_width, verticalSizer + 25 * 7 );
 	  LABEL_ControllerFrequency.setSize(300, 20);
 	  LABEL_ControllerFrequency.setBackground(backgroundColor);
 	  LABEL_ControllerFrequency.setForeground(labelColor);
@@ -263,7 +263,7 @@ public class CenterPanelRight {
 	 
 	  
 	   INPUT_ControllerFrequency = new JTextField(10);
-	  INPUT_ControllerFrequency.setLocation(2, verticalSizer + 25 * 10);
+	  INPUT_ControllerFrequency.setLocation(2, verticalSizer + 25 * 7);
 	  INPUT_ControllerFrequency.setSize(INPUT_width-20, 20);
 	  //INPUT_M0.setBackground(backgroundColor);
 	  //INPUT_M0.setForeground(labelColor);
@@ -275,12 +275,13 @@ public class CenterPanelRight {
 
 		@Override
 		public void focusLost(FocusEvent e) {
+			setControllerFrequency(Double.parseDouble(INPUT_ControllerFrequency.getText()));
 			BlueBookVisual.WRITE_INIT();
 		}
 		  
 	  });
 	  mainPanel.add(INPUT_ControllerFrequency);
-	  
+	  /*
 	  JLabel LABEL_GlobalFrequency = new JLabel("Set Global Result Frequency [Hz]");
 	  LABEL_GlobalFrequency.setLocation(INPUT_width, verticalSizer + 25 * 11 );
 	  LABEL_GlobalFrequency.setSize(300, 20);
@@ -309,9 +310,9 @@ public class CenterPanelRight {
 		  
 	  });
 	  mainPanel.add(INPUT_GlobalFrequency);
-	  
-	  JLabel LABEL_IntegTime = new JLabel("Set Maximum Simulation Time [s]");
-	  LABEL_IntegTime.setLocation(INPUT_width, verticalSizer + 25 * 12 );
+	  */
+	  JLabel LABEL_IntegTime = new JLabel("Set Simulated Time Frame [s]");
+	  LABEL_IntegTime.setLocation(INPUT_width, verticalSizer + 25 * 8 );
 	  LABEL_IntegTime.setSize(300, 20);
 	  LABEL_IntegTime.setBackground(backgroundColor);
 	  LABEL_IntegTime.setForeground(labelColor);
@@ -320,7 +321,7 @@ public class CenterPanelRight {
 	 
 	  
 	   INPUT_GlobalTime = new JTextField(10);
-	  INPUT_GlobalTime.setLocation(2, verticalSizer + 25 * 12);
+	  INPUT_GlobalTime.setLocation(2, verticalSizer + 25 * 8);
 	  INPUT_GlobalTime.setSize(INPUT_width-20, 20);
 	  //INPUT_M0.setBackground(backgroundColor);
 	  //INPUT_M0.setForeground(labelColor);
@@ -344,8 +345,8 @@ public class CenterPanelRight {
 	  });
 	  mainPanel.add(INPUT_GlobalTime);
 	    
-	  JLabel LABEL_InitAttitude = new JLabel("Initial Attitude:");
-	  LABEL_InitAttitude.setLocation(2, verticalSizer + 25 * 13 );
+	  JLabel LABEL_InitAttitude = new JLabel("Initial Attitude Settings:");
+	  LABEL_InitAttitude.setLocation(2, verticalSizer + 25 * 9 );
 	  LABEL_InitAttitude.setSize(300, 20);
 	  LABEL_InitAttitude.setBackground(backgroundColor);
 	  LABEL_InitAttitude.setForeground(labelColor);
@@ -355,7 +356,7 @@ public class CenterPanelRight {
 	// Initial Attitude Setup 
 	//
 	  	AttitudeSetting aSetting = new AttitudeSetting();
-		aSetting.getMainPanel().setLocation(2, verticalSizer + 25 * 14);
+		aSetting.getMainPanel().setLocation(2, verticalSizer + 25 * 10);
 		aSetting.getMainPanel().setSize(900,450);
 		mainPanel.add(aSetting.getMainPanel());
 

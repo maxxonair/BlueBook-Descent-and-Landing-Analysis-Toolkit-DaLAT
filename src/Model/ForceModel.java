@@ -77,34 +77,35 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-
     actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet, integratorData);
     
     spaceShip = actuatorSet.getSpaceShip();
-    
-    
+        
     forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------
     	// 					    Force Definition - Thrust Forces | Body fixed Frame |
-    	//-------------------------------------------------------------------------------------------------------------------
-    
-	   	F_Thrust_B[0][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha())*Math.cos(actuatorSet.getTVC_beta());  
-	   	F_Thrust_B[1][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha())*Math.sin(actuatorSet.getTVC_beta());   
+    	//-------------------------------------------------------------------------------------------------------------------    
+    double tvcMomentum = forceMomentumSet.getThrustTotal() * Math.sin(actuatorSet.getTVC_alpha()) * ( spaceShip.getCoM() - spaceShip.getCoT() );
+
+    		F_Thrust_B[0][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha()) * Math.cos(actuatorSet.getTVC_beta());  
+	   	F_Thrust_B[1][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha()) * Math.sin(actuatorSet.getTVC_beta());   
 	   	F_Thrust_B[2][0] =  forceMomentumSet.getThrustTotal() * Math.sin(actuatorSet.getTVC_alpha());  
 	   	
-	   	M_Thrust_B[0][0] = actuatorSet.getMomentumRCS_X_is();
-	    M_Thrust_B[1][0] = actuatorSet.getMomentumRCS_Y_is();
-	   	M_Thrust_B[2][0] = actuatorSet.getMomentumRCS_Z_is();
+	   	M_Thrust_B[0][0] =  actuatorSet.getMomentumRCS_X_is();
+	    M_Thrust_B[1][0] =  actuatorSet.getMomentumRCS_Y_is() + tvcMomentum;
+	   	M_Thrust_B[2][0] =  actuatorSet.getMomentumRCS_Z_is();
 	   	
 	   	M_total_B = Mathbox.Addup_Matrices(M_Thrust_B , M_Aero_B);
-	   	//System.out.println(actuatorSet.getMomentumRCS_Y_is());
+
 	   	if(Math.abs(M_total_B[0][0])>0) {
-	   		forceMomentumSet.setRCSThrustX(spaceShip.getPropulsion().getSecondaryThrust_RCS_X()*Math.abs(controlCommandSet.getMomentumRCS_X_cmd()));
+	   		
+	   		forceMomentumSet.setRCSThrustX(spaceShip.getPropulsion().getSecondaryThrust_RCS_X()*Math.abs(controlCommandSet.getMomentumRCS_X_cmd()) );
 	   	} else {
 	   		forceMomentumSet.setRCSThrustX(0);
 	   	}
 	   	if(Math.abs(M_total_B[1][0])>0) {
-	   		forceMomentumSet.setRCSThrustY(spaceShip.getPropulsion().getSecondaryThrust_RCS_Y()*Math.abs(controlCommandSet.getMomentumRCS_Y_cmd()));
+	   		
+	   		forceMomentumSet.setRCSThrustY( spaceShip.getPropulsion().getSecondaryThrust_RCS_Y()*Math.abs(controlCommandSet.getMomentumRCS_Y_cmd())  );
 	   	} else {
 	   		forceMomentumSet.setRCSThrustY(0);
 	   	}
@@ -127,8 +128,7 @@ public class ForceModel {
     	forceMomentumSet.setF_Thrust_NED(F_Thrust_NED);
     	
     	F_total_NED   	= Mathbox.Addup_Matrices(F_Aero_NED , F_Thrust_NED );
-    	forceMomentumSet.setF_total_NED(F_total_NED);
-    	
+    	forceMomentumSet.setF_total_NED(F_total_NED);  	
     	//-------------------------------------------------------------------------------------------------------------------
     	// Prepare ResultSet
     	//-------------------------------------------------------------------------------------------------------------------

@@ -18,6 +18,8 @@ public class ActuatorModel {
 	
 	private static double currentTime;
 	
+	public static double PI    = 3.141592653589793238462643383279502884197169399375105820974944;
+	
 	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
 	
 	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
@@ -48,7 +50,11 @@ public class ActuatorModel {
 				controlCommandSet.getPrimaryThrustThrottleCmd()));} else {
     				actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
     			}
-		// Set Thrust 
+		
+		/**
+		 * 
+		 *  Set Main Thrust 
+		 */
 		if(primaryPropellant>0) {
 			double thrustIs =0;;
 			updatePrimaryThrustChangeLog(controlCommandSet.getPrimaryThrustThrottleCmd(), integratorData);
@@ -70,8 +76,8 @@ public class ActuatorModel {
 		}
 		
 		
-		actuatorSet.setTVC_alpha(controlCommandSet.getTVC_alpha());
-		actuatorSet.setTVC_beta(controlCommandSet.getTVC_beta());
+		actuatorSet.setTVC_alpha((controlCommandSet.getTVC_alpha() * spaceShip.getPropulsion().getTvc_alpha_MAX_deg()) * PI/180);
+		actuatorSet.setTVC_beta((controlCommandSet.getTVC_beta() * spaceShip.getPropulsion().getTvc_beta_MAX_deg()) * PI/180);
 		
 		
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX())) {

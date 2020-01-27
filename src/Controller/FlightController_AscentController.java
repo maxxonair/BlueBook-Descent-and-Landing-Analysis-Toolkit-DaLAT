@@ -6,11 +6,11 @@ import Model.DataSets.SensorSet;
 
 public class FlightController_AscentController extends FlightController {
 	
-	
+	 public static double PI    = 3.1415926535897932384626433832795028841971693993751058209749445;
 	PID pitch;
 	
 	public FlightController_AscentController() {
-		 pitch =  new PID(2.6, 0.001,3,-1, 1);
+		 pitch =  new PID(.4, 0.001,3,-1, 1);
 	}
 	
 	@Override
@@ -39,16 +39,47 @@ public class FlightController_AscentController extends FlightController {
 		
 		if(Math.toDegrees(flightPathInclination) > 5 ) {
 			ctrlError =  flightPathInclination - pitchIs;
-			//System.out.println(ctrlError);
+	
 		} else {
 			ctrlError  = 0;
 		}
 		
-		double Ycmd = -  PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
-		   
-		   
-			controlCommandSet.setMomentumRCS_Y_cmd(Ycmd);
+		/**
+		 * 
+		 * 	SQRT pitching 
+		 * 
+		 * 		that(t) = A * sqrt(t) ;
+		 */
+		double tMECO = 175; //[s]
+		double thetaMECO  = 20*PI/180 ; //[rad]
+		double A = thetaMECO / Math.sqrt(tMECO);
+		double t = sensorSet.getGlobalTime() -5;
+		double theta = A * Math.sqrt(t);
+		double pitchTarget = PI/2 - theta;
+		ctrlError = pitchTarget - pitchIs;
+		//System.out.println(t+"|"+(Math.toDegrees(ctrlError)));
+		//-----------------------------------
+		boolean isTVC = true;
 		
+		if(isTVC) {
+			/**
+			 * 
+			 * Pitch controlled by TVC (alpha)
+			 */
+			pitch.P = 0.001;
+			pitch.I = 0.0001;
+			pitch.D = 0.8;
+			double Ycmd =   PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+			//System.out.println(ctrlError+"|"+Ycmd);
+			controlCommandSet.setTVC_alpha(Ycmd);
+		} else {
+			/**
+			 * 
+			 * Pitch controlled by RCS (thruster MY)
+			 */
+			double Ycmd = - PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+			controlCommandSet.setMomentumRCS_Y_cmd(Ycmd);
+		}
 		//-------------------------------------------------------------------------------------------
 		// 			Roll Controll - Maintain horizontal attitude without bank angle
 		//-------------------------------------------------------------------------------------------

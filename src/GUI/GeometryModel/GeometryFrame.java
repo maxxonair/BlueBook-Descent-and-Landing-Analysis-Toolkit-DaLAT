@@ -40,7 +40,7 @@ public class GeometryFrame {
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	private static double CoM=0;
-	private static double CoPr=0;
+	private static double CoT=0;
 	private static double CoP=0;
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
@@ -130,16 +130,16 @@ public static void setCoM(double coM) {
 }
 
 
-public static double getCoPr() {
-	return CoPr;
+public static double getCoT() {
+	return CoT;
 	
 }
 
 
-public static void setCoPr(double coPr) {
-	CoPr = coPr;
-	ControlPanel.CoPrInput.setText(""+coPr);
-	canvas.setCoPr(Double.parseDouble(ControlPanel.CoPrInput.getText()));
+public static void setCoT(double coPr) {
+	CoT = coPr;
+	ControlPanel.CoTInput.setText(""+coPr);
+	canvas.setCoT(Double.parseDouble(ControlPanel.CoTInput.getText()));
 	try {
 		BlueBookVisual.WRITE_SC();
 	} catch (Exception e) {
