@@ -1,6 +1,5 @@
 package Simulator_main.DataSets;
 
-import FlightElement.SpaceShip;
 import Model.DataSets.MasterSet;
 
 public class RealTimeResultSet {
@@ -40,8 +39,6 @@ public class RealTimeResultSet {
 	
 	
 	private MasterSet masterSet; 
-	
-	private SpaceShip spaceShip; 
 	
 	private IntegratorData integratorData;
 	
@@ -89,13 +86,6 @@ public class RealTimeResultSet {
 		this.integratorData = integratorData;
 	}
 
-	public SpaceShip getSpaceShip() {
-		return spaceShip;
-	}
-
-	public void setSpaceShip(SpaceShip spaceShip) {
-		this.spaceShip = spaceShip;
-	}
 
 	public double getNormalizedDeceleration() {
 		return normalizedDeceleration;

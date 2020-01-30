@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 
 import GUI.BlueBookVisual;
 import GUI.DataStructures.InputFileSet;
+import utils.GuiReadInput;
 
 public class Data2DPlot extends DashboardPlotPanel {
 	//-------------------------------------------------------------------------------------------------------------
@@ -103,7 +104,7 @@ public class Data2DPlot extends DashboardPlotPanel {
 		frame.setLayout(new BorderLayout());
 
 		try {
-			analysisFile = BlueBookVisual.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
+			analysisFile = GuiReadInput.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
 			Data2DPlot dataplot = new Data2DPlot(0, analysisFile);
 			frame.add(dataplot.getMainPanel(), BorderLayout.CENTER);
 		} catch (IOException e) {

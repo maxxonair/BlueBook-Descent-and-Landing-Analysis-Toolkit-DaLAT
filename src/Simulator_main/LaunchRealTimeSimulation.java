@@ -28,6 +28,7 @@ import Sequence.SequenceContent;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
+import Simulator_main.DataSets.SimulatorInputSet;
 import utils.ReadInput;
 
 public class LaunchRealTimeSimulation {
@@ -58,83 +59,24 @@ public class LaunchRealTimeSimulation {
     	List<SequenceContent> SequenceSet = ReadInput.READ_sequenceFile();
     	
     	//------------------------------------------------------------------------------------------
-	double[] inputOut = ReadInput.readInput();
+	//double[] inputOut = ReadInput.readInput();
 	//------------------------------------------------------------------------------------------
 	//					Compile Integrator inputs from files:
 	//------------------------------------------------------------------------------------------
-	    	double rm = SimulationCore.DATA_MAIN[(int) inputOut[9]][0];
+	    	//double rm = SimulationCore.DATA_MAIN[(int) inputOut[9]][0];
 	    	//--------------------------------------------------------------------------------------
-	    	System.out.println("READ: Create SpaceShip");
-	    	SpaceShip spaceShip = new SpaceShip();
-	    	spaceShip.setInertiaTensorMatrix(ReadInput.readInertia());
-	    	spaceShip.setMass(inputOut[6]);
-	    	spaceShip.getAeroElements().setSurfaceArea(ReadInput.readSurfaceArea(inputOut[6]));
-	    	spaceShip.getAeroElements().setHeatshieldRadius(ReadInput.readAeroFile()[2]);
-	    	spaceShip.getAeroElements().setParachuteMass(70);
-	    	spaceShip.getAeroElements().setHeatShieldMass(120);
-	    	spaceShip.getPropulsion().setPrimaryISPMax(ReadInput.readPropulsionInput()[0]);
-	    	spaceShip.getPropulsion().setPrimaryPropellant(ReadInput.readPropulsionInput()[1]);
-	    	spaceShip.getPropulsion().setPrimaryThrustMax(ReadInput.readPropulsionInput()[2]);
-	    	spaceShip.getPropulsion().setPrimaryThrustMin(ReadInput.readPropulsionInput()[3]);	    	
-	    	spaceShip.getPropulsion().setRCSMomentumX(ReadInput.readPropulsionInput()[6]);
-	    	spaceShip.getPropulsion().setRCSMomentumY(ReadInput.readPropulsionInput()[7]);
-	    	spaceShip.getPropulsion().setRCSMomentumZ(ReadInput.readPropulsionInput()[8]);
-	    	spaceShip.getPropulsion().setSecondaryPropellant(ReadInput.readPropulsionInput()[12]);
-	    	spaceShip.getPropulsion().setSecondaryISP_RCS_X(ReadInput.readPropulsionInput()[13]);
-	    	spaceShip.getPropulsion().setSecondaryISP_RCS_Y(ReadInput.readPropulsionInput()[14]);
-	    	spaceShip.getPropulsion().setSecondaryISP_RCS_Z(ReadInput.readPropulsionInput()[15]);
-	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_X(ReadInput.readPropulsionInput()[9]);
-	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_Y(ReadInput.readPropulsionInput()[10]);
-	    	spaceShip.getPropulsion().setSecondaryThrust_RCS_Z(ReadInput.readPropulsionInput()[11]);
-	    	spaceShip.setCoM(ReadInput.readSCFile()[3]);
-	    	spaceShip.setCoT(ReadInput.readSCFile()[4]);
-	    	spaceShip.setVehicleLength(20);
+	    	System.out.println("READ: Create simulation input file");
+
+	    	SimulatorInputSet simulatorInputSet = ReadInput.readINP();
+	    	SpaceShip spaceShip =  simulatorInputSet.getSpaceShip();
 	    	
-	    	spaceShip.getAeroElements().setParachuteSurfaceArea(ReadInput.readSCFile()[2]);
+	    	IntegratorData integratorData = simulatorInputSet.getIntegratorData();
 	    	
-	    	if((int) ReadInput.readPropulsionInput()[4]==1) {
-	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
-	    		spaceShip.getPropulsion().setPrimaryISPMin(ReadInput.readPropulsionInput()[5]);
-	    	} else {
-	    		spaceShip.getPropulsion().setIsPrimaryThrottleModel(false);
-	    	}
-	    	//-------------------------------------------------------------------------------------
-			double[] IntegINP = ReadInput.readIntegratorInput((int) inputOut[8]);
-	    	IntegratorData integratorData = new IntegratorData();
- 	
-	    	
-    		double tGlobal = inputOut[7];
-    		double Frequency = inputOut[18];
+    		double tGlobal = integratorData.getMaxGlobalTime();
+    		double Frequency = integratorData.getControllerFrequency();
     		double tIncrement = 1/Frequency; 
-    		
-    		
 
-	    		integratorData.setIntegInput(IntegINP);	// !!! Must be called BEFORE .setIntegratorType !!!
-	    		integratorData.setIntegratorType((int) inputOut[8]);
-	    		integratorData.setTargetBody((int) inputOut[9]);
-	    		
-	    		integratorData.setInitLongitude(inputOut[0]*deg2rad);
-	    		integratorData.setInitLatitude(inputOut[1]*deg2rad);
-	    		integratorData.setInitRadius(inputOut[2]+inputOut[11]+rm);    		
-	    		
-	    		integratorData.setInitVelocity(inputOut[3]);
-	    		integratorData.setInitFpa(inputOut[4]*deg2rad);
-	    		integratorData.setInitAzimuth(inputOut[5]*deg2rad);
-	    		
-	    		integratorData.setVelocityVectorCoordSystem((int) inputOut[13]);
-
-	    		integratorData.setInitRotationalRateX(inputOut[15]*deg2rad);
-	    		integratorData.setInitRotationalRateY(inputOut[16]*deg2rad);
-	    		integratorData.setInitRotationalRateZ(inputOut[17]*deg2rad);	    		
-
-	    		integratorData.setRefElevation(inputOut[11]);
-	    		
-	    		integratorData.setInitialQuarterions(ReadInput.readInitialAttitude());
-	    		integratorData.setAeroDragModel((int) ReadInput.readAeroFile()[0]); 
-	    		integratorData.setAeroParachuteModel((int) ReadInput.readAeroFile()[3]);
-	    		integratorData.setConstParachuteCd((double) ReadInput.readAeroFile()[4]);
-	    		//integratorData.setDegreeOfFreedom((int) inputOut[14]);
-	    		integratorData.setDegreeOfFreedom(6);
+	    		integratorData.setDegreeOfFreedom(6);  // manual overwrite for now 
 	    		
 	    		integratorData.setAtmosphereNoiseModel(true);
 	    		integratorData.setActuatorNoiseModel(true);
@@ -144,12 +86,8 @@ public class LaunchRealTimeSimulation {
 	    		
 	    		RealTimeResultSet realTimeResultSet = new RealTimeResultSet();	    		
 	    		
-	    		integratorData.setIntegTimeStep(0.1);
-	    		integratorData.setMaxIntegTime(tIncrement);
-	    		
 	    	    ArrayList<String> steps = new ArrayList<String>();
     			RealTimeContainer realTimeContainer = new RealTimeContainer();	
-
     			
 		        long startTime   = System.nanoTime();	
 		    	System.out.println("------------------------------------------");
@@ -192,22 +130,22 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    	   //				  Get Master Controller Commands
 		    	   //---------------------------------------------------------------------------------------  		
 		    	    		controlCommandSet = MasterController.createMasterCommand(controlCommandSet, 
-		    	    	realTimeContainer, realTimeResultSet.getSpaceShip(), sensorSet, SequenceSet, Frequency);
+		    	    	realTimeContainer, realTimeResultSet.getMasterSet().getSpaceShip(), sensorSet, SequenceSet, Frequency);
 		    	   //---------------------------------------------------------------------------------------
 		    	   //				  Start incremental integration
 		    	   //---------------------------------------------------------------------------------------	
 
 		    	    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
 								integratorData, 
-								realTimeResultSet.getSpaceShip(),				 
+								realTimeResultSet.getMasterSet().getSpaceShip(),				 
 								controlCommandSet
 		    																			);	
 	    			}
 	  	      //---------------------------------------------------------------------------------------
 	    	      //				       Create Sensor Data
 	    	      //---------------------------------------------------------------------------------------
-	    		  sensorSet.setMasterSet(realTimeContainer.getMasterList().get(realTimeContainer.
-	    				  getMasterList().size() - 1));
+	    		  sensorSet.setMasterSet(realTimeContainer.getRealTimeList().get(realTimeContainer.
+	    				  getRealTimeList().size() - 1).getMasterSet());
 	    		  sensorSet.setRealTimeResultSet(realTimeResultSet);
 	    		  sensorSet.setGlobalTime(tIS);
 	    		    	   SensorModel.addVelocitySensorUncertainty(sensorSet,  4);
@@ -217,11 +155,12 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------
-	    		    	   for(int i=0;i<realTimeContainer.getMasterList().size();i++) {
+
+	    		    	   for(int i=0;i<realTimeContainer.getRealTimeList().size();i++) {
 	    		    		   integratorData.setGroundtrack(realTimeContainer.getRealTimeList().get(i).
 	    		    				   getIntegratorData().getGroundtrack());
 	    		    		   	steps = addStep(steps, realTimeContainer, integratorData, i);
-	    		    		   	
+	    		    		   //	System.out.println(i+"|"+realTimeContainer.getRealTimeList().get(i).getGlobalTime());
 	    		    		   	
 	    		    	   }
 	  	      //---------------------------------------------------------------------------------------
@@ -233,15 +172,15 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		  	  //---------------------------------------------------------------------------------------
 		  	  //				  Approximate Delta-V per controller step 
 		  	  //---------------------------------------------------------------------------------------	
-		        double primaryDeltaVIncrement =realTimeContainer.getMasterList().
-		        		get(realTimeContainer.getMasterList().size()-1).
+		        double primaryDeltaVIncrement =realTimeContainer.getRealTimeList().
+		        		get(realTimeContainer.getRealTimeList().size()-1).getMasterSet().
 		        		getActuatorSet().getPrimaryISP_is()*9.80665*Math.abs(realTimeContainer.
-		        				getRealTimeResultSet().getSpaceShip().getPropulsion().getMassFlowPrimary())/
+		        				getRealTimeResultSet().getMasterSet().getSpaceShip().getPropulsion().getMassFlowPrimary())/
 		        		realTimeContainer.getRealTimeResultSet().getSCMass()*tIncrement;
 		         
 		        
-		       realTimeContainer.getRealTimeResultSet().getSpaceShip().getPropulsion().setAccumulatedDeltaVPrimary(
-		    	   realTimeContainer.getRealTimeResultSet().getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+primaryDeltaVIncrement);
+		       realTimeContainer.getRealTimeResultSet().getMasterSet().getSpaceShip().getPropulsion().setAccumulatedDeltaVPrimary(
+		    	   realTimeContainer.getRealTimeResultSet().getMasterSet().getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+primaryDeltaVIncrement);
 	    		}
 
 		  	//---------------------------------------------------------------------------------------
@@ -280,13 +219,14 @@ private static void createWriteOut(ArrayList<String> steps) {
 private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContainer realTimeContainer, 
 										 IntegratorData integratorData, int subIndx) {
 	RealTimeResultSet realTimeResultSet = realTimeContainer.getRealTimeList().get(subIndx);
-	MasterSet masterSet = realTimeContainer.getMasterList().get(subIndx); 
+	MasterSet masterSet = realTimeContainer.getRealTimeList().get(subIndx).getMasterSet(); 
 	AtmosphereSet atmosphereSet = masterSet.getAtmosphereSet();
 	AerodynamicSet aerodynamicSet = masterSet.getAerodynamicSet();
 	GravitySet gravitySet = masterSet.getGravitySet();
 	ControlCommandSet controlCommandSet = masterSet.getControlCommandSet();
 	ForceMomentumSet forceMomentumSet = masterSet.getForceMomentumSet();
 	ActuatorSet actuatorSet = masterSet.getActuatorSet();
+	SpaceShip spaceShip = masterSet.getSpaceShip();
 	if(isPlot) {
 	dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
 			masterSet.getSpaceShip().getMass()));
@@ -363,7 +303,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
   	      realTimeResultSet.getEulerX()+" "+
   		  realTimeResultSet.getEulerY()+" "+
   	      realTimeResultSet.getEulerZ()+" "+
-  		  realTimeResultSet.getSpaceShip().getMass()+ " " +
+  		  realTimeResultSet.getMasterSet().getSpaceShip().getMass()+ " " +
   		  realTimeResultSet.getNormalizedDeceleration()+ " " +
   		  0+ " " + 
   		  realTimeResultSet.getVelocity()*Math.cos(realTimeResultSet.getFpa())+" "+
@@ -377,7 +317,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 		  (controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
 		  (actuatorSet.getPrimaryThrust_is())+" "+
 		  (actuatorSet.getPrimaryThrust_is()/realTimeResultSet.getSCMass())+" "+
-		  realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel()/realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
+		  realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel()/realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
 		  actuatorSet.getPrimaryISP_is()+" "+
 		  controlCommandSet.getMomentumRCS_X_cmd()+" "+
 		  controlCommandSet.getMomentumRCS_Y_cmd()+" "+
@@ -385,7 +325,7 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 		  actuatorSet.getMomentumRCS_X_is()+" "+
 		  actuatorSet.getMomentumRCS_Y_is()+" "+
 		  actuatorSet.getMomentumRCS_Z_is()+" "+
-		  realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel()/realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
+		  realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel()/realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
   		  controlCommandSet.getTVC_alpha()+" "+
   		  controlCommandSet.getTVC_beta()+" "+
 		  actuatorSet.getTVC_alpha()+" "+
@@ -396,14 +336,14 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
   		  0+" "+
   		  0+" "+
   		  0+" "+
-  		  realTimeResultSet.getSpaceShip().getPropulsion().getMassFlowPrimary()+" "+
-  		  (realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellant()-realTimeResultSet.getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel())+" "+
-  		  (realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellant()-realTimeResultSet.getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel())+" "+
+  		  spaceShip.getPropulsion().getMassFlowPrimary()+" "+
+  		  (spaceShip.getPropulsion().getPrimaryPropellant()-spaceShip.getPropulsion().getPrimaryPropellantFillingLevel())+" "+
+  		  (spaceShip.getPropulsion().getSecondaryPropellant()-spaceShip.getPropulsion().getSecondaryPropellantFillingLevel())+" "+
   		  0+" "+
   		  0+" "+
   		  0+" "+
   		  0+" "+
-  		  realTimeResultSet.getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+" "
+  		  spaceShip.getPropulsion().getAccumulatedDeltaVPrimary()+" "
   		  );
 	return steps;	
 }

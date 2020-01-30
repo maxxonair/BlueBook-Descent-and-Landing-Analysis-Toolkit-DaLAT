@@ -21,6 +21,9 @@ import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
 import GUI.BlueBookVisual.CustomRenderer;
+import GUI.FilePaths;
+import utils.GuiReadInput;
+import utils.WriteInput;
 
 public class SidePanelLeft {
 	
@@ -201,7 +204,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				Inertial2Rotating();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -220,7 +223,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				Inertial2Rotating();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -239,7 +242,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				Inertial2Rotating();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -256,7 +259,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			
 			}
 	    	  
@@ -276,7 +279,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				Inertial2Rotating();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -295,7 +298,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				Inertial2Rotating();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -313,7 +316,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				Inertial2Rotating();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -332,7 +335,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
 				Rotating2Inertial();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -350,7 +353,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
 				Rotating2Inertial();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -368,7 +371,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
 				Rotating2Inertial();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -437,7 +440,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
 				Rotating2Inertial();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -455,7 +458,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
 				Rotating2Inertial();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -473,7 +476,7 @@ public class SidePanelLeft {
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
 				Rotating2Inertial();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -520,7 +523,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -538,7 +541,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -556,7 +559,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -616,7 +619,7 @@ public class SidePanelLeft {
 		  Integrator_chooser.addActionListener(new ActionListener() { 
 	    	  public void actionPerformed(ActionEvent e) {
 	    		  Update_IntegratorSettings();
-	    		  BlueBookVisual.READ_INTEG();
+	    		  GuiReadInput.READ_INTEG();
 	    	  }
 	  	  } );
 		  Integrator_chooser.addFocusListener(new FocusListener() {
@@ -630,7 +633,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
-				 BlueBookVisual.WRITE_INIT();
+				 WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 			  
 		  });
@@ -665,7 +668,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INTEG();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -699,7 +702,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INTEG();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -733,7 +736,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INTEG();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -767,7 +770,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INTEG();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -801,7 +804,7 @@ public class SidePanelLeft {
 			@Override
 			public void focusLost(FocusEvent e) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_INTEG();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });

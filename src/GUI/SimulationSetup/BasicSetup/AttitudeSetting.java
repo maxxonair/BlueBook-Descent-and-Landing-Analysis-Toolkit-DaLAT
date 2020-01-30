@@ -21,11 +21,13 @@ import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
 import GUI.BlueBookVisual;
+import GUI.FilePaths;
 import GUI.GuiComponents;
 import GUI.FxElements.SpaceShipView3D;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import utils.Mathbox;
+import utils.WriteInput;
 
 public class AttitudeSetting {
     //-------------------------------------------------------------------------------------------------------------
@@ -106,7 +108,7 @@ public class AttitudeSetting {
 			@Override
 			public void focusLost(FocusEvent e) {
 				try {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				} catch (Exception ee ) {
 					System.err.print(ee);
 				}
@@ -148,7 +150,7 @@ public class AttitudeSetting {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				//------------------------------------------------------------------------------
 				double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
 									 {Double.parseDouble(INPUT_Quarternion2.getText())},
@@ -187,7 +189,7 @@ public class AttitudeSetting {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				//------------------------------------------------------------------------------
 				double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
 									 {Double.parseDouble(INPUT_Quarternion2.getText())},
@@ -226,7 +228,7 @@ public class AttitudeSetting {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				//------------------------------------------------------------------------------
 				double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
 									 {Double.parseDouble(INPUT_Quarternion2.getText())},
@@ -281,7 +283,7 @@ public class AttitudeSetting {
 				INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
 				INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
 				INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				INPUT_Euler1.setText(""+sliderEuler1.getValue());
 			}
 	    	   
@@ -303,7 +305,7 @@ public class AttitudeSetting {
 						INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
 						INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
 						INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
-						BlueBookVisual.WriteInitialAttitude();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 						INPUT_Euler2.setText(""+sliderEuler2.getValue());
 					}
 			    	   
@@ -325,7 +327,7 @@ public class AttitudeSetting {
 						INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
 						INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
 						INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
-						BlueBookVisual.WriteInitialAttitude();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 						INPUT_Euler3.setText(""+sliderEuler3.getValue());
 					}
 			    	   
@@ -345,7 +347,7 @@ public class AttitudeSetting {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				sliderEuler1.setValue(Integer.parseInt(INPUT_Euler1.getText()));
 			}
 	    	  
@@ -355,7 +357,7 @@ public class AttitudeSetting {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				if( Double.parseDouble(INPUT_Euler1.getText())>=-90 && Double.parseDouble(INPUT_Euler1.getText())<=90) {
 				sliderEuler1.setValue((int) Double.parseDouble(INPUT_Euler1.getText()));
 				}
@@ -388,7 +390,7 @@ public class AttitudeSetting {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				sliderEuler2.setValue(Integer.parseInt(INPUT_Euler2.getText()));
 			}
 	    	  
@@ -398,7 +400,7 @@ public class AttitudeSetting {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				if( Double.parseDouble(INPUT_Euler2.getText())>=-90 && Double.parseDouble(INPUT_Euler2.getText())<=90) {
 				sliderEuler2.setValue((int) Double.parseDouble(INPUT_Euler2.getText()));
 				}
@@ -431,7 +433,7 @@ public class AttitudeSetting {
 
 			@Override
 			public void focusLost(FocusEvent e) {
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				sliderEuler3.setValue(Integer.parseInt(INPUT_Euler3.getText()));
 			}
 	    	  
@@ -441,7 +443,7 @@ public class AttitudeSetting {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WriteInitialAttitude();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				if( Double.parseDouble(INPUT_Euler3.getText())>=-90 && Double.parseDouble(INPUT_Euler3.getText())<=90) {
 				sliderEuler3.setValue((int) Double.parseDouble(INPUT_Euler3.getText()));
 				}

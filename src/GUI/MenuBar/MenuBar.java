@@ -36,11 +36,13 @@ import javax.swing.filechooser.FileFilter;
 import org.apache.commons.io.FileUtils;
 
 import GUI.BlueBookVisual;
+import GUI.FilePaths;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.GeometryModel.GeometryFrame;
 import GUI.PostProcessing.CreateCustomChart;
 import GUI.Settings.Settings;
 import VisualEngine.engineLauncher.worldGenerator;
+import utils.GuiReadInput;
 
 public class MenuBar {
 	//-------------------------------------------------------------------------------------------------------------
@@ -179,7 +181,7 @@ public class MenuBar {
 	  	                File file = fileChooser.getSelectedFile() ;
 	  	                String filePath = file.getAbsolutePath();
 	  	                filePath = filePath.replaceAll(BlueBookVisual.RESULT_FileEnding, "");
-	  	                File source = new File(BlueBookVisual.RES_File);
+	  	                File source = new File(FilePaths.RES_File);
 	  	                File dest = new File(filePath+BlueBookVisual.RESULT_FileEnding);
                 	   try {
                 	       FileUtils.copyFile(source, dest);
@@ -763,9 +765,9 @@ public class MenuBar {
 		BlueBookVisual.MAIN_frame.setTitle(BlueBookVisual.PROJECT_TITLE + " - Scenario: " + CurrentWorkfileName);
 		BlueBookVisual.UPDATE_Page01(true);
 	      try {
-			  BlueBookVisual.READ_INPUT();	       
-			  BlueBookVisual.READ_INERTIA() ;
-			  BlueBookVisual.READ_InitialAttitude();
+			  GuiReadInput.READ_INPUT();	       
+			  GuiReadInput.READ_INERTIA() ;
+			  GuiReadInput.READ_InitialAttitude();
 		    	  BlueBookVisual.READ_sequenceFile();
 	      } catch(Exception e) {
 	    	  		System.out.println("ERROR: Reading input section after Case updated failed.");

@@ -231,18 +231,19 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	        
 	        static CoordinateTransformation coordinateTransformation ;
 	        
-	        public static SpaceShip spaceShip = new SpaceShip();
-	        public static IntegratorData integratorData = new IntegratorData();
-	        public static AtmosphereSet atmosphereSet = new AtmosphereSet();
-	        public static ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
-	        public static GravitySet gravitySet = new GravitySet();
-	        public static AerodynamicSet aerodynamicSet = new AerodynamicSet();
-	        public static ControlCommandSet controlCommandSet = new ControlCommandSet();
-	        public static ActuatorSet actuatorSet = new ActuatorSet();
-	        public static CurrentDataSet currentDataSet = new CurrentDataSet();
-	        public static ErrorSet errorSet = new ErrorSet();
-	        public static MasterSet masterSet = new MasterSet();
+	        private static SpaceShip spaceShip = new SpaceShip();
+	        private static IntegratorData integratorData = new IntegratorData();
+	        private static AtmosphereSet atmosphereSet = new AtmosphereSet();
+	        private static ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
+	        private static GravitySet gravitySet = new GravitySet();
+	        private static AerodynamicSet aerodynamicSet = new AerodynamicSet();
+	        private static ControlCommandSet controlCommandSet = new ControlCommandSet();
+	        private static ActuatorSet actuatorSet = new ActuatorSet();
+	        private static CurrentDataSet currentDataSet = new CurrentDataSet();
+	        private static ErrorSet errorSet = new ErrorSet();
+	        private static MasterSet masterSet = new MasterSet();
 	        
+
 	        //private static RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
@@ -679,9 +680,7 @@ ATM_DATA = AtmosphereModel.INITIALIZE_ATM_DATA(integratorData.getTargetBody());
 // TODO Auto-generated catch block
 e1.printStackTrace();
 }
-for (int i = 0;i<ATM_DATA.size();i++){
-//System.out.println(ATM_DATA.get(i).get_altitude() + " | " + ATM_DATA.get(i).get_density());
-}
+
 //----------------------------------------------------------------------------------------------
 // 						Result vector setup - DO NOT TOUCH
 int dimension = 16;
@@ -745,24 +744,31 @@ List<MasterSet> masterList = new ArrayList<MasterSet>();
 @SuppressWarnings("unused")
 List<RealTimeResultSet> realTimeList = new ArrayList<RealTimeResultSet>();
 RealTimeContainer realTimeContainer = new RealTimeContainer();
+
 //----------------------------------------------------------------------------------------------
   		
 	        StepHandler WriteOut = new StepHandler() {
-
+	        	  
+	        	
 	            public void init(double t0, double[] y0, double t) {
-
+	         
 	            }
 	            
 	            public void handleStep(StepInterpolator interpolator, boolean isLast) {
-	                double   t     = interpolator.getCurrentTime();
+	               // double   t     = interpolator.getCurrentTime();
 	                double[] ymo   = interpolator.getInterpolatedDerivatives();
 	                double[] y     = interpolator.getInterpolatedState();
-	               // System.out.println(y[6]);
+	                RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
-	         	    double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
-	         	   RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
-	                	realTimeResultSet.setTime(t);
-	                	realTimeResultSet.setGlobalTime(currentTime);
+	                 //double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
+	         	  // RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
+	         	    // System.out.println(stepCount);
+	                // currentGlobalTime = currentGlobalTime + val_dt;
+	         		
+	         	   // System.out.println(integratorData.getGlobalTime() + currentGlobalTime+"|"+val_dt);
+	                	//realTimeResultSet.setTime(currentGlobalTime);
+	                //realTimeResultSet.setGlobalTime(integratorData.getGlobalTime() + currentGlobalTime);
+	                	realTimeResultSet.setGlobalTime(currentDataSet.getGlobalTime());
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
 	                	realTimeResultSet.setRadius(r_ECEF_spherical[2]);
@@ -792,41 +798,41 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setGroundtrack(groundtrack);
 	                	integratorData.setGroundtrack(groundtrack);
 	                //if(masterSet.getActuatorSet().getPrimaryThrust_is()>10 && masterSet.getActuatorSet().getPrimaryThrust_is()<6000){	System.out.println(masterSet.getActuatorSet().getPrimaryThrust_is()); }
+	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
 	                	realTimeResultSet.setMasterSet(masterSet);
 	                	realTimeResultSet.setIntegratorData(integratorData);
-	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
-	                	realTimeResultSet.setSpaceShip(masterSet.getSpaceShip());
+	                	//RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
+	                //	realTimeResultSet.setSpaceShip(masterSet.getSpaceShip());
 	             
 	                masterList.add(masterSet);
 	                realTimeList.add(realTimeResultSet);
 	                
 	                
 	                if(isLast) {                	
-	                	realTimeContainer.setRealTimeResultSet(realTimeResultSet);
-	                	realTimeContainer.setMasterList(masterList);
-	                	realTimeContainer.setRealTimeList(realTimeList);
+		                	realTimeContainer.setRealTimeResultSet(realTimeResultSet);
+		                	realTimeContainer.setRealTimeList(realTimeList);
+		                //	currentGlobalTime=0;
 	                }
 	            }
 	            
 	        };
 
 	        IntegratorModule.addStepHandler(WriteOut);
-	        /*
-	        System.out.println("----------------------");
-	        for(int i=0;i<y.length;i++) {
-	        	System.out.println(y[i]);
-	        }
-	        */
+
 	        try {
-	       	double t= integratorData.getMaxIntegTime();
-	        	//double t=  0.1;
-	        	IntegratorModule.integrate(ode, 0.0, y, t, y);
+	        	double t= integratorData.getMaxIntegTime();  // integration interval 
+	        	//double t=  1;
+	        			IntegratorModule.integrate(ode, 0.0, y, t, y);
 	        } catch(NoBracketingException eNBE) {
 	        		System.out.println("ERROR: Integrator failed:");
 	        }
-
-			return realTimeContainer;
-	       
+	        /**
+	         * 
+	         * 
+	         * Return full result set 
+	         */
+				return realTimeContainer;
+			//---------------------------------------
 		}
 public static double getRef_ELEVATION() {
 	return ref_ELEVATION;

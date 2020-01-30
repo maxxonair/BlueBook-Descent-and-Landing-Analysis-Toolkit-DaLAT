@@ -25,11 +25,12 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
-
+import GUI.FilePaths;
 import GUI.BlueBookVisual.CustomRenderer;
 import GUI.FxElements.TargetWindow;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import utils.WriteInput;
 
 
 public class CenterPanelRight {
@@ -142,7 +143,7 @@ public class CenterPanelRight {
 			public void focusLost(FocusEvent arg0) {
 				// TODO Auto-generated method stub
 				targetIndx= Target_chooser.getSelectedIndex();
-				 BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 				 refreshTargetWindow();
 			}
 			  
@@ -184,7 +185,7 @@ public class CenterPanelRight {
 				} else if (SELECT_VelocityCartesian.isSelected()) {
 					VelocityCoordinateSystem = 2;
 				}
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	   });
 	   SELECT_VelocityCartesian.addActionListener(new ActionListener() {
@@ -197,7 +198,7 @@ public class CenterPanelRight {
 				} else if (SELECT_VelocityCartesian.isSelected()) {
 					VelocityCoordinateSystem = 2;
 				}
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	  	 
 	   });
@@ -235,7 +236,7 @@ public class CenterPanelRight {
 				} else if (SELECT_6DOF.isSelected()) {
 					DOF_System = 6;
 				}
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	 	 
 	  });
@@ -248,7 +249,7 @@ public class CenterPanelRight {
 				} else if (SELECT_6DOF.isSelected()) {
 					DOF_System = 6;
 				}
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	 	 
 	  }); 
@@ -276,7 +277,7 @@ public class CenterPanelRight {
 		@Override
 		public void focusLost(FocusEvent e) {
 			setControllerFrequency(Double.parseDouble(INPUT_ControllerFrequency.getText()));
-			BlueBookVisual.WRITE_INIT();
+			WriteInput.writeInputFile(FilePaths.inputFile);
 		}
 		  
 	  });
@@ -305,7 +306,7 @@ public class CenterPanelRight {
 
 		@Override
 		public void focusLost(FocusEvent e) {
-			//BlueBookVisual.WRITE_INIT();
+			//WriteInput.writeInputFile(BlueBookVisual.inputFile);
 		}
 		  
 	  });
@@ -339,7 +340,7 @@ public class CenterPanelRight {
 				System.out.println("ERROR/CenterPanelRight: Reading Gloabl Time failed - value set to 0.");
 				globalTime=0;
 			}
-			BlueBookVisual.WRITE_INIT();
+			WriteInput.writeInputFile(FilePaths.inputFile);
 		}
 		  
 	  });

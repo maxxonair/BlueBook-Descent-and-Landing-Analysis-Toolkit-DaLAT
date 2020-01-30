@@ -51,10 +51,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.PrintWriter;
 import java.net.URISyntaxException;
 
 import java.text.DecimalFormat;
@@ -63,7 +61,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.Scanner;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -79,10 +76,6 @@ import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import javax.swing.table.DefaultTableModel;
-import javax.swing.table.TableCellRenderer;
-import javax.swing.table.TableColumn;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.LineIterator;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartMouseEvent;
 import org.jfree.chart.ChartMouseListener;
@@ -102,19 +95,16 @@ import org.jfree.data.xy.XYSeriesCollection;
 import org.jfree.ui.RectangleEdge;
 import javax.swing.*;  
 
-import Sequence.SequenceElement;
 import Simulator_main.DataSets.RealTimeResultSet;
 import GUI.PropulsionDraw.PropulsionDrawEditor;
-import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.BasicSetupMain;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
-import VisualEngine.animation.AnimationSet;
-import utils.ReadInput;
+import utils.GuiReadInput;
+import utils.WriteInput;
 
 import com.apple.eawt.Application;
 
-import GUI.Dashboard.DashboardLeftPanel;
 import GUI.Dashboard.DashboardPanel;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.DataStructures.InputFileSet;
@@ -127,6 +117,7 @@ public class BlueBookVisual implements  ActionListener {
     //-----------------------------------------------------------------------------------------------------------------------------------------
 	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.3 ALPHA";
 	static boolean darkTheme = true; 
+	static boolean isSplashAnimation = true;
     static int x_init = 1350;
     static int y_init = 860 ;
     public static JFrame MAIN_frame;
@@ -134,38 +125,7 @@ public class BlueBookVisual implements  ActionListener {
     public static String CASE_FileEnding   = ".case";
     public static String RESULT_FileEnding = ".res";
     public static int OS_is = 1; 
-    //-----------------------------------------------------------------------------------------------------------------------------------------
-    //												Relative File Paths
-    //-----------------------------------------------------------------------------------------------------------------------------------------
-	public static String Elevation_File_RES4 	= "/ELEVATION/LRO_4.csv";
-	public static String Elevation_File_RES16	= "/ELEVATION/LRO_16.csv";
-	public static String Elevation_File_RES64 	= "/ELEVATION/LRO_16.csv";
-	public static String Elevation_File_RES128 	= "/ELEVATION/LRO_128.csv";
-	public static String LOCALELEVATIONFILE		= "/LocalElevation.inp";   		//
-    public static String Init_File   			= "/INP/init.inp" ;		    		// Input: Initial state
-    public static String RES_File    			= "/results.txt"  ;       	 	// Input: result file 
-    public static String CTR_001_File			= "/CTRL/cntrl_1.inp";		    // Controller 01 input file 
-    public static String Prop_File 	 			= "/INP/PROP/prop.inp";			// Main propulsion ystem input file 
-    public static String SEQU_File		 		= "/SEQU.res";					// Sequence output file 
-    public static String SC_file 				= "/INP/SC/sc.inp";
-    public static String ICON_File   	 		= "/images/BB_icon4.png";
-    public static String ERROR_File 				= "/INP/ErrorFile.inp";
-    public static String SEQUENCE_File   		= "/INP/sequence_1.inp"; 
-    public static String CONTROLLER_File			= "CTRL/ctrl_main.inp";
-	public static String MAP_EARTH				= "/MAPS/Earth_MAP.jpg";
-	public static String MAP_MOON				= "/MAPS/Moon_MAP.jpg";
-	public static String MAP_VENUS				= "/MAPS/Venus_MAP.jpg";
-	public static String MAP_MARS				= "/MAPS/Mars_MAP.jpg";
-	public static String MAP_SOUTHPOLE_MOON		= "/MAPS/Moon_South_Pole.jpg";
-	public static String EventHandler_File		= "/INP/eventhandler.inp";
-	public static String INTEG_File_01 			= "/INP/INTEG/00_DormandPrince853Integrator.inp";
-	public static String INTEG_File_02 			= "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp";
-	public static String INTEG_File_03 			= "/INP/INTEG/02_GraggBulirschStoerIntegrator.inp";
-	public static String INTEG_File_04 			= "/INP/INTEG/03_AdamsBashfordIntegrator.inp";
-	public static String INERTIA_File 		    = "/INP/INERTIA.inp";
-	public static String InitialAttitude_File   = "/INP/INITIALATTITUDE.inp";
-    public static String Aero_file 		        = System.getProperty("user.dir") + "/INP/AERO/aeroBasic.inp";
-    public static String sequenceFile 		    = System.getProperty("user.dir") + "/INP/sequenceFile.inp";
+
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
@@ -186,8 +146,6 @@ public class BlueBookVisual implements  ActionListener {
 	 };
 	
 	public static String BB_delimiter = " ";
-	//public static String CurrentWorkfile_Name = "";
-	//public static File CurrentWorkfile_Path = new File("");
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //											Styles, Fonts, Colors
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -205,19 +163,19 @@ public class BlueBookVisual implements  ActionListener {
    	
    	public static Color light_gray = new Color(230,230,230);
    	
-    static DecimalFormat decf 		  = new DecimalFormat("#.#");
-    static DecimalFormat decAngularRate =  new DecimalFormat("##.####");
-    static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
-    static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
+    public static DecimalFormat decf 		  = new DecimalFormat("#.#");
+    public static DecimalFormat decAngularRate =  new DecimalFormat("##.####");
+    public static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
+    public static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
     //static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
-    static Font small_font			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
-    static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
+    public static Font small_font			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
+    public static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     //static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
     
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     public static DecimalFormat df 	  = new DecimalFormat();
     
-    static List<JRadioButton> DragModelSet = new ArrayList<JRadioButton>();
+    public static List<JRadioButton> DragModelSet = new ArrayList<JRadioButton>();
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Variables and Container Arrays
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -430,12 +388,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     static DefaultTableModel MODEL_RAWData;
     static JTable TABLE_RAWData; 
 
-    
-    
-
-	 
-
-	 
 	 static int c_ERROR = 5;
 	 static Object[] ROW_ERROR = new Object[c_ERROR];
 	 static DefaultTableModel MODEL_ERROR;
@@ -445,10 +397,10 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 	 static Object[] ROW_EventHandler = new Object[c_EventHanlder];
 	 static DefaultTableModel MODEL_EventHandler;
 
-    static Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
-    static Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 1);
-    static Border Mars_border 	= BorderFactory.createLineBorder(Color.ORANGE, 1);
-    static Border Venus_border = BorderFactory.createLineBorder(Color.GREEN, 1);
+    public static Border Earth_border = BorderFactory.createLineBorder(Color.BLUE, 1);
+    public static Border Moon_border 	= BorderFactory.createLineBorder(Color.GRAY, 1);
+    public static Border Mars_border 	= BorderFactory.createLineBorder(Color.ORANGE, 1);
+    public static Border Venus_border = BorderFactory.createLineBorder(Color.GREEN, 1);
     public static JCheckBox p421_linp0;
 
     static XYSeriesCollection ResultSet_MercatorMap = new XYSeriesCollection();
@@ -474,38 +426,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	MainGUI = new JPanel();
     	MainGUI.setBackground(backgroundColor);
     	MainGUI.setLayout(new BorderLayout());
-    	//---------------------------------------------------------------------------------------
-    	//                Initialize paths from relative to absolute file paths
-    	//---------------------------------------------------------------------------------------
-    	 String dir = System.getProperty("user.dir");
-    	 
-    	 Init_File = dir + Init_File ;
-    	 RES_File  = dir + RES_File  ;
-    	 CTR_001_File  = dir + CTR_001_File  ;
-    	 Prop_File  = dir + Prop_File  ;
-    	 SEQU_File = dir + SEQU_File; 
-    	 ICON_File = dir + ICON_File; 
-    	 SEQUENCE_File = dir +SEQUENCE_File; 
-    	 ERROR_File = dir + ERROR_File; 
-    	 SC_file = dir + SC_file;
-    	 Elevation_File_RES4 = dir + Elevation_File_RES4 ;
-    	 Elevation_File_RES16 = dir + Elevation_File_RES16 ;
-    	 Elevation_File_RES64 = dir + Elevation_File_RES64 ;
-    	 Elevation_File_RES128 = dir + Elevation_File_RES128 ;
-    	 LOCALELEVATIONFILE = dir + LOCALELEVATIONFILE;
-    	 MAP_MARS = dir + MAP_MARS;
-    	 MAP_EARTH = dir + MAP_EARTH;
-    	 MAP_MOON = dir + MAP_MOON;
-    	 MAP_VENUS = dir + MAP_VENUS;
-    	 MAP_SOUTHPOLE_MOON = dir + MAP_SOUTHPOLE_MOON;
-    	 EventHandler_File = dir + EventHandler_File;
-    	 INTEG_File_01 = dir + INTEG_File_01;
-    	 INTEG_File_02 = dir + INTEG_File_02;
-    	 INTEG_File_03 = dir + INTEG_File_03;
-    	 INTEG_File_04 = dir + INTEG_File_04; 
-    	 INERTIA_File  = dir + INERTIA_File;
-    	 InitialAttitude_File = dir + InitialAttitude_File;
-    	 
 
     	// System.out.println(System.getProperty("os.name"));
     	 if(System.getProperty("os.name").contains("Mac")) {
@@ -523,7 +443,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
      // ---------------------------------------------------------------------------------
     	 //       Define Task (FileWatcher) Update Result Overview
     	 // ---------------------------------------------------------------------------------
-    	  task_Update = new FileWatcher( new File(RES_File) ) {
+    	  task_Update = new FileWatcher( new File(FilePaths.RES_File) ) {
     		    protected void onChange( File file ) {
 
           		  UPDATE_Page01(true);
@@ -789,7 +709,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
-							// TODO Auto-generated method stub
+				
 	        				for(int i=0;i<sequenceContentList.size();i++) {
 								if(sequenceContentList.get(i).isSelected()) {
         							System.out.println("Sequence "+i+" selected.");
@@ -888,7 +808,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void stateChanged(ChangeEvent arg0) {
-						WRITE_AERO();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 						//------------------------------------------------------------------------
 						int indx = getDragModelSetIndx();
 						for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
@@ -906,7 +826,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 						      AeroLeftBarAdditionalComponents.add(LABEL_CD);
 						      AerodynamicDragPanel.add(LABEL_CD);
 							
-					        ConstantCD_INPUT = new JTextField(""+readFromFile(Aero_file,1));
+					        ConstantCD_INPUT = new JTextField(""+readFromFile(FilePaths.Aero_file,1));
 					        ConstantCD_INPUT.setLocation(193, 5 + 25 * 2 );
 					        ConstantCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 					        ConstantCD_INPUT.setBorder(Moon_border);
@@ -919,7 +839,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 								@Override
 								public void focusLost(FocusEvent e) {
-									WRITE_AERO();
+									WriteInput.writeInputFile(FilePaths.inputFile);
 								}
 						   	  
 						     });
@@ -947,7 +867,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void stateChanged(ChangeEvent arg0) {
-							WRITE_AERO();
+							WriteInput.writeInputFile(FilePaths.inputFile);
 							//------------------------------------------------------------------------
 							int indx = getDragModelSetIndx();
 							for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
@@ -957,7 +877,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 							AerodynamicDragPanel.repaint();
 							if(indx==1) {							
 							     INPUT_RB = new JTextField(10);
-							     double value = readFromFile(Aero_file, 2);
+							     double value = readFromFile(FilePaths.Aero_file, 2);
 							     INPUT_RB.setText(""+value);
 							     INPUT_RB.setLocation(193, 5 + 25 * 3);;
 							     INPUT_RB.setSize(INPUT_width, 20);
@@ -970,7 +890,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 									@Override
 									public void focusLost(FocusEvent e) {
-										WRITE_AERO();
+										WriteInput.writeInputFile(FilePaths.inputFile);
 									}
 							   	  
 							     });
@@ -1003,7 +923,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void stateChanged(ChangeEvent arg0) {
-							WRITE_AERO();
+							WriteInput.writeInputFile(FilePaths.inputFile);
 							for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
 								AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
 							}
@@ -1019,7 +939,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 							      AeroParachuteBarAdditionalComponents.add(LABEL);
 							      AerodynamicParachuteOptionPanel.add(LABEL);
 							      
-							        ConstantParachuteCD_INPUT = new JTextField(""+readFromFile(Aero_file,4));
+							        ConstantParachuteCD_INPUT = new JTextField(""+readFromFile(FilePaths.Aero_file,4));
 							        ConstantParachuteCD_INPUT.setLocation(3, 5 + 25 * 2 );
 							        ConstantParachuteCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
 							        ConstantParachuteCD_INPUT.setBorder(Moon_border);
@@ -1032,7 +952,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 										@Override
 										public void focusLost(FocusEvent e) {
-											WRITE_AERO();
+											WriteInput.writeInputFile(FilePaths.inputFile);
 										}
 								   	  
 								     });
@@ -1046,7 +966,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void stateChanged(ChangeEvent arg0) {
-							WRITE_AERO();
+							WriteInput.writeInputFile(FilePaths.inputFile);
 							for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
 								AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
 							}
@@ -1211,8 +1131,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 		@Override
 		public void focusLost(FocusEvent e) {
-			WRITE_INIT();
-			WRITE_PROP();
+			WriteInput.writeInputFile(FilePaths.inputFile);
+			WriteInput.writeInputFile(FilePaths.inputFile);
 		}
   	  
     });
@@ -1271,7 +1191,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1300,7 +1220,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1327,7 +1247,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1356,7 +1276,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1383,7 +1303,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1412,7 +1332,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1439,7 +1359,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1468,7 +1388,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1496,7 +1416,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WriteINERTIA();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			    	  
 			      });
@@ -1630,8 +1550,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 				@Override
 				public void focusLost(FocusEvent e) {
-					WRITE_INIT();
-					WRITE_PROP();
+					WriteInput.writeInputFile(FilePaths.inputFile);
+					WriteInput.writeInputFile(FilePaths.inputFile);
 				}
 		    	  
 		      });
@@ -1658,8 +1578,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 				@Override
 				public void focusLost(FocusEvent e) {
-					WRITE_INIT();
-					WRITE_PROP();
+					WriteInput.writeInputFile(FilePaths.inputFile);
+					WriteInput.writeInputFile(FilePaths.inputFile);
 				}
 		   	  
 		     });
@@ -1686,8 +1606,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 				@Override
 				public void focusLost(FocusEvent e) {
-					WRITE_INIT();
-					WRITE_PROP();
+					WriteInput.writeInputFile(FilePaths.inputFile);
+					WriteInput.writeInputFile(FilePaths.inputFile);
 				}
 		   	  
 		     });
@@ -1714,8 +1634,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 				@Override
 				public void focusLost(FocusEvent e) {
-					WRITE_INIT();
-					WRITE_PROP();
+					WriteInput.writeInputFile(FilePaths.inputFile);
+					WriteInput.writeInputFile(FilePaths.inputFile);
 				}
 		   	  
 		     });
@@ -1738,7 +1658,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 		     INPUT_ISPMODEL.setForeground(valueColor);
 		     INPUT_ISPMODEL.addItemListener(new ItemListener() {
 		       	 public void itemStateChanged(ItemEvent e) {
-		       		WRITE_PROP();
+		       		WriteInput.writeInputFile(FilePaths.inputFile);
 		       	 }
 		                  });
 		     INPUT_ISPMODEL.setHorizontalAlignment(0);
@@ -1767,8 +1687,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 				@Override
 				public void focusLost(FocusEvent e) {
-					WRITE_INIT();
-					WRITE_PROP();
+					WriteInput.writeInputFile(FilePaths.inputFile);
+					WriteInput.writeInputFile(FilePaths.inputFile);
 				}
 		   	  
 		     });
@@ -1834,8 +1754,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-					//	WRITE_INIT();
-						WRITE_PROP();
+					//	WriteInput.writeInputFile(FilePaths.inputFile);
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			   	  
 			     });
@@ -1863,8 +1783,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-					//	WRITE_INIT();
-						WRITE_PROP();
+					//	WriteInput.writeInputFile(FilePaths.inputFile);
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			   	  
 			     });
@@ -1892,8 +1812,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-					//	WRITE_INIT();
-						WRITE_PROP();
+					//	WriteInput.writeInputFile(FilePaths.inputFile);
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			   	  
 			     });
@@ -1971,8 +1891,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2000,8 +1920,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2029,8 +1949,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2058,8 +1978,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2087,8 +2007,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2116,8 +2036,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2145,8 +2065,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void focusLost(FocusEvent e) {
-						//	WRITE_INIT();
-							WRITE_PROP();
+						//	WriteInput.writeInputFile(FilePaths.inputFile);
+							WriteInput.writeInputFile(FilePaths.inputFile);
 						}
 				   	  
 				     });
@@ -2169,8 +2089,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 		      LABEL_BallisticCoefficient.setForeground(labelColor);
 		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
 		      
-			     double value = Math.sqrt(4/PI*readFromFile(SC_file, 2));
-			     //System.out.println(readFromFile(Aero_file, 2)+" | "+value); 
+			     double value = Math.sqrt(4/PI*readFromFile(FilePaths.SC_file, 2));
+			     //System.out.println(readFromFile(FilePaths.Aero_file, 2)+" | "+value); 
 			     INPUT_ParachuteDiameter = new JTextField(""+decAngularRate.format(value)){
 					    /**
 						 * 
@@ -2193,7 +2113,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WRITE_SC();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 					}
 			   	  
 			     });
@@ -2232,7 +2152,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WRITE_SC();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 						EvaluateSurfaceAreaSetup() ;
 					}
 			   	  
@@ -2251,7 +2171,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 					@Override
 					public void focusLost(FocusEvent e) {
-						WRITE_SC();
+						WriteInput.writeInputFile(FilePaths.inputFile);
 						EvaluateSurfaceAreaSetup() ;
 					}
 			   	  
@@ -2306,7 +2226,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
 						@Override
 						public void actionPerformed(ActionEvent arg0) {
-							// TODO Auto-generated method stub
+						
 							if(RB_SurfaceArea.isSelected()) {
 								double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
 								double mass = Double.parseDouble(INPUT_M0.getText());
@@ -2471,13 +2391,10 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 		        
 		        
 
-		    		    
+		    		    /*
 		    		    //---------------------------------------------------------------------------------------------
 		    		    TABLE_ERROR = new JTable(){
-		    			   	 
-		    		    	/**
-		    				 * 
-		    				 */
+		  
 		    				private static final long serialVersionUID = 1L;
 
 		    				@Override
@@ -2495,9 +2412,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 		    		    
 		    			Action action5 = new AbstractAction()
 		    		    {
-		    		        /**
-		    				 * 
-		    				 */
+		    		        
 		    				private static final long serialVersionUID = 1L;
 
 		    				public void actionPerformed(ActionEvent e)
@@ -2557,7 +2472,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 		    			    TABLE_ERROR_ScrollPane.getHorizontalScrollBar().setBackground(backgroundColor);
 		    			    TABLE_ERROR_ScrollPane.setBackground(backgroundColor);
 		    			    SplitPane_Page2_Charts_HorizontalSplit.add(TABLE_ERROR_ScrollPane, JSplitPane.RIGHT);
-
+*/
         //-----------------------------------------------------------------------------------------
         // Page 4.3
         //-----------------------------------------------------------------------------------------
@@ -2690,7 +2605,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
         Page04_subtabPane.setSelectedIndex(0);
     		//CreateChart_A01();
         // The following prevents long load up times when opening the GUI 
-    		try {     long filesize = 	new File(RES_File).length()/1000000;
+    		try {     long filesize = 	new File(FilePaths.RES_File).length()/1000000;
 			    	    if(filesize<10) {
 							SET_MAP(indx_target);
 			    	    }
@@ -2701,8 +2616,9 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 				System.out.println("ERROR: Loading map failed.");
 			}
         //------------------------------------------------------------------------
-        	// Check filesize 
-    	    long filesize = 	new File(RES_File).length()/1000000;
+ 
+    		// Check filesize 
+    	    long filesize = 	new File(FilePaths.RES_File).length()/1000000;
     	    try {
     	    if(filesize<10) {
     		UPDATE_Page01(true);
@@ -2710,7 +2626,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	    	UPDATE_Page01(false);
     	    	System.out.println("Full data import supressed. Filesize prohibits fast startup.");
     	    }
-    	    READ_INPUT();
+       	    GuiReadInput.READ_INPUT();
     	    DashboardPlotArea.setAnalysisFile(analysisFile);
     	    DashboardPlotArea.setTargetIndx(indx_target);
     	   // dashboardPlotArea.updateDashboardPlotArea(dashboardPlotArea.getContentPanelList());
@@ -2718,8 +2634,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	       CenterPanelRight.createTargetWindow();
    	       
     	       
-    		READ_INERTIA() ;
-    		READ_InitialAttitude();
+    		GuiReadInput.READ_INERTIA() ;
+    		GuiReadInput.READ_InitialAttitude();
     		//Update_ErrorIndicator();
     		  SidePanelLeft.Update_IntegratorSettings();
     	     // Update_DashboardFlexibleChart2();
@@ -2752,7 +2668,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     
 	public static void UPDATE_Page01(boolean fullImport){
 		  try {
-			READ_INPUT();
+			GuiReadInput.READ_INPUT();
 			if(fullImport) {
 			READ_RAWDATA();
 			SET_MAP(indx_target);
@@ -2780,7 +2696,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
     
     public static void READ_sequenceFile() throws IOException{	
-		BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
+		BufferedReader br = new BufferedReader(new FileReader(FilePaths.sequenceFile));
        String strLine;
        String fcSeparator="\\|FlightControllerElements\\|";
        String eventSeparator="\\|EventManagementElements";
@@ -2822,343 +2738,12 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 
    }
     
-    public static void READ_INERTIA() throws NumberFormatException, IOException {
-		BufferedReader br = new BufferedReader(new FileReader(INERTIA_File));
-	       String strLine;
-	       int j=0;
-	       try {
-	       while ((strLine = br.readLine()) != null )   {
-		       	String[] tokens = strLine.split(" ");
-		       	if(j==0) {
-		       		INPUT_IXX.setText(tokens[0]);
-		       		INPUT_IXY.setText(tokens[1]);
-		       		INPUT_IXZ.setText(tokens[2]);
-		       	} else if (j==1) {
-		       		INPUT_IYX.setText(tokens[0]);
-		       		INPUT_IYY.setText(tokens[1]);
-		       		INPUT_IYZ.setText(tokens[2]);
-		       	} else if (j==2) {
-		       		INPUT_IZX.setText(tokens[0]);
-		       		INPUT_IZY.setText(tokens[1]);
-		       		INPUT_IZZ.setText(tokens[2]);
-		       	}
-		       	
-		       	j++;
-	       }
-	       br.close();
-	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-    }
-    public static void READ_INPUT() throws IOException{
-    	double InitialState = 0;
-       	FileInputStream fstream = null; 
-try {
-              fstream = new FileInputStream(Init_File);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading init.inp failed.");} 
-        DataInputStream in = new DataInputStream(fstream);
-        @SuppressWarnings("resource")
-		BufferedReader br = new BufferedReader(new InputStreamReader(in));
-        String strLine;
-        int k = 0;
-        try {
-        while ((strLine = br.readLine()) != null )   {
-        	String fullLine = strLine;
-        //	System.out.println(fullLine);
-        	String[] tokens = strLine.split(" ");
-        if (k==0){
-        	InitialState = Double.parseDouble(tokens[0]);
-         	DashboardLeftPanel.INDICATOR_LONG.setText(decf.format(InitialState));
-        		SidePanelLeft.INPUT_LONG_Rs.setText(df_X4.format(InitialState));
-        	} else if (k==1){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_LAT.setText(decf.format( InitialState));
-        		SidePanelLeft.INPUT_LAT_Rs.setText(df_X4.format( InitialState));
-        	} else if (k==2){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_ALT.setText(decf.format( InitialState));
-        		SidePanelLeft.INPUT_ALT_Rs.setText(decf.format( InitialState));
-        	} else if (k==3){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_VEL.setText(decf.format(InitialState));
-        		SidePanelLeft.INPUT_VEL_Rs.setText(decf.format(InitialState));
-        	} else if (k==4){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_FPA.setText(decf.format(InitialState));
-        		SidePanelLeft.INPUT_FPA_Rs.setText(df_X4.format(InitialState));
-        	} else if (k==5){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_AZI.setText(decf.format(InitialState));
-        		SidePanelLeft.INPUT_AZI_Rs.setText(df_X4.format(InitialState));
-        	} else if (k==6){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_M0.setText(decf.format(InitialState));
-        		INPUT_M0.setText(decf.format(InitialState));
-        	} else if (k==7){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	DashboardLeftPanel.INDICATOR_INTEGTIME.setText(decf.format(InitialState));
-        		CenterPanelRight.setGlobalTime(InitialState);
-        		 //MODEL_EventHandler.setValueAt(decf.format(InitialState), 0, 1);
-        	} else if (k==8){
-            	InitialState = Double.parseDouble(tokens[0]);
-        		int Integ_indx = (int) InitialState;
-        		SidePanelLeft.Integrator_chooser.setSelectedIndex(Integ_indx);
-        } else if (k==9){
-        	InitialState = Double.parseDouble(tokens[0]);
-        		int Target_indx = (int) InitialState;
-        		indx_target = (int) InitialState; 
-        		RM = DATA_MAIN[indx_target][0];
-        		DashboardLeftPanel.INDICATOR_TARGET.setText(Target_Options[indx_target]);
-        		CenterPanelRight.setTargetIndx(Target_indx);
-                if(indx_target==0) {
-                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Earth_border);
-                } else if(indx_target==1){
-                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Moon_border);
-                } else if(indx_target==2){
-                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Mars_border);
-                } else if(indx_target==3){
-                	DashboardLeftPanel.INDICATOR_TARGET.setBorder(Venus_border);
-                }
-            } else if (k==10){
-            	//InitialState = Double.parseDouble(tokens[0]);
-	            //	INPUT_WRITETIME.setText(decf.format(InitialState)); // write dt
-	        	InitialState = Double.parseDouble(tokens[0]);
-		    	CenterPanelRight.setGlobalFrequency(InitialState);
-            } else if (k==11){
-            	InitialState = Double.parseDouble(tokens[0]);
-            	SidePanelLeft.INPUT_REFELEV.setText(decf.format(InitialState));       // Reference Elevation
-		    } else if (k==12) {
-		    	    // Time format :
-		    		String UTCTime = fullLine;
-		    		//System.out.println("handover string: "+UTCTime);
-		    		SidePanelLeft.timePanel.updateTimeFromString(UTCTime);	    	
-		    } else if (k==13) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-			    	int Integ_indx = (int) InitialState;
-			    	CenterPanelRight.setVelocityCoordinateSystem(Integ_indx);
-		    } else if (k==14) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-			    	int Integ_indx = (int) InitialState;
-			    	CenterPanelRight.setDOF_System(Integ_indx);
-		    } else if (k==15) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-		    	SidePanelLeft.INPUT_AngularRate_X.setText(decAngularRate.format(InitialState));
-		    } else if (k==16) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-		    	SidePanelLeft.INPUT_AngularRate_Y.setText(decAngularRate.format(InitialState));
-		    } else if (k==17) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-		    	SidePanelLeft.INPUT_AngularRate_Z.setText(decAngularRate.format(InitialState));
-		    } else if(k==18) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-		    CenterPanelRight.setControllerFrequency(InitialState);
-		    }else if(k==19) {
-	        	InitialState = Double.parseDouble(tokens[0]);
-		    	CenterPanelRight.setGlobalFrequency(InitialState);
-		    }
-        	k++;
-        }
-        in.close();
-        br.close();
-        fstream.close();
-        } catch (NullPointerException eNPE) { System.out.println(eNPE);}
 
-    //------------------------------------------------------------------
-    // Read from PROP
-    try {
-        fstream = new FileInputStream(Prop_File);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading prop.inp failed.");} 
-  DataInputStream in3 = new DataInputStream(fstream);
-  @SuppressWarnings("resource")
-  BufferedReader br4 = new BufferedReader(new InputStreamReader(in3));
-  k = 0;
-  String strLine3;
-  try {
-  while ((strLine3 = br4.readLine()) != null )   {
-  	String[] tokens = strLine3.split(" ");
-  	if(tokens[0].isEmpty()==false) {
-  	InitialState = Double.parseDouble(tokens[0]);
-  	} else {
-  		InitialState =0; 
-  	}
-    if (k==0){
-    	INPUT_ISP.setText(df_X4.format(InitialState)); 
-  	} else if (k==1){
-  		INPUT_PROPMASS.setText(df_X4.format(InitialState)); 
-  	//System.out.println(RM);
-  	} else if (k==2){
-  		INPUT_THRUSTMAX.setText(df_X4.format(InitialState));
-  	} else if (k==3){
-  		INPUT_THRUSTMIN.setText(df_X4.format(InitialState)); 
-  	} else if (k==4){
-  		int value = (int) InitialState; 
-  		if(value==1) {INPUT_ISPMODEL.setSelected(true);}else {INPUT_ISPMODEL.setSelected(false);}
-  	} else if (k==5){
-  		INPUT_ISPMIN.setText(df_X4.format(InitialState)); 
-  	} else if (k==6){
-  		INPUT_RCSX.setText(df_X4.format(InitialState)); 
-  	} else if (k==7){
-  		INPUT_RCSY.setText(df_X4.format(InitialState));
-  	} else if (k==8) {
-  		INPUT_RCSZ.setText(df_X4.format(InitialState));
-  	} else if (k==9) {
-  		INPUT_RCSXTHRUST.setText(df_X4.format(InitialState));
-  	} else if (k==10) {
-  		INPUT_RCSYTHRUST.setText(df_X4.format(InitialState));
-  	} else if (k==11) {
-  		INPUT_RCSZTHRUST.setText(df_X4.format(InitialState));
-  	} else if(k==12) {
-  		INPUT_RCSTANK.setText(df_X4.format(InitialState));
-  	} else if(k==13) {
-  		INPUT_RCSXISP.setText(df_X4.format(InitialState));
-  	} else if(k==14) {
-  		INPUT_RCSYISP.setText(df_X4.format(InitialState));
-  	} else if(k==15) {
-  		INPUT_RCSZISP.setText(df_X4.format(InitialState));
-  	}
-  	k++;
-  }
-  in3.close();
-  br4.close();
-  fstream.close();
-  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
-  //------------------------------------------------------------------
-  // Read from AERO
-  try {
-      fstream = new FileInputStream(Aero_file);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading aeroBasic.inp failed.");} 
-DataInputStream in55 = new DataInputStream(fstream);
-@SuppressWarnings("resource")
-BufferedReader br55 = new BufferedReader(new InputStreamReader(in55));
-k = 0;
-String strLine55;
-try {
-while ((strLine55 = br55.readLine()) != null )   {
-	String[] tokens = strLine55.split(" ");
-	if(tokens[0].isEmpty()==false) {
-	InitialState = Double.parseDouble(tokens[0]);
-	} else {
-		InitialState =0; 
-	}
-    if (k==0){
-	  int index = (int) InitialState; 
-		for(int j=0;j<DragModelSet.size();j++) {
-			if(j==index) {
-				DragModelSet.get(j).setSelected(true);
-			}
-		}
-	} else if (k==1){
-		ConstantCD_INPUT.setText(""+InitialState);
-	//System.out.println(RM);
-	} else if (k==2){
-		INPUT_RB.setText(""+(InitialState)); 
-	} else if (k==5) {
-		
-	}
-	k++;
-}
-in55.close();
-br55.close();
-fstream.close();
-} catch (NullPointerException eNPE) { System.out.println(eNPE);}  
-//--------------------------------------------------------------------------------------------------------
-  //--------------------------------------------------------------------------------------------------------
-  // Integrator settings 
-  //--------------------------------------------------------------------------------------------------------
-	String integ_file = null;  
-	if(	SidePanelLeft.Integrator_chooser.getSelectedIndex()==0) {
-		integ_file = INTEG_File_01; 
-	} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==1) {
-		integ_file = INTEG_File_02; 
-	} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==2) {
-		integ_file = INTEG_File_03; ;
-	} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==3) {
-		integ_file = INTEG_File_04; 
-	}
-    try {
-        fstream = new FileInputStream(integ_file);
-} catch(IOException | NullPointerException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
-  in3 = new DataInputStream(fstream);
-  @SuppressWarnings("resource")
-  BufferedReader br5 = new BufferedReader(new InputStreamReader(in3));
-  k = 0;
-  try {
-  while ((strLine3 = br5.readLine()) != null )   {
-  	String[] tokens = strLine3.split(" ");
-  	InitialState = Double.parseDouble(tokens[0]);
-    if (k==0){
-    		SidePanelLeft.INPUT_IntegratorSetting_01.setText(""+(InitialState)); 
-  	} else if (k==1){
-  		SidePanelLeft.INPUT_IntegratorSetting_02.setText(""+(InitialState)); 
-  	} else if (k==2){
-  		SidePanelLeft.INPUT_IntegratorSetting_03.setText(""+(InitialState)); 
-  	} else if (k==3){
-  		SidePanelLeft.INPUT_IntegratorSetting_04.setText(""+(InitialState)); 
-  	} else if (k==4){
-  		SidePanelLeft.INPUT_IntegratorSetting_05.setText(""+(InitialState)); 
-  	} else if (k==5){
-
-  	} else if (k==6){
-
-  	} else if (k==7){
-
-  	}
-  	k++;
-  }
-  in3.close();
-  br5.close();
-  fstream.close();
-  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  
-  //-------------------------------------------------------------------------------------------------------------------
-  try {
-      fstream = new FileInputStream(SC_file);
-} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
-in3 = new DataInputStream(fstream);
-@SuppressWarnings("resource")
-BufferedReader br6 = new BufferedReader(new InputStreamReader(in3));
-k = 0;
-try {
-while ((strLine3 = br6.readLine()) != null )   {
-	String[] tokens = strLine3.split(" ");
-	InitialState = Double.parseDouble(tokens[0]);
-  if (k==0){
-  		INPUT_SURFACEAREA.setText(""+(InitialState)); 
-  		if(InitialState!=0) {
-  			RB_SurfaceArea.setSelected(true);
-  			INPUT_SURFACEAREA.setEditable(true);
-  			INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-  		}
-	} else if (k==1){
-		INPUT_BALLISTICCOEFFICIENT.setText(""+(InitialState)); 
-  		if(InitialState!=0) {
-  			RB_BallisticCoefficient.setSelected(true);
-  			INPUT_SURFACEAREA.setEditable(false);
-  			INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
-  		}
-	} else if (k==2){
-		
-	} else if (k==3){
-		GeometryFrame.setCoM(InitialState);
-	} else if (k==4){
-		GeometryFrame.setCoT(InitialState);
-	} else if (k==5){
-		GeometryFrame.setCoP(InitialState);
-	} else if (k==6){
-
-	} else if (k==7){
-
-	}
-	k++;
-}
-EvaluateSurfaceAreaSetup() ;
-in3.close();
-br5.close();
-fstream.close();
-} catch (NullPointerException eNPE) { System.out.println(eNPE);} 
-    }
     
     public static void READ_RAWDATA() {
     	resultSet.clear();
     try {
-		analysisFile = 	readResultFileList(RES_File);
+		analysisFile = 	GuiReadInput.readResultFileList(FilePaths.RES_File);
 	} catch (IOException e) {
 		// TODO Auto-generated catch block
 		e.printStackTrace();
@@ -3167,7 +2752,7 @@ fstream.close();
     	for(int j=MODEL_RAWData.getRowCount()-1;j>=0;j--) {MODEL_RAWData.removeRow(j);}
     	// Read all data from file: 
 	    FileInputStream fstream = null;
-		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+		try{ fstream = new FileInputStream(FilePaths.RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	              DataInputStream in = new DataInputStream(fstream);
 	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	              String strLine;
@@ -3200,199 +2785,7 @@ fstream.close();
 					}
     }
     
-    public static List<RealTimeResultSet> READ_ResultSet(String RES_File) {
-    	List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
-    	resultSet.clear();
-    	// Read all data from file: 
-	    FileInputStream fstream = null;
-		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
-	              DataInputStream in = new DataInputStream(fstream);
-	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
-	              String strLine;
-	              try {
-							while ((strLine = br.readLine()) != null )   {
-								Object[] tokens = strLine.split(" ");
-						     	RealTimeResultSet resultElement = new RealTimeResultSet();
-							    double[] CartesianPosition = {Double.parseDouble((String) tokens[41]),
-			 							   						Double.parseDouble((String) tokens[42]),
-			 							   						Double.parseDouble((String) tokens[43])};
-							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
-							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
-							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
-							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
-							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
-							    resultElement.setFpa(Double.parseDouble((String) tokens[7]));
-							    resultSet.add(resultElement);
-							  
-							  }
-			       fstream.close();
-			       in.close();
-			       br.close();
 
-	              } catch (NullPointerException | IOException eNPE) { 
-	            	  System.out.println("Read raw data, Nullpointerexception");
-					}catch(IllegalArgumentException eIAE) {
-					  System.out.println("Read raw data, illegal argument error");
-					}
-	 return resultSet;
-    }
-    
-    public static void READ_INTEG() {
-    	  //--------------------------------------------------------------------------------------------------------
-    	  // Integrator settings 
-    	  //--------------------------------------------------------------------------------------------------------
-    		String integ_file = null;
-    		 FileInputStream  fstream = null; 
-    		if(	SidePanelLeft.Integrator_chooser.getSelectedIndex()==0) {
-    			integ_file = INTEG_File_01; 
-    		} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==1) {
-    			integ_file = INTEG_File_02; 
-    		} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==2) {
-    			integ_file = INTEG_File_03; ;
-    		} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==3) {
-    			integ_file = INTEG_File_04; 
-    		}
-    	    try {
-    	         fstream = new FileInputStream(integ_file);
-    	} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading integrator input failed. " + integ_file);} 
-    	  DataInputStream in3 = new DataInputStream(fstream);
-    	  @SuppressWarnings("resource")
-    	  BufferedReader br5 = new BufferedReader(new InputStreamReader(in3));
-    	  int k = 0;
-    	  String strLine3="" ; 
-    	  try {
-    	  try {
-			while ((strLine3 = br5.readLine()) != null )   {
-			  	String[] tokens = strLine3.split(" ");
-			  	double InitialState = Double.parseDouble(tokens[0]);
-			    if (k==0){
-			    		SidePanelLeft.INPUT_IntegratorSetting_01.setText(""+(InitialState)); 
-			  	} else if (k==1){
-			  		SidePanelLeft.INPUT_IntegratorSetting_02.setText(""+(InitialState)); 
-			  	} else if (k==2){
-			  		SidePanelLeft.INPUT_IntegratorSetting_03.setText(""+(InitialState)); 
-			  	} else if (k==3){
-			  		SidePanelLeft.INPUT_IntegratorSetting_04.setText(""+(InitialState)); 
-			  	} else if (k==4){
-			  		SidePanelLeft.INPUT_IntegratorSetting_05.setText(""+(InitialState)); 
-			  	} else if (k==5){
-
-			  	} else if (k==6){
-
-			  	} else if (k==7){
-
-			  	}
-			  	k++;
-			  }
-		} catch (NumberFormatException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	  try {
-    		  in3.close();
-	    	  br5.close();
-	    	  fstream.close();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-    	  } catch (NullPointerException eNPE) { System.out.println(eNPE);}  	
-    }
-    
-    public static void READ_InitialAttitude() throws IOException {
-		BufferedReader br = new BufferedReader(new FileReader(InitialAttitude_File));
-	       String strLine;
-	       int j=0;
-	       try {
-	       while ((strLine = br.readLine()) != null )   {
-		       	String[] tokens = strLine.split(" ");
-		       	if(j==0) {
-		       		AttitudeSetting.INPUT_Quarternion1.setText(tokens[0]);
-		       	} else if (j==1) {
-		       		AttitudeSetting.INPUT_Quarternion2.setText(tokens[0]);
-		       	} else if (j==2) {
-		       		AttitudeSetting.INPUT_Quarternion3.setText(tokens[0]);
-		       	} else if (j==3) {
-		       		AttitudeSetting.INPUT_Quarternion4.setText(tokens[0]);
-		       	}	       	
-		       	j++;
-	       }
-	       br.close();
-	       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-    }
-    
-    public static List<AnimationSet>  READ_AnimationData() {
-     int indx_time=0;
-     int indx_vel =6;
-    	 int indx_fpa =7;
-    	 int indx_azi =8;
-    	 float init_alt=0;
-   	 List<AnimationSet> animationSets= new ArrayList<AnimationSet>();
-	FileInputStream fstream = null;
-    DataInputStream in = new DataInputStream(fstream);
-    BufferedReader br = new BufferedReader(new InputStreamReader(in));
-    String strLine;
-   	// Scan for specifin information 
-	     fstream = null;
-		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
-	               in = new DataInputStream(fstream);
-	               br = new BufferedReader(new InputStreamReader(in));
-	              try {
-	              int indx=0;
-							while ((strLine = br.readLine()) != null )   {
-								Object[] tokens = strLine.split(" ");
-
-							    if(indx==0){init_alt=Float.parseFloat((String) tokens[4]);}
-							    indx++;
-							    }
-			       fstream.close();
-			       in.close();
-			       br.close();
-
-	              } catch (NullPointerException | IOException eNPE) { 
-	            	  System.out.println("Read raw data, Nullpointerexception");
-					}catch(IllegalArgumentException eIAE) {
-					  System.out.println("Read raw data, illegal argument error");
-					}
-	//----------------------------------------------------------------------------------------------
-	             // System.out.println(init_x+" | "+init_y+" | "+init_z+" | "); 
-	      	    fstream = null;
-	    		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
-	               in = new DataInputStream(fstream);
-	               br = new BufferedReader(new InputStreamReader(in));
-	               strLine=null;
-	    	              try {
-	    							while ((strLine = br.readLine()) != null )   {
-	    								Object[] tokens = strLine.split(" ");
-	    							    AnimationSet animationSet = new AnimationSet();
-	    							    animationSet.setTime(Float.parseFloat((String) tokens[indx_time]));
-	    							    float velocity = Float.parseFloat((String) tokens[indx_vel]);
-	    							    float fpa = Float.parseFloat((String) tokens[indx_fpa]);
-	    							    float azi = Float.parseFloat((String) tokens[indx_azi]);
-	    							    float v_v = (float) (velocity * Math.sin(fpa));
-	    							    float v_h = (float) (velocity * Math.cos(fpa));
-	    							    //System.out.println(v_v+" | "+init_alt);
-	    							    animationSet.setV_h(v_h);
-	    							    animationSet.setV_v(v_v);
-	    							    animationSet.setAzimuth(azi);
-	    							    animationSet.setAlt_init(init_alt);
-	    							    animationSets.add(animationSet);	    							  }
-	    			       fstream.close();
-	    			       in.close();
-	    			       br.close();
-
-	    	              } catch (NullPointerException | IOException eNPE) { 
-	    	            	  System.out.println("Read raw data, Nullpointerexception");
-	    					}catch(IllegalArgumentException eIAE) {
-	    					  System.out.println("Read raw data, illegal argument error");
-	    					}
-						return animationSets;
-   }
-    
     public static double readFromFile(String file, int indx) {
     	FileInputStream fstream = null;
     	double result=0;
@@ -3433,7 +2826,7 @@ fstream.close();
     public static ArrayList<String> Read_SEQU(){
 	ArrayList<String> SEQUENCE_DATA = new ArrayList<String>();
 	 try {
-		BufferedReader br = new BufferedReader(new FileReader(SEQU_File));
+		BufferedReader br = new BufferedReader(new FileReader(FilePaths.SEQU_File));
 	   String strLine;
 	   while ((strLine = br.readLine()) != null )   {
 	   	String[] tokens = strLine.split(" ");
@@ -3456,624 +2849,8 @@ fstream.close();
 	   return SEQUENCE_DATA;
 	}
     
-    public static List<InputFileSet> readResultFileList(String filePath) throws IOException{
-    	List<InputFileSet> newInputFileSetList = new ArrayList<InputFileSet>();
 
-   		      	InputFileSet newInputFileSet = new InputFileSet();
-   		      	newInputFileSet.setInputDataFilePath(filePath);
-   		      	newInputFileSetList.add(newInputFileSet);
 
-    return newInputFileSetList;
-    }
-	public static void WriteErrorINP() {
-	    try {
-	        File fac = new File(ERROR_File);
-	        if (!fac.exists())
-	        {
-	            fac.createNewFile();
-	        } else {
-	        	fac.delete();
-	        	fac.createNewFile();
-	        }
-	        FileWriter wr = new FileWriter(fac);
-	        for (int i=0; i<MODEL_ERROR.getRowCount(); i++)
-	        {
-	        	String error_type 		= (String) MODEL_ERROR.getValueAt(i, 1);
-	        	for(int k=0;k<ErrorType.length;k++) { if(error_type.equals(ErrorType[k])){error_type=""+k;} }
-	        	String error_trigger 	= (String) MODEL_ERROR.getValueAt(i, 2);
-	        	String error_value 		= (String) MODEL_ERROR.getValueAt(i, 3); 
-	        	wr.write(error_type+" "+error_trigger+" "+error_value+System.getProperty( "line.separator" ));
-	        }
-	        wr.close(); 
-	       // Update_ErrorIndicator();
-	     } catch (IOException eIO){
-	     	System.out.println(eIO);
-	     }
-	}
-	
-	
-	public static void WriteInitialAttitude() {
-        try {
-            File fac = new File(InitialAttitude_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            FileWriter wr = new FileWriter(fac);
-            for (int i=0; i<4; i++)
-            {
-        			double value =0;
-				if(i==0) { 
-					 if(AttitudeSetting.INPUT_Quarternion1.getText().equals("")) {
-						 value =0;
-					 } else {
-						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion1.getText()); 
-					 }
-				} else if(i==1) {
-					 if(AttitudeSetting.INPUT_Quarternion2.getText().equals("")) {
-						 value =0;
-					 } else {
-						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion2.getText()); 
-					 }
-				}else if(i==2) {
-					 if(AttitudeSetting.INPUT_Quarternion3.getText().equals("")) {
-						 value =0;
-					 } else {
-						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion3.getText()); 
-					 }
-				} else if(i==3) {
-					 if(AttitudeSetting.INPUT_Quarternion4.getText().equals("")) {
-						 value =0;
-					 } else {
-						 value = Double.parseDouble(AttitudeSetting.INPUT_Quarternion4.getText()); 
-					 } 
-				}
-        			wr.write(value+System.getProperty( "line.separator" ));
-            }
-            wr.close(); 
-        } catch (IOException eIO){
-        	System.out.println(eIO);
-        }
-	}
-	public static void WriteINERTIA() {
-	    try {
-	        File fac = new File(INERTIA_File);
-	        if (!fac.exists())
-	        {
-	            fac.createNewFile();
-	        } else {
-	        	fac.delete();
-	        	fac.createNewFile();
-	        }
-	        FileWriter wr = new FileWriter(fac);
-	        for (int j=0;j<3;j++) {
-					 if(j==0) {
-						 double Ixx = 0;
-						 double Ixy = 0; 
-						 double Ixz = 0;
-						 if(INPUT_IXX.getText().equals("")) {
-							 Ixx =0;
-						 } else {
-							 Ixx = Double.parseDouble(INPUT_IXX.getText()); 
-						 }
-						 if(INPUT_IXY.getText().equals("")) {
-							 Ixy =0;
-						 } else {
-							 Ixy = Double.parseDouble(INPUT_IXY.getText());
-						 }
-						 if(INPUT_IXZ.getText().equals("")) {
-							 Ixz =0;
-						 } else {
-							 Ixz = Double.parseDouble(INPUT_IXZ.getText());
-						 }
-					     wr.write(Ixx+" "+Ixy+" "+Ixz+System.getProperty( "line.separator" ));
-					 } else if (j==1) {
-						 double Iyx = 0; 
-						 double Iyy = 0; 
-						 double Iyz = 0;
-						 if(INPUT_IYX.getText().equals("")) {
-							 Iyx =0;
-						 } else {
-							 Iyx = Double.parseDouble(INPUT_IYX.getText());
-						 }
-						 if(INPUT_IYY.getText().equals("")) {
-							 Iyy =0;
-						 } else {
-							 Iyy = Double.parseDouble(INPUT_IYY.getText());
-						 }
-						 if(INPUT_IYZ.getText().equals("")) {
-							 Iyz =0;
-						 } else {
-							 Iyz = Double.parseDouble(INPUT_IYZ.getText());
-						 }
-					     wr.write(Iyx+" "+Iyy+" "+Iyz+System.getProperty( "line.separator" )); 
-					 } else if (j==2 ) {
-						 double Izx = 0;
-						 double Izy = 0;
-						 double Izz = 0;
-						 if(INPUT_IZX.getText().equals("")) {
-							 Izx =0;
-						 } else {
-							 Izx = Double.parseDouble(INPUT_IZX.getText());
-						 }
-						 if(INPUT_IZY.getText().equals("")) {
-							 Izy =0;
-						 } else {
-							 Izy = Double.parseDouble(INPUT_IZY.getText()); 
-						 }
-						 if(INPUT_IZZ.getText().equals("")) {
-							 Izz =0;
-						 } else {
-							 Izz = Double.parseDouble(INPUT_IZZ.getText()); 
-						 }
-					     wr.write(Izx+" "+Izy+" "+Izz+System.getProperty( "line.separator" ));
-					 }
-	        }
-	        wr.close(); 
-	
-	     } catch (IOException eIO){
-	     	System.out.println(eIO);
-	     }
-	}
-
-	public static void WRITE_INIT() {
-        try {
-            File fac = new File(Init_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            //System.out.println("\n----------------------------------");
-            //System.out.println("The file has been created.");
-            //System.out.println("------------------------------------");
-            double r = 0;
-            int rr=0;
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=30; i++)
-            {
-        		if (i == 0 ){
-        			r = Double.parseDouble(	SidePanelLeft.INPUT_LONG_Rs.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==1 ){
-        			r = Double.parseDouble(	SidePanelLeft.INPUT_LAT_Rs.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==2 ){
-        			r = Double.parseDouble(	SidePanelLeft.INPUT_ALT_Rs.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==3 ){
-        			r = Double.parseDouble(	SidePanelLeft.INPUT_VEL_Rs.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i == 4 ){
-            		r = Double.parseDouble(	SidePanelLeft.INPUT_FPA_Rs.getText()) ;
-            		wr.write(r+System.getProperty( "line.separator" ));	
-        			} else if (i == 5 ){
-                	r = Double.parseDouble(	SidePanelLeft.INPUT_AZI_Rs.getText()) ;
-                	wr.write(r+System.getProperty( "line.separator" ));	
-            		} else if (i == 6 ){
-                	r = Double.parseDouble(INPUT_M0.getText()) ;
-                	wr.write(r+System.getProperty( "line.separator" ));	
-            		} else if (i == 7 ){     
-                wr.write(CenterPanelRight.getGlobalTime()+System.getProperty( "line.separator" ));	
-		    		} else if (i == 8 ){
-		            rr =  	SidePanelLeft.Integrator_chooser.getSelectedIndex() ;
-		            wr.write(rr+System.getProperty( "line.separator" ));	
-		    		} else if (i == 9 ){
-		            wr.write(CenterPanelRight.getTargetIndx()+System.getProperty( "line.separator" ));	
-		    		} else if (i == 10 ){
-		            // r = 0;//Double.parseDouble(INPUT_WRITETIME.getText())  ; // delta-t write out
-		            wr.write(0+System.getProperty( "line.separator" ));	
-		    		} else if (i == 11 ){
-			        r = Double.parseDouble(SidePanelLeft.INPUT_REFELEV.getText())  ; // Reference elevation
-			        wr.write(r+System.getProperty( "line.separator" ));	
-		        } else if (i == 12) {
-	    				String timeString = SidePanelLeft.timePanel.getaTime().getUtcString();
-		            wr.write(timeString+System.getProperty( "line.separator" ));	
-		        } else if(i == 13) {
-	                wr.write(CenterPanelRight.getVelocityCoordinateSystem()+System.getProperty( "line.separator" ));	
-		        } else if(i == 14) {
-	                wr.write(CenterPanelRight.getDOF_System()+System.getProperty( "line.separator" ));	
-		        } else if(i == 15) {
-		        	double rate = Double.parseDouble(	SidePanelLeft.INPUT_AngularRate_X.getText());
-		        	wr.write(rate+System.getProperty( "line.separator" ));	
-		        } else if(i == 16) {
-		        	double rate = Double.parseDouble(	SidePanelLeft.INPUT_AngularRate_Y.getText());
-		        	wr.write(rate+System.getProperty( "line.separator" ));	
-		        } else if(i == 17) {
-		        	double rate = Double.parseDouble(	SidePanelLeft.INPUT_AngularRate_Z.getText());
-		        	wr.write(rate+System.getProperty( "line.separator" ));	
-		        } else if(i==18) {
-		        	wr.write(CenterPanelRight.getControllerFrequency()+System.getProperty( "line.separator" ));
-		        } else if(i==19) {
-		        	wr.write(CenterPanelRight.getGlobalFrequency()+System.getProperty( "line.separator" ));
-		        }
-		            }               
-            wr.close();
-            } catch (IOException eIO) {
-            	System.out.println(eIO);
-            }
-    }
-    public void WRITE_CTRL_01() {
-        try {
-            File fac = new File(CTR_001_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            //System.out.println("\n----------------------------------");
-            //System.out.println("The file has been created.");
-            //System.out.println("------------------------------------");
-            double r = 0;
-            int rr=0;
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=12; i++)
-            {
-        		if (i == 0 ){
-        			if(p421_linp0.isSelected()) {
-        				rr=1;
-        			wr.write(rr+System.getProperty( "line.separator" )); } else {
-        				rr=0;
-        		    wr.write(rr+System.getProperty( "line.separator" ));	
-        			}
-        			} else if (i ==1 ){
-        			r = Double.parseDouble(INPUT_PGAIN.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==2 ){
-        			r = Double.parseDouble(INPUT_IGAIN.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==3 ){
-        			r = Double.parseDouble(INPUT_DGAIN.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i == 4 ){
-            		r = Double.parseDouble(INPUT_CTRLMAX.getText()) ;
-            		wr.write(r+System.getProperty( "line.separator" ));	
-        			} else if (i == 5 ){
-                	r = Double.parseDouble(INPUT_CTRLMIN.getText()) ;
-                	wr.write(r+System.getProperty( "line.separator" ));	
-            		} 
-		            }               
-            wr.close();
-            } catch (IOException eIO) {
-            	System.out.println(eIO);
-            }
-    }
-    
-    public static void WRITE_SC() {
-    try {
-            File fac = new File(SC_file);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            //System.out.println("\n----------------------------------");
-            //System.out.println("The file has been created.");
-            //System.out.println("------------------------------------");
-            double r = 0;
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=15; i++)
-            {
-        			if (i == 0 ){
-        				if(INPUT_SURFACEAREA.getText().isEmpty()) {
-		        			r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}else {
-		        			r = Double.parseDouble(INPUT_SURFACEAREA.getText()) ;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        			} else if (i ==1 ){
-        				if(INPUT_BALLISTICCOEFFICIENT.getText().isEmpty()) {
-		        			r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}else {
-		        			r = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText()) ;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        			} else if (i==2) {
-        				try {
-        				if(INPUT_ParachuteDiameter.getText().isEmpty()) {
-		        			 r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}else {
-		        			double d = Double.parseDouble(INPUT_ParachuteDiameter.getText()) ;
-		        			double area = PI/4*d*d;
-		        			wr.write(area+System.getProperty( "line.separator" ));
-        				}
-        				} catch (NullPointerException e) {
-		        			 r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        			} else if (i==3) {
-        				// Center of Mass 
-	        			 r = GeometryFrame.getCoM();
-	        			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i==4) {
-        				// Center of propulsife Forces CoPr 
-	        			 r = GeometryFrame.getCoT();
-	        			wr.write(r+System.getProperty( "line.separator" ));
-       			} else if (i==5) {
-    				// Center of (aerodynamic) Pressure 
-       			 r = GeometryFrame.getCoP();
-       			wr.write(r+System.getProperty( "line.separator" ));
-   			}
-            }
-            wr.close();
-      } catch (IOException eIO) {
-      System.out.println(eIO);
-      }
-    }
-    
-    public static void WRITE_AERO() {
-    try {
-            File fac = new File(Aero_file);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=15; i++)
-            {
-        			if (i == 0 ){
-        					int indx = getDragModelSetIndx();
-	        			   wr.write(indx+System.getProperty( "line.separator" ));
-        			} else if ( i == 1 ) {
-        				double CD = 1.4;
-        				try {
-        			    CD = Double.parseDouble(ConstantCD_INPUT.getText());
-        				wr.write(CD+System.getProperty( "line.separator" ));
-        				} catch(NullPointerException e) {
-            				wr.write(CD+System.getProperty( "line.separator" ));
-            			}
-        			} else if ( i == 2 ) {
-        				try {
-        				if(INPUT_RB.getText().isEmpty()) {
-		        			double r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}else {
-		        			double r = Double.parseDouble(INPUT_RB.getText()) ;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        				} catch (NullPointerException e) {
-		        			double r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        			} else if(i == 3 ) {
-    					int indx = getParachuteModelSetIndx();
-
-	        			   wr.write(indx+System.getProperty( "line.separator" ));
-        			} else if(i == 4 ) {
-        				try {
-        				if(ConstantParachuteCD_INPUT.getText().isEmpty()) {
-		        			double r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}else {
-		        			double r = Double.parseDouble(ConstantParachuteCD_INPUT.getText()) ;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        				} catch (NullPointerException e) {
-		        			double r = 0;
-		        			wr.write(r+System.getProperty( "line.separator" ));
-        				}
-        			} else if (i==5) {
-
-        			}
-            }
-            wr.close();
-      } catch (IOException eIO) {
-      System.out.println(eIO);
-      }
-    }
-    
-    public static void WRITE_INTEG() {
-    	String integ_file = null;  
-    	int steps =0 ; 
-    	if(	SidePanelLeft.Integrator_chooser.getSelectedIndex()==0) {
-    		integ_file = INTEG_File_01; 
-    		steps = 4; 
-    	} else if (	SidePanelLeft.Integrator_chooser.getSelectedIndex()==1) {
-    		integ_file = INTEG_File_02; 
-    		steps =1;
-    	} else if (SidePanelLeft.Integrator_chooser.getSelectedIndex()==2) {
-    		integ_file = INTEG_File_03; 
-    		steps =4;
-    	} else if (SidePanelLeft.Integrator_chooser.getSelectedIndex()==3) {
-    		integ_file = INTEG_File_04; 
-    		steps =5;
-    	}
-        try {
-            File fac = new File(integ_file);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            double r = 0;
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<steps; i++)
-            {
-            		   if(i==0) {
-        			r = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_01.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-            	} else if (i==1) {
-        			r = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_02.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-            	} else if (i==2) {
-        			r = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_03.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-            	} else if (i==3) {
-        			r = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_04.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-            	} else if (i==4) {
-        			r = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_05.getText()) ;
-        			wr.write(r+System.getProperty( "line.separator" ));
-            	} 
-		            }               
-            wr.close();
-            } catch (IOException eIO) {
-            	System.out.println(eIO);
-            }
-    }
-    
-    public static void   WRITE_EventHandler() {
-        try {
-            File fac = new File(EventHandler_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            //-----------------------------------------------------
-            FileWriter wr = new FileWriter(fac);
-            for (int i=0; i<MODEL_EventHandler.getRowCount(); i++){
-	            	int EventType =0;
-		            	for(int j=0;j<EventHandler_Type.length;j++) {
-		            		if(MODEL_EventHandler.getValueAt(i, 0).equals(EventHandler_Type[j])) {EventType =j;}
-		            	}
-	            	double EventValue = Double.parseDouble((String) MODEL_EventHandler.getValueAt(i, 1));
-	            	wr.write(EventType+BB_delimiter+EventValue+BB_delimiter+System.getProperty( "line.separator" ));	
-			}               
-	            wr.close();
-            } catch (IOException eIO) {System.out.println(eIO);}
-    }
-    
-    public static void WRITE_PROP() {
-        try {
-            File fac = new File(Prop_File);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            //System.out.println("\n----------------------------------");
-            //System.out.println("The file has been created.");
-            //System.out.println("------------------------------------");
-            double r = 0;
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<=30; i++)
-            {
-        			if (i == 0 ){
-            			r = Double.parseDouble(INPUT_ISP.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==1 ){
-            			r = Double.parseDouble(INPUT_PROPMASS.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==2 ){
-            			r = Double.parseDouble(INPUT_THRUSTMAX.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i ==3 ){
-            			r = Double.parseDouble(INPUT_THRUSTMIN.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-        			} else if (i == 4 ){
-        					if(INPUT_ISPMODEL.isSelected()) {
-        						wr.write(1+System.getProperty( "line.separator" ));
-        					} else {
-        						wr.write(0+System.getProperty( "line.separator" ));
-        					}
-        			} else if (i == 5 ){
-        				try {
-        					if (INPUT_ISPMIN.equals("")) {
-        						r = Double.parseDouble(INPUT_ISP.getText()) ;
-        					} else {
-        						r = Double.parseDouble(INPUT_ISPMIN.getText()) ;
-        					}
-            			wr.write(r+System.getProperty( "line.separator" ));
-        				} catch (java.lang.NumberFormatException eNFE) {
-        					wr.write(""+System.getProperty( "line.separator" ));	
-        				}
-            		} else if( i == 6 ) {
-            			r = Double.parseDouble(INPUT_RCSX.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 7 ) {
-            			r = Double.parseDouble(INPUT_RCSY.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 8 ) {
-            			r = Double.parseDouble(INPUT_RCSZ.getText()) ;
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 9 ) {
-            			r = Double.parseDouble(INPUT_RCSXTHRUST.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 10 ) {
-            			r = Double.parseDouble(INPUT_RCSYTHRUST.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 11 ) {
-            			r = Double.parseDouble(INPUT_RCSZTHRUST.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 12 ) {
-            			r = Double.parseDouble(INPUT_RCSTANK.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 13 ) {
-            			r = Double.parseDouble(INPUT_RCSXISP.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 14 ) {
-            			r = Double.parseDouble(INPUT_RCSYISP.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		} else if( i == 15 ) {
-            			r = Double.parseDouble(INPUT_RCSZISP.getText());
-            			wr.write(r+System.getProperty( "line.separator" ));
-            		}
-		            }               
-            wr.close();
-            } catch (IOException eIO) {
-            	System.out.println(eIO);
-            }
-    }
-    
-    public static void WRITE_SequenceFile() {
-        try {
-            File fac = new File(sequenceFile);
-            if (!fac.exists())
-            {
-                fac.createNewFile();
-            } else {
-            	fac.delete();
-            	fac.createNewFile();
-            }
-            String fcSeparator="|FlightControllerElements|";
-            String eventSeparator="|EventManagementElements";
-            String endSeparator="|EndElement|";
-            FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<sequenceContentList.size(); i++)
-            {
-        		int ID = sequenceContentList.get(i).getSequenceID();
-            	String sequenceContent = ID+" "+
-						 			 sequenceContentList.get(i).getSequenceName()+" "+
-            							 fcSeparator	+" "+ 
-            							 sequenceContentList.get(i).getFlightControllerSelect().getSelectedIndex()+" "+
-            							 fcSeparator	+" "+ 
-            							 eventSeparator+" "+ 
-            							 sequenceContentList.get(i).getEventSelect().getSelectedIndex()+" "+
-            							 eventSeparator+" "+ 
-            							 endSeparator+" "+ 
-            							 sequenceContentList.get(i).getEndSelect().getSelectedIndex()+" "+
-            							 sequenceContentList.get(i).getValueEnd().getText()+" "
-            							 +endSeparator+" ";
-            	
-            	wr.write(sequenceContent+System.getProperty( "line.separator" ));
-		    }               
-            wr.close();
-            } catch (IOException eIO) {
-            	System.out.println(eIO);
-            }
-    }
     
     public static int getDragModelSetIndx() {
 		int k=0;
@@ -4105,7 +2882,7 @@ fstream.close();
 	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	    		
 	    	}
     	}
-    
+    /*
     public static double[][] FIND_ctrl_init_cond() throws IOException{
 	   	   List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
 	   	    SEQUENCE_DATA = ReadInput.readSequence();
@@ -4116,7 +2893,7 @@ fstream.close();
 	   	    
 	   	    return INIT_CONDITIONS;
 	}
-
+*/
 
 	public static double[] Spherical2Cartesian(double[] X) {
 	double[] result = new double[3];
@@ -4145,15 +2922,15 @@ fstream.close();
 		final PolarPlot plot_polar = (PolarPlot) chart_PolarMap.getPlot();
 		  if (TARGET==0){ 
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(MAP_EARTH));
+		         BufferedImage myImage = ImageIO.read(new File(FilePaths.MAP_EARTH));
 		         plot2.setBackgroundImage(myImage);  
 			  } catch(IIOException eIIO) {
 				  System.out.println(eIIO);System.out.println("ERROR: Reading maps failed.");
 			  }
 		  } else if (TARGET==1){
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(MAP_MOON));
-		         BufferedImage myImage_Polar = ImageIO.read(new File(MAP_SOUTHPOLE_MOON));
+		         BufferedImage myImage = ImageIO.read(new File(FilePaths.MAP_MOON));
+		         BufferedImage myImage_Polar = ImageIO.read(new File(FilePaths.MAP_SOUTHPOLE_MOON));
 		         plot2.setBackgroundImage(myImage);  
 		         plot_polar.setBackgroundImage(myImage_Polar);
 			  } catch(IIOException eIIO) {
@@ -4161,7 +2938,7 @@ fstream.close();
 			  }
 		  } else if(TARGET==2){
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(MAP_MARS));
+		         BufferedImage myImage = ImageIO.read(new File(FilePaths.MAP_MARS));
 		         plot2.setBackgroundImage(myImage); 
 			  } catch(IIOException eIIO) {
 				  //System.out.println(eIIO);
@@ -4169,7 +2946,7 @@ fstream.close();
 			  }
 		  } else if(TARGET==3){
 			  try {
-		         BufferedImage myImage = ImageIO.read(new File(MAP_VENUS));
+		         BufferedImage myImage = ImageIO.read(new File(FilePaths.MAP_VENUS));
 		         plot2.setBackgroundImage(myImage); 
 		  } catch(IIOException eIIO) {
 			  //System.out.println(eIIO);
@@ -4183,7 +2960,7 @@ fstream.close();
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
             FileInputStream fstream = null;
-            		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+            		try{ fstream = new FileInputStream(FilePaths.RES_File);} catch(IOException eIO) { System.out.println(eIO);}
                   DataInputStream in = new DataInputStream(fstream);
                   BufferedReader br = new BufferedReader(new InputStreamReader(in));
                   String strLine;
@@ -4216,7 +2993,7 @@ fstream.close();
        	XYSeries xyseries10 = new XYSeries("", false, true); 
 
             FileInputStream fstream = null;
-            		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
+            		try{ fstream = new FileInputStream(FilePaths.RES_File);} catch(IOException eIO) { System.out.println(eIO);}
                   DataInputStream in = new DataInputStream(fstream);
                   BufferedReader br = new BufferedReader(new InputStreamReader(in));
                   String strLine;
@@ -4379,125 +3156,21 @@ fstream.close();
         innerPanel.setPreferredSize(new Dimension(size, size));
         container.revalidate();
     }
-	
-	public static void CreateLocalElevationFile(int Resolution) throws IOException {
-        FileInputStream fstream = null;
-        ArrayList<String> steps = new ArrayList<String>();
-        String Elevation_File="";
-        if(Resolution==4) {
-        	Elevation_File = Elevation_File_RES4;
-        } else if (Resolution==16) {
-        	Elevation_File = Elevation_File_RES16;
-        } else if (Resolution==64) {
-        	Elevation_File = Elevation_File_RES64;
-        } else if (Resolution==128) {
-        	Elevation_File = Elevation_File_RES128;
-        }
-		try{ fstream = new FileInputStream(RES_File);} catch(IOException eIO) { System.out.println(eIO);}
-      DataInputStream in = new DataInputStream(fstream);
-      BufferedReader br = new BufferedReader(new InputStreamReader(in));
-      String strLine;
-      try {
-      while ((strLine = br.readLine()) != null )   {
-       String[] tokens = strLine.split(" ");
-       double longitude = Double.parseDouble(tokens[1])*rad2deg;     // Longitude 	[deg]
-       double latitude  = Double.parseDouble(tokens[2])*rad2deg;     // Latitude 	[deg]
-       double local_elevation = GetLocalElevation(Elevation_File, longitude, latitude);
-
-       steps.add(local_elevation+" ");
-      }
-      	String resultpath="";
-      	String dir = System.getProperty("user.dir");
-      	resultpath = dir + "/LocalElevation.inp";
-      PrintWriter writer = new PrintWriter(new File(resultpath), "UTF-8");
-      for(String step: steps) {
-          writer.println(step);
-      }
-      System.out.println("Write: Local Elevation File. ");
-
-		writer.close();
-		in.close();
-		br.close();
-		fstream.close();
-      } catch(NullPointerException eNPI) { System.out.print(eNPI); }
-		
-	}
-	@SuppressWarnings("resource")
-	public static double GetLocalElevation(String InputFile, double longitude, double latitude) throws IOException {
-		double ELEVATION = 0;
-		int resolution = 4;
-		int latitude_indx = (int) ((90-latitude)*resolution+1);
-		int longitude_indx = (int) (longitude*resolution+1);
-		FileInputStream inputStream = null;
-		Scanner sc  = null;
-		String path = InputFile;
-		long k =0; 
-		double max_runtime = 2; 
-		long startTime = System.nanoTime();
-		boolean TargetNOTReached=true; 
-		File Input = new File(InputFile);
-		try {
-		    inputStream = new FileInputStream(path);
-		    LineIterator it = FileUtils.lineIterator(Input, "UTF-8");
-		  //  sc = new Scanner(inputStream, "UTF-8");
-		    while (it.hasNext() && TargetNOTReached) {
-		        String line = it.nextLine();
-		        if(latitude_indx==k) {
-					String[] tokens = line.split(",");
-		        	ELEVATION = Double.parseDouble(tokens[longitude_indx]);
-		        	TargetNOTReached=false;
-		        	it.close();
-		        	return ELEVATION;
-		        }
-				long endTime   = System.nanoTime();
-				long totalTime = endTime - startTime;
-				double  totalTime_sec = (double) (totalTime * 1E-9);
-				if(totalTime_sec>max_runtime) {break;}
-				k++;
-		    }
-		    // note that Scanner suppresses exceptions
-		    /*
-		    if (sc.ioException() != null) {
-		        throw sc.ioException();
-		    } */
-		    it.close();
-		} finally {
-		    if (inputStream != null) {
-		        inputStream.close();
-		    }
-		    if (sc != null) {
-		        sc.close();
-		    }
-		}
-		return ELEVATION;
-	}
-
 
     
     static void renderSplashFrame(Graphics2D g, int frame) {
-        final String[] comps = {"foo", "bar", "baz"};
+        final String[] comps = {" .", " ..", " ...", " ....", " .....", " ......", " ......."};
         g.setComposite(AlphaComposite.Clear);
-        g.fillRect(120,140,200,40);
+        g.fillRect(120,100,150,40);
         g.setPaintMode();
-        g.setColor(Color.GREEN);
-        g.drawString("Loading "+comps[(frame/5)%3]+"...", 120, 150);
-        Image image = Toolkit.getDefaultToolkit().getImage(BlueBookVisual.ICON_File);
-        g.drawImage(image, frame, frame, Color.RED, null);
+        g.setColor(labelColor);
+        g.drawString("Loading "+comps[(frame/15)%7]+"...", 120, 600);
+       // Image image = Toolkit.getDefaultToolkit().getImage(FilePaths.ICON_File);
+       // g.drawImage(image, frame, frame, null, null);
     }
     
     
 	private static void createAndShowGUI() throws IOException {
-		/*
-		JWindow window = new JWindow();
-		JLabel label = new JLabel("", new ImageIcon(ICON_File), SwingConstants.CENTER);
-		label.setSize(500, 500);
-		label.setVisible(true);
-		window.getContentPane().add(label, BorderLayout.CENTER);
-		//window.setBounds(800, 150, 800, 200);
-		window.setSize(600,500);
-		window.setLocationRelativeTo(null);
-		window.setVisible(true);
-		 */
 		
 		boolean splashLoad=true;
         final SplashScreen splash = SplashScreen.getSplashScreen();
@@ -4511,14 +3184,16 @@ fstream.close();
 	            System.out.println("g is null");
 	           // return;
 	        }
-	        for(int i=0; i<100; i++) {
-	            renderSplashFrame(g, i);
-	            splash.update();
-	            try {
-	                Thread.sleep(10);
-	            }
-	            catch(InterruptedException e) {
-	            }
+	        if(isSplashAnimation) {
+		        for(int i=0; i<100; i++) {
+		            renderSplashFrame(g, i);
+		            splash.update();
+		            try {
+		                Thread.sleep(10);
+		            }
+		            catch(InterruptedException e) {
+		            }
+		        }
 	        }
         }
 		
@@ -4541,7 +3216,7 @@ fstream.close();
         MAIN_frame.setVisible(true);
         // Create Icon image  -  top left for windows
          try {
-        	BufferedImage myIcon = ImageIO.read(new File(ICON_File)); 
+        	BufferedImage myIcon = ImageIO.read(new File(FilePaths.ICON_File)); 
         	MAIN_frame.setIconImage(myIcon);
          }catch(IIOException eIIO) {System.out.println(eIIO);}    
          // Create taskbar icon - for mac 
@@ -4549,7 +3224,7 @@ fstream.close();
         	 // Set Taskbar Icon for MacOS
          try {
          Application application = Application.getApplication();
-         Image image = Toolkit.getDefaultToolkit().getImage(ICON_File);
+         Image image = Toolkit.getDefaultToolkit().getImage(FilePaths.ICON_File);
          application.setDockIconImage(image);
          } catch(Exception e) {
         	 System.err.println("Taskbar icon could not be created");
@@ -4578,7 +3253,7 @@ fstream.close();
 			return TARGET; 
 		}
 		public static String getICON_File() {
-			return ICON_File;
+			return FilePaths.ICON_File;
 		}
 		public static double getRM() {
 			return RM;

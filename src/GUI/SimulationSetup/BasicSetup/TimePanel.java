@@ -18,7 +18,8 @@ import javax.swing.JTextField;
 import javax.swing.text.JTextComponent;
 
 import DateTime.AbsoluteTime;
-import GUI.BlueBookVisual;
+import GUI.FilePaths;
+import utils.WriteInput;
 
 public class TimePanel {
 
@@ -187,7 +188,7 @@ public class TimePanel {
 					i++;
 				}
 				updateATime();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	  
 	      });
@@ -209,7 +210,7 @@ public class TimePanel {
 					i++;
 				}
 				updateATime();
-				BlueBookVisual.WRITE_INIT();
+				WriteInput.writeInputFile(FilePaths.inputFile);
 			}
 	    	 
 	     });
@@ -370,5 +371,8 @@ public class TimePanel {
 		aTime.setMillisecond(millisecond);
 	}
 	
+	public long getJ2000Time() {
+		return aTime.getJ2000();
+	}
 	
 }

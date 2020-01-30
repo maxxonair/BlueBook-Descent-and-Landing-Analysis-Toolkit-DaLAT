@@ -19,6 +19,7 @@ import javax.swing.border.Border;
 
 import GUI.BlueBookVisual.CustomRenderer;
 import javafx.application.Platform;
+import utils.WriteInput;
 
 public class GUISequenceElement {
 	
@@ -61,6 +62,7 @@ public class GUISequenceElement {
 										  "roll stabilisation",
 										  "Thrust full",
 										  "Ascent Control",
+										  "Descent Control",
 										  "External Controller"
 };
     
@@ -165,7 +167,7 @@ public class GUISequenceElement {
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
 				SelectSequenceButton.setText(SequenceName.getText());
-				BlueBookVisual.WRITE_SequenceFile();
+				WriteInput.WRITE_SequenceFile();
 			}
 	    	  
 	      });
@@ -259,7 +261,7 @@ public class GUISequenceElement {
 				    			      BlueBookVisual.SequenceProgressBar.revalidate();
 				    			      BlueBookVisual.SequenceProgressBar.repaint();
 				    			      resizeCanvas();
-				    			      BlueBookVisual.WRITE_SequenceFile();
+				    			      WriteInput.WRITE_SequenceFile();
 			    			      }
 		                    	}
 		                    }
@@ -290,7 +292,7 @@ public class GUISequenceElement {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_SequenceFile();
+				WriteInput.WRITE_SequenceFile();
 			}
 	    	  
 	      });
@@ -319,7 +321,7 @@ public class GUISequenceElement {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_SequenceFile();
+				WriteInput.WRITE_SequenceFile();
 			}
 	    	  
 	      });
@@ -354,7 +356,7 @@ public class GUISequenceElement {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				// TODO Auto-generated method stub
-				BlueBookVisual.WRITE_SequenceFile();
+				WriteInput.WRITE_SequenceFile();
 			}
 	    	  
 	      });
@@ -378,7 +380,7 @@ public class GUISequenceElement {
 				} else if(indx==2 || indx==3) {
 					relationLabel.setText("<");
 				}
-				BlueBookVisual.WRITE_SequenceFile();
+				WriteInput.WRITE_SequenceFile();
 			} 
 	    	  
 	      });
@@ -456,7 +458,7 @@ BlueBookVisual.getSequenceProgressBarContent().add(IDlabel);
 BlueBookVisual.SequenceProgressBar.revalidate();
 BlueBookVisual.SequenceProgressBar.repaint();
 resizeCanvas();
-BlueBookVisual.WRITE_SequenceFile();
+WriteInput.WRITE_SequenceFile();
 	}
 	
 	public static void resizeCanvas() {

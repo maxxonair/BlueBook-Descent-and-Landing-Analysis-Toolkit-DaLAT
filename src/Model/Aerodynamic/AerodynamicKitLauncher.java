@@ -6,9 +6,9 @@ import Simulator_main.DataSets.CurrentDataSet;
 public class AerodynamicKitLauncher {
 	/**
 	 * 
-	 * 	Simplified aerodynamic class for launcher applications 
+	 * 	The following code contains a (very) simplified aerodynamic class for launcher applications 
 	 * 
-	 * based on data and assumption from: 
+	 * it is based on data and assumption from: 
 	 * 	Data from Sim p l i c i o , P . V. M., Marcos, A., & Bennani, S. (2019). Reusable Launchers:
 		Development of a Coupled Flight Mechanics, Guidance and Control
 		Benchmark. Journal of Spacecraft and Rockets.

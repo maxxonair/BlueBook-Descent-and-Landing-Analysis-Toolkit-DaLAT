@@ -60,25 +60,44 @@ public class FlightController_AscentController extends FlightController {
 		//System.out.println(t+"|"+(Math.toDegrees(ctrlError)));
 		//-----------------------------------
 		boolean isTVC = true;
+		boolean AoAControl = true;
 		
-		if(isTVC) {
-			/**
-			 * 
-			 * Pitch controlled by TVC (alpha)
-			 */
-			pitch.P = 0.001;
-			pitch.I = 0.0001;
-			pitch.D = 0.8;
-			double Ycmd =   PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+		if(AoAControl) {
+			
+			double aoaTarget = 0;
+			double aoaIs = Math.toDegrees( sensorSet.getRealTimeResultSet().getEulerY() - sensorSet.getRealTimeResultSet().getFpa() );
+			
+			ctrlError = aoaTarget - aoaIs;
+			
+			//System.out.println(ctrlError);
+			
+			pitch.P = 0.1;
+			pitch.I = 0.01;
+			pitch.D = 0.2;
+			double Ycmd =  - PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
 			//System.out.println(ctrlError+"|"+Ycmd);
 			controlCommandSet.setTVC_alpha(Ycmd);
+			
 		} else {
-			/**
-			 * 
-			 * Pitch controlled by RCS (thruster MY)
-			 */
-			double Ycmd = - PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
-			controlCommandSet.setMomentumRCS_Y_cmd(Ycmd);
+			if(isTVC) {
+				/**
+				 * 
+				 * Pitch controlled by TVC (alpha)
+				 */
+				pitch.P = 0.001;
+				pitch.I = 0.0001;
+				pitch.D = 0.8;
+				double Ycmd =   PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+				//System.out.println(ctrlError+"|"+Ycmd);
+				controlCommandSet.setTVC_alpha(Ycmd);
+			} else {
+				/**
+				 * 
+				 * Pitch controlled by RCS (thruster MY)
+				 */
+				double Ycmd = - PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+				controlCommandSet.setMomentumRCS_Y_cmd(Ycmd);
+			}
 		}
 		//-------------------------------------------------------------------------------------------
 		// 			Roll Controll - Maintain horizontal attitude without bank angle

@@ -13,12 +13,20 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.geom.Ellipse2D;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 
 import javax.swing.JPanel;
+
+import GUI.BlueBookVisual;
+import GUI.FilePaths;
 
 
 public class Canvas extends JPanel {
@@ -516,6 +524,7 @@ public class Canvas extends JPanel {
 
 	public void setElementList(List<Element> elementList) {
 		this.elementList = elementList;
+		writeElementList();
 	}
     
     public void setScaleFactor(int factor) {
@@ -564,6 +573,81 @@ public class Canvas extends JPanel {
 	public void setCoT(double coPr) {
 		CoT = coPr;
 		repaint();
+	}
+	
+	private void writeElementList() {
+
+        try {
+            File fac = new File(FilePaths.elementList);
+            if (!fac.exists())
+            {
+                fac.createNewFile();
+            } else {
+            	fac.delete();
+            	fac.createNewFile();
+            }
+
+            FileWriter wr = new FileWriter(fac);
+            for (int i = 0; i< elementList.size(); i++)
+            {
+            	int eClass = (int) elementList.get(i).getElementClass();
+            	if(eClass ==1) {
+            	wr.write(elementList.get(i).getElementClass()+
+            			BlueBookVisual.BB_delimiter+
+            			elementList.get(i).getLength()+
+            			BlueBookVisual.BB_delimiter+
+            			elementList.get(i).getDiameter1()+
+            			BlueBookVisual.BB_delimiter+
+            			elementList.get(i).getDiameter1()+
+            			System.getProperty( "line.separator" ));
+            	} else if (eClass == 2) {
+                	wr.write(elementList.get(i).getElementClass()+
+                			BlueBookVisual.BB_delimiter+
+                			elementList.get(i).getLength()+
+                			BlueBookVisual.BB_delimiter+
+                			elementList.get(i).getDiameter1()+
+                			BlueBookVisual.BB_delimiter+
+                			elementList.get(i).getDiameter2()+
+                			System.getProperty( "line.separator" ));
+            	}
+		            }               
+            wr.close();
+            } catch (IOException eIO) {
+            //	System.out.println(eIO);
+            }
+	}
+	
+	public void readElementList() {
+		List<Element> elementList = new ArrayList<>();
+	   	 BufferedReader br;
+		try {
+			br = new BufferedReader(new FileReader(FilePaths.elementList));
+	   	 String strLine;
+			      while ((strLine = br.readLine()) != null )   {
+			      	String[] tokens = strLine.split(" ");
+			      	Element element = new Element();
+			       double eClass   = Double.parseDouble(tokens[0]);
+			       if(eClass == 1) {
+				    	   element.setElementClass(1);
+				    	   element.setLength(Double.parseDouble(tokens[1]));
+				    	   element.setDiameter1(Double.parseDouble(tokens[2]));
+				    	   element.setDiameter2(Double.parseDouble(tokens[3]));
+			       } else if (eClass == 2) {
+				    	   element.setElementClass(2);
+				    	   element.setLength(Double.parseDouble(tokens[1]));
+				    	   element.setDiameter1(Double.parseDouble(tokens[2]));
+				    	   element.setDiameter2(Double.parseDouble(tokens[3]));
+			       }
+			       elementList.add(element);
+			
+			      }
+	 
+			      br.close();
+		} catch (Exception excp) {
+			//excp.printStackTrace();
+		} 
+	 this.elementList = elementList;
+	 repaint();
 	}
 
 }

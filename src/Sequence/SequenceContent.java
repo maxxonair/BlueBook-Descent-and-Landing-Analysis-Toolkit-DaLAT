@@ -5,6 +5,7 @@ import java.util.List;
 
 import Controller.FlightController;
 import Controller.FlightController_AscentController;
+import Controller.FlightController_DescentController;
 import Controller.FlightController_ExternalController;
 import Controller.FlightController_PitchControl;
 import Controller.FlightController_RollControl;
@@ -61,6 +62,11 @@ public class SequenceContent {
 	public void addAscentController() {
 		FlightController_AscentController ascentController = new FlightController_AscentController();
 		controllerSets.add(ascentController);
+	}
+	
+	public void addDescentController() {
+		FlightController_DescentController descentController = new FlightController_DescentController();
+		controllerSets.add(descentController);
 	}
 	
 	public void addYawControl() {

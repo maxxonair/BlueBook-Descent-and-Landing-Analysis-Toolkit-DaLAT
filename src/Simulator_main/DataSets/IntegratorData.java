@@ -31,6 +31,8 @@ public class IntegratorData {
 	private double maxIntegTime;
 	private double integTimeStep;
 	
+	private double maxGlobalTime;
+	
 	private double globalTime=0;
 	
 	private double refElevation;
@@ -41,6 +43,8 @@ public class IntegratorData {
 	private int degreeOfFreedom;
 	
 	double[] IntegInput;
+	
+	double ControllerFrequency=1;
 	
 	int IntegratorType;
 	
@@ -130,6 +134,14 @@ public class IntegratorData {
 		return ConstParachuteCd;
 	}
 
+
+	public double getMaxGlobalTime() {
+		return maxGlobalTime;
+	}
+
+	public void setMaxGlobalTime(double maxGlobalTime) {
+		this.maxGlobalTime = maxGlobalTime;
+	}
 
 	public void setConstParachuteCd(double constParachuteCd) {
 		ConstParachuteCd = constParachuteCd;
@@ -349,6 +361,14 @@ public class IntegratorData {
 
 	public void setDegreeOfFreedom(int degreeOfFreedom) {
 		this.degreeOfFreedom = degreeOfFreedom;
+	}
+
+	public double getControllerFrequency() {
+		return ControllerFrequency;
+	}
+
+	public void setControllerFrequency(double controllerFrequency) {
+		ControllerFrequency = controllerFrequency;
 	}
 	
 }

@@ -14,6 +14,7 @@ import javax.swing.JSplitPane;
 import GUI.BlueBookVisual;
 import GUI.DataStructures.InputFileSet;
 import Simulator_main.DataSets.RealTimeResultSet;
+import utils.GuiReadInput;
 import utils.ReadInput;
 import utils.WriteInput;
 
@@ -49,10 +50,10 @@ public class DashboardPlotArea {
 		
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		labelColor = BlueBookVisual.getLabelColor();
-	    resultSet  = BlueBookVisual.READ_ResultSet(System.getProperty("user.dir") + "/results.txt");
+	    resultSet  = GuiReadInput.READ_ResultSet();
 		
 		try {
-			analysisFile = BlueBookVisual.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
+			analysisFile = GuiReadInput.readResultFileList(System.getProperty("user.dir") + "/results.txt" );
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -174,7 +175,7 @@ public class DashboardPlotArea {
 	}
 	
 	public static void updateResultSet() {
-		resultSet = BlueBookVisual.READ_ResultSet(System.getProperty("user.dir") + "/results.txt");
+		resultSet = GuiReadInput.READ_ResultSet();
 	}
 
 	public static List<ChartSetting> getChartSettings() {
