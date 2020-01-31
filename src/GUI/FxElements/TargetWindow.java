@@ -16,6 +16,7 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.ui.RectangleEdge;
 
 import GUI.BlueBookVisual;
+import GUI.FilePaths;
 import Simulator_main.DataSets.RealTimeResultSet;
 import javafx.animation.AnimationTimer;
 import javafx.application.Application;
@@ -254,7 +255,7 @@ private static void rotatePlanet(boolean direction) {
 
 private static ImageView prepareImageView() {
 	try {
-	backgroundImage = new Image(new FileInputStream(System.getProperty("user.dir")+"/images/SurfaceTextures/milkyway.jpg"));
+	backgroundImage = new Image(new FileInputStream(FilePaths.starBackgroundFile));
 	imageView = new ImageView(backgroundImage);
 	//imageView.setPreserveRatio(true);
 	imageView.getTransforms().add(new Translate(0,0,200000));
@@ -294,7 +295,8 @@ private static Node prepareSun(){
 }
     
     public static Sphere prepareTargetBody(int targetInd) {
-    	targetBodyRadius = BlueBookVisual.getRM()/1000;
+    	//targetBodyRadius = BlueBookVisual.getRM()/1000;
+    	targetBodyRadius = 6000;
     	Sphere sphere = new Sphere(targetBodyRadius);
     	PhongMaterial material = new PhongMaterial();
 

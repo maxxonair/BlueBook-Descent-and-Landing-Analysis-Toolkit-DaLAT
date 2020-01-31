@@ -176,7 +176,7 @@ public static double getLength() {
 
 
 public static void setLength(double length) {
-	Length = length;
+	Length = length;	
 }
 
 
@@ -187,6 +187,7 @@ public static double getDiameter() {
 
 public static void setDiameter(double diameter) {
 	Diameter = diameter;
+
 }
 	
 

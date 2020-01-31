@@ -385,6 +385,8 @@ public class Canvas extends JPanel {
         CoP = sum/Atotal;
         int x = (int) (boxGap + 10);
         int y = height - 100;
+        GeometryFrame.setDiameter(maxDiameter);
+        GeometryFrame.setLength(maxLength);
         g2d.drawString("Diameter: "+indicatorFormat.format(maxDiameter)+" "+strUnits[unitSetting], x, y); 		// Diameter 
         y = height - 80;
         g2d.drawString("Length: "+indicatorFormat.format(maxLength)+" "+strUnits[unitSetting], x, y); 			// Length
@@ -619,6 +621,8 @@ public class Canvas extends JPanel {
 	
 	public void readElementList() {
 		List<Element> elementList = new ArrayList<>();
+		double maxDiam=0;
+		double maxLength=0;
 	   	 BufferedReader br;
 		try {
 			br = new BufferedReader(new FileReader(FilePaths.elementList));
@@ -638,6 +642,9 @@ public class Canvas extends JPanel {
 				    	   element.setDiameter1(Double.parseDouble(tokens[2]));
 				    	   element.setDiameter2(Double.parseDouble(tokens[3]));
 			       }
+			    	   maxDiam = compDiam(maxDiam, element.getDiameter1());
+			    	   maxDiam = compDiam(maxDiam, element.getDiameter2());
+			    	   maxLength += element.getLength();
 			       elementList.add(element);
 			
 			      }
@@ -646,8 +653,18 @@ public class Canvas extends JPanel {
 		} catch (Exception excp) {
 			//excp.printStackTrace();
 		} 
+		GeometryFrame.setDiameter(maxDiam);
+		GeometryFrame.setLength(maxLength);
 	 this.elementList = elementList;
 	 repaint();
+	}
+	
+	private double compDiam(double ref, double comp) {
+		if(comp>ref) {
+			return comp;
+		} else {
+			return ref;
+		}
 	}
 
 }

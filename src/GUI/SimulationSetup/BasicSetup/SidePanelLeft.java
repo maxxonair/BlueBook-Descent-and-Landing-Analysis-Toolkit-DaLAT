@@ -619,7 +619,7 @@ public class SidePanelLeft {
 		  Integrator_chooser.addActionListener(new ActionListener() { 
 	    	  public void actionPerformed(ActionEvent e) {
 	    		  Update_IntegratorSettings();
-	    		  GuiReadInput.READ_INTEG();
+	    		  GuiReadInput.readINP();;
 	    	  }
 	  	  } );
 		  Integrator_chooser.addFocusListener(new FocusListener() {

@@ -242,7 +242,7 @@ public class MenuBar {
         menu_SIM.add(menuItem_Update);
         menuItem_Update.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
-                	   BlueBookVisual.UPDATE_Page01(true);
+                	   BlueBookVisual.update(true);
                     } });
         
        
@@ -533,7 +533,7 @@ public class MenuBar {
         JMenu menu_Window = new JMenu();
         menu_Window.setText("Window");
        // menu_Window.setForeground(labelColor);
-        //menu_Window.setBackground(backgroundColor);
+        menu_Window.setBackground(backgroundColor);
         menu_Window.setForeground(Color.black);
        //menu_Window.setColor(labelColor);
         menu_Window.setFont(smallFont);
@@ -763,11 +763,9 @@ public class MenuBar {
 	
 	private void updateBBFrameTitle() {
 		BlueBookVisual.MAIN_frame.setTitle(BlueBookVisual.PROJECT_TITLE + " - Scenario: " + CurrentWorkfileName);
-		BlueBookVisual.UPDATE_Page01(true);
+		BlueBookVisual.update(true);
 	      try {
-			  GuiReadInput.READ_INPUT();	       
-			  GuiReadInput.READ_INERTIA() ;
-			  GuiReadInput.READ_InitialAttitude();
+			  GuiReadInput.readINP();	       
 		    	  BlueBookVisual.READ_sequenceFile();
 	      } catch(Exception e) {
 	    	  		System.out.println("ERROR: Reading input section after Case updated failed.");

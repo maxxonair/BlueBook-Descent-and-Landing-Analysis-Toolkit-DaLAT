@@ -16,6 +16,7 @@ import Simulator_main.RealTimeSimulationCore;
 
 public class WriteInput {
 
+	private static boolean isWritable=false;
 	private static String delimiter = " ";
 	
     public static void writeDashboradSetting(List<ChartSetting> chartSetting) {
@@ -79,8 +80,16 @@ public class WriteInput {
             }
     }
     
-    public static void writeInputFile(String initFilePath) {
+    public static boolean isWritable() {
+		return isWritable;
+	}
 
+	public static void setWritable(boolean isWritable) {
+		WriteInput.isWritable = isWritable;
+	}
+
+	public static void writeInputFile(String initFilePath) {
+    	if(isWritable) {
         try {
             File fac = new File(initFilePath);
             if (!fac.exists())
@@ -192,6 +201,7 @@ public class WriteInput {
         		System.out.println("Error: Writing input file failed.");
             	System.out.println(eIO);
         }
+    	}
     }
     
     private static FileWriter write_InitLONG(FileWriter fileWriter, String delimiter) throws IOException {
@@ -224,7 +234,7 @@ public class WriteInput {
 	int target=0;
 			try {
 				target = CenterPanelRight.getTargetIndx();
-			} catch (Exception exction) {System.out.println(exction);}
+			} catch (Exception exction) { }
 	double radius = RealTimeSimulationCore.DATA_MAIN[target][0];
 	double value =0;
 	try {
@@ -488,7 +498,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_01.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -501,7 +511,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_02.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -514,7 +524,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_03.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -527,7 +537,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_04.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -540,7 +550,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_01.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -553,7 +563,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_01.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -566,7 +576,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_02.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -579,7 +589,7 @@ public class WriteInput {
 	double value = 0 ;
 	try {
 		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_03.getText());
-	} catch (Exception exction) {System.out.println(exction);}
+	} catch (Exception exction) { }
 	 
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -592,7 +602,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_04.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -605,7 +615,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_01.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -618,7 +628,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_02.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -631,7 +641,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_03.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -644,7 +654,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_04.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -657,7 +667,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_IntegratorSetting_05.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -670,7 +680,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = CenterPanelRight.getTargetIndx();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -683,7 +693,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(SidePanelLeft.INPUT_REFELEV.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -696,7 +706,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = BlueBookVisual.getDragModelSetIndx();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -709,7 +719,7 @@ public class WriteInput {
     	double value = 1.4 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.ConstantCD_INPUT.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -722,7 +732,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = BlueBookVisual.getParachuteModelSetIndx();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -735,7 +745,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.ConstantParachuteCD_INPUT.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -748,7 +758,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.INPUT_SURFACEAREA.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -761,7 +771,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.INPUT_ParachuteDiameter.getText());
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -774,7 +784,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = GeometryFrame.getCoM();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -787,7 +797,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = GeometryFrame.getCoT();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -800,7 +810,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = GeometryFrame.getCoP();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -813,7 +823,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = GeometryFrame.getLength();
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -826,7 +836,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = GeometryFrame.getDiameter()/2;
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -839,7 +849,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.INPUT_ISP.getText()) ;
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -852,7 +862,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.INPUT_PROPMASS.getText()) ;
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -865,7 +875,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.INPUT_THRUSTMAX.getText()) ;
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -878,7 +888,7 @@ public class WriteInput {
     	double value = 0 ;
     	try {
     		value = Double.parseDouble(BlueBookVisual.INPUT_THRUSTMIN.getText()) ;
-    	} catch (Exception exction) {System.out.println(exction);}
+    	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
     	
@@ -906,7 +916,7 @@ public class WriteInput {
    	double value = 0 ;
    	try {
    		value = Double.parseDouble(BlueBookVisual.INPUT_ISPMIN.getText()) ;
-   	} catch (Exception exction) {System.out.println(exction);}
+   	} catch (Exception exction) { }
    	 
    		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
    	
@@ -919,7 +929,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSX.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -932,7 +942,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSY.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -945,7 +955,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSZ.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -958,7 +968,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSXTHRUST.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -971,7 +981,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSYTHRUST.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -984,7 +994,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSZTHRUST.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -997,7 +1007,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSTANK.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -1010,7 +1020,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSXISP.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -1023,7 +1033,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSYISP.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
@@ -1036,7 +1046,7 @@ public class WriteInput {
 	   	double value = 0 ;
 	   	try {
 	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSZISP.getText()) ;
-	   	} catch (Exception exction) {System.out.println(exction);}
+	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	   	
