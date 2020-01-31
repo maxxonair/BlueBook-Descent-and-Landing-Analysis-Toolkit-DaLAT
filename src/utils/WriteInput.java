@@ -686,6 +686,7 @@ public class WriteInput {
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
+    		BlueBookVisual.indx_target = (int) value;
     	
     	return fileWriter;
     }

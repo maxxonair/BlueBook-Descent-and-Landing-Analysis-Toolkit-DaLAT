@@ -164,7 +164,7 @@ public class PolarMap {
 			e.printStackTrace();
 		}
      	try {
-			BlueBookVisual.mapSetting.setMap(1);
+			MapSetting.setMap(1);
 		} catch (Exception exp) {
 				System.err.println(exp);
 		}

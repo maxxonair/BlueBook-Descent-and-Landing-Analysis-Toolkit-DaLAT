@@ -345,6 +345,7 @@ public class GuiReadInput {
 
     			DashboardLeftPanel.INDICATOR_TARGET.setText(BlueBookVisual.Target_Options[Target_indx]);
     			CenterPanelRight.setTargetIndx(Target_indx);
+    			BlueBookVisual.indx_target = Target_indx;
     	        if(Target_indx==0) {
     	        	DashboardLeftPanel.INDICATOR_TARGET.setBorder(BlueBookVisual.Earth_border);
     	        } else if(Target_indx==1){

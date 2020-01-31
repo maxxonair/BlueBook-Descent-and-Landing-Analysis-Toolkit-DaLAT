@@ -320,7 +320,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	public static MercatorMap mercatorMap;
     	public static PolarMap polarMap;
     	private static RawData rawData;
-    	public static MapSetting mapSetting;
+   
     	
     	
      	public static  List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
@@ -1042,7 +1042,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
         //-----------------------------------------------------------------------------------------
         // 		Create map classes 
         //-----------------------------------------------------------------------------------------
-		 mapSetting = new MapSetting();
+		
 		 mercatorMap = new MercatorMap();
 
          polarMap = new PolarMap();
@@ -1100,7 +1100,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
         // The following prevents long load up times when opening the GUI 
     		try {     long filesize = 	new File(FilePaths.RES_File).length()/1000000;
 			    	    if(filesize<10) {
-			    	    		mapSetting.setMap(indx_target);
+			    	    		MapSetting.setMap(indx_target);
 			    	    }
 			} catch (URISyntaxException e1) {
 				// TODO Auto-generated catch block
@@ -1164,7 +1164,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 			GuiReadInput.readINP();
 			if(fullImport) {
 				rawData.readRawData();
-				mapSetting.setMap(indx_target);
+				MapSetting.setMap(indx_target);
 			}
 		} catch (IOException | URISyntaxException e2) {
 			// TODO Auto-generated catch block

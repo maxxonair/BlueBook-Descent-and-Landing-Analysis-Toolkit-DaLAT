@@ -20,7 +20,7 @@ public class MapSetting {
 		
 	}
 
-	public void setMap(int TARGET) throws URISyntaxException, IOException{
+	public static void setMap(int TARGET) throws URISyntaxException, IOException{
 		final XYPlot plot2 = (XYPlot) BlueBookVisual.mercatorMap.Chart_MercatorMap.getPlot();
 		final PolarPlot plot_polar = (PolarPlot) BlueBookVisual.polarMap.chart_PolarMap.getPlot();
 		  if (TARGET==0){ 
