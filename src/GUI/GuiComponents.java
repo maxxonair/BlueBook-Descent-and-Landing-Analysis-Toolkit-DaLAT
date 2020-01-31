@@ -71,7 +71,7 @@ public class GuiComponents {
 	}
 	
 	
-	static JPanel getdynamicList(JPanel targetPanel, String title, String[] bulletPointTitles ,
+	public static JPanel getdynamicList(JPanel targetPanel, String title, String[] bulletPointTitles ,
 								 List<JRadioButton> contentList) {
 		
 	      JLabel labelTitle = new JLabel(title);

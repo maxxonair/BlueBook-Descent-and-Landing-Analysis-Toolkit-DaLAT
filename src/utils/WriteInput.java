@@ -7,8 +7,11 @@ import java.util.List;
 
 import GUI.BlueBookVisual;
 import GUI.FilePaths;
+import GUI.AerdoynamicSetup.AerodynamicSetup;
+import GUI.AerdoynamicSetup.AerodynamicSetupSpacecraft;
 import GUI.Dashboard.ChartSetting;
 import GUI.GeometryModel.GeometryFrame;
+import GUI.PropulsionSetup.PropulsionSetup;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
@@ -705,7 +708,7 @@ public class WriteInput {
     	String identifier = "Env_DragModel";
     	double value = 0 ;
     	try {
-    		value = BlueBookVisual.getDragModelSetIndx();
+    		value = AerodynamicSetup.getDragModelSetIndx();
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -718,7 +721,7 @@ public class WriteInput {
     	String identifier = "Env_ConstCD";
     	double value = 1.4 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.ConstantCD_INPUT.getText());
+    		value = Double.parseDouble(AerodynamicSetup.ConstantCD_INPUT.getText());
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -731,7 +734,7 @@ public class WriteInput {
     	String identifier = "Env_ParModel";
     	double value = 0 ;
     	try {
-    		value = BlueBookVisual.getParachuteModelSetIndx();
+    		value = AerodynamicSetup.getParachuteModelSetIndx();
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -744,7 +747,7 @@ public class WriteInput {
     	String identifier = "Env_ParCD";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.ConstantParachuteCD_INPUT.getText());
+    		value = Double.parseDouble(AerodynamicSetup.ConstantParachuteCD_INPUT.getText());
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -757,7 +760,7 @@ public class WriteInput {
     	String identifier = "SC_SurfArea";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.INPUT_SURFACEAREA.getText());
+    		value = Double.parseDouble(AerodynamicSetupSpacecraft.INPUT_SURFACEAREA.getText());
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -770,7 +773,7 @@ public class WriteInput {
     	String identifier = "SC_ParDiam";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.INPUT_ParachuteDiameter.getText());
+    		value = Double.parseDouble(AerodynamicSetupSpacecraft.INPUT_ParachuteDiameter.getText());
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -848,7 +851,7 @@ public class WriteInput {
     	String identifier = "SC_MainISP";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.INPUT_ISP.getText()) ;
+    		value = Double.parseDouble(PropulsionSetup.INPUT_ISP.getText()) ;
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -861,7 +864,7 @@ public class WriteInput {
     	String identifier = "SC_MainProp";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.INPUT_PROPMASS.getText()) ;
+    		value = Double.parseDouble(PropulsionSetup.INPUT_PROPMASS.getText()) ;
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -874,7 +877,7 @@ public class WriteInput {
     	String identifier = "SC_MainThrustMax";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.INPUT_THRUSTMAX.getText()) ;
+    		value = Double.parseDouble(PropulsionSetup.INPUT_THRUSTMAX.getText()) ;
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -887,7 +890,7 @@ public class WriteInput {
     	String identifier = "SC_MainThrustMin";
     	double value = 0 ;
     	try {
-    		value = Double.parseDouble(BlueBookVisual.INPUT_THRUSTMIN.getText()) ;
+    		value = Double.parseDouble(PropulsionSetup.INPUT_THRUSTMIN.getText()) ;
     	} catch (Exception exction) { }
     	 
     		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -899,7 +902,7 @@ public class WriteInput {
    	try {
    	String identifier = "SC_MainISPModel";
    	double value = 0 ;
-	if(BlueBookVisual.INPUT_ISPMODEL.isSelected()) {
+	if(PropulsionSetup.INPUT_ISPMODEL.isSelected()) {
 		value = 1;
 	} else {
 		value=0;
@@ -915,7 +918,7 @@ public class WriteInput {
    	String identifier = "SC_MainISPMin";
    	double value = 0 ;
    	try {
-   		value = Double.parseDouble(BlueBookVisual.INPUT_ISPMIN.getText()) ;
+   		value = Double.parseDouble(PropulsionSetup.INPUT_ISPMIN.getText()) ;
    	} catch (Exception exction) { }
    	 
    		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -928,7 +931,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSMomX";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSX.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSX.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -941,7 +944,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSMomY";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSY.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSY.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -954,7 +957,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSMomZ";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSZ.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSZ.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -967,7 +970,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSThrustX";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSXTHRUST.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSXTHRUST.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -980,7 +983,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSThrustY";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSYTHRUST.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSYTHRUST.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -993,7 +996,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSThrustZ";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSZTHRUST.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSZTHRUST.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -1006,7 +1009,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSProp";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSTANK.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSTANK.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -1019,7 +1022,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSISPX";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSXISP.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSXISP.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -1032,7 +1035,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSISPY";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSYISP.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSYISP.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
@@ -1045,7 +1048,7 @@ public class WriteInput {
 	   	String identifier = "SC_RCSISPZ";
 	   	double value = 0 ;
 	   	try {
-	   		value = Double.parseDouble(BlueBookVisual.INPUT_RCSZISP.getText()) ;
+	   		value = Double.parseDouble(PropulsionSetup.INPUT_RCSZISP.getText()) ;
 	   	} catch (Exception exction) { }
 	   	 
 	   		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));

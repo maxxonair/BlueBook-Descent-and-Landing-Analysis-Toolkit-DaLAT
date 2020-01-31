@@ -10,7 +10,7 @@ Init_QuartW 0.0
 Init_QuartX -0.01745241
 Init_QuartY 0.0
 Init_QuartZ 0.9998477
-Init_AngRateX 0.0
+Init_AngRateX 5.0
 Init_AngRateY 0.0
 Init_AngRateZ 0.0
 Init_IXX 20000.0
@@ -47,14 +47,14 @@ Env_DragModel 0.0
 Env_ConstCD 1.4
 Env_ParModel 1.0
 Env_ParCD 0.0
-SC_SurfArea 6.25
+SC_SurfArea 6.246
 SC_ParDiam 0.0
 SC_COM 3.523
 SC_COT 0.1
 SC_COP 1.186133128502015
 SC_Height 2.059
 SC_BodyRadius 1.41
-SC_MainISP 0.0
+SC_MainISP 320.0
 SC_MainProp 8200.0
 SC_MainThrustMax 40075.0
 SC_MainThrustMin 4500.0

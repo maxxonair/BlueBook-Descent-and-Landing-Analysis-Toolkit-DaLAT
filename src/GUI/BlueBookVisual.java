@@ -28,12 +28,8 @@ import java.awt.SplashScreen;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.ComponentAdapter;
-import java.awt.event.ComponentEvent;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
-import java.awt.event.ItemEvent;
-import java.awt.event.ItemListener;
 
 import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
@@ -53,28 +49,24 @@ import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
 import javax.imageio.IIOException;
 import javax.imageio.ImageIO;
 import javax.swing.border.Border;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
-
 import javax.swing.plaf.ComboBoxUI;
 import javax.swing.plaf.basic.BasicArrowButton;
 import javax.swing.plaf.basic.BasicComboBoxUI;
 import javax.swing.*;  
-
 import Simulator_main.DataSets.RealTimeResultSet;
-import GUI.PropulsionDraw.PropulsionDrawEditor;
+import GUI.PropulsionSetup.PropulsionSetup;
 import GUI.SimulationSetup.BasicSetup.BasicSetupMain;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
 import utils.GuiReadInput;
 import utils.WriteInput;
-
 import com.apple.eawt.Application;
 
+import GUI.AerdoynamicSetup.AerodynamicSetup;
+import GUI.AerdoynamicSetup.AerodynamicSetupSpacecraft;
 import GUI.Dashboard.DashboardPanel;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.DataStructures.InputFileSet;
@@ -123,16 +115,10 @@ public class BlueBookVisual implements  ActionListener {
     //											Styles, Fonts, Colors
     //-----------------------------------------------------------------------------------------------------------------------------------------
     public static int gg = 235;
-    //public static Color labelColor = new Color(0,0,0);    					    // Label Color
     public static Color labelColor = new Color(220,220,220);    					// Label Color
    	public static Color backgroundColor = new Color(41,41,41);				    // Background Color
 
    	public static Color valueColor =  new Color(65,105,225);
-   	//public static Color valueColor2 =  new Color(255,140,0);
-   	//public static Color w_c = new Color(gg,gg,gg);					            // Box background color
-   //	public static Color t_c = new Color(255,255,255);				        // Table background color
-   	//public static Color t_c = new Color(61,61,61);				                // Table background color
-   	
    	
    	public static Color light_gray = new Color(230,230,230);
    	
@@ -148,7 +134,7 @@ public class BlueBookVisual implements  ActionListener {
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     public static DecimalFormat df 	  = new DecimalFormat();
     
-    public static List<JRadioButton> DragModelSet = new ArrayList<JRadioButton>();
+    
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Variables and Container Arrays
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -298,40 +284,22 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												GUI Elements
     //----------------------------------------------------------------------------------------------------------------------------------------- 
-    
-    public static boolean chartA3_fd=true;  
-	static boolean Chart_DashBoardFlexibleChart_fd = true;
-	static boolean CHART_P1_DashBoardOverviewChart_fd = true;
-  
-       
-    
-   
     public static JPanel dashboardPanel;
-    public static JPanel PageX04_Map;
-    public static JPanel PageX04_3;
+
     public static JPanel PageX04_SimSetup; 
-    public static JPanel PageX04_RawDATA; 
-    public static JPanel PageX04_PolarMap;
-    public static JPanel PolarMapContainer; 
-    public static JPanel P1_Plotpanel; 
     public static JPanel PageX04_AttitudeSetup;
 
     
-    public static JCheckBox INPUT_ISPMODEL; 
-    public static JTextField INPUT_RCSX, INPUT_RCSY, INPUT_RCSZ;
-    public static JTextField  INPUT_RB; 
-    public static JTextField INPUT_M0, INPUT_WRITETIME,INPUT_ISP,INPUT_PROPMASS,INPUT_THRUSTMAX,INPUT_THRUSTMIN,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
-    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN,INPUT_ISPMIN, INPUT_SURFACEAREA, INPUT_BALLISTICCOEFFICIENT;
+
+    public static JTextField INPUT_M0, INPUT_WRITETIME,p42_inp14,p42_inp15,p42_inp16,p42_inp17;
+    public static JTextField INPUT_PGAIN,INPUT_IGAIN,INPUT_DGAIN,INPUT_CTRLMAX,INPUT_CTRLMIN;
     
-    public static JRadioButton RB_SurfaceArea, RB_BallisticCoefficient;
+
     public static JTextField INPUT_IXX, INPUT_IXY, INPUT_IXZ, INPUT_IYX, INPUT_IYY, INPUT_IYZ, INPUT_IZX, INPUT_IZY, INPUT_IZZ;
 
 
     public static TimerTask task_Update;
-    public static JTextField ConstantCD_INPUT;
-    public static JTextField ConstantParachuteCD_INPUT, INPUT_ParachuteDiameter;
     public static JPanel SequenceLeftPanel;
-    public static JTextField INPUT_RCSXTHRUST, INPUT_RCSYTHRUST, INPUT_RCSZTHRUST, INPUT_RCSTANK, INPUT_RCSXISP, INPUT_RCSYISP,INPUT_RCSZISP;
     public static JPanel SequenceProgressBar, FlexibleChartContentPanel, FlexibleChartContentPanel2;
     public static List<JLabel> sequenceProgressBarContent = new ArrayList<JLabel>();
 
@@ -355,9 +323,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	public static MapSetting mapSetting;
     	
     	
-    	public static List<Component> AeroLeftBarAdditionalComponents = new ArrayList<Component>();
-    	public static List<Component> AeroParachuteBarAdditionalComponents = new ArrayList<Component>();
-    	public static List<JRadioButton> ParachuteBulletPoints = new ArrayList<JRadioButton>();
      	public static  List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
      	public static  List<GUISequenceElement> sequenceContentList = new ArrayList<GUISequenceElement>();
      	public static 				int sequenceDimensionWidth=1500;
@@ -430,36 +395,13 @@ public static String[] COLUMS_EventHandler = {"Event Type",
         dashboardPanel.setLayout(new BorderLayout());
         dashboardPanel.setBackground(backgroundColor);
         dashboardPanel.setForeground(labelColor);
-        PageX04_Map = new JPanel();
-        PageX04_Map.setLocation(0, 0);
-        PageX04_Map.setPreferredSize(new Dimension(extx_main, exty_main));
-        PageX04_Map.setLayout(new BorderLayout());
-        PageX04_Map.setBackground(backgroundColor);
-        PageX04_Map.setForeground(labelColor);
-        PageX04_3 = new JPanel();
-        PageX04_3.setLocation(0, 0);
-        PageX04_3.setPreferredSize(new Dimension(extx_main, exty_main));
-        PageX04_3.setLayout(new BorderLayout());
-        PageX04_3.setBackground(backgroundColor);
-        PageX04_3.setForeground(labelColor);
+
         PageX04_SimSetup = new JPanel(); 
         PageX04_SimSetup.setLocation(0, 0);
         PageX04_SimSetup.setPreferredSize(new Dimension(extx_main, exty_main));
         PageX04_SimSetup.setLayout(new BorderLayout());
         PageX04_SimSetup.setBackground(backgroundColor);
         PageX04_SimSetup.setForeground(labelColor);
-        PageX04_PolarMap = new JPanel();
-        PageX04_PolarMap.setLocation(0, 0);
-        PageX04_PolarMap.setPreferredSize(new Dimension(extx_main, exty_main));
-        PageX04_PolarMap.setLayout(new BorderLayout());
-        PageX04_PolarMap.setBackground(backgroundColor);
-        PageX04_PolarMap.setForeground(labelColor);
-        PageX04_RawDATA = new JPanel();
-        PageX04_RawDATA.setLocation(0, 0);
-        PageX04_RawDATA.setPreferredSize(new Dimension(extx_main, exty_main));
-        PageX04_RawDATA.setLayout(new BorderLayout());
-        PageX04_RawDATA.setBackground(backgroundColor);
-        PageX04_RawDATA.setForeground(labelColor);
         PageX04_AttitudeSetup = new JPanel();
         PageX04_AttitudeSetup.setLocation(0, 0);
         PageX04_AttitudeSetup.setPreferredSize(new Dimension(extx_main, exty_main));
@@ -498,12 +440,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
       TabPane_SimulationSetup.setForeground(labelColor);
 //-------------------------------------------------------------------------------------------	    
       // Main panels for each page 
-		JPanel AerodynamicSetupPanel = new JPanel();
-		AerodynamicSetupPanel.setLocation(0, 0);
-		AerodynamicSetupPanel.setBackground(backgroundColor);
-		AerodynamicSetupPanel.setForeground(labelColor);
-		AerodynamicSetupPanel.setSize(400, 600);
-		AerodynamicSetupPanel.setLayout(new BorderLayout()); 
 		
 	      
 			JPanel SequenceSetupPanel = new JPanel();
@@ -541,7 +477,12 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 			@SuppressWarnings("unused")
 			BasicSetupMain basicSetupMasterPanel = new BasicSetupMain();
 			
-			
+		    //-------------
+		    /**
+		        
+		        Create Aerodynamic Setup page 
+		    */
+		      AerodynamicSetup aeroSetup = new AerodynamicSetup();
 			//---------------------------------------------------------------------------------------
 			/**
 			 * 		Create Setup area tabbed pane structure 
@@ -563,7 +504,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 	      
 	     	TabPane_SimulationSetup.addTab("Basic Setup" , icon_setup2, BasicSetupMain.getMainPanel(), null);
 	     	TabPane_SimulationSetup.addTab("Sequence Setup" , icon_setup2, SequenceSetupPanel, null);
-	     	TabPane_SimulationSetup.addTab("Aerodynamic Setup" , icon_aerodynamic, AerodynamicSetupPanel, null);
+	     	TabPane_SimulationSetup.addTab("Aerodynamic Setup" , icon_aerodynamic, aeroSetup.getMainPanel(), null);
 	     	TabPane_SimulationSetup.addTab("Gravity Setup" , icon_setup2, gravityModelPanel, null);
 	     	TabPane_SimulationSetup.addTab("Noise and Error Model Setup" , null, NoiseSetupPanel, null);
 	     	PageX04_SimSetup.add(TabPane_SimulationSetup);
@@ -590,10 +531,22 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     
 
 				//-----------------------------------------------------------------------------------------
-			    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
+			    // ---->>>>>                       TAB: Aerodynamic Setup 
 				//-----------------------------------------------------------------------------------------		    
 			    
+    				AerodynamicSetupSpacecraft aeroSetupSpacecraft = new AerodynamicSetupSpacecraft();
+    				
+    				
+    				//-----------------------------------------------------------------------------------------
+    			    // ---->>>>>                       TAB: Propulsion Setup 
+    				//-----------------------------------------------------------------------------------------		    
+    			    
+    				PropulsionSetup propulsionSetup = new PropulsionSetup();
 			    
+    
+				//-----------------------------------------------------------------------------------------
+			    // ---->>>>>                       TAB: Aerodynamic Setup Sim side
+				//-----------------------------------------------------------------------------------------	
 				JPanel SequenceRightPanel = new JPanel();
 				SequenceRightPanel.setLocation(0, 0);
 				SequenceRightPanel.setBackground(backgroundColor);
@@ -671,269 +624,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 			      sequenceContentList.add(sequenceElement1);
 			      sequenceContentList.get(0).getMasterPanel().setLocation(globalLeftGap, globalTopGap);
 			      SequenceLeftPanel.add(sequenceContentList.get(0).getMasterPanel());
-				//-----------------------------------------------------------------------------------------
-			    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
-				//-----------------------------------------------------------------------------------------		    
-			    
-				JPanel AerodynamicRightPanel = new JPanel();
-				AerodynamicRightPanel.setLocation(0, 0);
-				AerodynamicRightPanel.setBackground(backgroundColor);
-				AerodynamicRightPanel.setForeground(labelColor);
-				AerodynamicRightPanel.setSize(400, 600);
-				AerodynamicRightPanel.setLayout(null); 
 
-			   
-				JPanel AerodynamicLeftPanel = new JPanel();
-			    AerodynamicLeftPanel.setLocation(0, 0);
-			    AerodynamicLeftPanel.setBackground(backgroundColor);
-			    AerodynamicLeftPanel.setForeground(labelColor);
-			    AerodynamicLeftPanel.setSize(400, 600);
-			    AerodynamicLeftPanel.setLayout(null); 
-			    
-				JPanel AerodynamicDragPanel = new JPanel();
-				AerodynamicDragPanel.setLocation(0, 0);
-				AerodynamicDragPanel.setBackground(backgroundColor);
-				AerodynamicDragPanel.setForeground(labelColor);
-				AerodynamicDragPanel.setSize(400, 150);
-				AerodynamicDragPanel.setLayout(null); 
-				AerodynamicLeftPanel.add(AerodynamicDragPanel);
-				
-			    JPanel AerodynamicParachutePanel = new JPanel();
-				AerodynamicParachutePanel.setLocation(0, (int) AerodynamicDragPanel.getSize().getHeight());
-				AerodynamicParachutePanel.setBackground(backgroundColor);
-				AerodynamicParachutePanel.setForeground(labelColor);
-				AerodynamicParachutePanel.setSize(190, 300);
-				AerodynamicParachutePanel.setLayout(null); 
-				AerodynamicLeftPanel.add(AerodynamicParachutePanel);
-				
-			    JPanel AerodynamicParachuteOptionPanel = new JPanel();
-			    AerodynamicParachuteOptionPanel.setLocation(190, (int) AerodynamicDragPanel.getSize().getHeight());
-			    AerodynamicParachuteOptionPanel.setBackground(backgroundColor);
-			    AerodynamicParachuteOptionPanel.setForeground(labelColor);
-			    AerodynamicParachuteOptionPanel.setSize(210, 300);
-			    AerodynamicParachuteOptionPanel.setLayout(null); 
-				AerodynamicLeftPanel.add(AerodynamicParachuteOptionPanel);
-
-			      
-			      JPanel AerodynamicInputPanel = new JPanel();
-			      AerodynamicInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-			      AerodynamicInputPanel.setSize(SidePanel_Width, 750);
-			      AerodynamicInputPanel.setBackground(backgroundColor);
-			      AerodynamicInputPanel.setForeground(Color.white);
-			      AerodynamicInputPanel.setLayout(null);	
-			  
-			      JScrollPane ScrollPaneAerodynamicInput = new JScrollPane(AerodynamicLeftPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			      ScrollPaneAerodynamicInput.setPreferredSize(new Dimension(405, exty_main));
-			      ScrollPaneAerodynamicInput.getVerticalScrollBar().setUnitIncrement(16);
-			      AerodynamicSetupPanel.add(ScrollPaneAerodynamicInput, BorderLayout.LINE_START);
-			      JScrollPane ScrollPaneAerodynamicInput2 = new JScrollPane(AerodynamicRightPanel,JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-			      ScrollPaneAerodynamicInput2.setPreferredSize(new Dimension(405, exty_main));
-			      ScrollPaneAerodynamicInput2.getVerticalScrollBar().setUnitIncrement(16);
-			      AerodynamicSetupPanel.add(ScrollPaneAerodynamicInput2, BorderLayout.CENTER);
-			    
-			      JLabel LABELdragModel = new JLabel("Select Aerodynamic Drag Model:");
-			      LABELdragModel.setLocation(3, 5 + 25 * 0  );
-			      LABELdragModel.setSize(190, 20);
-			      LABELdragModel.setBackground(backgroundColor);
-			      LABELdragModel.setForeground(labelColor);
-			      LABELdragModel.setFont(small_font);
-			      LABELdragModel.setHorizontalAlignment(0);
-			      AerodynamicDragPanel.add(LABELdragModel);
-			      
-			      ButtonGroup dragModelGroup = new ButtonGroup();  
-				     
-			      JRadioButton aeroButton = new JRadioButton("Constant drag coefficient");
-			      aeroButton.setLocation(3, 5 + 25 * 1  );
-			      aeroButton.setSize(190, 20);
-			      aeroButton.setBackground(backgroundColor);
-			      aeroButton.setForeground(labelColor);
-			      aeroButton.setFont(small_font);
-			      aeroButton.addChangeListener(new ChangeListener() {
-
-					@Override
-					public void stateChanged(ChangeEvent arg0) {
-						WriteInput.writeInputFile(FilePaths.inputFile);
-						//------------------------------------------------------------------------
-						int indx = getDragModelSetIndx();
-						for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
-							AerodynamicDragPanel.remove(AeroLeftBarAdditionalComponents.get(i));
-						}
-						AerodynamicDragPanel.revalidate();
-						AerodynamicDragPanel.repaint();
-						if(indx==0) {	
-						      JLabel LABEL_CD = new JLabel("Set constant CD value [-]");
-						      LABEL_CD.setLocation(193, 5 + 25 * 1);
-						      LABEL_CD.setSize(300, 20);
-						      LABEL_CD.setBackground(backgroundColor);
-						      LABEL_CD.setForeground(labelColor);
-						      LABEL_CD.setFont(small_font);
-						      AeroLeftBarAdditionalComponents.add(LABEL_CD);
-						      AerodynamicDragPanel.add(LABEL_CD);
-							
-					        ConstantCD_INPUT = new JTextField("");
-					        ConstantCD_INPUT.setLocation(193, 5 + 25 * 2 );
-					        ConstantCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-					        ConstantCD_INPUT.setBorder(Moon_border);
-					        ConstantCD_INPUT.setSize(100, 20);
-					        ConstantCD_INPUT.setEditable(true);
-					        ConstantCD_INPUT.addFocusListener(new FocusListener() {
-
-								@Override
-								public void focusGained(FocusEvent arg0) { }
-
-								@Override
-								public void focusLost(FocusEvent e) {
-									WriteInput.writeInputFile(FilePaths.inputFile);
-								}
-						   	  
-						     });
-					        AeroLeftBarAdditionalComponents.add(ConstantCD_INPUT);
-					       // RB_INPUT.setBackground(Color.lightGray);
-					        AerodynamicDragPanel.add(ConstantCD_INPUT);       
-						}
-						//------------------------------------------------------------------------
-					}
-			    	  
-			      });
-			      //aeroButton.setSelected(true);
-			      DragModelSet.add(aeroButton);
-			      //aeroButton.setHorizontalAlignment(0);
-			      AerodynamicDragPanel.add(aeroButton);
-			      dragModelGroup.add(aeroButton);
-			       aeroButton = new JRadioButton("Hypersonic Panel Model");
-			      aeroButton.setLocation(3, 5 + 25 * 2  );
-			      aeroButton.setSize(190, 20);
-			      aeroButton.setBackground(backgroundColor);
-			      aeroButton.setForeground(labelColor);
-			      aeroButton.setFont(small_font);
-			      DragModelSet.add(aeroButton);
-			      aeroButton.addChangeListener(new ChangeListener() {
-
-					@Override
-					public void stateChanged(ChangeEvent arg0) {
-							WriteInput.writeInputFile(FilePaths.inputFile);
-							//------------------------------------------------------------------------
-							int indx = getDragModelSetIndx();
-							for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
-								AerodynamicDragPanel.remove(AeroLeftBarAdditionalComponents.get(i));
-							}
-							AerodynamicDragPanel.revalidate();
-							AerodynamicDragPanel.repaint();
-							if(indx==1) {							
-							     INPUT_RB = new JTextField(10);
-							     INPUT_RB.setText("");
-							     INPUT_RB.setLocation(193, 5 + 25 * 3);;
-							     INPUT_RB.setSize(INPUT_width, 20);
-							     INPUT_RB.setHorizontalAlignment(JTextField.RIGHT);
-							     AeroLeftBarAdditionalComponents.add(INPUT_RB);
-							     INPUT_RB.addFocusListener(new FocusListener() {
-
-									@Override
-									public void focusGained(FocusEvent arg0) { }
-
-									@Override
-									public void focusLost(FocusEvent e) {
-										WriteInput.writeInputFile(FilePaths.inputFile);
-									}
-							   	  
-							     });
-							     AerodynamicDragPanel.add(INPUT_RB);
-						        
-							      JLabel LABEL_RB = new JLabel("Heat Shield Body Radius RB [m]");
-							      LABEL_RB.setLocation(193, 5 + 25 * 2);
-							      LABEL_RB.setSize(300, 20);
-							      LABEL_RB.setFont(small_font);
-							      LABEL_RB.setBackground(backgroundColor);
-							      LABEL_RB.setForeground(labelColor);
-							      AeroLeftBarAdditionalComponents.add(LABEL_RB);
-						       // RB_INPUT.setBackground(Color.lightGray);
-							      AerodynamicDragPanel.add(LABEL_RB);       
-							}
-							//------------------------------------------------------------------------
-					}
-			    	  
-			      });
-			     // aeroButton.setHorizontalAlignment(0);
-			      AerodynamicDragPanel.add(aeroButton);
-			      dragModelGroup.add(aeroButton);
-
-			      // System.out.println(dragModelGroup.getSelection().);
-			      String[] titles = {"Constant Drag Coefficient", "Mach model"};
-			      AerodynamicParachutePanel = GuiComponents.getdynamicList(AerodynamicParachutePanel, 
-			    		  "Set Parachute drag model" , titles, ParachuteBulletPoints);
-			      
-			      ParachuteBulletPoints.get(0).addChangeListener(new ChangeListener() {
-
-						@Override
-						public void stateChanged(ChangeEvent arg0) {
-							WriteInput.writeInputFile(FilePaths.inputFile);
-							for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
-								AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
-							}
-							AerodynamicParachuteOptionPanel.revalidate();
-							AerodynamicParachuteOptionPanel.repaint();
-
-							      JLabel LABEL = new JLabel("Set constant CD value [-]");
-							      LABEL.setLocation(3, 30 + 25 * 0);
-							      LABEL.setSize(210, 20);
-							      LABEL.setBackground(backgroundColor);
-							      LABEL.setForeground(labelColor);
-							      LABEL.setFont(small_font);
-							      AeroParachuteBarAdditionalComponents.add(LABEL);
-							      AerodynamicParachuteOptionPanel.add(LABEL);
-							      
-							        ConstantParachuteCD_INPUT = new JTextField("");
-							        ConstantParachuteCD_INPUT.setLocation(3, 5 + 25 * 2 );
-							        ConstantParachuteCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-							        ConstantParachuteCD_INPUT.setBorder(Moon_border);
-							        ConstantParachuteCD_INPUT.setSize(100, 20);
-							        ConstantParachuteCD_INPUT.setEditable(true);
-							        ConstantParachuteCD_INPUT.addFocusListener(new FocusListener() {
-
-										@Override
-										public void focusGained(FocusEvent arg0) { }
-
-										@Override
-										public void focusLost(FocusEvent e) {
-											WriteInput.writeInputFile(FilePaths.inputFile);
-										}
-								   	  
-								     });
-							        AeroParachuteBarAdditionalComponents.add(ConstantParachuteCD_INPUT);
-							        AerodynamicParachuteOptionPanel.add(ConstantParachuteCD_INPUT); 
-							
-						}
-				    	  
-				      });
-			      ParachuteBulletPoints.get(1).addChangeListener(new ChangeListener() {
-
-						@Override
-						public void stateChanged(ChangeEvent arg0) {
-							WriteInput.writeInputFile(FilePaths.inputFile);
-							for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
-								AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
-							}
-							AerodynamicParachuteOptionPanel.revalidate();
-							AerodynamicParachuteOptionPanel.repaint();
-
-							      JLabel LABEL = new JLabel("Select 1D model [-]");
-							      LABEL.setLocation(3, 30 + 25 * 1);
-							      LABEL.setSize(300, 20);
-							      LABEL.setBackground(backgroundColor);
-							      LABEL.setForeground(labelColor);
-							      LABEL.setFont(small_font);
-							      AeroParachuteBarAdditionalComponents.add(LABEL);
-							      AerodynamicParachuteOptionPanel.add(LABEL);
-							
-						}
-				    	  
-				      });
-			      
-			      ParachuteBulletPoints.get(1).setSelected(true);
-			      
-			      
-			      
-			      
+			 
 			      
 		//-----------------------------------------------------------------------------------------
 	    // ---->>>>>                       TAB: Spacecraft Definition
@@ -961,14 +653,6 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 					InertiaxPanel.setSize(400, 600);
 					InertiaxPanel.setLayout(null); 
 					massAndInertiaPanel.add(InertiaxPanel);
-					
-					
-			      JPanel propulsionInputPanel = new JPanel();
-			     // propulsionInputPanel.setLocation(0, uy_p41 + 26 * 38 );
-			     // propulsionInputPanel.setSize(SidePanel_Width, 350);
-			      propulsionInputPanel.setBackground(backgroundColor);
-			      propulsionInputPanel.setForeground(labelColor);
-			      propulsionInputPanel.setLayout(new BorderLayout());
 			      
 			      JPanel guidanceNavigationAndControlPanel = new JPanel();
 			     // propulsionInputPanel.setLocation(0, uy_p41 + 26 * 38 );
@@ -987,8 +671,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 			      }
 			      
 				TabPane_SCDefinition.addTab("Mass, Inertia and Geometry" , icon_setup2, massAndInertiaPanel, null);
-				TabPane_SCDefinition.addTab("Propulsion" , icon_inertia, propulsionInputPanel, null);
-				TabPane_SCDefinition.addTab("Aerodynamic" , icon_aerodynamic, AerodynamicInputPanel, null);
+				TabPane_SCDefinition.addTab("Propulsion" , icon_inertia, propulsionSetup.getMainPanel(), null);
+				TabPane_SCDefinition.addTab("Aerodynamic" , icon_aerodynamic, aeroSetupSpacecraft.getMainPanel(), null);
 				TabPane_SCDefinition.addTab("GNC" , icon_aerodynamic, guidanceNavigationAndControlPanel, null);
 				PageX04_AttitudeSetup.add(TabPane_SCDefinition);
 		        TabPane_SCDefinition.setSelectedIndex(0);
@@ -1354,847 +1038,7 @@ public static String[] COLUMS_EventHandler = {"Event Type",
 			      InertiaMatrixPanel.add(LABEL_IZZ);
 			      
 			      
-		        //---------------------------------------------------------------------------------------------
-		        //                         Propulsion Definition Block
-		        //--------------------------------------------------------------------------------------------- 
-		      
-			        JPanel propulsionSidePanel = new JPanel();
-			        propulsionSidePanel.setPreferredSize(new Dimension(400, 800));
-			        propulsionSidePanel.setBackground(backgroundColor);
-			        propulsionSidePanel.setLayout(null);
-			        propulsionInputPanel.add(propulsionSidePanel, BorderLayout.EAST);
-			        
-			        
-			    PropulsionDrawEditor propulsionDrawEditior = new PropulsionDrawEditor();
-		        JPanel PropulsionEditor = propulsionDrawEditior.getPropulsionDrawArea();
-		        //PropulsionEditor.setSize(600, 500);
-		        //PropulsionEditor.setLocation(400, 30);
-		        PropulsionEditor.addComponentListener(new ComponentAdapter() 
-		        {  
-		            public void componentResized(ComponentEvent evt) {
-		            	propulsionDrawEditior.getCanvas().resizeBackgroundImage();
-		            }
-		    });
-		        propulsionInputPanel.add(PropulsionEditor, BorderLayout.CENTER);
 		        
-		        
-		        JButton propEditorButton = new JButton("Open Full Size Editor");
-		        propEditorButton.setSize(200,30);
-		        propEditorButton.setLocation(0, uy_p41 + 25 * 1);
-		        propEditorButton.setBackground(backgroundColor);
-		        propEditorButton.setForeground(Color.BLACK);
-		        propEditorButton.setFont(small_font);
-		        propEditorButton.addActionListener(new ActionListener() {
-		        	 public void actionPerformed(ActionEvent e)
-		        	  {
-	                	   Thread thread = new Thread(new Runnable() {
-	                  		    public void run() {
-	                  		    		PropulsionDrawEditor.setExit(false);
-	                  		       	PropulsionDrawEditor.main(null);
-
-	                  		    }
-	                  		});
-	                  		thread.start();
-		        		 
-		        	  }
-		        });
-		        propulsionSidePanel.add(propEditorButton);
-		      
-		      JLabel LABEL_PrimarySettings = new JLabel("Primary Propulsion System Settings");
-		      LABEL_PrimarySettings.setLocation(0, uy_p41 + 25 * 3 );
-		      LABEL_PrimarySettings.setSize(400, 20);
-		      LABEL_PrimarySettings.setBackground(backgroundColor);
-		      LABEL_PrimarySettings.setForeground(labelColor);
-		      LABEL_PrimarySettings.setFont(HeadlineFont);
-		      LABEL_PrimarySettings.setHorizontalAlignment(JLabel.LEFT);
-		      propulsionSidePanel.add(LABEL_PrimarySettings);
-		      
-		      
-		      JLabel LABEL_ME_ISP = new JLabel("Main propulsion system ISP [s]");
-		      LABEL_ME_ISP.setLocation(INPUT_width+5, uy_p41 + 25 * 4 );
-		      LABEL_ME_ISP.setSize(300, 20);
-		      LABEL_ME_ISP.setBackground(backgroundColor);
-		      LABEL_ME_ISP.setForeground(labelColor);
-		      propulsionSidePanel.add(LABEL_ME_ISP);
-		      JLabel LABEL_ME_PropMass = new JLabel("Main propulsion system propellant mass [kg]");
-		      LABEL_ME_PropMass.setLocation(INPUT_width+5, uy_p41 + 25 * 5);
-		      LABEL_ME_PropMass.setSize(300, 20);
-		      LABEL_ME_PropMass.setBackground(backgroundColor);
-		      LABEL_ME_PropMass.setForeground(labelColor);
-		      propulsionSidePanel.add(LABEL_ME_PropMass);
-		      JLabel LABEL_ME_Thrust_max = new JLabel("Main propulsion system max. Thrust [N]");
-		      LABEL_ME_Thrust_max.setLocation(INPUT_width+5, uy_p41 + 25 * 6 );
-		      LABEL_ME_Thrust_max.setSize(300, 20);
-		      LABEL_ME_Thrust_max.setBackground(backgroundColor);
-		      LABEL_ME_Thrust_max.setForeground(labelColor);
-		      propulsionSidePanel.add(LABEL_ME_Thrust_max);
-		      JLabel LABEL_ME_Thrust_min = new JLabel("Main Propulsion system min. Thrust [N]");
-		      LABEL_ME_Thrust_min.setLocation(INPUT_width+5, uy_p41 + 25 * 7 );
-		      LABEL_ME_Thrust_min.setSize(300, 20);
-		      LABEL_ME_Thrust_min.setBackground(backgroundColor);
-		      LABEL_ME_Thrust_min.setForeground(labelColor);
-		      propulsionSidePanel.add(LABEL_ME_Thrust_min);
-		      
-		      JLabel LABEL_ME_ISP_Model = new JLabel("Include dynamic ISP model in throttled state");
-		      LABEL_ME_ISP_Model.setLocation(INPUT_width+5, uy_p41 + 25 * 8 );
-		      LABEL_ME_ISP_Model.setSize(300, 20);
-		      LABEL_ME_ISP_Model.setBackground(backgroundColor);
-		      LABEL_ME_ISP_Model.setForeground(labelColor);
-		      propulsionSidePanel.add(LABEL_ME_ISP_Model);
-		      
-		      JLabel LABEL_ME_ISP_min = new JLabel("ISP for maximum throttled state [s]");
-		      LABEL_ME_ISP_min.setLocation(INPUT_width+5, uy_p41 + 25 * 9 );
-		      LABEL_ME_ISP_min.setSize(300, 20);
-		      LABEL_ME_ISP_min.setBackground(backgroundColor);
-		      LABEL_ME_ISP_min.setForeground(labelColor);
-		      propulsionSidePanel.add(LABEL_ME_ISP_min);
-		     
-			 
-		      INPUT_ISP = new JTextField(10){
-				    /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-						@Override public void setBorder(Border border) {
-					        // No!
-					    }
-					};
-		      INPUT_ISP.setLocation(2, uy_p41 + 25 * 4 );
-		      INPUT_ISP.setSize(INPUT_width-20, 20);
-		      INPUT_ISP.setBackground(backgroundColor);
-		      INPUT_ISP.setForeground(valueColor);
-		      INPUT_ISP.setHorizontalAlignment(JTextField.RIGHT);
-		      INPUT_ISP.addFocusListener(new FocusListener() {
-
-				@Override
-				public void focusGained(FocusEvent arg0) { }
-
-				@Override
-				public void focusLost(FocusEvent e) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					WriteInput.writeInputFile(FilePaths.inputFile);
-				}
-		    	  
-		      });
-		      propulsionSidePanel.add(INPUT_ISP);
-		     INPUT_PROPMASS = new JTextField(10){
-				    /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-						@Override public void setBorder(Border border) {
-					        // No!
-					    }
-					};
-		     INPUT_PROPMASS.setLocation(2, uy_p41 + 25 * 5);
-		     INPUT_PROPMASS.setSize(INPUT_width-20, 20);
-		     INPUT_PROPMASS.setBackground(backgroundColor);
-		     INPUT_PROPMASS.setForeground(valueColor);
-		     INPUT_PROPMASS.setHorizontalAlignment(JTextField.RIGHT);
-		     INPUT_PROPMASS.addFocusListener(new FocusListener() {
-
-				@Override
-				public void focusGained(FocusEvent arg0) { }
-
-				@Override
-				public void focusLost(FocusEvent e) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					WriteInput.writeInputFile(FilePaths.inputFile);
-				}
-		   	  
-		     });
-		     propulsionSidePanel.add(INPUT_PROPMASS);        
-		     INPUT_THRUSTMAX = new JTextField(10){
-				    /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-						@Override public void setBorder(Border border) {
-					        // No!
-					    }
-					};
-		     INPUT_THRUSTMAX.setLocation(2, uy_p41 + 25 * 6 );
-		     INPUT_THRUSTMAX.setSize(INPUT_width-20, 20);
-		     INPUT_THRUSTMAX.setBackground(backgroundColor);
-		     INPUT_THRUSTMAX.setForeground(valueColor);
-		     INPUT_THRUSTMAX.setHorizontalAlignment(JTextField.RIGHT);
-		     INPUT_THRUSTMAX.addFocusListener(new FocusListener() {
-
-				@Override
-				public void focusGained(FocusEvent arg0) { }
-
-				@Override
-				public void focusLost(FocusEvent e) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					WriteInput.writeInputFile(FilePaths.inputFile);
-				}
-		   	  
-		     });
-		     propulsionSidePanel.add(INPUT_THRUSTMAX);
-		     INPUT_THRUSTMIN = new JTextField(10){
-				    /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-						@Override public void setBorder(Border border) {
-					        // No!
-					    }
-					};
-		     INPUT_THRUSTMIN.setLocation(2, uy_p41 + 25 * 7 );;
-		     INPUT_THRUSTMIN.setSize(INPUT_width-20, 20);
-		     INPUT_THRUSTMIN.setBackground(backgroundColor);
-		     INPUT_THRUSTMIN.setForeground(valueColor);
-		     INPUT_THRUSTMIN.setHorizontalAlignment(JTextField.RIGHT);
-		     INPUT_THRUSTMIN.addFocusListener(new FocusListener() {
-
-				@Override
-				public void focusGained(FocusEvent arg0) { }
-
-				@Override
-				public void focusLost(FocusEvent e) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					WriteInput.writeInputFile(FilePaths.inputFile);
-				}
-		   	  
-		     });
-		     propulsionSidePanel.add(INPUT_THRUSTMIN);
-		     
-		     INPUT_ISPMODEL = new JCheckBox(){
-				    /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-						@Override public void setBorder(Border border) {
-					        // No!
-					    }
-					};
-		     INPUT_ISPMODEL.setLocation(INPUT_width+5-20, uy_p41 + 25 * 8+2);
-		     INPUT_ISPMODEL.setSize(15, 15);
-		     INPUT_ISPMODEL.setSelected(true);
-		     INPUT_ISPMODEL.setBackground(backgroundColor);
-		     INPUT_ISPMODEL.setForeground(valueColor);
-		     INPUT_ISPMODEL.addItemListener(new ItemListener() {
-		       	 public void itemStateChanged(ItemEvent e) {
-		       		WriteInput.writeInputFile(FilePaths.inputFile);
-		       	 }
-		                  });
-		     INPUT_ISPMODEL.setHorizontalAlignment(0);
-		     propulsionSidePanel.add(INPUT_ISPMODEL);
-		     
-		     
-		     INPUT_ISPMIN = new JTextField(10){
-				    /**
-					 * 
-					 */
-					private static final long serialVersionUID = 1L;
-
-						@Override public void setBorder(Border border) {
-					        // No!
-					    }
-					};
-		     INPUT_ISPMIN.setLocation(2, uy_p41 + 25 * 9 );;
-		     INPUT_ISPMIN.setSize(INPUT_width-20, 20);
-		     INPUT_ISPMIN.setBackground(backgroundColor);
-		     INPUT_ISPMIN.setForeground(valueColor);
-		     INPUT_ISPMIN.setHorizontalAlignment(JTextField.RIGHT);
-		     INPUT_ISPMIN.addFocusListener(new FocusListener() {
-
-				@Override
-				public void focusGained(FocusEvent arg0) { }
-
-				@Override
-				public void focusLost(FocusEvent e) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					WriteInput.writeInputFile(FilePaths.inputFile);
-				}
-		   	  
-		     });
-		     propulsionSidePanel.add(INPUT_ISPMIN);
-		     
-		        
-				JPanel RCSPanel = new JPanel();
-				RCSPanel.setLocation(3, 300);
-				RCSPanel.setBackground(backgroundColor);
-				RCSPanel.setSize(400, 350);
-				RCSPanel.setLayout(null);
-				propulsionSidePanel.add(RCSPanel);
-				
-		      JLabel LABEL_RCSSettings = new JLabel("Reaction Control System Settings");
-		      LABEL_RCSSettings.setLocation(0, uy_p41 + 10 * 0  );
-		      LABEL_RCSSettings.setSize(400, 20);
-		      LABEL_RCSSettings.setBackground(backgroundColor);
-		      LABEL_RCSSettings.setForeground(labelColor);
-		      LABEL_RCSSettings.setFont(HeadlineFont);
-		      LABEL_RCSSettings.setHorizontalAlignment(JLabel.LEFT);
-		      RCSPanel.add(LABEL_RCSSettings);
-		      
-		      JLabel LABEL_RcsX = new JLabel("Momentum RCS X axis [Nm]");
-		      LABEL_RcsX.setLocation(INPUT_width+1, uy_p41 + 25 * 2 );
-		      LABEL_RcsX.setSize(250, 20);
-		      LABEL_RcsX.setBackground(backgroundColor);
-		      LABEL_RcsX.setForeground(labelColor);
-		      RCSPanel.add(LABEL_RcsX);
-		      
-		      JLabel LABEL_RcsY = new JLabel("Momentum RCS Y axis [Nm]");
-		      LABEL_RcsY.setLocation(INPUT_width+1, uy_p41 + 25 * 3 );
-		      LABEL_RcsY.setSize(250, 20);
-		      LABEL_RcsY.setBackground(backgroundColor);
-		      LABEL_RcsY.setForeground(labelColor);
-		      RCSPanel.add(LABEL_RcsY);
-		      
-		      JLabel LABEL_RcsZ = new JLabel("Momentum RCS Z axis [Nm]");
-		      LABEL_RcsZ.setLocation(INPUT_width+1, uy_p41 + 25 * 4 );
-		      LABEL_RcsZ.setSize(250, 20);
-		      LABEL_RcsZ.setBackground(backgroundColor);
-		      LABEL_RcsZ.setForeground(labelColor);
-		      RCSPanel.add(LABEL_RcsZ);
-		      
-			     INPUT_RCSX = new JTextField(10){
-					    /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-							@Override public void setBorder(Border border) {
-						        // No!
-						    }
-						};
-			     INPUT_RCSX.setLocation(2, uy_p41 + 25 * 2 );;
-			     INPUT_RCSX.setSize(INPUT_width-20, 20);
-			     INPUT_RCSX.setBackground(backgroundColor);
-			     INPUT_RCSX.setForeground(valueColor);
-			     INPUT_RCSX.setHorizontalAlignment(JTextField.RIGHT);
-			     INPUT_RCSX.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusGained(FocusEvent arg0) { }
-
-					@Override
-					public void focusLost(FocusEvent e) {
-					//	WriteInput.writeInputFile(FilePaths.inputFile);
-						WriteInput.writeInputFile(FilePaths.inputFile);
-					}
-			   	  
-			     });
-			     RCSPanel.add(INPUT_RCSX);
-			     
-			     INPUT_RCSY = new JTextField(10){
-					    /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-							@Override public void setBorder(Border border) {
-						        // No!
-						    }
-						};
-			     INPUT_RCSY.setLocation(2, uy_p41 + 25 * 3 );;
-			     INPUT_RCSY.setSize(INPUT_width-20, 20);
-			     INPUT_RCSY.setBackground(backgroundColor);
-			     INPUT_RCSY.setForeground(valueColor);
-			     INPUT_RCSY.setHorizontalAlignment(JTextField.RIGHT);
-			     INPUT_RCSY.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusGained(FocusEvent arg0) { }
-
-					@Override
-					public void focusLost(FocusEvent e) {
-					//	WriteInput.writeInputFile(FilePaths.inputFile);
-						WriteInput.writeInputFile(FilePaths.inputFile);
-					}
-			   	  
-			     });
-			     RCSPanel.add(INPUT_RCSY);
-			     
-			     INPUT_RCSZ = new JTextField(10){
-					    /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-							@Override public void setBorder(Border border) {
-						        // No!
-						    }
-						};
-			     INPUT_RCSZ.setLocation(2, uy_p41 + 25 * 4 );;
-			     INPUT_RCSZ.setSize(INPUT_width-20, 20);
-			     INPUT_RCSZ.setBackground(backgroundColor);
-			     INPUT_RCSZ.setForeground(valueColor);
-			     INPUT_RCSZ.setHorizontalAlignment(JTextField.RIGHT);
-			     INPUT_RCSZ.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusGained(FocusEvent arg0) { }
-
-					@Override
-					public void focusLost(FocusEvent e) {
-					//	WriteInput.writeInputFile(FilePaths.inputFile);
-						WriteInput.writeInputFile(FilePaths.inputFile);
-					}
-			   	  
-			     });
-			     RCSPanel.add(INPUT_RCSZ);
-			     
-			     
-			      JLabel LABEL_RcsXThrust = new JLabel("RCS X Thrust [N]");
-			      LABEL_RcsXThrust.setLocation(INPUT_width+1, uy_p41 + 25 * 6 );
-			      LABEL_RcsXThrust.setSize(250, 20);
-			      LABEL_RcsXThrust.setBackground(backgroundColor);
-			      LABEL_RcsXThrust.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsXThrust);
-			      
-			      JLabel LABEL_RcsYThrust = new JLabel("RCS Y Thrust [N]");
-			      LABEL_RcsYThrust.setLocation(INPUT_width+1, uy_p41 + 25 * 7 );
-			      LABEL_RcsYThrust.setSize(250, 20);
-			      LABEL_RcsYThrust.setBackground(backgroundColor);
-			      LABEL_RcsYThrust.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsYThrust);
-			      
-			      JLabel LABEL_RcsZThrust = new JLabel("RCS Z Thrust [N]");
-			      LABEL_RcsZThrust.setLocation(INPUT_width+1, uy_p41 + 25 * 8 );
-			      LABEL_RcsZThrust.setSize(250, 20);
-			      LABEL_RcsZThrust.setBackground(backgroundColor);
-			      LABEL_RcsZThrust.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsZThrust);
-			      
-			      JLabel LABEL_RcsTank = new JLabel("Secondary Propulsion Tank [kg]");
-			      LABEL_RcsTank.setLocation(INPUT_width+1, uy_p41 + 25 * 10 );
-			      LABEL_RcsTank.setSize(250, 20);
-			      LABEL_RcsTank.setBackground(backgroundColor);
-			      LABEL_RcsTank.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsTank);
-			      
-			      JLabel LABEL_RcsXISP= new JLabel("RCS ISP X axis Thruster [s]");
-			      LABEL_RcsXISP.setLocation(INPUT_width+1, uy_p41 + 25 * 11 );
-			      LABEL_RcsXISP.setSize(250, 20);
-			      LABEL_RcsXISP.setBackground(backgroundColor);
-			      LABEL_RcsXISP.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsXISP);
-			      
-			      JLabel LABEL_RcsYISP= new JLabel("RCS ISP Y axis Thruster [s]");
-			      LABEL_RcsYISP.setLocation(INPUT_width+1, uy_p41 + 25 * 12 );
-			      LABEL_RcsYISP.setSize(250, 20);
-			      LABEL_RcsYISP.setBackground(backgroundColor);
-			      LABEL_RcsYISP.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsYISP);
-			      
-			      JLabel LABEL_RcsZISP= new JLabel("RCS ISP Z axis Thruster [s]");
-			      LABEL_RcsZISP.setLocation(INPUT_width+1, uy_p41 + 25 * 13 );
-			      LABEL_RcsZISP.setSize(250, 20);
-			      LABEL_RcsZISP.setBackground(backgroundColor);
-			      LABEL_RcsZISP.setForeground(labelColor);
-			      RCSPanel.add(LABEL_RcsZISP);
-			      
-				     INPUT_RCSXTHRUST = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSXTHRUST.setLocation(2, uy_p41 + 25 * 6 );;
-				     INPUT_RCSXTHRUST.setSize(INPUT_width-20, 20);
-				     INPUT_RCSXTHRUST.setBackground(backgroundColor);
-				     INPUT_RCSXTHRUST.setForeground(valueColor);
-				     INPUT_RCSXTHRUST.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSXTHRUST.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSXTHRUST);
-				     
-				     INPUT_RCSYTHRUST = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSYTHRUST.setLocation(2, uy_p41 + 25 * 7 );;
-				     INPUT_RCSYTHRUST.setSize(INPUT_width-20, 20);
-				     INPUT_RCSYTHRUST.setBackground(backgroundColor);
-				     INPUT_RCSYTHRUST.setForeground(valueColor);
-				     INPUT_RCSYTHRUST.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSYTHRUST.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSYTHRUST);
-				     
-				     INPUT_RCSZTHRUST = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSZTHRUST.setLocation(2, uy_p41 + 25 * 8 );;
-				     INPUT_RCSZTHRUST.setSize(INPUT_width-20, 20);
-				     INPUT_RCSZTHRUST.setBackground(backgroundColor);
-				     INPUT_RCSZTHRUST.setForeground(valueColor);
-				     INPUT_RCSZTHRUST.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSZTHRUST.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSZTHRUST);
-				     
-				     INPUT_RCSTANK = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSTANK.setLocation(2, uy_p41 + 25 * 10 );;
-				     INPUT_RCSTANK.setSize(INPUT_width-20, 20);
-				     INPUT_RCSTANK.setBackground(backgroundColor);
-				     INPUT_RCSTANK.setForeground(valueColor);
-				     INPUT_RCSTANK.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSTANK.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSTANK);
-				     
-				     INPUT_RCSXISP = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSXISP.setLocation(2, uy_p41 + 25 * 11 );
-				     INPUT_RCSXISP.setSize(INPUT_width-20, 20);
-				     INPUT_RCSXISP.setBackground(backgroundColor);
-				     INPUT_RCSXISP.setForeground(valueColor);
-				     INPUT_RCSXISP.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSXISP.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSXISP);
-				     
-				     INPUT_RCSYISP = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSYISP.setLocation(2, uy_p41 + 25 * 12 );
-				     INPUT_RCSYISP.setSize(INPUT_width-20, 20);
-				     INPUT_RCSYISP.setBackground(backgroundColor);
-				     INPUT_RCSYISP.setForeground(valueColor);
-				     INPUT_RCSYISP.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSYISP.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSYISP);
-				     
-				     INPUT_RCSZISP = new JTextField(10){
-						    /**
-							 * 
-							 */
-							private static final long serialVersionUID = 1L;
-
-								@Override public void setBorder(Border border) {
-							        // No!
-							    }
-							};
-				     INPUT_RCSZISP.setLocation(2, uy_p41 + 25 * 13 );;
-				     INPUT_RCSZISP.setSize(INPUT_width-20, 20);
-				     INPUT_RCSZISP.setBackground(backgroundColor);
-				     INPUT_RCSZISP.setForeground(valueColor);
-				     INPUT_RCSZISP.setHorizontalAlignment(JTextField.RIGHT);
-				     INPUT_RCSZISP.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-						//	WriteInput.writeInputFile(FilePaths.inputFile);
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-				     RCSPanel.add(INPUT_RCSZISP);
-		     //----------------------------------------------------------------------------------
-		     //						Aerodynamic Input
-		     //----------------------------------------------------------------------------------
-		     
-		      JLabel LABEL_SurfaceArea = new JLabel("S/C Surface Area [m\u00b2]");
-		      LABEL_SurfaceArea.setLocation(INPUT_width+35, uy_p41 + 25 * 1 );
-		      LABEL_SurfaceArea.setSize(300, 20);
-		      LABEL_SurfaceArea.setBackground(backgroundColor);
-		      LABEL_SurfaceArea.setForeground(labelColor);
-		      AerodynamicInputPanel.add(LABEL_SurfaceArea);
-		      
-		      JLabel LABEL_BallisticCoefficient = new JLabel("Ballistic Coefficient [kg/m\u00b2]");
-		      LABEL_BallisticCoefficient.setLocation(INPUT_width+35, uy_p41 + 25 * 2 );
-		      LABEL_BallisticCoefficient.setSize(300, 20);
-		      LABEL_BallisticCoefficient.setBackground(backgroundColor);
-		      LABEL_BallisticCoefficient.setForeground(labelColor);
-		      AerodynamicInputPanel.add(LABEL_BallisticCoefficient);
-		      
-
-			     //System.out.println(readFromFile(FilePaths.Aero_file, 2)+" | "+value); 
-			     INPUT_ParachuteDiameter = new JTextField(""){
-					    /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-							@Override public void setBorder(Border border) {
-						        // No!
-						    }
-						};
-			     INPUT_ParachuteDiameter.setLocation(2, uy_p41 + 25 * 4);
-			     INPUT_ParachuteDiameter.setSize(INPUT_width, 20);
-			     INPUT_ParachuteDiameter.setBackground(backgroundColor);
-			     INPUT_ParachuteDiameter.setForeground(valueColor);
-			     INPUT_ParachuteDiameter.setHorizontalAlignment(JTextField.RIGHT);
-			     INPUT_ParachuteDiameter.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusGained(FocusEvent arg0) { }
-
-					@Override
-					public void focusLost(FocusEvent e) {
-						WriteInput.writeInputFile(FilePaths.inputFile);
-					}
-			   	  
-			     });
-			     AerodynamicInputPanel.add(INPUT_ParachuteDiameter);
-			     
-			     INPUT_SURFACEAREA = new JTextField(10){
-					    /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-							@Override public void setBorder(Border border) {
-						        // No!
-						    }
-						};
-			     INPUT_BALLISTICCOEFFICIENT = new JTextField(10){
-					    /**
-						 * 
-						 */
-						private static final long serialVersionUID = 1L;
-
-							@Override public void setBorder(Border border) {
-						        // No!
-						    }
-						};
-
-			     INPUT_SURFACEAREA.setLocation(2, uy_p41 + 25 * 1 );;
-			     INPUT_SURFACEAREA.setSize(INPUT_width, 20);
-			     INPUT_SURFACEAREA.setBackground(backgroundColor);
-			     INPUT_SURFACEAREA.setForeground(valueColor);
-			     INPUT_SURFACEAREA.setHorizontalAlignment(JTextField.RIGHT);
-			     INPUT_SURFACEAREA.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusGained(FocusEvent arg0) { }
-
-					@Override
-					public void focusLost(FocusEvent e) {
-						WriteInput.writeInputFile(FilePaths.inputFile);
-						EvaluateSurfaceAreaSetup() ;
-					}
-			   	  
-			     });
-			     AerodynamicInputPanel.add(INPUT_SURFACEAREA);
-			     
-			     INPUT_BALLISTICCOEFFICIENT.setLocation(2, uy_p41 + 25 * 2 );
-			     INPUT_BALLISTICCOEFFICIENT.setSize(INPUT_width, 20);
-			     INPUT_BALLISTICCOEFFICIENT.setBackground(backgroundColor);
-			     INPUT_BALLISTICCOEFFICIENT.setForeground(valueColor);
-			     INPUT_BALLISTICCOEFFICIENT.setHorizontalAlignment(JTextField.RIGHT);
-			     INPUT_BALLISTICCOEFFICIENT.addFocusListener(new FocusListener() {
-
-					@Override
-					public void focusGained(FocusEvent arg0) { }
-
-					@Override
-					public void focusLost(FocusEvent e) {
-						WriteInput.writeInputFile(FilePaths.inputFile);
-						System.out.println("write ballistic");
-						EvaluateSurfaceAreaSetup() ;
-					}
-			   	  
-			     });
-			     AerodynamicInputPanel.add(INPUT_BALLISTICCOEFFICIENT);
-			     
-			      RB_SurfaceArea =new JRadioButton("");    
-			      RB_BallisticCoefficient =new JRadioButton("");    
-			     //r1.setBounds(75,50,100,30);    
-			      RB_SurfaceArea.setLocation(INPUT_width+5, uy_p41 + 25 * 1 );
-			      RB_SurfaceArea.setSize(22,22);
-			      RB_SurfaceArea.setForeground(labelColor);
-			      RB_SurfaceArea.setBackground(backgroundColor);
-			     //r2.setBounds(75,100,100,30); 
-			      RB_BallisticCoefficient.setLocation(INPUT_width+5, uy_p41 + 25 * 2 );
-			      RB_BallisticCoefficient.setSize(22,22);
-			      RB_BallisticCoefficient.setBackground(backgroundColor);
-			      
-
-				     ButtonGroup bg=new ButtonGroup();    
-				     bg.add(RB_SurfaceArea);bg.add(RB_BallisticCoefficient); 
-				     AerodynamicInputPanel.add(RB_SurfaceArea);
-				     AerodynamicInputPanel.add(RB_BallisticCoefficient);
-				     RB_SurfaceArea.addActionListener(new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-							// TODO Auto-generated method stub
-							if(RB_SurfaceArea.isSelected()) {
-								double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-								double mass = Double.parseDouble(INPUT_M0.getText());
-					    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
-					    		INPUT_BALLISTICCOEFFICIENT.setText("");
-					    		
-					    		INPUT_SURFACEAREA.setEditable(true);
-					    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-					    		
-							} else if (RB_BallisticCoefficient.isSelected()) {
-								double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-								double mass = Double.parseDouble(INPUT_M0.getText());
-					    		INPUT_SURFACEAREA.setText("");
-							INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
-							
-					    		INPUT_SURFACEAREA.setEditable(false);
-					    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
-							}
-							
-						}
-				    	 
-				     });
-				     RB_BallisticCoefficient.addActionListener(new ActionListener() {
-
-						@Override
-						public void actionPerformed(ActionEvent arg0) {
-						
-							if(RB_SurfaceArea.isSelected()) {
-								double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-								double mass = Double.parseDouble(INPUT_M0.getText());
-					    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
-					    		INPUT_BALLISTICCOEFFICIENT.setText("");
-					    		
-					    		INPUT_SURFACEAREA.setEditable(true);
-					    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	
-					    		
-							} else if (RB_BallisticCoefficient.isSelected()) {
-								double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-								double mass = Double.parseDouble(INPUT_M0.getText());
-					    		INPUT_SURFACEAREA.setText("");
-							INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
-							
-					    		INPUT_SURFACEAREA.setEditable(false);
-					    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);	
-					    		
-							}
-						}
-				    	 
-				     });
-				     				     
-				      JLabel LABEL_Parachute= new JLabel("Parachute Diameter [m]");
-				      LABEL_Parachute.setLocation(INPUT_width+35, uy_p41 + 25 * 4 );
-				      LABEL_Parachute.setSize(250, 20);
-				      LABEL_Parachute.setBackground(backgroundColor);
-				      LABEL_Parachute.setForeground(labelColor);
-				      AerodynamicInputPanel.add(LABEL_Parachute);
-				      
- 
-		      
-		        String path = "images/milleniumSchlieren2.png";
-		        File file = new File(path);
-		        try {
-		        BufferedImage image2 = ImageIO.read(file);
-		        JLabel label = new JLabel(new ImageIcon(image2));
-		        label.setSize(300,290);
-		        label.setLocation(5, uy_p41 + 25 * 6);
-		        label.setBorder(Moon_border);
-		        AerodynamicInputPanel.add(label);
-		        } catch (Exception e) {
-		        	System.err.println("Error: SpaceShip Setup/Aerodynamik - could not load image");
-		        }
-	      
         //-----------------------------------------------------------------------------------------
         // 		Create map classes 
         //-----------------------------------------------------------------------------------------
@@ -2424,36 +1268,8 @@ public static String[] COLUMS_EventHandler = {"Event Type",
     	return result;
     }
 
-    public static int getDragModelSetIndx() {
-		int k=0;
-		for(int j=0;j<DragModelSet.size();j++) {
-			if(DragModelSet.get(j).isSelected()) {
-				k=j;
-			}
-		}
-		return k;
-    }
 
-    public static int getParachuteModelSetIndx() {
-		int k=0;
-		for(int j=0;j<ParachuteBulletPoints.size();j++) {
-			if(ParachuteBulletPoints.get(j).isSelected()) {
-				k=j;
-			}
-		}
-		return k;
-    }
-    public static void EvaluateSurfaceAreaSetup() {
-	    	if(INPUT_SURFACEAREA.getText().equals("0")) {	    		
-	    		INPUT_SURFACEAREA.setText("");
-	    		INPUT_SURFACEAREA.setEditable(false);
-	    		INPUT_BALLISTICCOEFFICIENT.setEditable(true);
-	    	} else if (INPUT_BALLISTICCOEFFICIENT.getText().equals("0")) {
-	    		INPUT_BALLISTICCOEFFICIENT.setText("");
-	    		INPUT_SURFACEAREA.setEditable(true);
-	    		INPUT_BALLISTICCOEFFICIENT.setEditable(false);	    		
-	    	}
-    	}
+
 
 
 	public static double[] Spherical2Cartesian(double[] X) {

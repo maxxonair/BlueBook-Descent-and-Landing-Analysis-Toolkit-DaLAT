@@ -294,6 +294,16 @@ public class PlotElement {
 	            } catch (Exception e) {
 	            	
 	            }
+	            double max = xAxis.getUpperBound();
+	            double min = xAxis.getLowerBound();
+	            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
+		            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
+	            		try {
+	            			updateDashboardValues(indx);
+                		} catch (Exception exp ) {
+                			
+                		}
+		            }
 	        }
 	});
 	    CrosshairOverlay crosshairOverlay = new CrosshairOverlay();
@@ -310,6 +320,23 @@ public class PlotElement {
 	    chartPanel.addOverlay(crosshairOverlay);
 
 	   return chartPanel;
+	}
+	
+	private void updateDashboardValues(int indx){
+		
+		//System.out.println(BlueBookVisual.decf.format(Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getLongitude())));
+		DashboardLeftPanel.INDICATOR_LONG.setText(BlueBookVisual.decf.format(Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getLongitude())));
+		DashboardLeftPanel.INDICATOR_LAT.setText(BlueBookVisual.decf.format(Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getLatitude())));		
+		DashboardLeftPanel.INDICATOR_ALT.setText(BlueBookVisual.decf.format(DashboardPlotArea.getResultSet().get(indx).getAltitude()));
+		
+		DashboardLeftPanel.INDICATOR_VEL.setText(BlueBookVisual.decf.format(DashboardPlotArea.getResultSet().get(indx).getVelocity()));
+		DashboardLeftPanel.INDICATOR_FPA.setText(BlueBookVisual.decf.format(Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getFpa())));
+		DashboardLeftPanel.INDICATOR_AZI.setText(BlueBookVisual.decf.format(Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getAzi())));
+	
+		DashboardLeftPanel.INDICATOR_M0.setText(BlueBookVisual.decf.format(DashboardPlotArea.getResultSet().get(indx).getSCMass()));
+	
+		DashboardLeftPanel.INDICATOR_PRIMTANKFIL.setText(BlueBookVisual.decf.format(DashboardPlotArea.getResultSet().get(indx).getPrimTankfillingLevelPerc()));
+		DashboardLeftPanel.INDICATOR_SECMTANKFIL.setText(BlueBookVisual.decf.format(DashboardPlotArea.getResultSet().get(indx).getSecTankfillingLevelPerc()));
 	}
 	
 	public void updateChart(){

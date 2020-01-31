@@ -51,8 +51,26 @@ public class RealTimeResultSet {
 	
 	private double groundtrack;
 	
+	private double primTankfillingLevelPerc;
+	private double secTankfillingLevelPerc;
 	
+
 	
+	public double getPrimTankfillingLevelPerc() {
+		return primTankfillingLevelPerc;
+	}
+
+	public void setPrimTankfillingLevelPerc(double primTankfillingLevelPerc) {
+		this.primTankfillingLevelPerc = primTankfillingLevelPerc;
+	}
+
+	public double getSecTankfillingLevelPerc() {
+		return secTankfillingLevelPerc;
+	}
+
+	public void setSecTankfillingLevelPerc(double secTankfillingLevelPerc) {
+		this.secTankfillingLevelPerc = secTankfillingLevelPerc;
+	}
 
 	public double getGroundtrack() {
 		return groundtrack;

@@ -74,7 +74,8 @@ public class AttitudeFrontPage {
 	public   SmartGroup model;
 	public   SmartGroup coordinateSystem;
 	
-    private Translate translate;
+    @SuppressWarnings("unused")
+	private Translate translate;
     private Rotate rotateX,rotateY,rotateZ;
 	
     double gridScale=5;
@@ -145,6 +146,10 @@ public class AttitudeFrontPage {
 		//initMouseControl(model, coordinateSystem, scene, fxpanel);
 		initMouseControl(scene, fxpanel, camera);
 		
+		setRotationX(0);
+		setRotationY(0);
+		setRotationZ(0);
+		
 		if( DashboardPlotArea.getContentPanelList().get(0).getID()==0) {
 			Data2DPlot plotElement = (Data2DPlot) DashboardPlotArea.getContentPanelList().get(0);
 			ChartPanel chartPanel = plotElement.getPlotElement().getChartPanel();
@@ -159,7 +164,7 @@ public class AttitudeFrontPage {
 	
 	        @Override
 	        public void chartMouseMoved(ChartMouseEvent event) {
-	        	
+	       
 				        	if(varX.getSelectedIndx()==0) {
 				            Rectangle2D dataArea = chartPanel.getScreenDataArea();
 				            JFreeChart chart = event.getChart();
@@ -172,6 +177,7 @@ public class AttitudeFrontPage {
 				            double min = xAxis.getLowerBound();
 				            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
 					            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
+				
 					                Platform.runLater(new Runnable() {
 					                    @Override
 					                    public void run() {
@@ -179,7 +185,7 @@ public class AttitudeFrontPage {
 					                    	double getRotx = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerX());
 					                    	double getRoty = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerY());
 					                    	double getRotz = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerZ());
-					                    	double[][] q = DashboardPlotArea.getResultSet().get(indx).getQuarternions();
+					                   // 	double[][] q = DashboardPlotArea.getResultSet().get(indx).getQuarternions();
 					        				//System.out.println(getRoty);
 					                    	try {
 					                    	if(!Double.isNaN(getRotx)) {
@@ -217,6 +223,7 @@ public class AttitudeFrontPage {
 		fxpanel.setScene(scene);
 
 	}
+	
 	
 	
 	private   void initMouseControl(Scene scene,JFXPanel fxpanel, Camera camera) {

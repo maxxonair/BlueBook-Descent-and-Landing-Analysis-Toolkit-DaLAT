@@ -10,9 +10,12 @@ import java.util.List;
 
 import GUI.BlueBookVisual;
 import GUI.FilePaths;
+import GUI.AerdoynamicSetup.AerodynamicSetup;
+import GUI.AerdoynamicSetup.AerodynamicSetupSpacecraft;
 import GUI.Dashboard.DashboardLeftPanel;
 import GUI.DataStructures.InputFileSet;
 import GUI.GeometryModel.GeometryFrame;
+import GUI.PropulsionSetup.PropulsionSetup;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
@@ -27,12 +30,18 @@ public class GuiReadInput {
     	List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
     	resultSet.clear();
     	// Read all data from file: 
+    	double resPropPerc =0;
+    	double totalDv =0;
+    	double m0=0;
+    	double m=0;
 	    FileInputStream fstream = null;
 		try{ fstream = new FileInputStream(FilePaths.RES_File);} catch(IOException eIO) { System.out.println(eIO);}
 	              DataInputStream in = new DataInputStream(fstream);
 	              BufferedReader br = new BufferedReader(new InputStreamReader(in));
 	              String strLine;
+	              
 	              try {
+	            	  int k=0;
 							while ((strLine = br.readLine()) != null )   {
 								Object[] tokens = strLine.split(" ");
 						     	RealTimeResultSet resultElement = new RealTimeResultSet();
@@ -44,17 +53,34 @@ public class GuiReadInput {
 							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
 							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
 							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
+							    resultElement.setAltitude(Double.parseDouble((String) tokens[4]));
 							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
 							    resultElement.setFpa(Double.parseDouble((String) tokens[7]));
+							    resultElement.setAzi(Double.parseDouble((String) tokens[8]));
+							    resultElement.setLongitude(Double.parseDouble((String) tokens[1]));
+							    resultElement.setLatitude(Double.parseDouble((String) tokens[2]));
+							    resultElement.setSCMass(Double.parseDouble((String) tokens[60]));
+							    resultElement.setPrimTankfillingLevelPerc(Double.parseDouble((String) tokens[73]));
+							    resultElement.setSecTankfillingLevelPerc(Double.parseDouble((String) tokens[81]));
+							    if(k==0) {
+							    	m0 = Double.parseDouble((String) tokens[60]);
+							    }
+							    m=Double.parseDouble((String) tokens[60]);
+							    resPropPerc = Double.parseDouble((String) tokens[73]);
+							    totalDv = Double.parseDouble((String) tokens[99]);
+							    
 							    resultSet.add(resultElement);
-							  
+							  k++;
 							  }
 			       fstream.close();
 			       in.close();
 			       br.close();
-
+			       DashboardLeftPanel.INDICATOR_RESPROP.setText(""+BlueBookVisual.decf.format(resPropPerc));
+			       DashboardLeftPanel.INDICATOR_DELTAV.setText(""+BlueBookVisual.decf.format(totalDv));
+			       DashboardLeftPanel.INDICATOR_PROPPERC.setText(""+BlueBookVisual.decf.format(m0 - m));
+			       
 	              } catch (NullPointerException | IOException eNPE) { 
-	            	  System.out.println("Read raw data, Nullpointerexception");
+	            	  		//System.out.println("Read raw data, Nullpointerexception");
 					}catch(IllegalArgumentException eIAE) {
 					  System.out.println("Read raw data, illegal argument error");
 					}
@@ -155,6 +181,7 @@ public class GuiReadInput {
     				    	read_Env_ConstCD( identifier, value);
     				    	
     				    	read_SC_MainProp( identifier, value);
+    				    	read_SC_MainISP( identifier, value);
     				    	read_SC_MainThrustMax( identifier, value);
     				    	read_SC_MainThrustMin( identifier, value);
     				    	read_SC_MainISPModel( identifier, value);
@@ -399,7 +426,7 @@ public class GuiReadInput {
     private static void read_SC_MainProp(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_MainProp")) {
-    			BlueBookVisual.INPUT_PROPMASS.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_PROPMASS.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -407,7 +434,7 @@ public class GuiReadInput {
     private static void read_SC_MainThrustMax(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_MainThrustMax")) {
-    			BlueBookVisual.INPUT_THRUSTMAX.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_THRUSTMAX.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -415,7 +442,15 @@ public class GuiReadInput {
     private static void read_SC_MainThrustMin(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_MainThrustMin")) {
-    			BlueBookVisual.INPUT_THRUSTMIN.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_THRUSTMIN.setText(BlueBookVisual.df_X4.format(value)); 
+    		}
+    	} catch(Exception exp) {}
+    }
+    
+    private static void read_SC_MainISP(String identifier, double value) {
+    	try {
+    		if(identifier.equals("SC_MainISP")) {
+    			PropulsionSetup.INPUT_ISP.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -424,9 +459,9 @@ public class GuiReadInput {
     	try {
     		if(identifier.equals("SC_MainISPModel")) {
     	  		if((int) value == 1) {
-    	  			BlueBookVisual.INPUT_ISPMODEL.setSelected(true);
+    	  			PropulsionSetup.INPUT_ISPMODEL.setSelected(true);
     	  		}else {
-    	  			BlueBookVisual.INPUT_ISPMODEL.setSelected(false);
+    	  			PropulsionSetup.INPUT_ISPMODEL.setSelected(false);
     	  			}
     		}
     	} catch(Exception exp) {}
@@ -435,7 +470,7 @@ public class GuiReadInput {
     private static void read_SC_MainISPMin(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_MainISPMin")) {
-    			BlueBookVisual.INPUT_ISPMIN.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_ISPMIN.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -443,7 +478,7 @@ public class GuiReadInput {
     private static void read_SC_RCSMomX(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSMomX")) {
-    			BlueBookVisual.INPUT_RCSX.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSX.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -451,7 +486,7 @@ public class GuiReadInput {
     private static void read_SC_RCSMomY(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSMomY")) {
-    			BlueBookVisual.INPUT_RCSY.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSY.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -459,7 +494,7 @@ public class GuiReadInput {
     private static void read_SC_RCSMomZ(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSMomZ")) {
-    			BlueBookVisual.INPUT_RCSZ.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSZ.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -467,7 +502,7 @@ public class GuiReadInput {
     private static void read_SC_RCSThrustX(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSThrustX")) {
-    			BlueBookVisual.INPUT_RCSXTHRUST.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSXTHRUST.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -475,7 +510,7 @@ public class GuiReadInput {
     private static void read_SC_RCSThrustY(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSThrustY")) {
-    			BlueBookVisual.INPUT_RCSYTHRUST.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSYTHRUST.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -483,7 +518,7 @@ public class GuiReadInput {
     private static void read_SC_RCSThrustZ(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSThrustZ")) {
-    			BlueBookVisual.INPUT_RCSZTHRUST.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSZTHRUST.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -491,7 +526,7 @@ public class GuiReadInput {
     private static void read_SC_RCSProp(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSProp")) {
-    			BlueBookVisual.INPUT_RCSTANK.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSTANK.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -499,7 +534,7 @@ public class GuiReadInput {
     private static void read_SC_RCSISPX(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSISPX")) {
-    			BlueBookVisual.INPUT_RCSXISP.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSXISP.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -507,7 +542,7 @@ public class GuiReadInput {
     private static void read_SC_RCSISPY(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSISPY")) {
-    			BlueBookVisual.INPUT_RCSYISP.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSYISP.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -515,7 +550,7 @@ public class GuiReadInput {
     private static void read_SC_RCSISPZ(String identifier, double value) {
     	try {
     		if(identifier.equals("SC_RCSISPZ")) {
-    			BlueBookVisual.INPUT_RCSZISP.setText(BlueBookVisual.df_X4.format(value)); 
+    			PropulsionSetup.INPUT_RCSZISP.setText(BlueBookVisual.df_X4.format(value)); 
     		}
     	} catch(Exception exp) {}
     }
@@ -524,9 +559,9 @@ public class GuiReadInput {
     	try {
     		if(identifier.equals("Env_DragModel")) {
     			  int index = (int) value; 
-    				for(int j=0;j<BlueBookVisual.DragModelSet.size();j++) {
+    				for(int j=0;j<AerodynamicSetup.DragModelSet.size();j++) {
     					if(j==index) {
-    						BlueBookVisual.DragModelSet.get(j).setSelected(true);
+    						AerodynamicSetup.DragModelSet.get(j).setSelected(true);
     					}
     				} 
     		}
@@ -536,7 +571,7 @@ public class GuiReadInput {
     private static void read_Env_ConstCD(String identifier, double value) {
     	try {
     		if(identifier.equals("Env_ConstCD")) {
-    			BlueBookVisual.ConstantCD_INPUT.setText(""+value); 
+    			AerodynamicSetup.ConstantCD_INPUT.setText(""+value); 
     		}
     	} catch(Exception exp) {}
     }
@@ -565,9 +600,9 @@ public class GuiReadInput {
     private static void set_SurfaceAreaAndBallisticCoefficient() {
     	try {
     			double diameter = GeometryFrame.getDiameter();
-			BlueBookVisual.INPUT_SURFACEAREA.setEditable(true);
-			BlueBookVisual.INPUT_BALLISTICCOEFFICIENT.setEditable(false);
-			BlueBookVisual.INPUT_SURFACEAREA.setText(""+BlueBookVisual.df_X4.format(PI*diameter*diameter/4)); 
+    			AerodynamicSetupSpacecraft.INPUT_SURFACEAREA.setEditable(true);
+    			AerodynamicSetupSpacecraft.INPUT_BALLISTICCOEFFICIENT.setEditable(false);
+    			AerodynamicSetupSpacecraft.INPUT_SURFACEAREA.setText(""+BlueBookVisual.df_X4.format(PI*diameter*diameter/4)); 
     	} catch (Exception exp) {
     		System.out.println("surface diam failed");
     	}
