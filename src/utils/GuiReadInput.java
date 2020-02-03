@@ -15,6 +15,7 @@ import GUI.AerdoynamicSetup.AerodynamicSetupSpacecraft;
 import GUI.Dashboard.DashboardLeftPanel;
 import GUI.DataStructures.InputFileSet;
 import GUI.GeometryModel.GeometryFrame;
+import GUI.InertiaGeometry.InertiaGeometry;
 import GUI.PropulsionSetup.PropulsionSetup;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
@@ -283,7 +284,7 @@ public class GuiReadInput {
     	try {
     		if(identifier.equals("Init_Mass")) {
     	    		DashboardLeftPanel.INDICATOR_M0.setText(BlueBookVisual.decf.format(value));
-    			BlueBookVisual.INPUT_M0.setText(BlueBookVisual.decf.format(value));
+    	    		InertiaGeometry.INPUT_Mass.setText(BlueBookVisual.decf.format(value));
     		}
     	} catch(Exception exp) {}
     }
@@ -761,15 +762,15 @@ public class GuiReadInput {
     
     private static void passOverInertiaTensor(double[][] tensor) {
     	try {
-       		BlueBookVisual.INPUT_IXX.setText(""+tensor[0][0]);
-       		BlueBookVisual.INPUT_IXY.setText(""+tensor[0][1]);
-       		BlueBookVisual.INPUT_IXZ.setText(""+tensor[0][2]);
-       		BlueBookVisual.INPUT_IYX.setText(""+tensor[1][0]);
-       		BlueBookVisual.INPUT_IYY.setText(""+tensor[1][1]);
-       		BlueBookVisual.INPUT_IYZ.setText(""+tensor[1][2]);
-       		BlueBookVisual.INPUT_IZX.setText(""+tensor[2][0]);
-       		BlueBookVisual.INPUT_IZY.setText(""+tensor[2][1]);
-       		BlueBookVisual.INPUT_IZZ.setText(""+tensor[2][2]);
+    		InertiaGeometry.INPUT_IXX.setText(""+tensor[0][0]);
+    		InertiaGeometry.INPUT_IXY.setText(""+tensor[0][1]);
+    		InertiaGeometry.INPUT_IXZ.setText(""+tensor[0][2]);
+    		InertiaGeometry.INPUT_IYX.setText(""+tensor[1][0]);
+       		InertiaGeometry.INPUT_IYY.setText(""+tensor[1][1]);
+       		InertiaGeometry.INPUT_IYZ.setText(""+tensor[1][2]);
+       		InertiaGeometry.INPUT_IZX.setText(""+tensor[2][0]);
+       		InertiaGeometry.INPUT_IZY.setText(""+tensor[2][1]);
+       		InertiaGeometry.INPUT_IZZ.setText(""+tensor[2][2]);
     	} catch (Exception exp) {
     		
     	}

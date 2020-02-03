@@ -2,6 +2,7 @@ package GUI;
 
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -9,15 +10,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.border.Border;
 
-import GUI.BlueBookVisual.CustomRenderer;
+import GUI.Sequence.SequencePanel;
 import javafx.application.Platform;
 import utils.WriteInput;
 
@@ -122,19 +125,19 @@ public class GUISequenceElement {
 		        				masterPanel.setBorder(marsBorder);
 		        				masterPanel.revalidate();
 		        				masterPanel.repaint();
-		        				setSelected(true); //.e.BlueBookVisual.getSequenceContentList().get(sequenceID).setSelected(true);	
+		        				setSelected(true); //.e.SequencePanel.getSequenceContentList().get(sequenceID).setSelected(true);	
 	        				} else {
 		        				masterPanel.setBorder(moonBorder);
 		        				masterPanel.revalidate();
 		        				masterPanel.repaint();
-		        				//BlueBookVisual.getSequenceContentList().get(sequenceID).setSelected(false);
+		        				//SequencePanel.getSequenceContentList().get(sequenceID).setSelected(false);
 		        				setSelected(false);
 	        				}
 	        				
-	        				for(int i=0;i<BlueBookVisual.getSequenceContentList().size();i++) {
+	        				for(int i=0;i<SequencePanel.getSequenceContentList().size();i++) {
 	        					if(i!=sequenceID) {
-	        						BlueBookVisual.getSequenceContentList().get(i).getMasterPanel().setBorder(moonBorder);
-	        						BlueBookVisual.getSequenceContentList().get(i).setSelected(false);
+	        						SequencePanel.getSequenceContentList().get(i).getMasterPanel().setBorder(moonBorder);
+	        						SequencePanel.getSequenceContentList().get(i).setSelected(false);
 	        					}
 	        				}
 
@@ -223,20 +226,20 @@ public class GUISequenceElement {
 		                    public void run() {
 		                    	if(sequenceID!=0) {
 		                    		// Remove Content Element from Canvas
-		                    	BlueBookVisual.SequenceLeftPanel.remove(BlueBookVisual.getSequenceContentList().get(sequenceID).getMasterPanel());
-			    			    BlueBookVisual.getSequenceContentList().remove(sequenceID);
-		                    	BlueBookVisual.SequenceLeftPanel.revalidate();
-			    			      BlueBookVisual.SequenceLeftPanel.repaint();
+		                    	SequencePanel.SequenceLeftPanel.remove(SequencePanel.getSequenceContentList().get(sequenceID).getMasterPanel());
+			    			    SequencePanel.getSequenceContentList().remove(sequenceID);
+		                    	SequencePanel.SequenceLeftPanel.revalidate();
+			    			      SequencePanel.SequenceLeftPanel.repaint();
 			    			      // Remove respective progress bar entry 
-			    			      BlueBookVisual.SequenceProgressBar.remove(BlueBookVisual.getSequenceProgressBarContent().get(sequenceID));
-			    			      BlueBookVisual.getSequenceProgressBarContent().remove(sequenceID);
-			    			      BlueBookVisual.SequenceProgressBar.revalidate();
-			    			      BlueBookVisual.SequenceProgressBar.repaint();
+			    			      SequencePanel.SequenceProgressBar.remove(SequencePanel.getSequenceProgressBarContent().get(sequenceID));
+			    			      SequencePanel.getSequenceProgressBarContent().remove(sequenceID);
+			    			      SequencePanel.SequenceProgressBar.revalidate();
+			    			      SequencePanel.SequenceProgressBar.repaint();
 			    			      //-----------------------------------------------------------------
 			    			      // Revalidate :
-			    			      for(int i=0;i<BlueBookVisual.getSequenceContentList().size();i++) {
-						      			 BlueBookVisual.getSequenceContentList().get(i).setSequenceID(i);
-						      			// SequenceID.setText(""+BlueBookVisual.getSequenceContentList().get(i).getSequenceID());
+			    			      for(int i=0;i<SequencePanel.getSequenceContentList().size();i++) {
+						      			 SequencePanel.getSequenceContentList().get(i).setSequenceID(i);
+						      			// SequenceID.setText(""+SequencePanel.getSequenceContentList().get(i).getSequenceID());
 						   // System.out.println(i);
 						      			// masterPanel.revalidate();
 						      			// masterPanel.repaint();
@@ -249,17 +252,17 @@ public class GUISequenceElement {
 				      			   }
 				      			   locationX = (int) (globalLeftGap + (2 * sidePanelWidth * i)/3);
 
-				      			  BlueBookVisual.getSequenceContentList().get(i).getMasterPanel().setLocation(locationX, locationY);
-				      			  BlueBookVisual.getSequenceContentList().get(i).setSequenceID(i);
-			                    	  BlueBookVisual.SequenceLeftPanel.revalidate();
-				    			      BlueBookVisual.SequenceLeftPanel.repaint();
+				      			  SequencePanel.getSequenceContentList().get(i).getMasterPanel().setLocation(locationX, locationY);
+				      			  SequencePanel.getSequenceContentList().get(i).setSequenceID(i);
+			                    	  SequencePanel.SequenceLeftPanel.revalidate();
+				    			      SequencePanel.SequenceLeftPanel.repaint();
 				    			      int labelx=40;
 				    			      int labelLocationX = (int) (globalLeftGap + (2 * sidePanelWidth * i)/3 + sidePanelWidth /2 - labelx/2) ;
 				    			      
-				    			      BlueBookVisual.getSequenceProgressBarContent().get(i).setLocation(labelLocationX, 0);
-				    			      BlueBookVisual.getSequenceProgressBarContent().get(i).setText(""+i);
-				    			      BlueBookVisual.SequenceProgressBar.revalidate();
-				    			      BlueBookVisual.SequenceProgressBar.repaint();
+				    			      SequencePanel.getSequenceProgressBarContent().get(i).setLocation(labelLocationX, 0);
+				    			      SequencePanel.getSequenceProgressBarContent().get(i).setText(""+i);
+				    			      SequencePanel.SequenceProgressBar.revalidate();
+				    			      SequencePanel.SequenceProgressBar.repaint();
 				    			      resizeCanvas();
 				    			      WriteInput.WRITE_SequenceFile();
 			    			      }
@@ -400,10 +403,10 @@ public class GUISequenceElement {
 	      IDlabel.setBackground(BlueBookVisual.getBackgroundColor());
 	      IDlabel.setForeground(BlueBookVisual.getLabelColor());
 	      IDlabel.setFont(BlueBookVisual.getSmall_font());
-	      BlueBookVisual.SequenceProgressBar.add(IDlabel);
-	      BlueBookVisual.getSequenceProgressBarContent().add(IDlabel);
-	      BlueBookVisual.SequenceProgressBar.revalidate();
-	      BlueBookVisual.SequenceProgressBar.repaint();
+	      SequencePanel.SequenceProgressBar.add(IDlabel);
+	      SequencePanel.getSequenceProgressBarContent().add(IDlabel);
+	      SequencePanel.SequenceProgressBar.revalidate();
+	      SequencePanel.SequenceProgressBar.repaint();
 	      }
 	      //----------------------------------------------------------------------------------------------------
 	      // 					 Resizing content Element 
@@ -426,7 +429,7 @@ public class GUISequenceElement {
 	}
 	
 	public static void addGUISequenceElment() {
-		   int newSequenceID = BlueBookVisual.getSequenceContentList().size();
+		   int newSequenceID = SequencePanel.getSequenceContentList().size();
 	   int locationX=0;
 	   int locationY=0;
 	   if(isOdd(newSequenceID)) {
@@ -437,11 +440,11 @@ public class GUISequenceElement {
 	   locationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3);
 //System.out.println(isOdd(newSequenceID)+"|"+newSequenceID+"|"+locationX+" | "+locationY);
 GUISequenceElement guiSequenceElement = new GUISequenceElement(newSequenceID);
-BlueBookVisual.getSequenceContentList().add(guiSequenceElement);
-BlueBookVisual.getSequenceContentList().get(newSequenceID).getMasterPanel().setLocation(locationX, locationY);
-BlueBookVisual.SequenceLeftPanel.add(BlueBookVisual.getSequenceContentList().get(newSequenceID).getMasterPanel());
-BlueBookVisual.SequenceLeftPanel.revalidate();
-BlueBookVisual.SequenceLeftPanel.repaint();
+SequencePanel.getSequenceContentList().add(guiSequenceElement);
+SequencePanel.getSequenceContentList().get(newSequenceID).getMasterPanel().setLocation(locationX, locationY);
+SequencePanel.SequenceLeftPanel.add(SequencePanel.getSequenceContentList().get(newSequenceID).getMasterPanel());
+SequencePanel.SequenceLeftPanel.revalidate();
+SequencePanel.SequenceLeftPanel.repaint();
 
 int labelx=40;
 int labelLocationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3 + sidePanelWidth /2 - labelx/2) ;
@@ -452,24 +455,24 @@ IDlabel.setBorder(marsBorder);
 IDlabel.setHorizontalAlignment(JLabel.CENTER);
 IDlabel.setBackground(BlueBookVisual.getBackgroundColor());
 IDlabel.setForeground(BlueBookVisual.getLabelColor());
-IDlabel.setFont(BlueBookVisual.getSmall_font());
-BlueBookVisual.SequenceProgressBar.add(IDlabel);
-BlueBookVisual.getSequenceProgressBarContent().add(IDlabel);
-BlueBookVisual.SequenceProgressBar.revalidate();
-BlueBookVisual.SequenceProgressBar.repaint();
+IDlabel.setFont(SequencePanel.smallFont);
+SequencePanel.SequenceProgressBar.add(IDlabel);
+SequencePanel.getSequenceProgressBarContent().add(IDlabel);
+SequencePanel.SequenceProgressBar.revalidate();
+SequencePanel.SequenceProgressBar.repaint();
 resizeCanvas();
 WriteInput.WRITE_SequenceFile();
 	}
 	
 	public static void resizeCanvas() {
-	      if(BlueBookVisual.getSequenceContentList().size()>7) {
-	    	  int newDimension = (int) (BlueBookVisual.sequenceDimensionWidth * BlueBookVisual.getSequenceContentList().size()/7);
-	    	  BlueBookVisual.SequenceLeftPanel.setPreferredSize(new Dimension(newDimension, 850));
-	    	  BlueBookVisual.SequenceProgressBar.setSize(newDimension, 20);
-		      BlueBookVisual.SequenceLeftPanel.revalidate();
-		      BlueBookVisual.SequenceLeftPanel.repaint();
-		      BlueBookVisual.SequenceProgressBar.revalidate();
-		      BlueBookVisual.SequenceProgressBar.repaint();
+	      if(SequencePanel.getSequenceContentList().size()>7) {
+	    	  int newDimension = (int) (SequencePanel.sequenceDimensionWidth * SequencePanel.getSequenceContentList().size()/7);
+	    	  SequencePanel.SequenceLeftPanel.setPreferredSize(new Dimension(newDimension, 850));
+	    	  SequencePanel.SequenceProgressBar.setSize(newDimension, 20);
+		      SequencePanel.SequenceLeftPanel.revalidate();
+		      SequencePanel.SequenceLeftPanel.repaint();
+		      SequencePanel.SequenceProgressBar.revalidate();
+		      SequencePanel.SequenceProgressBar.repaint();
 	      }
 	}
 
@@ -542,6 +545,23 @@ WriteInput.WRITE_SequenceFile();
 	
 	public void setSequenceName(String name) {
 		SelectSequenceButton.setText(name);
+	}
+	
+    
+	public static class CustomRenderer extends DefaultListCellRenderer {
+
+		
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+		        int index, boolean isSelected, boolean cellHasFocus) {
+		    super.getListCellRendererComponent(list, value, index, isSelected,
+		            cellHasFocus);
+		    setBackground(BlueBookVisual.getBackgroundColor());
+		    setForeground(BlueBookVisual.getLabelColor());     
+		    return this;
+		}  
 	}
 	
 }

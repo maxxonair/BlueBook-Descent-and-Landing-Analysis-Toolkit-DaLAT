@@ -2,6 +2,7 @@ package GUI.SimulationSetup.BasicSetup;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
@@ -10,9 +11,11 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.text.DecimalFormat;
 
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JSeparator;
 import javax.swing.JTextField;
@@ -20,7 +23,6 @@ import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
-import GUI.BlueBookVisual.CustomRenderer;
 import GUI.FilePaths;
 import utils.GuiReadInput;
 import utils.WriteInput;
@@ -974,6 +976,22 @@ public class SidePanelLeft {
         frame.setLocationRelativeTo(null);
         frame.setVisible(true);
 		frame.pack();
+	}
+	
+	public static class CustomRenderer extends DefaultListCellRenderer {
+
+		
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+		        int index, boolean isSelected, boolean cellHasFocus) {
+		    super.getListCellRendererComponent(list, value, index, isSelected,
+		            cellHasFocus);
+		    setBackground(BlueBookVisual.getBackgroundColor());
+		    setForeground(BlueBookVisual.getLabelColor());     
+		    return this;
+		}  
 	}
 	
 }

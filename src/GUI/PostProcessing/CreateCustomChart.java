@@ -31,9 +31,11 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultCellEditor;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
+import javax.swing.JList;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
@@ -72,7 +74,6 @@ import com.apple.eawt.Application;
 
 import GUI.BlueBookVisual;
 import GUI.TableCellListener;
-import GUI.BlueBookVisual.CustomRenderer;
 
 
 public class CreateCustomChart {
@@ -615,5 +616,26 @@ return xyseries10;
 	        g2d.fillRect(0, 0, getWidth() - 1, getHeight() - 1);
 
 	    }
+
+
 	}
+	
+    
+	public static class CustomRenderer extends DefaultListCellRenderer {
+
+		
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+		        int index, boolean isSelected, boolean cellHasFocus) {
+		    super.getListCellRendererComponent(list, value, index, isSelected,
+		            cellHasFocus);
+		    setBackground(BlueBookVisual.getBackgroundColor());
+		    setForeground(BlueBookVisual.getLabelColor());     
+		    return this;
+		}  
+	}
+	
+	
 }

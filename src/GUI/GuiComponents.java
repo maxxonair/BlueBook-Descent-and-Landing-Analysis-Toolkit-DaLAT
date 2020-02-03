@@ -12,7 +12,7 @@ import javax.swing.JRadioButton;
 import javax.swing.JSlider;
 
 public class GuiComponents {
-	
+	public static Font smallFont			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
 	@SuppressWarnings("unchecked")
 	public static JSlider getGuiSlider(Font font, int length, int low, int midval, int high) {
         JSlider slider = new JSlider(JSlider.HORIZONTAL);
@@ -79,7 +79,7 @@ public class GuiComponents {
 	      labelTitle.setSize(190, 20);
 	      labelTitle.setBackground(BlueBookVisual.getBackgroundColor());
 	      labelTitle.setForeground(BlueBookVisual.getLabelColor());
-	      labelTitle.setFont(BlueBookVisual.getSmall_font());
+	      labelTitle.setFont(smallFont);
 	      //labelTitle.setHorizontalAlignment(HorizontalAlignment.LEFT);
 	      targetPanel.add(labelTitle);
  
@@ -90,7 +90,7 @@ public class GuiComponents {
 			      bulletPoint.setSize(190, 20);
 			      bulletPoint.setBackground(BlueBookVisual.getBackgroundColor());
 			      bulletPoint.setForeground(BlueBookVisual.getLabelColor());
-			      bulletPoint.setFont(BlueBookVisual.getSmall_font());
+			      bulletPoint.setFont(smallFont);
 
 			      contentList.add(bulletPoint);
 			      targetPanel.add(bulletPoint);

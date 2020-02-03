@@ -40,6 +40,7 @@ import GUI.FilePaths;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.GeometryModel.GeometryFrame;
 import GUI.PostProcessing.CreateCustomChart;
+import GUI.Sequence.SequencePanel;
 import GUI.Settings.Settings;
 import VisualEngine.engineLauncher.worldGenerator;
 import utils.GuiReadInput;
@@ -766,7 +767,7 @@ public class MenuBar {
 		BlueBookVisual.update(true);
 	      try {
 			  GuiReadInput.readINP();	       
-		    	  BlueBookVisual.READ_sequenceFile();
+		    	  SequencePanel.READ_sequenceFile();
 	      } catch(Exception e) {
 	    	  		System.out.println("ERROR: Reading input section after Case updated failed.");
 	      }

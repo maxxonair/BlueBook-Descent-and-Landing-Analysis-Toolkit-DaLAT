@@ -11,7 +11,9 @@ import GUI.AerdoynamicSetup.AerodynamicSetup;
 import GUI.AerdoynamicSetup.AerodynamicSetupSpacecraft;
 import GUI.Dashboard.ChartSetting;
 import GUI.GeometryModel.GeometryFrame;
+import GUI.InertiaGeometry.InertiaGeometry;
 import GUI.PropulsionSetup.PropulsionSetup;
+import GUI.Sequence.SequencePanel;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
@@ -59,20 +61,20 @@ public class WriteInput {
             String eventSeparator="|EventManagementElements";
             String endSeparator="|EndElement|";
             FileWriter wr = new FileWriter(fac);
-            for (int i = 0; i<BlueBookVisual.getSequenceContentList().size(); i++)
+            for (int i = 0; i<SequencePanel.getSequenceContentList().size(); i++)
             {
-        		int ID = BlueBookVisual.getSequenceContentList().get(i).getSequenceID();
+        		int ID = SequencePanel.getSequenceContentList().get(i).getSequenceID();
             	String sequenceContent = ID+" "+
-						 			 BlueBookVisual.getSequenceContentList().get(i).getSequenceName()+" "+
+            			SequencePanel.getSequenceContentList().get(i).getSequenceName()+" "+
             							 fcSeparator	+" "+ 
-            							 BlueBookVisual.getSequenceContentList().get(i).getFlightControllerSelect().getSelectedIndex()+" "+
+            							 SequencePanel.getSequenceContentList().get(i).getFlightControllerSelect().getSelectedIndex()+" "+
             							 fcSeparator	+" "+ 
             							 eventSeparator+" "+ 
-            							 BlueBookVisual.getSequenceContentList().get(i).getEventSelect().getSelectedIndex()+" "+
+            							 SequencePanel.getSequenceContentList().get(i).getEventSelect().getSelectedIndex()+" "+
             							 eventSeparator+" "+ 
             							 endSeparator+" "+ 
-            							 BlueBookVisual.getSequenceContentList().get(i).getEndSelect().getSelectedIndex()+" "+
-            							 BlueBookVisual.getSequenceContentList().get(i).getValueEnd().getText()+" "
+            							 SequencePanel.getSequenceContentList().get(i).getEndSelect().getSelectedIndex()+" "+
+            							 SequencePanel.getSequenceContentList().get(i).getValueEnd().getText()+" "
             							 +endSeparator+" ";
             	
             	wr.write(sequenceContent+System.getProperty( "line.separator" ));
@@ -289,7 +291,7 @@ public class WriteInput {
 	String identifier = "Init_Mass";
 	double value =0;
 	try {
-	 value = Double.parseDouble(BlueBookVisual.INPUT_M0.getText()) ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_Mass.getText()) ;
 	} catch (Exception exp) {}
 		fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
@@ -407,39 +409,39 @@ public class WriteInput {
     	
 	String identifier = "Init_IXX";
 	try {
-	double value = Double.parseDouble(BlueBookVisual.INPUT_IXX.getText());  ;
+	double value = Double.parseDouble(InertiaGeometry.INPUT_IXX.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IXY";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IXY.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IXY.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IXZ";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IXZ.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IXZ.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IYX";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IYX.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IYX.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IYY";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IYY.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IYY.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IYZ";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IYZ.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IYZ.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IZX";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IZX.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IZX.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IZY";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IZY.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IZY.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	
 	 identifier = "Init_IZZ";
-	 value = Double.parseDouble(BlueBookVisual.INPUT_IZZ.getText());  ;
+	 value = Double.parseDouble(InertiaGeometry.INPUT_IZZ.getText());  ;
 	fileWriter.write(identifier+delimiter+value+System.getProperty( "line.separator" ));
 	} catch (Exception exp) {}
 	return fileWriter;

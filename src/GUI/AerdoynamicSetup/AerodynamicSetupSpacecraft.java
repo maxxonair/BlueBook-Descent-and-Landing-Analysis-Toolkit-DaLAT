@@ -22,6 +22,7 @@ import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
 import GUI.FilePaths;
+import GUI.InertiaGeometry.InertiaGeometry;
 import utils.WriteInput;
 
 public class AerodynamicSetupSpacecraft {
@@ -189,7 +190,7 @@ public class AerodynamicSetupSpacecraft {
 						// TODO Auto-generated method stub
 						if(RB_SurfaceArea.isSelected()) {
 							double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-							double mass = Double.parseDouble(BlueBookVisual.INPUT_M0.getText());
+							double mass = Double.parseDouble(InertiaGeometry.INPUT_Mass.getText());
 				    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
 				    		INPUT_BALLISTICCOEFFICIENT.setText("");
 				    		
@@ -198,7 +199,7 @@ public class AerodynamicSetupSpacecraft {
 				    		
 						} else if (RB_BallisticCoefficient.isSelected()) {
 							double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-							double mass = Double.parseDouble(BlueBookVisual.INPUT_M0.getText());
+							double mass = Double.parseDouble(InertiaGeometry.INPUT_Mass.getText());
 				    		INPUT_SURFACEAREA.setText("");
 						INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
 						
@@ -216,7 +217,7 @@ public class AerodynamicSetupSpacecraft {
 					
 						if(RB_SurfaceArea.isSelected()) {
 							double BC = Double.parseDouble(INPUT_BALLISTICCOEFFICIENT.getText());
-							double mass = Double.parseDouble(BlueBookVisual.INPUT_M0.getText());
+							double mass = Double.parseDouble(InertiaGeometry.INPUT_Mass.getText());
 				    		INPUT_SURFACEAREA.setText(""+String.format("%.2f",mass/BC));
 				    		INPUT_BALLISTICCOEFFICIENT.setText("");
 				    		
@@ -225,7 +226,7 @@ public class AerodynamicSetupSpacecraft {
 				    		
 						} else if (RB_BallisticCoefficient.isSelected()) {
 							double surfacearea = Double.parseDouble(INPUT_SURFACEAREA.getText());
-							double mass = Double.parseDouble(BlueBookVisual.INPUT_M0.getText());
+							double mass = Double.parseDouble(InertiaGeometry.INPUT_Mass.getText());
 				    		INPUT_SURFACEAREA.setText("");
 						INPUT_BALLISTICCOEFFICIENT.setText(""+String.format("%.2f", mass/surfacearea));
 						

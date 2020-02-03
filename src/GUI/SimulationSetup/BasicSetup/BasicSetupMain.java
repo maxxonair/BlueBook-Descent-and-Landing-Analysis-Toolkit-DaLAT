@@ -14,7 +14,7 @@ public class BasicSetupMain {
     private Color backgroundColor;	
     private int verticalSizer = 10 ;
     
-    private static JPanel mainPanel;
+    private  JPanel mainPanel;
 	
 	public BasicSetupMain() {
 		
@@ -41,7 +41,7 @@ public class BasicSetupMain {
 	      mainPanel.add(scrollPane_RIGHT_InputSection, BorderLayout.CENTER);
 	}
 
-	public static JPanel getMainPanel() {
+	public  JPanel getMainPanel() {
 		return mainPanel;
 	}
 		

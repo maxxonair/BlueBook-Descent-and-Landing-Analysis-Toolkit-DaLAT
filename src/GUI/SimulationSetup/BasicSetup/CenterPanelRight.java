@@ -15,9 +15,11 @@ import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListCellRenderer;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
@@ -26,7 +28,6 @@ import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
 import GUI.FilePaths;
-import GUI.BlueBookVisual.CustomRenderer;
 import GUI.FxElements.TargetWindow;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
@@ -489,6 +490,22 @@ public class CenterPanelRight {
 	    frame.pack();
 	    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	    frame.setVisible(true);
+	}
+	
+	public static class CustomRenderer extends DefaultListCellRenderer {
+
+		
+		private static final long serialVersionUID = 1L;
+
+		@Override
+		public Component getListCellRendererComponent(@SuppressWarnings("rawtypes") JList list, Object value,
+		        int index, boolean isSelected, boolean cellHasFocus) {
+		    super.getListCellRendererComponent(list, value, index, isSelected,
+		            cellHasFocus);
+		    setBackground(BlueBookVisual.getBackgroundColor());
+		    setForeground(BlueBookVisual.getLabelColor());     
+		    return this;
+		}  
 	}
 
 }
