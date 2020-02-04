@@ -68,12 +68,14 @@ public class Spacecraft extends Entity {
 			Spacecraft.SCMass = (float) spaceShip.getMass();
 			Spacecraft.SCPropMass = (float) spaceShip.getPropulsion().getPrimaryPropellant();
 			Spacecraft.SCMainThrust = (float) spaceShip.getPropulsion().getPrimaryThrustMax();
+			/*
 			try {
 				 IntegINP = ReadInput.readIntegratorInput(1);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			*/
 		    integratorData.setInitRadius(1737400+Spacecraft.getPosition().y);
 	}
 	

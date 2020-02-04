@@ -20,7 +20,6 @@ import javax.swing.JScrollPane;
 
 import GUI.BlueBookVisual;
 import GUI.FilePaths;
-import GUI.GUISequenceElement;
 
 public class SequencePanel {
 	//-------------------------------------------------------------------------------------------------------------

@@ -81,7 +81,7 @@ public class AttitudeView extends DashboardPlotPanel{
             	spaceShipView.coordinateSystem.getChildren().removeAll();
             	//SpaceShipView3DFrontPage.root.getChildren().removeAll();
             	spaceShipView.start(fxPanel, DashboardPlotArea.getModel3DFilePath());
-            	System.out.println(DashboardPlotArea.getModel3DFilePath());
+            	//System.out.println(DashboardPlotArea.getModel3DFilePath());
             }
        });
       

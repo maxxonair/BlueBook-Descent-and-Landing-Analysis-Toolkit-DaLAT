@@ -318,8 +318,6 @@ public class BlueBookVisual implements  ActionListener {
         } catch (UnsupportedLookAndFeelException ex) {
         }
         UIManager.put("MenuBar.background", Color.green);
-       // UIManager.put("Menu.background", labelColor);
-      //  UIManager.put("MenuItem.background", labelColor);
         UIManager.put("Menu.opaque", true);
         
 
@@ -577,7 +575,7 @@ public class BlueBookVisual implements  ActionListener {
     	
     }
    
-    static Image getScaledImage(Image srcImg, int w, int h){
+    public static Image getScaledImage(Image srcImg, int w, int h){
         BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = resizedImg.createGraphics();
 
@@ -596,7 +594,6 @@ public class BlueBookVisual implements  ActionListener {
 				MapSetting.setMap(indx_target);
 			}
 		} catch (IOException | URISyntaxException e2) {
-			// TODO Auto-generated catch block
 			e2.printStackTrace();
 		}
 

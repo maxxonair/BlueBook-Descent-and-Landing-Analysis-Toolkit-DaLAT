@@ -1,7 +1,0 @@
-0 EntryDescent |FlightControllerElements| 3 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 2 810.0 |EndElement| 
-1 ParachuteDeployment |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 1 |EventManagementElements |EndElement| 3 2000.0 |EndElement| 
-2 ParachuteSeparation |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 2.0 |EndElement| 
-3 FreeFlight |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 2.0 |EndElement| 
-4 HeatShieldSeparation |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 4 |EventManagementElements |EndElement| 1 2.0 |EndElement| 
-5 FreeFall |FlightControllerElements| 5 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 1 10.0 |EndElement| 
-6 AutoSequence |FlightControllerElements| 0 |FlightControllerElements| |EventManagementElements 0 |EventManagementElements |EndElement| 0 0 |EndElement| 

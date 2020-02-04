@@ -20,18 +20,25 @@ public class AerodynamicModel {
     private static int sequenceIs=-1;
     private static double lastTimeMark=0;
     
-    private 	static	int aeroModel =2 ; // <---- !!!
-    
 	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
-
-		if(aeroModel == 1) { // standard model 
-		return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
-		} else if (aeroModel == 2) { // launcher model 
+		int dragModelSelection = integratorData.getAeroDragModel();
+		
+			   if(dragModelSelection  == 0) {  // standard model / CD = constant 
+			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
+		} else if (dragModelSelection == 1) {  // standard model / CD from panel method (valid in hypersonics only)
+			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
+		} else if (dragModelSelection == 2) { // launcher model 
 			return getAerodynamicSetLauncher( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
-		} else { // fallback standard model 
+		} else if (dragModelSelection == 3) {  // AeroModel off
+			return getAerodynamicSetVoid() ;
+		} else { 							  // fallback standard model 
 			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
 		}
 		
+	}
+	
+	private static AerodynamicSet getAerodynamicSetVoid() {
+		return new AerodynamicSet();
 	}
 	
 	private static AerodynamicSet getAerodynamicSetLauncher(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
@@ -115,7 +122,6 @@ public class AerodynamicModel {
 					if(CdP<0.2) {
 						CdP=0.2;
 					}
-					//System.out.println(Ma+"|"+CdP);
 				}
 				double parachuteDeploymentEffect = getParachuteDeploymentMode(currentDataSet.getSequenceTime(), 3) ;
 				CdP = CdP * parachuteDeploymentEffect;
@@ -138,12 +144,13 @@ public class AerodynamicModel {
 		aerodynamicSet.setMy(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMy());              
 		aerodynamicSet.setMz(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * referenceLength * aerodynamicSet.getCMz()); 	                 
 		//----------------------------------------------------------------------------------------------
+		//System.out.println(aerodynamicSet.getDragCoefficient());
 		return aerodynamicSet;
 	}
 	//----------------------------------------------------------------------------------------------------------------------------
 	//
-	//	                                        Calculate Drag with three flowzone approach
-	//	                                      Free molecular -> transitional -> Contiuum flow
+	//	                                        Calculate Drag with three flow zones approach
+	//	                                      Free molecular -> transitional -> Continuum flow
 	//
 	//----------------------------------------------------------------------------------------------------------------------------
 	public static double calcDrag(AtmosphereSet atmosphereSet, CurrentDataSet currentDataSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData)

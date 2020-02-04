@@ -7,6 +7,8 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Point;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
@@ -58,6 +60,7 @@ public class AerodynamicSetup {
     public static JTextField ConstantCD_INPUT;
     public static JTextField ConstantParachuteCD_INPUT;
     public static JTextField  INPUT_RB;
+    
 	
 	public AerodynamicSetup() {
 		backgroundColor = BlueBookVisual.getBackgroundColor();
@@ -66,13 +69,13 @@ public class AerodynamicSetup {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.setBackground(backgroundColor);
-		
-	      int INPUT_width = 110;
-	      //int SidePanel_Width = 380; 
 		//-----------------------------------------------------------------------------------------
 	    // ---->>>>>                       TAB: Aerodynamic Setup Sim sided
 		//-----------------------------------------------------------------------------------------		    
-	    
+	      ConstantCD_INPUT =  new JTextField("");
+	      ConstantParachuteCD_INPUT = new JTextField("");
+	      INPUT_RB = new JTextField("");
+	    //-----------------------------------------------------------------------------------------	  
 		JPanel AerodynamicRightPanel = new JPanel();
 		AerodynamicRightPanel.setLocation(0, 0);
 		AerodynamicRightPanel.setBackground(backgroundColor);
@@ -123,7 +126,7 @@ public class AerodynamicSetup {
 	      ScrollPaneAerodynamicInput2.getVerticalScrollBar().setUnitIncrement(16);
 	      mainPanel.add(ScrollPaneAerodynamicInput2, BorderLayout.CENTER);
 	    
-	      JLabel LABELdragModel = new JLabel("Select Aerodynamic Drag Model:");
+	      JLabel LABELdragModel = new JLabel("Select Aerodynamic Model:");
 	      LABELdragModel.setLocation(3, 5 + 25 * 0  );
 	      LABELdragModel.setSize(190, 20);
 	      LABELdragModel.setBackground(backgroundColor);
@@ -141,59 +144,39 @@ public class AerodynamicSetup {
 	      aeroButton.setForeground(labelColor);
 	      aeroButton.setFont(smallFont);
 	      aeroButton.addChangeListener(new ChangeListener() {
-
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-				WriteInput.writeInputFile(FilePaths.inputFile);
-				//------------------------------------------------------------------------
-				int indx = getDragModelSetIndx();
-				for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
-					AerodynamicDragPanel.remove(AeroLeftBarAdditionalComponents.get(i));
-				}
-				AerodynamicDragPanel.revalidate();
-				AerodynamicDragPanel.repaint();
-				if(indx==0) {	
-				      JLabel LABEL_CD = new JLabel("Set constant CD value [-]");
-				      LABEL_CD.setLocation(193, 5 + 25 * 1);
-				      LABEL_CD.setSize(300, 20);
-				      LABEL_CD.setBackground(backgroundColor);
-				      LABEL_CD.setForeground(labelColor);
-				      LABEL_CD.setFont(smallFont);
-				      AeroLeftBarAdditionalComponents.add(LABEL_CD);
-				      AerodynamicDragPanel.add(LABEL_CD);
-					
-			        ConstantCD_INPUT = new JTextField("");
-			        ConstantCD_INPUT.setLocation(193, 5 + 25 * 2 );
-			        ConstantCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-			        ConstantCD_INPUT.setBorder(BlueBookVisual.Moon_border);
-			        ConstantCD_INPUT.setSize(100, 20);
-			        ConstantCD_INPUT.setEditable(true);
-			        ConstantCD_INPUT.addFocusListener(new FocusListener() {
-
-						@Override
-						public void focusGained(FocusEvent arg0) { }
-
-						@Override
-						public void focusLost(FocusEvent e) {
-							WriteInput.writeInputFile(FilePaths.inputFile);
-						}
-				   	  
-				     });
-			        AeroLeftBarAdditionalComponents.add(ConstantCD_INPUT);
-			       // RB_INPUT.setBackground(Color.lightGray);
-			        AerodynamicDragPanel.add(ConstantCD_INPUT);       
-				}
-				//------------------------------------------------------------------------
+				addActionField("Set constant CD value [-]", ConstantCD_INPUT, AerodynamicDragPanel, 1);
 			}
 	    	  
 	      });
-	      //aeroButton.setSelected(true);
 	      DragModelSet.add(aeroButton);
-	      //aeroButton.setHorizontalAlignment(0);
 	      AerodynamicDragPanel.add(aeroButton);
 	      dragModelGroup.add(aeroButton);
+	      aeroButton.setSelected(true);
+	      //-------------------------------------------------------------------------------
+	      
 	       aeroButton = new JRadioButton("Hypersonic Panel Model");
 	      aeroButton.setLocation(3, 5 + 25 * 2  );
+	      aeroButton.setSize(190, 20);
+	      aeroButton.setBackground(backgroundColor);
+	      aeroButton.setForeground(labelColor);
+	      aeroButton.setFont(smallFont);
+	      aeroButton.addChangeListener(new ChangeListener() {
+
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				addActionField("Heat Shield Body Radius RB [m]", INPUT_RB, AerodynamicDragPanel, 2);
+			}
+	    	  
+	      });
+	      DragModelSet.add(aeroButton);
+	      AerodynamicDragPanel.add(aeroButton);
+	      dragModelGroup.add(aeroButton);
+	    //-------------------------------------------------------------------------------
+	      
+	       aeroButton = new JRadioButton("Launcher Model");
+	      aeroButton.setLocation(3, 5 + 25 * 3  );
 	      aeroButton.setSize(190, 20);
 	      aeroButton.setBackground(backgroundColor);
 	      aeroButton.setForeground(labelColor);
@@ -203,53 +186,34 @@ public class AerodynamicSetup {
 
 			@Override
 			public void stateChanged(ChangeEvent arg0) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					//------------------------------------------------------------------------
-					int indx = getDragModelSetIndx();
-					for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
-						AerodynamicDragPanel.remove(AeroLeftBarAdditionalComponents.get(i));
-					}
-					AerodynamicDragPanel.revalidate();
-					AerodynamicDragPanel.repaint();
-					if(indx==1) {							
-					     INPUT_RB = new JTextField(10);
-					     INPUT_RB.setText("");
-					     INPUT_RB.setLocation(193, 5 + 25 * 3);;
-					     INPUT_RB.setSize(INPUT_width, 20);
-					     INPUT_RB.setHorizontalAlignment(JTextField.RIGHT);
-					     AeroLeftBarAdditionalComponents.add(INPUT_RB);
-					     INPUT_RB.addFocusListener(new FocusListener() {
-
-							@Override
-							public void focusGained(FocusEvent arg0) { }
-
-							@Override
-							public void focusLost(FocusEvent e) {
-								WriteInput.writeInputFile(FilePaths.inputFile);
-							}
-					   	  
-					     });
-					     AerodynamicDragPanel.add(INPUT_RB);
-				        
-					      JLabel LABEL_RB = new JLabel("Heat Shield Body Radius RB [m]");
-					      LABEL_RB.setLocation(193, 5 + 25 * 2);
-					      LABEL_RB.setSize(300, 20);
-					      LABEL_RB.setFont(smallFont);
-					      LABEL_RB.setBackground(backgroundColor);
-					      LABEL_RB.setForeground(labelColor);
-					      AeroLeftBarAdditionalComponents.add(LABEL_RB);
-				       // RB_INPUT.setBackground(Color.lightGray);
-					      AerodynamicDragPanel.add(LABEL_RB);       
-					}
-					//------------------------------------------------------------------------
+				addActionField("Small/mid sized launcher applications", null, AerodynamicDragPanel,3);
 			}
 	    	  
 	      });
-	     // aeroButton.setHorizontalAlignment(0);
 	      AerodynamicDragPanel.add(aeroButton);
 	      dragModelGroup.add(aeroButton);
+	      
+	       aeroButton = new JRadioButton("Aerodynamic Off");
+	      aeroButton.setLocation(3, 5 + 25 * 4  );
+	      aeroButton.setSize(190, 20);
+	      aeroButton.setBackground(backgroundColor);
+	      aeroButton.setForeground(labelColor);
+	      aeroButton.setFont(smallFont);
+	      DragModelSet.add(aeroButton);
+	      aeroButton.addChangeListener(new ChangeListener() {
 
-	      // System.out.println(dragModelGroup.getSelection().);
+			@Override
+			public void stateChanged(ChangeEvent arg0) {
+				addActionField("Aerodynamics switched off", null, AerodynamicDragPanel,4);
+			}
+	    	  
+	      });
+	      AerodynamicDragPanel.add(aeroButton);
+	      dragModelGroup.add(aeroButton);
+	      
+	      //-------------------------------------------------------------------------------
+	      //							Parachute section
+	      //-------------------------------------------------------------------------------
 	      String[] titles = {"Constant Drag Coefficient", "Mach model"};
 	      AerodynamicParachutePanel = GuiComponents.getdynamicList(AerodynamicParachutePanel, 
 	    		  "Set Parachute drag model" , titles, ParachuteBulletPoints);
@@ -258,42 +222,7 @@ public class AerodynamicSetup {
 
 				@Override
 				public void stateChanged(ChangeEvent arg0) {
-					WriteInput.writeInputFile(FilePaths.inputFile);
-					for(int i=0;i<AeroParachuteBarAdditionalComponents.size();i++) {
-						AerodynamicParachuteOptionPanel.remove(AeroParachuteBarAdditionalComponents.get(i));
-					}
-					AerodynamicParachuteOptionPanel.revalidate();
-					AerodynamicParachuteOptionPanel.repaint();
-
-					      JLabel LABEL = new JLabel("Set constant CD value [-]");
-					      LABEL.setLocation(3, 30 + 25 * 0);
-					      LABEL.setSize(210, 20);
-					      LABEL.setBackground(backgroundColor);
-					      LABEL.setForeground(labelColor);
-					      LABEL.setFont(smallFont);
-					      AeroParachuteBarAdditionalComponents.add(LABEL);
-					      AerodynamicParachuteOptionPanel.add(LABEL);
-					      
-					        ConstantParachuteCD_INPUT = new JTextField("");
-					        ConstantParachuteCD_INPUT.setLocation(3, 5 + 25 * 2 );
-					        ConstantParachuteCD_INPUT.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-					        ConstantParachuteCD_INPUT.setBorder(BlueBookVisual.Moon_border);
-					        ConstantParachuteCD_INPUT.setSize(100, 20);
-					        ConstantParachuteCD_INPUT.setEditable(true);
-					        ConstantParachuteCD_INPUT.addFocusListener(new FocusListener() {
-
-								@Override
-								public void focusGained(FocusEvent arg0) { }
-
-								@Override
-								public void focusLost(FocusEvent e) {
-									WriteInput.writeInputFile(FilePaths.inputFile);
-								}
-						   	  
-						     });
-					        AeroParachuteBarAdditionalComponents.add(ConstantParachuteCD_INPUT);
-					        AerodynamicParachuteOptionPanel.add(ConstantParachuteCD_INPUT); 
-					
+					addActionFieldL("Set constant CD value [-]", ConstantParachuteCD_INPUT, AerodynamicParachuteOptionPanel,0);					
 				}
 		    	  
 		      });
@@ -322,13 +251,7 @@ public class AerodynamicSetup {
 		      });
 	      
 	      ParachuteBulletPoints.get(1).setSelected(true);
-	      
-	      
-	      
-	      
 	
-		
-		
 	}
 	
     public static int getDragModelSetIndx() {
@@ -372,6 +295,110 @@ public class AerodynamicSetup {
 		//frame.pack();
 		 
 		//new YourFrame();
+	}
+	
+	private void addActionField(String labelText, JTextField InputField, JPanel parentPanel, int setPosY) {
+		WriteInput.writeInputFile(FilePaths.inputFile);
+	try {
+		//------------------------------------------------------------------------
+			for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
+				parentPanel.remove(AeroLeftBarAdditionalComponents.get(i));
+			}
+		parentPanel.revalidate();
+		parentPanel.repaint();	
+		      JLabel label = new JLabel(labelText);
+		      label.setLocation(193, 5 + 25 * setPosY);
+		      label.setSize(300, 20);
+		      label.setBackground(backgroundColor);
+		      label.setForeground(labelColor);
+		      label.setFont(smallFont);
+		      
+		      AeroLeftBarAdditionalComponents.add(label);
+		      parentPanel.add(label);
+			
+		      if( InputField!= null ) {
+			      		  InputField.setSize(100, 20);
+					      InputField.setLocation(193, 5 + 25 * (setPosY+1) );
+					      InputField.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+					      InputField.setBorder(BlueBookVisual.Moon_border);
+					      InputField.setEditable(true);
+					      InputField.addFocusListener(new FocusListener() {
+			
+							@Override
+							public void focusGained(FocusEvent arg0) { }
+			
+							@Override
+							public void focusLost(FocusEvent e) {
+								WriteInput.writeInputFile(FilePaths.inputFile);
+							}
+					   	  
+					     });
+					      InputField.addActionListener(new ActionListener(){
+			
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								WriteInput.writeInputFile(FilePaths.inputFile);
+							}
+					      
+					      });
+					      
+					        AeroLeftBarAdditionalComponents.add(InputField);
+					        parentPanel.add(InputField); 
+					        
+		      }
+				parentPanel.revalidate();
+				parentPanel.repaint();
+		
+	} catch (NullPointerException exp ) {
+		System.out.println("Error: AerodynamicSetup.");
+	}
+	}
+	
+	private void addActionFieldL(String labelText, JTextField InputField, JPanel parentPanel, int setPosY) {
+		WriteInput.writeInputFile(FilePaths.inputFile);
+		//------------------------------------------------------------------------
+		for(int i=0;i<AeroLeftBarAdditionalComponents.size();i++) {
+			parentPanel.remove(AeroLeftBarAdditionalComponents.get(i));
+		}
+		parentPanel.revalidate();
+		parentPanel.repaint();
+		      JLabel label = new JLabel(labelText);
+		      label.setLocation(3, 5 + 25 * setPosY);
+		      label.setSize(210, 20);
+		      label.setBackground(backgroundColor);
+		      label.setForeground(labelColor);
+		      label.setFont(smallFont);
+		      AeroLeftBarAdditionalComponents.add(label);
+		      parentPanel.add(label);
+			
+		      if(InputField!= null ) {
+					      InputField.setSize(100, 20);
+					      InputField.setLocation(3, 5 + 25 * (setPosY+2) );
+					      InputField.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
+					      InputField.setBorder(BlueBookVisual.Moon_border);
+					      InputField.setEditable(true);
+					      InputField.addFocusListener(new FocusListener() {
+			
+							@Override
+							public void focusGained(FocusEvent arg0) { }
+			
+							@Override
+							public void focusLost(FocusEvent e) {
+								WriteInput.writeInputFile(FilePaths.inputFile);
+							}
+					   	  
+					     });
+					      InputField.addActionListener(new ActionListener(){
+			
+							@Override
+							public void actionPerformed(ActionEvent arg0) {
+								WriteInput.writeInputFile(FilePaths.inputFile);
+							}
+					      
+					      });
+				        AeroLeftBarAdditionalComponents.add(InputField);
+				        parentPanel.add(InputField); 
+		      }
 	}
 	
 }

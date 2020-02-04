@@ -293,6 +293,16 @@ Box_54*&^{}|RV3|9|893|210|90d88774-bc3c-4235-9217-9b2e904a0a6b|270.0
 Name|RV3
 Description|
 System mass [kg]|0.0
+Box_54*&^{}|DualThruster|2|787|1|37f20c43-e19d-4724-8dbb-b0b28d545e89|0.0
+Name|DualThruster
+Description|
+System mass [kg]|0.0
+Thrust [N]|0.0
+ISP [s]|0.0
+O/F [-]|0.0
+Momentum [Nm]|0.0
+Max. Pulse Time [ms]|0.0
+Min. Pulse Time [ms]|0.0
 Relation_74*&^{}|1da3bcef-bc2b-49f1-a8bc-868f2efb730b|e5696e60-1b23-4510-bc90-766cc1088ec1
 Relation_74*&^{}|4beccbe9-6a79-4e2d-b518-8b5ec806087a|428cce31-4d4c-4351-964c-680842178401
 Relation_74*&^{}|a9902324-faae-44d8-baef-81e0725c485f|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c
@@ -345,3 +355,4 @@ Relation_74*&^{}|2a0a7d68-a5a9-4a58-8a88-743a57416f4a|02dd12fc-cabf-495f-aa3e-b4
 Relation_74*&^{}|dc75024e-327d-4fd9-b4ca-00628164c495|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c
 Relation_74*&^{}|1d7c02f0-b6a1-437a-a688-6b545b01577e|899c82f8-16bb-4cb9-84d0-b5fcb6af1510
 Relation_74*&^{}|90d88774-bc3c-4235-9217-9b2e904a0a6b|e5696e60-1b23-4510-bc90-766cc1088ec1
+Relation_74*&^{}|37f20c43-e19d-4724-8dbb-b0b28d545e89|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c

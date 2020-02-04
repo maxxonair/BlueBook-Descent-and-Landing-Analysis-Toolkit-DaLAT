@@ -60,7 +60,7 @@ public class FlightController_AscentController extends FlightController {
 		//System.out.println(t+"|"+(Math.toDegrees(ctrlError)));
 		//-----------------------------------
 		boolean isTVC = true;
-		boolean AoAControl = true;
+		boolean AoAControl = false;
 		
 		if(AoAControl) {
 			

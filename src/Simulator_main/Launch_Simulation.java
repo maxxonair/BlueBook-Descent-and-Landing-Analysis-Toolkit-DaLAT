@@ -11,7 +11,7 @@ import Simulator_main.DataSets.IntegratorData;
 import utils.ReadInput;
 
 public class Launch_Simulation {
-	
+/*	
     public static double PI    = 3.14159265359;                 // PI                                       [-] 
 	static double deg2rad = PI/180.0; 		//Convert degrees to radians
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
@@ -96,13 +96,15 @@ public class Launch_Simulation {
 	    		//-----------------------------------------------------------------------------------------------------------------------------
 	    		//												6 Degree of Freedom - Universal module
 	    		//-----------------------------------------------------------------------------------------------------------------------------
+	    		
 	    		System.out.println("Simulator set and running");
 	    		SimulationCore.launchIntegrator(
 	    												    integratorData,
 	    												    ReadInput.readSequence(),	   // Sequence data set	LIST			     [-]
-														ReadInput.readErrorFile(),	   // Error file to model partial system failres [-] 
+														//ReadInput.readErrorFile(),	   // Error file to model partial system failres [-] 
 														spaceShip				       // SpaceShip data file                  [-]
 	    				);
-}
 
+}
+*/
 }
