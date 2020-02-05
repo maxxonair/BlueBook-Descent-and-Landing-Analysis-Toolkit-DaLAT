@@ -14,7 +14,6 @@ import GUI.FilePaths;
 import GUI.Dashboard.ChartSetting;
 import Sequence.SequenceContent;
 import Sequence.SequenceElement;
-import Simulator_main.StopCondition;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.SimulatorInputSet;
 
@@ -82,64 +81,6 @@ public class ReadInput {
 			}	  
 		   } 
 	   }	
-//---------------------------------------------------------------------------------------------------	
-    public static List<SequenceElement> readSequence() throws IOException{	
-   	 List<SequenceElement> SEQUENCE_DATA = new ArrayList<SequenceElement>(); 
-		BufferedReader br = new BufferedReader(new FileReader(SEQUENCE_File));
-       String strLine;
-       try {
-       while ((strLine = br.readLine()) != null )   {
-       	String[] tokens = strLine.split(" ");
-       	SequenceElement newSequenceElement = new SequenceElement( 0, 0,  0,  0,  0, 0, 0, 0, 0, 0, 0, 0);
-       	int sequence_ID 					= Integer.parseInt(tokens[0]);
-       	int trigger_end_type 				= Integer.parseInt(tokens[1]);
-       	double trigger_end_value 			= Double.parseDouble(tokens[2]);
-       	int sequence_type		 			= Integer.parseInt(tokens[3]);
-       	int sequence_controller_ID 			= Integer.parseInt(tokens[4]);
-       	double ctrl_target_vel      		= Double.parseDouble(tokens[5]);
-       	double ctrl_target_alt 				= Double.parseDouble(tokens[6]);
-       	int ctrl_target_curve    			= Integer.parseInt(tokens[7]);
-       	int sequence_TVCcontroller_ID 		= 0;
-       	double TVCctrl_target_t      		= 0;
-       	double TVCctrl_target_alt 			= 0;
-       	int ctrl_TVC_target_curve    		= 0;
-       	try {
-       	 sequence_TVCcontroller_ID 	= Integer.parseInt(tokens[8]);
-       	 TVCctrl_target_t     	    = Double.parseDouble(tokens[9]);
-       	 TVCctrl_target_alt 		= Double.parseDouble(tokens[10]);
-       	 ctrl_TVC_target_curve      = Integer.parseInt(tokens[11]);
-       	}catch(java.lang.ArrayIndexOutOfBoundsException eAIOO) {System.out.println("No TVC controller found.");}
-       	newSequenceElement.Update( sequence_ID,trigger_end_type,trigger_end_value,sequence_type,sequence_controller_ID,ctrl_target_vel,ctrl_target_alt,ctrl_target_curve,sequence_TVCcontroller_ID,TVCctrl_target_t,TVCctrl_target_alt,ctrl_TVC_target_curve);
-       	updateSequenceElements(newSequenceElement, SEQUENCE_DATA);
-       }
-       System.out.println("READ: Sequence setup sucessful. ");
-       System.out.println(""+SEQUENCE_DATA.size()+" Sequences added");
-       br.close();
-       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-       return SEQUENCE_DATA;
-   } 
-//---------------------------------------------------------------------------------------------------  
-    public static List<StopCondition> readEventHandler(double rm, double refElevation) throws IOException{
-    	 List<StopCondition> STOP_Handler = new ArrayList<StopCondition>(); 
- 	   	 BufferedReader br = new BufferedReader(new FileReader(EventHandler_File));
- 	   	 String strLine;
-  try { 
-      while ((strLine = br.readLine()) != null )   {
-      	String[] tokens = strLine.split(" ");
-   	int event_type 			= Integer.parseInt(tokens[0]);
-   	double event_value 		= Double.parseDouble(tokens[1]);
-   	System.out.println(event_type+" | "+event_value);
-   	STOP_Handler.add(new StopCondition(event_value,event_type, rm, refElevation));
-      }
-      for(int i=0;i<STOP_Handler.size();i++) {
-   	   STOP_Handler.get(i).create_StopHandler();
-      }
-  }catch(NullPointerException eNPE) { System.out.println(eNPE);}
-  br.close();
-  return STOP_Handler; 
-}  
- //---------------------------------------------------------------------------------------------------
-
 //---------------------------------------------------------------------------------------------------
 public static double[] readInput() {
 	double InitialState = 0;
@@ -188,7 +129,7 @@ public static double[] readInput() {
     return inputOut;
 } 
 //---------------------------------------------------------------------------------------------------
-public static List<SequenceContent> READ_sequenceFile() throws IOException{	
+public static List<SequenceContent> readSequenceFile() throws IOException{	
 	List<SequenceContent> SequenceSet = new ArrayList<SequenceContent>();
 	BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
    String strLine;
@@ -199,6 +140,8 @@ public static List<SequenceContent> READ_sequenceFile() throws IOException{
    while ((strLine = br.readLine()) != null )   {
        
        	String[] initSplit = strLine.split(fcSeparator);
+       	
+       	System.out.println("Content"+initSplit);
 
        	String[] head = initSplit[0].split(" ");
        //System.out.pri
@@ -260,8 +203,11 @@ public static List<SequenceContent> READ_sequenceFile() throws IOException{
     	    sequenceContent.setTriggerEnd(endIndex, endValue);
         //---------------------------------------------------------------------------------------------------
         	//					Add Sequence 
-        	//---------------------------------------------------------------------------------------------------   	    
-    	    SequenceSet.add(sequenceContent);
+        	//---------------------------------------------------------------------------------------------------  
+    	    String testString = ""+sequenceContent.getID();
+    	    if(!testString.equals("")) {
+    	    		SequenceSet.add(sequenceContent);
+    	    }
    }
    br.close();
    } catch(NullPointerException eNPE) { System.out.println(eNPE);}

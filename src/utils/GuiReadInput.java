@@ -3,6 +3,7 @@ package utils;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.FileInputStream;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -17,6 +18,8 @@ import GUI.DataStructures.InputFileSet;
 import GUI.GeometryModel.GeometryFrame;
 import GUI.InertiaGeometry.InertiaGeometry;
 import GUI.PropulsionSetup.PropulsionSetup;
+import GUI.Sequence.GUISequenceElement;
+import GUI.Sequence.SequencePanel;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
@@ -87,7 +90,7 @@ public class GuiReadInput {
 					}
 	 return resultSet;
     }
-    
+//------------------------------------------------------------------------    
     public static List<InputFileSet> readResultFileList(String filePath) throws IOException{
     	List<InputFileSet> newInputFileSetList = new ArrayList<InputFileSet>();
 
@@ -97,7 +100,60 @@ public class GuiReadInput {
 
     return newInputFileSetList;
     }
- 
+    public static void readSequenceFile() throws IOException{
+    	SequencePanel.resetSequenceContentList();
+		BufferedReader br = new BufferedReader(new FileReader(FilePaths.sequenceFile));
+       String strLine;
+       String fcSeparator="\\|FlightControllerElements\\|";
+       String validationString = "FlightControllerElements";
+       String eventSeparator="\\|EventManagementElements";
+       String endSeparator="\\|EndElement\\|";
+       int sequenceID=0;
+       try {
+       while ((strLine = br.readLine()) != null )   {
+		       if( strLine.contains(validationString) ) {		// Check for valid input line - skip empty lines 
+				       	String[] initSplit = strLine.split(fcSeparator);
+			
+				       	String[] head = initSplit[0].split(" ");
+				       // 	int  ID = Integer.parseInt(head[0]);
+				       	String sequenceName = head[1];
+				       	int flightControllerIndex = Integer.parseInt(initSplit[1].split(" ")[1]);
+				       	String[] arr     = strLine.split(eventSeparator);
+				       	//System.out.println(arr[1]);
+				       	int eventIndex  = Integer.parseInt(arr[1].split(" ")[1]);
+				       	
+				       	String[] arr2   = strLine.split(endSeparator);
+				       	//System.out.println(arr2[1]);
+				       	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
+				       	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
+				       	
+				       	System.out.println(sequenceID+" "+sequenceName+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
+				       	
+				       //	if(sequenceID != 0) {
+				       		GUISequenceElement.addGUISequenceElment(sequenceID, sequenceName, flightControllerIndex, eventIndex, endIndex, endValue);
+				       //	}
+				       		/*
+				       	try {
+				       	SequencePanel.sequenceContentList.get(sequenceID).setSequenceName(sequenceName);
+			       		SequencePanel.sequenceContentList.get(sequenceID).setFlightControllerSelectIndex(flightControllerIndex);
+			       		SequencePanel.sequenceContentList.get(sequenceID).setEventSelectIndx(eventIndex);
+			       		SequencePanel.sequenceContentList.get(sequenceID).setEndSelectIndex(endIndex);
+			       		SequencePanel.sequenceContentList.get(sequenceID).setValueEnd(""+endValue);
+				       	} catch (Exception expSequ) {
+				       		System.out.println("Error: ReadSequence setvalue");
+				       	}
+				       	*/
+				       	
+		     }
+	   sequenceID++;
+       }
+		for(int i=SequencePanel.sequenceContentList.size()-1;i>=0;i--) {
+			System.out.println(SequencePanel.sequenceContentList.get(i).getSequenceName());
+		}
+       br.close();
+       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+
+   }
 //------------------------------------------------------------------------
     public static void readINP() {
     	GeometryFrame.getCanvas().readElementList();

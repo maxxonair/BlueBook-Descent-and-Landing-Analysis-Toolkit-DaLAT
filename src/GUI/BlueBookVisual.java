@@ -25,16 +25,10 @@ import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.SplashScreen;
 import java.awt.Toolkit;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.DataInputStream;
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.net.URISyntaxException;
 
 import java.text.DecimalFormat;
@@ -76,7 +70,7 @@ import GUI.Maps.PolarMap;
 import GUI.MenuBar.MenuBar;
 import GUI.NoiseModel.NoiseErrorPanel;
 
-public class BlueBookVisual implements  ActionListener {
+public class BlueBookVisual  {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -425,7 +419,12 @@ public class BlueBookVisual implements  ActionListener {
 				//-----------------------------------------------------------------------------------------
 			    // ---->>>>>             TAB: Mass, Inertia and Geometry Setup 
 				//-----------------------------------------------------------------------------------------
-					InertiaGeometry inertiaGeometry = new InertiaGeometry();
+				InertiaGeometry inertiaGeometry = null;
+				try {
+							 inertiaGeometry = new InertiaGeometry();
+				} catch (Exception expInertGeo) {
+					System.out.println("Error: Creating Inertia/Geomtry pane failed.");
+				}
     				//-----------------------------------------------------------------------------------------
     			    // ---->>>>>                       TAB: Propulsion Setup 
     				//-----------------------------------------------------------------------------------------		    	    
@@ -538,42 +537,61 @@ public class BlueBookVisual implements  ActionListener {
         //------------------------------------------------------------------------
     		/**
     		 * Larger result file sizes lead to annoyingly long start ups 
-    		 * The following function checks the filesize before the input and switches
+    		 * The following function checks the file size before the input and switches
     		 * to a partial import for large files
     		 * The full import can be triggered manually by the user once the program
     		 * has started fully. 
     		 */
-    		// Check filesize 
-    	    long filesize = 	new File(FilePaths.RES_File).length()/1000000;
-    	    try {
-    	    if(filesize<10) {
-    	    		update(true);
-    	    } else {
-    	    		update(false);
-    	    	System.out.println("Full data import supressed. Filesize prohibits fast startup.");
-    	    }
-       	    GuiReadInput.readINP();
-       	    DashboardPlotArea.setAnalysisFile(analysisFile);
-       	    DashboardPlotArea.setTargetIndx(indx_target);
-       	    CenterPanelRight.createTargetWindow();
-
-    		SidePanelLeft.Update_IntegratorSettings();
-
-    	      try {
-    	      SequencePanel.READ_sequenceFile();
-    	      } catch(Exception e) {
-    	    	  System.out.println("ERROR: Reading sequenceFile.inp failed.");
-    	      }
-    	    } catch(Exception excpM) {
-    	    	System.out.println("Error: Reading input failed. ");
-    	    	System.out.println(excpM);
-    	    }
+    		// Check file size 
+    		try {
+		    	    long filesize = 	new File(FilePaths.RES_File).length()/1000000;
+		    	    try {
+			    	    if(filesize<10) {
+			    	    		update(true);
+			    	    } else {
+			    	    		update(false);
+			    	    	System.out.println("Full data import supressed. Filesize prohibits fast startup.");
+			    	    }
+		    	    		/*
+		    	    		 *  		Master input variable import
+		    	    		 */
+		       	    GuiReadInput.readINP();
+		       	    /*
+		       	     *      Import of chart settings 
+		       	     */
+		       	    DashboardPlotArea.setAnalysisFile(analysisFile);
+		       	    /**
+		       	     * 		Set center body index and load maps and 3D content textures accordingly 
+		       	     */
+		       	    DashboardPlotArea.setTargetIndx(indx_target);
+		       	    /** 
+		       	     * 		
+		       	     */
+		       	    CenterPanelRight.createTargetWindow();
+		       	    /**
+		       	     * 
+		       	     */
+		       	    SidePanelLeft.Update_IntegratorSettings();
+		       	    /**
+		       	     * 		Read sequence file content and create sequence GUI
+		       	     */
+			    	      try {
+			    	    	  	GuiReadInput.readSequenceFile();
+			    	      } catch(Exception e) {
+			    	    	  	System.out.println("ERROR: Reading sequenceFile.inp failed.");
+			    	      }
+		    	    } catch(Exception excpM) {
+		    	    	System.out.println("Error: Reading input failed. ");
+		    	    	System.out.println(excpM);
+		    	    }
+    		} catch (Exception exp ) {
+    			System.out.println("Error: Load data unsuccessful. Corrupt result file.");
+    			System.out.println(exp);
+    		}
         MainGUI.setOpaque(true);
         return MainGUI;
 	}
-    public void actionPerformed(ActionEvent e)  {
-    	
-    }
+
    
     public static Image getScaledImage(Image srcImg, int w, int h){
         BufferedImage resizedImg = new BufferedImage(w, h, BufferedImage.TYPE_INT_ARGB);
@@ -589,12 +607,13 @@ public class BlueBookVisual implements  ActionListener {
 	public static void update(boolean fullImport){
 		  try {
 			GuiReadInput.readINP();
+			GuiReadInput.readSequenceFile();
 			if(fullImport) {
 				rawData.readRawData();
 				MapSetting.setMap(indx_target);
 			}
 		} catch (IOException | URISyntaxException e2) {
-			e2.printStackTrace();
+			System.out.println("Error: update/readINP failed");
 		}
 
 		  if(fullImport) {
@@ -605,44 +624,6 @@ public class BlueBookVisual implements  ActionListener {
       	    		System.out.println("Updated "+timeStamp);
 		  }
 	  } 
-
-    public static double readFromFile(String file, int indx) {
-    	FileInputStream fstream = null;
-    	double result=0;
-    	  try {
-    	      fstream = new FileInputStream(file);
-    	} catch(IOException eIIO) { System.out.println(eIIO); System.out.println("ERROR: Reading from file failed.");} 
-    	DataInputStream in55 = new DataInputStream(fstream);
-    	@SuppressWarnings("resource")
-    	BufferedReader br55 = new BufferedReader(new InputStreamReader(in55));
-    	int k = 0;
-    	double InitialState = 0;
-    	String strLine55;
-    	try {
-    	while ((strLine55 = br55.readLine()) != null )   {
-    		String[] tokens = strLine55.split(" ");
-    		if(!tokens[0].isEmpty()) {
-    		 InitialState = Double.parseDouble(tokens[0]);
-    		} else {
-    			InitialState =0; 
-    			//System.out.println("isempty  "+indx+"|"+k);
-    		}
-    	 	if (k==indx){
-    		  result = InitialState;
-    		} 
-    	 	//System.out.println(k+"|"+indx);
-    		k++;
-    	}
-    	in55.close();
-    	br55.close();
-    	fstream.close();
-    	} catch (NullPointerException eNPE) { System.out.println(eNPE);} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}  
-    	return result;
-    }
-    
     static void renderSplashFrame(Graphics2D g, int frame) {
         final String[] comps = {" .", " ..", " ...", " ....", " .....", " ......", " ......."};
         g.setComposite(AlphaComposite.Clear);
@@ -707,7 +688,7 @@ public class BlueBookVisual implements  ActionListener {
          try {
         	BufferedImage myIcon = ImageIO.read(new File(FilePaths.ICON_File)); 
         	MAIN_frame.setIconImage(myIcon);
-         }catch(IIOException eIIO) {System.out.println(eIIO);}    
+         }catch(IIOException eIIO) {}    
          // Create taskbar icon - for mac 
          if(OS_is==1) {
         	 // Set Taskbar Icon for MacOS

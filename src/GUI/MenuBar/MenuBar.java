@@ -40,7 +40,6 @@ import GUI.FilePaths;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.GeometryModel.GeometryFrame;
 import GUI.PostProcessing.CreateCustomChart;
-import GUI.Sequence.SequencePanel;
 import GUI.Settings.Settings;
 import VisualEngine.engineLauncher.worldGenerator;
 import utils.GuiReadInput;
@@ -660,7 +659,7 @@ public class MenuBar {
 
 	            	copyFile(source ,  destination);
 	            	
-	            	updateBBFrameTitle();
+	            	updateBBFrameTitleAndReadInputFiles();
             }
 		}
 		
@@ -685,7 +684,7 @@ public class MenuBar {
 	                            JOptionPane.YES_NO_OPTION);
 	                    if (n == JOptionPane.YES_OPTION) {
 							CurrentWorkfileName =  s;
-							updateBBFrameTitle();
+							updateBBFrameTitleAndReadInputFiles();
 							String destination = caseFolder+"/"+CurrentWorkfileName+"/";
 							copyFile(inputFolder, destination);
 	                    } else if (n == JOptionPane.NO_OPTION) {
@@ -695,7 +694,7 @@ public class MenuBar {
 	                    }
 					} else {
 						CurrentWorkfileName =  s;
-						updateBBFrameTitle();
+						updateBBFrameTitleAndReadInputFiles();
 						String destination = caseFolder+"/"+CurrentWorkfileName+"/";
 						copyFile(inputFolder, destination);
 					}
@@ -762,12 +761,12 @@ public class MenuBar {
 		return CurrentWorkfileName;
 	}
 	
-	private void updateBBFrameTitle() {
+	private void updateBBFrameTitleAndReadInputFiles() {
 		BlueBookVisual.MAIN_frame.setTitle(BlueBookVisual.PROJECT_TITLE + " - Scenario: " + CurrentWorkfileName);
 		BlueBookVisual.update(true);
 	      try {
 			  GuiReadInput.readINP();	       
-		    	  SequencePanel.READ_sequenceFile();
+			  GuiReadInput.readSequenceFile();
 	      } catch(Exception e) {
 	    	  		System.out.println("ERROR: Reading input section after Case updated failed.");
 	      }

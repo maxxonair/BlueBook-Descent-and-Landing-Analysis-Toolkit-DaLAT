@@ -6,20 +6,19 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import GUI.BlueBookVisual;
-import GUI.FilePaths;
+import utils.GuiReadInput;
 
 public class SequencePanel {
 	//-------------------------------------------------------------------------------------------------------------
@@ -44,8 +43,8 @@ public class SequencePanel {
     public static JPanel SequenceLeftPanel;
     public static JPanel SequenceProgressBar, FlexibleChartContentPanel, FlexibleChartContentPanel2;
     public static List<JLabel> sequenceProgressBarContent = new ArrayList<JLabel>();
- 	public static  List<GUISequenceElement> sequenceContentList = new ArrayList<GUISequenceElement>();
- 	public static 				int sequenceDimensionWidth=1500;
+ 	public static List<GUISequenceElement> sequenceContentList = new ArrayList<GUISequenceElement>();
+ 	public static int sequenceDimensionWidth=1500;
     
     public SequencePanel() {
 		backgroundColor = BlueBookVisual.getBackgroundColor();
@@ -128,7 +127,7 @@ public class SequencePanel {
 		    
 	      int globalLeftGap = 30;
 	      int globalTopGap = 100;
-	      GUISequenceElement sequenceElement1 = new GUISequenceElement(sequenceContentList.size());
+	      GUISequenceElement sequenceElement1 = new GUISequenceElement(sequenceContentList.size(),"",0,0,0,0);
 	      sequenceContentList.add(sequenceElement1);
 	      sequenceContentList.get(0).getMasterPanel().setLocation(globalLeftGap, globalTopGap);
 	      SequenceLeftPanel.add(sequenceContentList.get(0).getMasterPanel());
@@ -139,50 +138,7 @@ public class SequencePanel {
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}
-	
-    public static void READ_sequenceFile() throws IOException{	
-		BufferedReader br = new BufferedReader(new FileReader(FilePaths.sequenceFile));
-       String strLine;
-       String fcSeparator="\\|FlightControllerElements\\|";
-       String eventSeparator="\\|EventManagementElements";
-       String endSeparator="\\|EndElement\\|";
-       int sequenceID=0;
-       try {
-       while ((strLine = br.readLine()) != null )   {
-	       
-	       	String[] initSplit = strLine.split(fcSeparator);
 
-	       	String[] head = initSplit[0].split(" ");
-	       //System.out.pri
-	       //	int  ID = Integer.parseInt(head[0]);
-	       	String sequenceName = head[1];
-	       	int flightControllerIndex = Integer.parseInt(initSplit[1].split(" ")[1]);
-	       	String[] arr     = strLine.split(eventSeparator);
-	       	//System.out.println(arr[1]);
-	       	int eventIndex  = Integer.parseInt(arr[1].split(" ")[1]);
-	       	
-	       	String[] arr2   = strLine.split(endSeparator);
-	       	//System.out.println(arr2[1]);
-	       	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
-	       	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
-	       	
-	       //	System.out.println(ID+" "+sequenceName+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
-	       	
-	       	if(sequenceID!=0) {
-	       		GUISequenceElement.addGUISequenceElment();
-	       	} 
-	       	sequenceContentList.get(sequenceID).setSequenceName(sequenceName);
-       		sequenceContentList.get(sequenceID).setFlightControllerSelectIndex(flightControllerIndex);
-       		sequenceContentList.get(sequenceID).setEventSelectIndx(eventIndex);
-       		sequenceContentList.get(sequenceID).setEndSelectIndex(endIndex);
-       		sequenceContentList.get(sequenceID).setValueEnd(""+endValue);
-	       	sequenceID++;
-       }
-       br.close();
-       } catch(NullPointerException eNPE) { System.out.println(eNPE);}
-
-   }
-    
 	public static  List<JLabel> getSequenceProgressBarContent() {
 		return sequenceProgressBarContent;
 	}
@@ -190,5 +146,37 @@ public class SequencePanel {
 		return sequenceContentList;
 	}
 	
+	public static void resetSequenceContentList() {
+		try {
+			for(int i=sequenceContentList.size()-1;i>=0;i--) {
+				SequenceLeftPanel.remove(sequenceContentList.get(i).getMasterPanel());
+				sequenceContentList.remove(i);
+			}
+		} catch (Exception exp ) {
+			
+		}
+	}
+	
+	/**
+	 * Unit Tester 
+	 * @param args
+	 * @throws IOException 
+	 */
+	public static void main(String[] args) throws IOException {
+		JFrame frame = new JFrame("Component Tester");
+		frame.setSize(400,400);
+		frame.setLayout(new BorderLayout());
+
+
+		SequencePanel panel = new SequencePanel();
+		panel.getMainPanel().setPreferredSize(new Dimension(1200,800));
+		GuiReadInput.readSequenceFile();
+		frame.add(panel.getMainPanel(), BorderLayout.CENTER);
+		
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setLocationRelativeTo(null);
+        frame.setVisible(true);
+		frame.pack();
+	}
 	
 }

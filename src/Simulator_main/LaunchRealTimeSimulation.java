@@ -56,7 +56,7 @@ public class LaunchRealTimeSimulation {
     	//					Compile Integrator inputs from files:
     	//------------------------------------------------------------------------------------------
     	
-    	List<SequenceContent> SequenceSet = ReadInput.READ_sequenceFile();
+    	List<SequenceContent> SequenceSet = ReadInput.readSequenceFile();
     	
     	//------------------------------------------------------------------------------------------
 	//double[] inputOut = ReadInput.readInput();

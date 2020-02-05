@@ -21,6 +21,7 @@ import javax.swing.JTextField;
 import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
+import GUI.FilePaths;
 import javafx.application.Platform;
 import utils.WriteInput;
 
@@ -52,7 +53,7 @@ public class GUISequenceElement {
     };
     
     private String[] elementEnd = {
-    								  "Global Time [s]",
+    								  "Global Time [s]" ,
     								  "Sequence Time [s]",
     								  "Velocity [m/s]",
     								  "Altitude [m]"
@@ -79,13 +80,27 @@ public class GUISequenceElement {
     private JTextField valueEnd;
     private JButton SelectSequenceButton;
     
-    public GUISequenceElement(int sequenceID) {
-    	this.sequenceID=sequenceID; 
-    	masterPanel = createSequencePanel();
+    @SuppressWarnings("unused")
+	private String sequenceName ="";
+    	private int flightControllerSetting =0;
+    private int eventSetting =0;
+    private int endSetting =0;
+    private double endValue=0;
+    
+    public GUISequenceElement(int SeqID, String sequenceName, int flightControllerSetting, int eventSetting, int endSetting, double endValue) {
+    	this.sequenceID=SeqID; 
+    	this.sequenceName = sequenceName;
+    	this.flightControllerSetting = flightControllerSetting;
+    	this.eventSetting = eventSetting;
+    	this.endSetting = endSetting;
+    	this.endValue = endValue;
+    	
+    	masterPanel = createSequencePanel( sequenceName,  flightControllerSetting,  eventSetting,  endSetting,  endValue);
+    	
     }
 	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public JPanel createSequencePanel() {
+	public JPanel createSequencePanel(String sequenceName, int flightControllerSetting, int eventSetting, int endSetting, double endValue) {
 	   masterPanelHeight=0;
 		 List<Object> contentList = new ArrayList<Object>();
 		int numberOfEmptySpaces=0;
@@ -94,8 +109,8 @@ public class GUISequenceElement {
      	ImageIcon iconMinus =null;
      	int sizeUpperBar=20;
      	try {
-     		iconPlus = new ImageIcon("images/iconPlus.png","");
-     		iconMinus = new ImageIcon("images/iconMinus.png","");
+     		iconPlus = new ImageIcon(FilePaths.iconPlusSequence,"");
+     		iconMinus = new ImageIcon(FilePaths.iconMinusSequence,"");
      		iconPlus = new ImageIcon(BlueBookVisual.getScaledImage(iconPlus.getImage(),sizeUpperBar,sizeUpperBar));
      		iconMinus = new ImageIcon(BlueBookVisual.getScaledImage(iconMinus.getImage(),sizeUpperBar,sizeUpperBar));
      	} catch (Exception e) {
@@ -148,8 +163,7 @@ public class GUISequenceElement {
         masterPanel.add(SelectSequenceButton);
 	      contentList.add(SelectSequenceButton);
 
-		
-		  JTextField SequenceName = new JTextField("AutoSequence"){
+		  JTextField SequenceName = new JTextField(""+sequenceName){
 			    /**
 			 * 
 			 */
@@ -161,7 +175,7 @@ public class GUISequenceElement {
 			};
 	      SequenceName.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*1 );
 	      SequenceName.setSize(250, 20);
-	      SelectSequenceButton.setText("AutoSequence");
+	      SelectSequenceButton.setText(""+sequenceName);
 	      SequenceName.setBackground(BlueBookVisual.getBackgroundColor());
 	      SequenceName.setForeground(BlueBookVisual.getLabelColor());
 	      SequenceName.addActionListener(new ActionListener() {
@@ -203,7 +217,7 @@ public class GUISequenceElement {
 		                Platform.runLater(new Runnable() {
 		                    @Override
 		                    public void run() {
-		                    	addGUISequenceElment();
+		                    	addGUISequenceElment(SequencePanel.getSequenceContentList().size(),"AutoSequence",0,0,0,0);
 		                    }
 		                    });
 	        	}} );
@@ -287,7 +301,7 @@ public class GUISequenceElement {
 	      flightControllerSelect.setRenderer(new CustomRenderer());
 	      flightControllerSelect.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*4);
 	      flightControllerSelect.setSize(250,20);
-	      flightControllerSelect.setSelectedIndex(0);
+	      flightControllerSelect.setSelectedIndex(flightControllerSetting);
 	      flightControllerSelect.setMaximumRowCount(20);
 	      flightControllerSelect.setMaximumRowCount(20);
 	      flightControllerSelect.addActionListener(new ActionListener() {
@@ -316,7 +330,7 @@ public class GUISequenceElement {
 	      eventSelect.setRenderer(new CustomRenderer());
 	      eventSelect.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*7);
 	      eventSelect.setSize(250,20);
-	      eventSelect.setSelectedIndex(0);
+	      eventSelect.setSelectedIndex(eventSetting);
 	      eventSelect.setMaximumRowCount(20);
 	      eventSelect.setMaximumRowCount(20);
 	      eventSelect.addActionListener(new ActionListener() {
@@ -349,7 +363,7 @@ public class GUISequenceElement {
 	      relationLabel.setHorizontalAlignment(JLabel.CENTER);
 	      masterPanel.add(relationLabel);
 	      
-	      valueEnd = new JTextField("0");
+	      valueEnd = new JTextField(""+endValue);
 	      valueEnd.setLocation(offsetX+190, upperGap + (upperGap+lowerGap+elementHeight)*9 );
 	      valueEnd.setSize(60, 20);
 	      valueEnd.setBackground(BlueBookVisual.getBackgroundColor());
@@ -369,7 +383,7 @@ public class GUISequenceElement {
 		  endSelect.setRenderer(new CustomRenderer());
 		  endSelect.setLocation(offsetX, upperGap + (upperGap+lowerGap+elementHeight)*9);
 		  endSelect.setSize(150,20);
-		  endSelect.setSelectedIndex(0);
+		  endSelect.setSelectedIndex(endSetting);
 		  endSelect.setMaximumRowCount(20);
 		  endSelect.setMaximumRowCount(20);
 		  endSelect.addActionListener(new ActionListener() {
@@ -428,42 +442,44 @@ public class GUISequenceElement {
 		return result;
 	}
 	
-	public static void addGUISequenceElment() {
-		   int newSequenceID = SequencePanel.getSequenceContentList().size();
-	   int locationX=0;
-	   int locationY=0;
-	   if(isOdd(newSequenceID)) {
-		   locationY = 400;
-	   } else {
-		   locationY=globalTopGap;
-	   }
-	   locationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3);
-//System.out.println(isOdd(newSequenceID)+"|"+newSequenceID+"|"+locationX+" | "+locationY);
-GUISequenceElement guiSequenceElement = new GUISequenceElement(newSequenceID);
-SequencePanel.getSequenceContentList().add(guiSequenceElement);
-SequencePanel.getSequenceContentList().get(newSequenceID).getMasterPanel().setLocation(locationX, locationY);
-SequencePanel.SequenceLeftPanel.add(SequencePanel.getSequenceContentList().get(newSequenceID).getMasterPanel());
-SequencePanel.SequenceLeftPanel.revalidate();
-SequencePanel.SequenceLeftPanel.repaint();
-
-int labelx=40;
-int labelLocationX = (int) (globalLeftGap + (2 * sidePanelWidth * newSequenceID)/3 + sidePanelWidth /2 - labelx/2) ;
-JLabel IDlabel = new JLabel(""+newSequenceID);
-IDlabel.setLocation(labelLocationX, 0 );
-IDlabel.setSize(labelx, 20);
-IDlabel.setBorder(marsBorder);
-IDlabel.setHorizontalAlignment(JLabel.CENTER);
-IDlabel.setBackground(BlueBookVisual.getBackgroundColor());
-IDlabel.setForeground(BlueBookVisual.getLabelColor());
-IDlabel.setFont(SequencePanel.smallFont);
-SequencePanel.SequenceProgressBar.add(IDlabel);
-SequencePanel.getSequenceProgressBarContent().add(IDlabel);
-SequencePanel.SequenceProgressBar.revalidate();
-SequencePanel.SequenceProgressBar.repaint();
-resizeCanvas();
-WriteInput.WRITE_SequenceFile();
+	public static void addGUISequenceElment(int SeqID, String sequenceName, int flightControllerSetting, int eventSetting, int endSetting, double endValue) {
+			   int locationX=0;
+			   int locationY=0;
+			   if(isOdd(SeqID)) {
+				   locationY = 400;
+			   } else {
+				   locationY=globalTopGap;
+			   }
+			   locationX = (int) (globalLeftGap + (2 * sidePanelWidth * SeqID)/3);
+		//System.out.println(isOdd(SeqID)+"|"+SeqID+"|"+locationX+" | "+locationY);
+		GUISequenceElement guiSequenceElement = new GUISequenceElement( SeqID ,sequenceName ,flightControllerSetting, eventSetting,  endSetting,  endValue);
+		guiSequenceElement.setSequenceName(sequenceName);
+		SequencePanel.getSequenceContentList().add(guiSequenceElement);
+		SequencePanel.getSequenceContentList().get(SeqID).getMasterPanel().setLocation(locationX, locationY);
+		SequencePanel.SequenceLeftPanel.add(SequencePanel.getSequenceContentList().get(SeqID).getMasterPanel());
+		SequencePanel.SequenceLeftPanel.revalidate();
+		SequencePanel.SequenceLeftPanel.repaint();
+		
+		int labelx=40;
+		int labelLocationX = (int) (globalLeftGap + (2 * sidePanelWidth * SeqID)/3 + sidePanelWidth /2 - labelx/2) ;
+		JLabel IDlabel = new JLabel(""+SeqID);
+		IDlabel.setLocation(labelLocationX, 0 );
+		IDlabel.setSize(labelx, 20);
+		IDlabel.setBorder(marsBorder);
+		IDlabel.setHorizontalAlignment(JLabel.CENTER);
+		IDlabel.setBackground(BlueBookVisual.getBackgroundColor());
+		IDlabel.setForeground(BlueBookVisual.getLabelColor());
+		IDlabel.setFont(SequencePanel.smallFont);
+		SequencePanel.SequenceProgressBar.add(IDlabel);
+		SequencePanel.getSequenceProgressBarContent().add(IDlabel);
+		SequencePanel.SequenceProgressBar.revalidate();
+		SequencePanel.SequenceProgressBar.repaint();
+		resizeCanvas();
+		WriteInput.WRITE_SequenceFile();
+		SequencePanel.SequenceLeftPanel.revalidate();
+	      SequencePanel.SequenceLeftPanel.repaint();
 	}
-	
+
 	public static void resizeCanvas() {
 	      if(SequencePanel.getSequenceContentList().size()>7) {
 	    	  int newDimension = (int) (SequencePanel.sequenceDimensionWidth * SequencePanel.getSequenceContentList().size()/7);
@@ -563,5 +579,41 @@ WriteInput.WRITE_SequenceFile();
 		    return this;
 		}  
 	}
+
+
+	public int getFlightControllerSetting() {
+		return flightControllerSetting;
+	}
+
+	public void setFlightControllerSetting(int flightControllerSetting) {
+		this.flightControllerSetting = flightControllerSetting;
+	}
+
+	public int getEventSetting() {
+		return eventSetting;
+	}
+
+	public void setEventSetting(int eventSetting) {
+		this.eventSetting = eventSetting;
+	}
+
+	public int getEndSetting() {
+		return endSetting;
+	}
+
+	public void setEndSetting(int endSetting) {
+		this.endSetting = endSetting;
+	}
+
+	public double getEndValue() {
+		return endValue;
+	}
+
+	public void setEndValue(double endValue) {
+		this.endValue = endValue;
+	}
+
+	
+	
 	
 }
