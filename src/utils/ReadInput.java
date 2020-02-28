@@ -34,10 +34,7 @@ public class ReadInput {
 	private static int integratorSetting=1;
 	static double[] IntegInput =  new double[5];
 	
-	public static double[][] q_vector        = {{0},
-												{0},
-												{0},
-												{0}}; 							// Quarternion vector
+	public static Quaternion qVector = new Quaternion(1,0,0,0);
 	
 	static double[][] InertiaTensor   = {{   0 ,  0  ,   0},
 			  					  {   0 ,  0  ,   0},
@@ -299,7 +296,7 @@ public static SimulatorInputSet readINP() throws IOException {
      * 				Finalize data package
      */
     try {
-	    integratorData.setInitialQuarterions(q_vector);
+	    integratorData.setInitialQuaternion(qVector);
 	    if(integratorSettingFlag) {
 			integratorData.setIntegInput(IntegInput);	// !!! Must be called BEFORE .setIntegratorType !!!
 			integratorData.setIntegratorType(integratorSetting);
@@ -436,13 +433,13 @@ private static IntegratorData checkIntegratorData(String identifier, double valu
 	} else if (identifier.equals("Init_AngRateZ")) {
 		integratorData.setInitRotationalRateZ(value*deg2rad);	
 	} else if (identifier.equals("Init_QuartW")) {
-		q_vector[0][0] = value;	
+		qVector.w = value;	
 	} else if (identifier.equals("Init_QuartX")) {
-		q_vector[1][0] = value;	
+		qVector.x = value;	
 	} else if (identifier.equals("Init_QuartY")) {
-		q_vector[2][0] = value;	
+		qVector.y = value;	
 	} else if (identifier.equals("Init_QuartZ")) {
-		q_vector[3][0] = value;	
+		qVector.z = value;	
 	} else if (identifier.equals("Integ_853_MinStep")) {
 		IntegInput[0] = value;	
 	} else if (identifier.equals("Integ_853_MaxStep")) {

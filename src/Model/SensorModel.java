@@ -1,6 +1,7 @@
 package Model;
 
 import Model.DataSets.SensorSet;
+import utils.Quaternion;
 
 public class SensorModel {
 
@@ -61,8 +62,8 @@ public class SensorModel {
 			isEulerZ -= variation2;	
 		}
 		double[][] Euler = {{isEulerX},{isEulerY},{isEulerZ}};
-		double[][] quarternions = utils.Mathbox.Euler2Quarternions(Euler);
-		sensorSet.getRealTimeResultSet().setQuarternions(quarternions);
+		Quaternion quaternions = utils.Mathbox.Euler2Quarternions(Euler);
+		sensorSet.getRealTimeResultSet().setQuaternion(quaternions);
 		return sensorSet;
 	}
 }

@@ -6,11 +6,11 @@ Init_FPA 90.0
 Init_AZI 210.0
 Init_Mass 12500.0
 Init_Time 0.0
-Init_QuartW 0.68610269
-Init_QuartX -0.17106461
-Init_QuartY 0.68610269
-Init_QuartZ 0.1830127
-Init_AngRateX 0.0
+Init_QuartW 0.82002162
+Init_QuartX -0.11627888
+Init_QuartY 0.34390955
+Init_QuartZ -0.55906703
+Init_AngRateX 20.0
 Init_AngRateY 0.0
 Init_AngRateZ 0.0
 Init_IXX 20000.0
@@ -51,8 +51,8 @@ SC_SurfArea 1.716
 SC_ParDiam 0.0
 SC_COM 5.523
 SC_COT 0.8
-SC_COP 5.837471649682398
-SC_Height 11.552000000000001
+SC_COP 6.986981045303973
+SC_Height 13.849
 SC_BodyRadius 0.739
 SC_MainISP 300.0
 SC_MainProp 8200.0

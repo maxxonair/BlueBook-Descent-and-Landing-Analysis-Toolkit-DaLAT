@@ -30,6 +30,7 @@ import VisualEngine.terrains.Terrain;
 import VisualEngine.textures.ModelTexture;
 import VisualEngine.textures.TerrainTexture;
 import VisualEngine.textures.TerrainTexturePack;
+import utils.Quaternion;
 
 public class worldFly {
 	
@@ -75,10 +76,10 @@ public class worldFly {
 													   {      0     ,    0        ,   26114}};
 
     
-	private static double[][] quarternions = {	{-0.2164396},
-												{0},
-												{0},
-												{0.976296}}; 
+	private static Quaternion qVector = new Quaternion(-0.2164396,
+												0,
+												0,
+												0.976296); 
 	
 	private static DecimalFormat df2 = new DecimalFormat("#.##");
 	
@@ -177,7 +178,7 @@ public class worldFly {
 		spaceShip.getPropulsion().setRCSMomentumY(1900);
 		spaceShip.getPropulsion().setRCSMomentumZ(1900);
 	    spacecraft = new Spacecraft(spaceShip,staticModel, startPostion,0,0,0,1);	
-		Spacecraft.setQuarternions(quarternions);
+		Spacecraft.setQuaternion(qVector);
 		//----------------------------------------------------------------
 		// 					  Light Setting
 		//----------------------------------------------------------------

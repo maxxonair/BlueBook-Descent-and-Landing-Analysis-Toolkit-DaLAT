@@ -1,7 +1,6 @@
 
 package utils;
 
-import org.apache.commons.math3.util.FastMath;
 
 public class Mathbox{
     public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
@@ -57,6 +56,41 @@ public class Mathbox{
 	//
 	//---------------------------------------------------------------------------------------------------------------------    
     public static double[][] Multiply_Matrices(double[][] A, double[][] B) {
+        int aRows = A.length;
+        int aColumns = A[0].length;
+        int bRows = B.length;
+        int bColumns = B[0].length;
+
+        if (aColumns != bRows) {
+            throw new IllegalArgumentException("A:Rows: " + aColumns + " did not match B:Columns " + bRows + ".");
+        }
+
+        double[][] C = new double[aRows][bColumns];
+        for (int i = 0; i < aRows; i++) {
+            for (int j = 0; j < bColumns; j++) {
+                C[i][j] = 0.00000;
+            }
+        }
+
+        for (int i = 0; i < aRows; i++) { // aRow
+            for (int j = 0; j < bColumns; j++) { // bColumn
+                for (int k = 0; k < aColumns; k++) { // aColumn
+                    C[i][j] += A[i][k] * B[k][j];
+                }
+            }
+        }
+
+        return C;
+    }
+    /**
+     * 
+     * Multiply matrix with Quaternion vector R(eturn) = M(A) * Q(quat) 
+     * @param A
+     * @param quat
+     * @return
+     */
+    public static double[][] Multiply_MQuat(double[][] A, Quaternion quat) {
+    	double[][] B = {{quat.w},{quat.x},{quat.y},{quat.z}};
         int aRows = A.length;
         int aColumns = A[0].length;
         int bRows = B.length;
@@ -203,14 +237,14 @@ public class Mathbox{
 		return result;
 	}
 	
-	public static double[][] Quaternions2Euler(double[][] Quaternions){
+	public static double[][] Quaternions2Euler(Quaternion qVector){
 		double[][] EulerAngles = {{0},{0},{0}};
 		
-		double a = Quaternions[0][0];
-		double b = Quaternions[1][0];
-		double c = Quaternions[2][0];
-		double d = Quaternions[3][0];
-		
+		double a = qVector.w;
+		double b = qVector.x;
+		double c = qVector.y;
+		double d = qVector.z;
+	
 		EulerAngles[1][0] = Math.asin(-2*(b*d - a*c));
 		if(Double.isNaN(EulerAngles[1][0])){
 			EulerAngles[1][0] = Theta;
@@ -337,21 +371,21 @@ public class Mathbox{
 		return EulerAngles;
 	}
 	
-	public static double[][] Euler2Quarternions(double[][] E){
-		double[][] Quarternions = {{1},{0},{0},{0}};
-		Quarternions[0][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
+	public static Quaternion Euler2Quarternions(double[][] E){
+		Quaternion quaternion = new Quaternion(1,0,0,0);
+		quaternion.w = Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
 				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
 		
-		Quarternions[1][0] = Math.sin(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
+		quaternion.x = Math.sin(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
 				- Math.cos(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
 		
-		Quarternions[2][0] = Math.cos(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
+		quaternion.y = Math.cos(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2)) 
 				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2));
 		
-		Quarternions[3][0] =  Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2)) 
+		quaternion.z =  Math.cos(Math.toRadians(E[0][0]/2)) * Math.cos(Math.toRadians(E[1][0]/2)) * Math.sin(Math.toRadians(E[2][0]/2)) 
 				+ Math.sin(Math.toRadians(E[0][0]/2)) * Math.sin(Math.toRadians(E[1][0]/2)) * Math.cos(Math.toRadians(E[2][0]/2));
 		
-		return Quarternions;
+		return quaternion;
 	}
 
 }

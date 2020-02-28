@@ -3,6 +3,7 @@ package Simulator_main;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import utils.Mathbox;
+import utils.Quaternion;
 
 public class CoordinateTransformation {
 
@@ -24,7 +25,7 @@ public class CoordinateTransformation {
 
 
 	public  void initializeTranformationMatrices(double[] x, double t, double omega, AtmosphereSet atmosphere, AerodynamicSet aerodynamicSet, double[][] euler_angle, 
-			double[][] q_vector, double[] r_ECEF_spherical,double[] V_NED_ECEF_spherical) {
+			Quaternion qVector, double[] r_ECEF_spherical,double[] V_NED_ECEF_spherical) {
 		//-------------------------------------------------------------------------------------------
 		//              Aerodynamic frame to North-East-Down
 		//-------------------------------------------------------------------------------------------
@@ -60,32 +61,32 @@ public class CoordinateTransformation {
 		//-----------------------------------------------------------------------
 		// Quaternion Representation: 
 		
-		C_NED2B[0][0] =    (q_vector[0][0]*q_vector[0][0] + q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]); 
-		C_NED2B[1][0] =  2*(q_vector[1][0]*q_vector[2][0] - q_vector[0][0]*q_vector[3][0]);
-		C_NED2B[2][0] =  2*(q_vector[1][0]*q_vector[3][0] + q_vector[0][0]*q_vector[2][0]);
+		C_NED2B[0][0] =    (qVector.w*qVector.w + qVector.x*qVector.x - qVector.y*qVector.y - qVector.z*qVector.z); 
+		C_NED2B[1][0] =  2*(qVector.x*qVector.y - qVector.w*qVector.z);
+		C_NED2B[2][0] =  2*(qVector.x*qVector.z + qVector.w*qVector.y);
 	
-		C_NED2B[0][1] =  2*(q_vector[1][0]*q_vector[2][0] + q_vector[0][0]*q_vector[3][0]); 
-		C_NED2B[1][1] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] + q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]);
-		C_NED2B[2][1] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
+		C_NED2B[0][1] =  2*(qVector.x*qVector.y + qVector.w*qVector.z); 
+		C_NED2B[1][1] =    (qVector.w*qVector.w - qVector.x*qVector.x + qVector.y*qVector.y - qVector.z*qVector.z);
+		C_NED2B[2][1] =  2*(qVector.y*qVector.z - qVector.w*qVector.x);
 		
-		C_NED2B[0][2] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]); 
-		C_NED2B[1][2] =  2*(q_vector[0][0]*q_vector[1][0] + q_vector[2][0]*q_vector[3][0]);
-		C_NED2B[2][2] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] + q_vector[3][0]*q_vector[3][0]);
+		C_NED2B[0][2] =  2*(qVector.x*qVector.z - qVector.w*qVector.y); 
+		C_NED2B[1][2] =  2*(qVector.w*qVector.x + qVector.y*qVector.z);
+		C_NED2B[2][2] =    (qVector.w*qVector.w - qVector.x*qVector.x - qVector.y*qVector.y + qVector.z*qVector.z);
 		
 		
 		//C_GC2B = Mathbox.Multiply_Matrices(C_GC2NED, C_NED2B);
 		
-		C_B2NED[0][0] =    (q_vector[0][0]*q_vector[0][0] + q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]); 
-		C_B2NED[1][0] =  2*(q_vector[1][0]*q_vector[2][0] + q_vector[0][0]*q_vector[3][0]);
-		C_B2NED[2][0] =  2*(q_vector[1][0]*q_vector[3][0] - q_vector[0][0]*q_vector[2][0]);
+		C_B2NED[0][0] =    (qVector.w*qVector.w + qVector.x*qVector.x - qVector.y*qVector.y - qVector.z*qVector.z); 
+		C_B2NED[1][0] =  2*(qVector.x*qVector.y + qVector.w*qVector.z);
+		C_B2NED[2][0] =  2*(qVector.x*qVector.z - qVector.w*qVector.y);
 	
-		C_B2NED[0][1] =  2*(q_vector[1][0]*q_vector[2][0] - q_vector[0][0]*q_vector[3][0]); 
-		C_B2NED[1][1] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] + q_vector[2][0]*q_vector[2][0] - q_vector[3][0]*q_vector[3][0]);
-		C_B2NED[2][1] =  2*(q_vector[2][0]*q_vector[3][0] + q_vector[0][0]*q_vector[1][0]);
+		C_B2NED[0][1] =  2*(qVector.x*qVector.y - qVector.w*qVector.z); 
+		C_B2NED[1][1] =    (qVector.w*qVector.w - qVector.x*qVector.x + qVector.y*qVector.y - qVector.z*qVector.z);
+		C_B2NED[2][1] =  2*(qVector.y*qVector.z + qVector.w*qVector.x);
 		
-		C_B2NED[0][2] =  2*(q_vector[1][0]*q_vector[3][0] + q_vector[0][0]*q_vector[2][0]); 
-		C_B2NED[1][2] =  2*(q_vector[2][0]*q_vector[3][0] - q_vector[0][0]*q_vector[1][0]);
-		C_B2NED[2][2] =    (q_vector[0][0]*q_vector[0][0] - q_vector[1][0]*q_vector[1][0] - q_vector[2][0]*q_vector[2][0] + q_vector[3][0]*q_vector[3][0]);
+		C_B2NED[0][2] =  2*(qVector.x*qVector.z + qVector.w*qVector.y); 
+		C_B2NED[1][2] =  2*(qVector.y*qVector.z - qVector.w*qVector.x);
+		C_B2NED[2][2] =    (qVector.w*qVector.w - qVector.x*qVector.x - qVector.y*qVector.y + qVector.z*qVector.z);
 		
 		//-------------------------------------------------------------------------------------------
 		//             Geo-Centric frame to North-East-Down

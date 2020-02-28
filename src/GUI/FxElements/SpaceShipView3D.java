@@ -91,7 +91,7 @@ public class SpaceShipView3D extends Application{
                     public void run() {
                     	
 				//double drotX = AttitudeSetting.sliderEuler1.getValue() - rotX;
-				rotX=AttitudeSetting.sliderEuler1.getValue();
+				rotX=AttitudeSetting.sliderEuler1.getValue()/100;
 				setRotationX( rotX);
 				//new TurnAction(model.rz, 15);
 
@@ -110,7 +110,7 @@ public class SpaceShipView3D extends Application{
                     public void run() {
                     	
 				//double drotZ = AttitudeSetting.sliderEuler2.getValue() - rotZ;
-				rotZ=AttitudeSetting.sliderEuler2.getValue();
+				rotZ=AttitudeSetting.sliderEuler2.getValue()/100;
 				setRotationZ( rotZ);
 				
                     }
@@ -128,7 +128,7 @@ public class SpaceShipView3D extends Application{
                     public void run() {
                     	
 				//double drotY = AttitudeSetting.sliderEuler3.getValue() - rotY;
-				rotY=AttitudeSetting.sliderEuler3.getValue();
+				rotY=AttitudeSetting.sliderEuler3.getValue()/100;
 				
 				setRotationY( rotY);
 				

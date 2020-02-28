@@ -7,7 +7,6 @@ import static java.lang.Math.tan;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.commons.math3.exception.NoBracketingException;
@@ -15,11 +14,9 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
-
 import Model.ForceModel;
 import Model.GravityModel;
 import Model.AtmosphereModel;
-import Model.atm_dataset;
 import Model.DataSets.ActuatorSet;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
@@ -33,6 +30,7 @@ import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
 import utils.Mathbox;
+import utils.Quaternion;
 import Controller.LandingCurve;
 import FlightElement.SpaceShip;
 
@@ -78,74 +76,30 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 		    public static double mminus=0;
 		    public static double vminus=0;
 		    public static double val_dt=0;
-		    public static boolean switcher=true; 
-		    public static double cmd_min = 0;
-		    public static double cmd_max = 0;
-		    public static boolean cntrl_on ; 
 		    public static double acc_deltav = 0; 
-		    public static double twrite=0;
 		    public static double ref_ELEVATION = 0;
-	 	//----------------------------------------------------------------
-			public static double[][] g = {{0},{0},{0}};		
-			public static double[][] g_NED = {{0},{0},{0}};  // Gravity vector in NED frame 				[m/s�]
+	 	    //----------------------------------------------------------------]
 			public static double Lt = 0;    		// Average collision diameter (CO2)         [m]
 			public static double mu    = 0;    	    // Standard gravitational constant (Mars)   [m3/s2]
 			public static double rm    = 0;    	    // Planets average radius                   [m]
 			public static double omega = 0 ;        // Planets rotational rate                  [rad/sec]
 			public static double g0 = 9.81;         // For normalized ISP 			
-		    public static double Cd=0;
- 					// Drag coefficient in contiuum flow; 
-		    public static int TARGET=0;						// Target body index
-		    public static double Throttle_CMD=0;				// Main engine throttle command [-]
-		    public static double m_propellant_init = 0;     	// Initial propellant mass [kg]
 		    public static double M0=0; 
-		    public static double Thrust_max=0; 
-		    public static double Thrust_min=0;
-		    public static double cntr_fpa_init=0;
-		    public static int ctrl_curve;
-	        private static List<atm_dataset> ATM_DATA 									 = new ArrayList<atm_dataset>(); 
-	        static boolean PROPread = false; 
-	        public static int active_sequence = 0 ; 
 	        public static double groundtrack = 0; 
 	        public static double phimin=0;
 	        public static double tetamin=0;
-	      	public static double fpa_dot =0;
-	      	public static double Thrust_is=0;
-	      	
-	        public static double Xfo = 0 ;
-	        public static double Yfo = 0 ; 
-	        public static double Zfo = 0 ; 
-	        
-	        static double azimuth_inertFrame = 0 ;
-	        static double fpa_inertFrame     = 0 ;
-	        static double vel_inertFrame     = 0 ;
-	        
-	    	
-			public static double[] V_NED_ECEF_spherical = {0,0,0};			// Velocity vector in NED system with respect to ECEF in spherical coordinates  [m/s]
-			public static double[] V_NED_ECEF_cartesian = {0,0,0};			// Velocity vector in NED system with respect to ECEF in cartesian coordinates [m/s]
-			
-			public static double[] r_ECEF_cartesian = {0,0,0};				// position coordinates with respect to ECEF in cartesian coordinates [m/s]
-			public static double[] r_ECEF_spherical = {0,0,0};				// position coordinates with respect to ECEF in spherical coordinates [m/s]
-			
-			
-			public static double[][] F_Aero_A    = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
-			public static double[][] F_Aero_NED  = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
-			public static double[][] F_Thrust_B  = {{0},{0},{0}};						// Thrust Force in body fixed system     [N]
-			public static double[][] F_Thrust_NED= {{0},{0},{0}};						// Thrust Force in NED frame    		 [N]
-			public static double[][] F_Gravity_G = {{0},{0},{0}};						// Gravity Force in ECEF coordinates     [N]
-			public static double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
-			public static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
-			
-			public static double[][] M_Aero_NED      = {{0},{0},{0}};
-			public static double[][] M_Aero_B      = {{0},{0},{0}};
-			public static double[][] M_Thrust_NED    = {{0},{0},{0}};
-			public static double[][] M_Thrust_B      = {{0},{0},{0}};
 
+			private static double[] V_NED_ECEF_spherical = {0,0,0};			// Velocity vector in NED system with respect to ECEF in spherical coordinates  [m/s]
+			private static double[] V_NED_ECEF_cartesian = {0,0,0};			// Velocity vector in NED system with respect to ECEF in cartesian coordinates [m/s]
+			
+			private static double[] r_ECEF_cartesian = {0,0,0};				// position coordinates with respect to ECEF in cartesian coordinates [m/s]
+			private static double[] r_ECEF_spherical = {0,0,0};				// position coordinates with respect to ECEF in spherical coordinates [m/s]
+			
+			
+			private static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
 			// 6 DOF Attitude variables: 
-			public static double[][] q_vector        = {{0},
-														{0},
-														{0},
-														{0}}; 							// Quarternion vector
+			public static Quaternion qVector = new Quaternion(1,0,0,0);
+			
 			public static double[][] AngularRate     = {{0},
 														{0},
 														{0}};							 // Angular Velcity {P, Q, R}T [rad/s] 
@@ -154,8 +108,8 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 													    {   0    ,    0    ,   0},
 													    {   0    ,    0    ,   0}};  // Inertia Tensor []
 			public static double[][] AngularMomentum_B = {{0},
-														{0},
-														{0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
+														  {0},
+														  {0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
 			
 			// Equation Elements for angular velocity equations: 
 			static double det_I = 0;
@@ -195,41 +149,8 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 			static double EE_R_x  = 0;
 			static double EE_R_y  = 0;
 			static double EE_R_z  = 0;
-			
-			public static double tankContent=0;
-			//__________________________
-			
-	        public static double elevationangle; 
-	        public static double const_tzer0=0;
-	        public static boolean const_isFirst =true; 
 	        
-	        // TVC control angles: 
-	        public static double TVC_alpha =0;					// TVC angle alpha [rad]
-	        public static double TVC_beta  =0;					// TVC angle beta [rad]
-	        
-	        public static double tvc_alpha_MAX = 15;
-	        public static double tvc_beta_MAX  = 15;
-	        //____________________________
-	        
-	        public static double Thrust_Deviation=0; 
-	        public static double Thrust_Elevation=0;
-	        public static double Thrust_Deviation_mo = 0; 
-	        public static double Thrust_Deviation_dot =0;
-	        public static double TE_save =0;
-	        
-	        public static double ISP_min = 0; 
-	        public static double ISP_max = 0; 
-	        public static double ISP_is = 0 ; 
-	        
-	        public static double TTM_max = 5.0;
-	        public static boolean engine_loss_indicator=false;
-	        
-	        public static boolean IsThrust=false;
-	        
-	        static DecimalFormat decf = new DecimalFormat("###.#");
-	        static DecimalFormat df_X4 = new DecimalFormat("#.###");
-	        
-	        static CoordinateTransformation coordinateTransformation ;
+	        private static CoordinateTransformation coordinateTransformation ;
 	        
 	        private static SpaceShip spaceShip = new SpaceShip();
 	        private static IntegratorData integratorData = new IntegratorData();
@@ -242,9 +163,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	        private static CurrentDataSet currentDataSet = new CurrentDataSet();
 	        private static ErrorSet errorSet = new ErrorSet();
 	        private static MasterSet masterSet = new MasterSet();
-	        
 
-	        //private static RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	      //-------------------------------------------------------------------------------
 	    public int getDimension() {
 	    		return 16; // 6 DOF model 
@@ -327,7 +246,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
 	    	currentDataSet.setEulerAngle(EulerAngle);
 		coordinateTransformation.initializeTranformationMatrices(x, t, omega, atmosphereSet, aerodynamicSet, EulerAngle, 
-																 q_vector, r_ECEF_spherical, V_NED_ECEF_spherical);
+																 qVector, r_ECEF_spherical, V_NED_ECEF_spherical);
 		currentDataSet.setCoordinateTransformation(coordinateTransformation);
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	// 										Delta-v integration
@@ -364,7 +283,10 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 	    		x[6]= spaceShip.getMass();
 	    	}
 	    	//-------------------------------------------------------------------------------------------------------------------
-	    	// 									     Equations of Motion
+	    	/**
+	    	 * 
+	    	 *  									     Equations of Motion
+	    	 */
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	//-------------------------------------------------------------------------------------------------------------------
 	    	// 									     Translational Motion
@@ -451,14 +373,8 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 		    spaceShip.getPropulsion().setPrimaryPropellantFillingLevel(x[14]);
 		    spaceShip.getPropulsion().setSecondaryPropellantFillingLevel(x[15]);
 
-		    //System.out.println(x[14]);
-		   // System.out.println(actuatorSet.getPrimaryThrust_is());
-		  // System.out.println(forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0)*currentDataSet.getValDt());
-		  //  System.out.println(spaceShip.getPropulsion().getPrimaryPropellantFillingLevel());
-		  //  tankContent -= forceMomentumSet.getThrustTotal()/(actuatorSet.getPrimaryISP_is()*g0) * currentDataSet.getValDt();
-		   // System.out.println("Tank content:"+tankContent);
 	    	//-------------------------------------------------------------------------------------------------------------------
-	    	// 						   Rotataional motion
+	    	// 						   Rotational motion
 	    	//-------------------------------------------------------------------------------------------------------------------
 		    if(is_6DOF) {
 		    	if (SixDoF_Option ==1) {
@@ -478,24 +394,23 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 			    				        { x[12],-x[11], 0    , x[13]},
 			    				        {-x[11],-x[12],-x[13], 0    }}; 
 			    		
-			    	    q_vector[0][0] = x[7];
-			    	    q_vector[1][0] = x[8];
-			    	    q_vector[2][0] = x[9];
-			    	    q_vector[3][0] = x[10];
+			    	    qVector.w = x[7];
+			    	    qVector.x = x[8];
+			    	    qVector.y = x[9];
+			    	    qVector.z = x[10];
 			    	    
 
-			    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_Matrices(Q, q_vector)); 
+			    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_MQuat(Q, qVector)); 
 			    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
 			    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
 			    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
 			    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
-		
-			    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
+
 		    		} else {
-			    		double[][] ElementMatrix = {{  -q_vector[1][0] , -q_vector[2][0]  , -q_vector[3][0]  }, 
-			    				         			{   q_vector[0][0] , -q_vector[3][0]  ,  q_vector[2][0]  },
-			    				         			{   q_vector[3][0] ,  q_vector[0][0]  , -q_vector[1][0]  },
-			    				         			{  -q_vector[2][0] ,  q_vector[1][0]  ,  q_vector[0][0]  }};
+			    		double[][] ElementMatrix = {{  -qVector.x , -qVector.y  , -qVector.z  }, 
+			    				         			{   qVector.w , -qVector.z  ,  qVector.y  },
+			    				         			{   qVector.z ,  qVector.w  , -qVector.x  },
+			    				         			{  -qVector.y ,  qVector.x  ,  qVector.w  }};
 			    		
 			    		double[][] PQR = {{x[11]},
 			    						  {x[12]},
@@ -525,11 +440,10 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 			    		dxdt[10] =  q_vector_dot[3][0];  // e4 dot
 			    		//-----------------------------------------
 			    		// Postprocessing Euler and Quarternions 
-			    	    q_vector[0][0] = x[7];
-			    	    q_vector[1][0] = x[8];
-			    	    q_vector[2][0] = x[9];
-			    	    q_vector[3][0] = x[10];
-			    		EulerAngle = Mathbox.Quaternions2Euler(q_vector);
+			    	    qVector.w = x[7];
+			    	    qVector.x = x[8];
+			    	    qVector.y = x[9];
+			    	    qVector.z = x[10];
 		    		}
 		    	    //----------------------------------------------------------------------------------------
 		    	    // System.out.println("model 1 running");
@@ -550,24 +464,20 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 		    				        { x[12],-x[11], 0    , x[13]},
 		    				        {-x[11],-x[12],-x[13], 0    }}; 
 		    		
-		    	    q_vector[0][0] = x[7];
-		    	    q_vector[1][0] = x[8];
-		    	    q_vector[2][0] = x[9];
-		    	    q_vector[3][0] = x[10];
-		    	    
-		    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
-		    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_Matrices(Q, q_vector)); 
+		    	    qVector.w = x[7];
+		    	    qVector.x = x[8];
+		    	    qVector.y = x[9];
+		    	    qVector.z = x[10];
+		    		double[][] q_vector_dot =  Mathbox.Multiply_Scalar_Matrix(0.5, Mathbox.Multiply_MQuat(Q, qVector)); 
 		    		dxdt[7] =  q_vector_dot[0][0];  // e1 dot
 		    		dxdt[8] =  q_vector_dot[1][0];  // e2 dot 
 		    		dxdt[9] =  q_vector_dot[2][0];  // e3 dot
 		    		dxdt[10] = q_vector_dot[3][0];  // e4 dot
 
-		    	    q_vector[0][0] = x[7];
-		    	    q_vector[1][0] = x[8];
-		    	    q_vector[2][0] = x[9];
-		    	    q_vector[3][0] = x[10];
-		    	    
-		    	    EulerAngle = Mathbox.Quaternions2Euler(q_vector);
+		    	    qVector.w = x[7];
+		    	    qVector.x = x[8];
+		    	    qVector.y = x[9];
+		    	    qVector.z = x[10];
 		    	    //----------------------------------------------------------------------------------------
 		    	    double Lb = forceMomentumSet.getM_total_NED()[0][0];
 		    	    double Mb = forceMomentumSet.getM_total_NED()[1][0];
@@ -600,6 +510,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 		AngularRate[2][0] = x[13];
 		//atmosphere.getAngleOfAttack() = EulerAngle[0][0] - V_NED_ECEF_spherical[1];
 		}
+		    EulerAngle = Mathbox.Quaternions2Euler(qVector);
 		    currentDataSet.setEulerAngle(EulerAngle);
 
 	}
@@ -633,7 +544,7 @@ e2.printStackTrace();
 //- Initialise ground track computation
 
 RealTimeSimulationCore.spaceShip = spaceShip;
-tankContent = spaceShip.getPropulsion().getPrimaryPropellant();
+//tankContent = spaceShip.getPropulsion().getPrimaryPropellant();
 RealTimeSimulationCore.controlCommandSet = controlCommandSet;
 
 RealTimeSimulationCore.integratorData = integratorData;
@@ -649,7 +560,7 @@ spherical = false;
 
 InertiaTensor = spaceShip.getInertiaTensorMatrix();
 
-q_vector      = integratorData.getInitialQuarterions();
+qVector      = integratorData.getInitialQuaternion();
 
 
 actuatorSet.setPrimaryISP_is(spaceShip.getPropulsion().getPrimaryISPMax());
@@ -673,9 +584,8 @@ FirstOrderIntegrator IntegratorModule = integratorData.getIntegrator();
 //----------------------------------------------------------------------------------------------
 FirstOrderDifferentialEquations ode = new RealTimeSimulationCore();
 //------------------------------
-ATM_DATA.removeAll(ATM_DATA);
 try {
-ATM_DATA = AtmosphereModel.INITIALIZE_ATM_DATA(integratorData.getTargetBody());
+AtmosphereModel.INITIALIZE_ATM_DATA(integratorData.getTargetBody());
 } catch (URISyntaxException e1) {
 // TODO Auto-generated catch block
 e1.printStackTrace();
@@ -722,10 +632,10 @@ double[] y = new double[dimension]; // Result vector
 // S/C Mass        
     y[6] = spaceShip.getMass();
 	// Attitude and Rotational Motion
-	y[7]  = integratorData.getInitialQuarterions()[0][0];
-	y[8]  = integratorData.getInitialQuarterions()[1][0];
-	y[9]  = integratorData.getInitialQuarterions()[2][0];
-	y[10] = integratorData.getInitialQuarterions()[3][0];
+	y[7]  = integratorData.getInitialQuaternion().w;
+	y[8]  = integratorData.getInitialQuaternion().x;
+	y[9]  = integratorData.getInitialQuaternion().y;
+	y[10] = integratorData.getInitialQuaternion().z;
 	y[11] = integratorData.getInitRotationalRateX();
 	y[12] = integratorData.getInitRotationalRateY();
 	y[13] = integratorData.getInitRotationalRateZ();
@@ -792,7 +702,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setEulerX( EulerAngle[0][0]);
 	                	realTimeResultSet.setEulerY( EulerAngle[1][0]);
 	                	realTimeResultSet.setEulerZ( EulerAngle[2][0]);
-	                	realTimeResultSet.setQuarternions(q_vector);
+	                	realTimeResultSet.setQuaternion(qVector);
 	                	realTimeResultSet.setCartesianPosECEF(r_ECEF_cartesian);
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
 	                	realTimeResultSet.setGroundtrack(groundtrack);

@@ -27,6 +27,7 @@ import GUI.FxElements.SpaceShipView3D;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
 import utils.Mathbox;
+import utils.Quaternion;
 import utils.WriteInput;
 
 public class AttitudeSetting {
@@ -230,11 +231,11 @@ public class AttitudeSetting {
 			public void focusLost(FocusEvent e) {
 				WriteInput.writeInputFile(FilePaths.inputFile);
 				//------------------------------------------------------------------------------
-				double[][] qvector= {{Double.parseDouble(INPUT_Quarternion1.getText())},
-									 {Double.parseDouble(INPUT_Quarternion2.getText())},
-									 {Double.parseDouble(INPUT_Quarternion3.getText())},
-									 {Double.parseDouble(INPUT_Quarternion4.getText())}};
-				double[][] EulerAngles = Mathbox.Quaternions2Euler2(qvector);
+				Quaternion qvector= new Quaternion(Double.parseDouble(INPUT_Quarternion1.getText()),
+									 Double.parseDouble(INPUT_Quarternion2.getText()),
+									 Double.parseDouble(INPUT_Quarternion3.getText()),
+									 Double.parseDouble(INPUT_Quarternion4.getText()) );
+				double[][] EulerAngles = Mathbox.Quaternions2Euler(qvector);
 				DecimalFormat numberFormat = new DecimalFormat("#.0000000");
 				INPUT_Euler1.setText(numberFormat.format(EulerAngles[0][0]*rad2deg));
 				INPUT_Euler2.setText(numberFormat.format(EulerAngles[1][0]*rad2deg));
@@ -261,9 +262,11 @@ public class AttitudeSetting {
 	      LABEL_Euler1.setSize(box_size_InitialAttitude_x, 20);
 	      InitialAttitudePanel.add(LABEL_Euler1);
 
-	         sliderEuler1 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
-	         sliderEuler2 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), -90, 0 ,90);
-	         sliderEuler3 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), -180, 0 ,180);
+	      double sliderFactor = 100;
+	      
+	         sliderEuler1 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), (int) (-180*sliderFactor), 0 ,(int) (180*sliderFactor), sliderFactor);
+	         sliderEuler2 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), (int) (-90*sliderFactor), 0 ,(int) (90*sliderFactor), sliderFactor);
+	         sliderEuler3 = GuiComponents.getGuiSlider(smallFont, (int) (box_size_InitialAttitude_x*1.9), (int) (-180*sliderFactor), 0 ,(int) (180*sliderFactor), sliderFactor);
 	        sliderEuler1.setValue(0);
 	        sliderEuler2.setValue(0);
 	        sliderEuler3.setValue(0);
@@ -278,13 +281,13 @@ public class AttitudeSetting {
 				Euler[0][0] = Double.parseDouble(INPUT_Euler1.getText());
 				Euler[1][0] = Double.parseDouble(INPUT_Euler2.getText());
 				Euler[2][0] = Double.parseDouble(INPUT_Euler3.getText());
-				double[][] Quarternions = Mathbox.Euler2Quarternions(Euler);
-				INPUT_Quarternion1.setText(""+decQuarternion.format(Quarternions[0][0]));
-				INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
-				INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
-				INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
+				Quaternion q = Mathbox.Euler2Quarternions(Euler);
+				INPUT_Quarternion1.setText(""+decQuarternion.format(q.w));
+				INPUT_Quarternion2.setText(""+decQuarternion.format(q.x));
+				INPUT_Quarternion3.setText(""+decQuarternion.format(q.y));
+				INPUT_Quarternion4.setText(""+decQuarternion.format(q.z));
 				WriteInput.writeInputFile(FilePaths.inputFile);
-				INPUT_Euler1.setText(""+sliderEuler1.getValue());
+				INPUT_Euler1.setText(""+sliderEuler1.getValue()/sliderFactor);
 			}
 	    	   
 	       });
@@ -300,13 +303,13 @@ public class AttitudeSetting {
 						Euler[0][0] = Double.parseDouble(INPUT_Euler1.getText());
 						Euler[1][0] = Double.parseDouble(INPUT_Euler2.getText());
 						Euler[2][0] = Double.parseDouble(INPUT_Euler3.getText());
-						double[][] Quarternions = Mathbox.Euler2Quarternions(Euler);
-						INPUT_Quarternion1.setText(""+decQuarternion.format(Quarternions[0][0]));
-						INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
-						INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
-						INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
+						Quaternion q = Mathbox.Euler2Quarternions(Euler);
+						INPUT_Quarternion1.setText(""+decQuarternion.format(q.w));
+						INPUT_Quarternion2.setText(""+decQuarternion.format(q.x));
+						INPUT_Quarternion3.setText(""+decQuarternion.format(q.y));
+						INPUT_Quarternion4.setText(""+decQuarternion.format(q.z));
 						WriteInput.writeInputFile(FilePaths.inputFile);
-						INPUT_Euler2.setText(""+sliderEuler2.getValue());
+						INPUT_Euler2.setText(""+sliderEuler2.getValue()/sliderFactor);
 					}
 			    	   
 			       });
@@ -322,13 +325,13 @@ public class AttitudeSetting {
 						Euler[0][0] = Double.parseDouble(INPUT_Euler1.getText());
 						Euler[1][0] = Double.parseDouble(INPUT_Euler2.getText());
 						Euler[2][0] = Double.parseDouble(INPUT_Euler3.getText());
-						double[][] Quarternions = Mathbox.Euler2Quarternions(Euler);
-						INPUT_Quarternion1.setText(""+decQuarternion.format(Quarternions[0][0]));
-						INPUT_Quarternion2.setText(""+decQuarternion.format(Quarternions[1][0]));
-						INPUT_Quarternion3.setText(""+decQuarternion.format(Quarternions[2][0]));
-						INPUT_Quarternion4.setText(""+decQuarternion.format(Quarternions[3][0]));
+						Quaternion q = Mathbox.Euler2Quarternions(Euler);
+						INPUT_Quarternion1.setText(""+decQuarternion.format(q.w));
+						INPUT_Quarternion2.setText(""+decQuarternion.format(q.x));
+						INPUT_Quarternion3.setText(""+decQuarternion.format(q.y));
+						INPUT_Quarternion4.setText(""+decQuarternion.format(q.z));
 						WriteInput.writeInputFile(FilePaths.inputFile);
-						INPUT_Euler3.setText(""+sliderEuler3.getValue());
+						INPUT_Euler3.setText(""+sliderEuler3.getValue()/sliderFactor);
 					}
 			    	   
 			       });
@@ -348,7 +351,7 @@ public class AttitudeSetting {
 			@Override
 			public void focusLost(FocusEvent e) {
 				WriteInput.writeInputFile(FilePaths.inputFile);
-				sliderEuler1.setValue(Integer.parseInt(INPUT_Euler1.getText()));
+				sliderEuler1.setValue((int) (Integer.parseInt(INPUT_Euler1.getText())*sliderFactor) );
 			}
 	    	  
 	      });
@@ -359,7 +362,7 @@ public class AttitudeSetting {
 				// TODO Auto-generated method stub
 				WriteInput.writeInputFile(FilePaths.inputFile);
 				if( Double.parseDouble(INPUT_Euler1.getText())>=-90 && Double.parseDouble(INPUT_Euler1.getText())<=90) {
-				sliderEuler1.setValue((int) Double.parseDouble(INPUT_Euler1.getText()));
+				sliderEuler1.setValue((int) (Double.parseDouble(INPUT_Euler1.getText())*sliderFactor) );
 				}
 			}
 	    	
@@ -391,7 +394,7 @@ public class AttitudeSetting {
 			@Override
 			public void focusLost(FocusEvent e) {
 				WriteInput.writeInputFile(FilePaths.inputFile);
-				sliderEuler2.setValue(Integer.parseInt(INPUT_Euler2.getText()));
+				sliderEuler2.setValue((int) (Integer.parseInt(INPUT_Euler2.getText())*sliderFactor));
 			}
 	    	  
 	      });
@@ -402,7 +405,7 @@ public class AttitudeSetting {
 				// TODO Auto-generated method stub
 				WriteInput.writeInputFile(FilePaths.inputFile);
 				if( Double.parseDouble(INPUT_Euler2.getText())>=-90 && Double.parseDouble(INPUT_Euler2.getText())<=90) {
-				sliderEuler2.setValue((int) Double.parseDouble(INPUT_Euler2.getText()));
+				sliderEuler2.setValue((int) (Double.parseDouble(INPUT_Euler2.getText())*sliderFactor) );
 				}
 			}
 	    	
@@ -434,7 +437,7 @@ public class AttitudeSetting {
 			@Override
 			public void focusLost(FocusEvent e) {
 				WriteInput.writeInputFile(FilePaths.inputFile);
-				sliderEuler3.setValue(Integer.parseInt(INPUT_Euler3.getText()));
+				sliderEuler3.setValue((int) (Integer.parseInt(INPUT_Euler3.getText())*sliderFactor));
 			}
 	    	  
 	      });
@@ -445,7 +448,7 @@ public class AttitudeSetting {
 				// TODO Auto-generated method stub
 				WriteInput.writeInputFile(FilePaths.inputFile);
 				if( Double.parseDouble(INPUT_Euler3.getText())>=-90 && Double.parseDouble(INPUT_Euler3.getText())<=90) {
-				sliderEuler3.setValue((int) Double.parseDouble(INPUT_Euler3.getText()));
+				sliderEuler3.setValue((int) (Double.parseDouble(INPUT_Euler3.getText())*sliderFactor) );
 				}
 			}
 	    	

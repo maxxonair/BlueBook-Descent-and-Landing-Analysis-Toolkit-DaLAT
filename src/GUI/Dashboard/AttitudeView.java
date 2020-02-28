@@ -3,14 +3,17 @@ package GUI.Dashboard;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 import GUI.BlueBookVisual;
-import GUI.FxElements.SpaceShipView3DFrontPage;
+import GUI.FxElements.AttitudeFx;
 import javafx.application.Platform;
 import javafx.embed.swing.JFXPanel;
+import utils.Quaternion;
 
 public class AttitudeView extends DashboardPlotPanel{
 	
@@ -33,18 +36,30 @@ public class AttitudeView extends DashboardPlotPanel{
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	  private int ID = 3;
-		 private SpaceShipView3DFrontPage spaceShipView;
-		 //private String objectFilePath="";
+	  private static AttitudeFx spaceShipView;
+	  private static Quaternion quatTemp;
 	
 	public AttitudeView(String objectFilePath) {
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		//labelColor = BlueBookVisual.getLabelColor();
 		super.type = 2;
 		this.objectFilePath = objectFilePath;
+		quatTemp = new Quaternion(1,0,0,0);
 		
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
 		mainPanel.setBackground(backgroundColor);
+		mainPanel.addComponentListener(new ResizeListener() {
+			@Override
+		    public void componentResized(ComponentEvent e) {
+
+				try {
+		        spaceShipView.updateFrameSize( mainPanel.getWidth(),  mainPanel.getHeight());
+				} catch (NullPointerException exp ) {
+					
+				}
+		    }
+		});
 		mainPanel.setSize(450,450);
 		
 		createSpaceshipView(objectFilePath);
@@ -55,7 +70,7 @@ public class AttitudeView extends DashboardPlotPanel{
         final JFXPanel fxPanel = new JFXPanel();
         fxPanel.setSize(450,450);
         mainPanel.add(fxPanel,BorderLayout.CENTER);
-        spaceShipView = new SpaceShipView3DFrontPage();
+        spaceShipView = new AttitudeFx();
         Platform.runLater(new Runnable() {
             @Override
             public void run() {
@@ -78,7 +93,6 @@ public class AttitudeView extends DashboardPlotPanel{
             @Override
             public void run() {
             	spaceShipView.model.getChildren().removeAll();
-            	spaceShipView.coordinateSystem.getChildren().removeAll();
             	//SpaceShipView3DFrontPage.root.getChildren().removeAll();
             	spaceShipView.start(fxPanel, DashboardPlotArea.getModel3DFilePath());
             	//System.out.println(DashboardPlotArea.getModel3DFilePath());
@@ -97,6 +111,20 @@ public class AttitudeView extends DashboardPlotPanel{
 		return ID;
 	}
 	
+	public AttitudeFx getSpaceShipView() {
+		return spaceShipView;
+	}
+	
+	
+	public static Quaternion getQuatTemp() {
+		return quatTemp;
+	}
+
+	public static void setQuatTemp(Quaternion quatTemp) {
+		AttitudeView.quatTemp = quatTemp;
+		spaceShipView.modelRotation(quatTemp);
+	}
+
 	/**
 	 * 
 	 * Unit Tester
@@ -117,4 +145,11 @@ public class AttitudeView extends DashboardPlotPanel{
 		frame.pack();
 	}
 
+}
+class ResizeListener extends ComponentAdapter {
+    public void componentResized(ComponentEvent e) {
+        // Recalculate the variable you mentioned
+    }
+    
+    
 }

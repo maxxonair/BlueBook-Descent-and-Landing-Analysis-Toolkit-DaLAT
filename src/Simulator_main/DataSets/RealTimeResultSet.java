@@ -1,6 +1,7 @@
 package Simulator_main.DataSets;
 
 import Model.DataSets.MasterSet;
+import utils.Quaternion;
 
 public class RealTimeResultSet {
 	
@@ -20,10 +21,7 @@ public class RealTimeResultSet {
 	private double eulerY=0;
 	private double eulerZ=0;
 	
-	private double[][] quarternions = {	{0},
-										{0},
-										{0},
-										{0}}; 
+	private Quaternion quaternion;
 	
 	private double[][] PQR = {{0},
 			 				  {0},
@@ -137,12 +135,12 @@ public class RealTimeResultSet {
 		Thrust_NED = thrust_NED;
 	}
 
-	public double[][] getQuarternions() {
-		return quarternions;
+	public Quaternion getQuaternion() {
+		return quaternion;
 	}
 
-	public void setQuarternions(double[][] quarternions) {
-		this.quarternions = quarternions;
+	public void setQuaternion(Quaternion quaternions) {
+		this.quaternion = quaternions;
 	}
 
 	public double getEulerX() {

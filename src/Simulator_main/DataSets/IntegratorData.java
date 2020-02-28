@@ -10,6 +10,7 @@ import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
 import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 
 import Simulator_main.StopCondition;
+import utils.Quaternion;
 
 public class IntegratorData {
 	
@@ -83,10 +84,7 @@ public class IntegratorData {
 		this.groundtrack = groundtrack;
 	}
 	
-	private double[][] initialQuarterions = {	{1},
-			{0},
-			{0},
-			{0}}; 
+	private Quaternion initialQuaternion;
 
 	private double[][] angularRate = {	{1},
 	{0},
@@ -111,13 +109,14 @@ public class IntegratorData {
 		this.angularRate = angularRate;
 	}
 	
-	public double[][] getInitialQuarterions() {
-		return initialQuarterions;
+
+
+	public Quaternion getInitialQuaternion() {
+		return initialQuaternion;
 	}
 
-
-	public void setInitialQuarterions(double[][] initialQuarterions) {
-		this.initialQuarterions = initialQuarterions;
+	public void setInitialQuaternion(Quaternion initialQuaternion) {
+		this.initialQuaternion = initialQuaternion;
 	}
 
 	public int getAeroParachuteModel() {

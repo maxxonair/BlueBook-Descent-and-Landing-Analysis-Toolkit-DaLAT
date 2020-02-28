@@ -29,6 +29,7 @@ import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
 import Simulator_main.DataSets.SimulatorInputSet;
+import utils.Quaternion;
 import utils.ReadInput;
 
 public class LaunchRealTimeSimulation {
@@ -120,7 +121,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    	    		integratorData.setInitFpa(realTimeResultSet.getFpa());
 		    	    		integratorData.setInitAzimuth(realTimeResultSet.getAzi());
 		    	    		
-		    	    		integratorData.setInitialQuarterions(realTimeResultSet.getQuarternions());
+		    	    		integratorData.setInitialQuaternion(realTimeResultSet.getQuaternion());
 		    	    		integratorData.setInitRotationalRateX(realTimeResultSet.getPQR()[0][0]);
 		    	    		integratorData.setInitRotationalRateY(realTimeResultSet.getPQR()[1][0]);
 		    	    		integratorData.setInitRotationalRateZ(realTimeResultSet.getPQR()[2][0]);
@@ -236,10 +237,8 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
 	dataContainer.setyAxisLabel("Noise");
 	}
 	
-	double quatNorm = Math.sqrt(realTimeResultSet.getQuarternions()[0][0] * realTimeResultSet.getQuarternions()[0][0]
-							  + realTimeResultSet.getQuarternions()[1][0] * realTimeResultSet.getQuarternions()[1][0]
-						      + realTimeResultSet.getQuarternions()[2][0] * realTimeResultSet.getQuarternions()[2][0]
-							  + realTimeResultSet.getQuarternions()[3][0] * realTimeResultSet.getQuarternions()[3][0]);
+	Quaternion qVector = realTimeResultSet.getQuaternion();
+	//qVector.normalize();
 							  
 	//System.out.println(realTimeContainer.getRealTimeSet().size());
 	// integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime())
@@ -290,10 +289,10 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
       		  0 + " " + 
       		  0 + " " + 
       		  0 + " " +       	 	  
-  		  realTimeResultSet.getQuarternions()[0][0]/quatNorm+" "+
-  		  realTimeResultSet.getQuarternions()[1][0]/quatNorm+" "+
-  		  realTimeResultSet.getQuarternions()[2][0]/quatNorm+" "+
-  		  realTimeResultSet.getQuarternions()[3][0]/quatNorm+" "+
+      		qVector.w+" "+
+      		qVector.x+" "+
+      		qVector.y+" "+
+      		qVector.z+" "+
   		  realTimeResultSet.getPQR()[0][0]+" "+
   		  realTimeResultSet.getPQR()[1][0]+" "+
   		  realTimeResultSet.getPQR()[2][0]+" "+

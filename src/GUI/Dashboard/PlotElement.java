@@ -47,8 +47,6 @@ import GUI.RotatedIcon;
 import GUI.TextIcon;
 import GUI.DataStructures.InputFileSet;
 
-
-
 public class PlotElement {
 	
 	 public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
@@ -297,6 +295,7 @@ public class PlotElement {
 	            double max = xAxis.getUpperBound();
 	            double min = xAxis.getLowerBound();
 	            int indx = (int) ( (x/(max-min))*DashboardPlotArea.getResultSet().size());
+	            
 		            if(indx>0 && indx<DashboardPlotArea.getResultSet().size()) {
 	            		try {
 	            			updateDashboardValues(indx);

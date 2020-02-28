@@ -1,6 +1,5 @@
 package VisualEngine.entities;
 
-import java.io.IOException;
 
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
@@ -15,7 +14,7 @@ import VisualEngine.animation.AnimationSet;
 import VisualEngine.models.TexturedModel;
 import VisualEngine.renderEngine.DisplayManager;
 import VisualEngine.terrains.Terrain;
-import utils.ReadInput;
+import utils.Quaternion;
 
 public class Spacecraft extends Entity {
 	
@@ -40,10 +39,7 @@ public class Spacecraft extends Entity {
 			 						 {0},
 			 						 {0}}; 
 	
-	private static double[][] quarternions = {	{0},
-												{0},
-												{0},
-												{0}}; 
+	private static  Quaternion qVector = new Quaternion(1,0,0,0);
 	
 	private static float animationScale =100;
 	
@@ -64,7 +60,7 @@ public class Spacecraft extends Entity {
 	public Spacecraft(SpaceShip spaceShip, TexturedModel model, Vector3f position, float rotX, float rotY, float rotZ, float scale) {
 		super(model, position, rotX, rotY, rotZ, scale);
 			Spacecraft.spaceShip = spaceShip;
-			Spacecraft.quarternions = integratorData.getInitialQuarterions();
+			Spacecraft.qVector = integratorData.getInitialQuaternion();
 			Spacecraft.SCMass = (float) spaceShip.getMass();
 			Spacecraft.SCPropMass = (float) spaceShip.getPropulsion().getPrimaryPropellant();
 			Spacecraft.SCMainThrust = (float) spaceShip.getPropulsion().getPrimaryThrustMax();
@@ -199,7 +195,7 @@ public class Spacecraft extends Entity {
 			//Spacecraft.setRotX(-25);
 			currentVerticalSpeed=-5;
 			currentHorizontalSpeed=60;
-			Spacecraft.setQuarternions(integratorData.getInitialQuarterions());
+			Spacecraft.setQuaternion(integratorData.getInitialQuaternion());
 		}
 	}
 
@@ -276,7 +272,7 @@ public class Spacecraft extends Entity {
 	    integratorData.setIntegratorType(INTEGRATOR);
 	    integratorData.setAeroDragModel(0);
 	    integratorData.setInitRadius(1737400+Spacecraft.getPosition().y);
-	    integratorData.setInitialQuarterions(Spacecraft.getQuarternions());
+	    integratorData.setInitialQuaternion((Spacecraft.getQuaternion()));
 	    integratorData.setAngularRate(Spacecraft.getPQR());
 		//System.out.println(controlCommandSet.getPrimaryThrustThrottleCmd());
 	    RealTimeContainer realTimeContainer = new RealTimeContainer();
@@ -284,7 +280,7 @@ public class Spacecraft extends Entity {
 		realTimeResultSet = realTimeContainer.getRealTimeResultSet();
 	    Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
 		Spacecraft.setPQR(realTimeResultSet.getPQR());
-		Spacecraft.setQuarternions(realTimeResultSet.getQuarternions());
+		Spacecraft.setQuaternion(realTimeResultSet.getQuaternion());
 		Spacecraft.setSCMass((float) realTimeResultSet.getSCMass());
 		Spacecraft.setAzimuth((float) realTimeResultSet.getAzi());
 		Spacecraft.setThrust_NED(realTimeResultSet.getThrust_NED());
@@ -294,12 +290,12 @@ public class Spacecraft extends Entity {
 	}
 
 
-	public static double[][] getQuarternions() {
-		return quarternions;
+	public static Quaternion getQuaternion() {
+		return qVector;
 	}
 
-	public static void setQuarternions(double[][] quarternions) {
-		Spacecraft.quarternions = quarternions;
+	public static void setQuaternion(Quaternion quarternions) {
+		Spacecraft.qVector = quarternions;
 	}
 
 	public static double[][] getThrust_Momentum() {

@@ -52,6 +52,11 @@ public class GuiReadInput {
 							    double[] CartesianPosition = {Double.parseDouble((String) tokens[41]),
 			 							   						Double.parseDouble((String) tokens[42]),
 			 							   						Double.parseDouble((String) tokens[43])};
+							    Quaternion quat = new Quaternion(Double.parseDouble((String) tokens[47]),
+							    					   Double.parseDouble((String) tokens[48]),
+							    					   Double.parseDouble((String) tokens[49]),
+							    					   Double.parseDouble((String) tokens[50]) );
+							    resultElement.setQuaternion(quat);
 							    resultElement.setCartesianPosECEF(CartesianPosition);
 							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
 							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
@@ -126,30 +131,13 @@ public class GuiReadInput {
 				       	//System.out.println(arr2[1]);
 				       	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
 				       	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
-				       	
-				       	System.out.println(sequenceID+" "+sequenceName+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
-				       	
-				       //	if(sequenceID != 0) {
-				       		GUISequenceElement.addGUISequenceElment(sequenceID, sequenceName, flightControllerIndex, eventIndex, endIndex, endValue);
-				       //	}
-				       		/*
-				       	try {
-				       	SequencePanel.sequenceContentList.get(sequenceID).setSequenceName(sequenceName);
-			       		SequencePanel.sequenceContentList.get(sequenceID).setFlightControllerSelectIndex(flightControllerIndex);
-			       		SequencePanel.sequenceContentList.get(sequenceID).setEventSelectIndx(eventIndex);
-			       		SequencePanel.sequenceContentList.get(sequenceID).setEndSelectIndex(endIndex);
-			       		SequencePanel.sequenceContentList.get(sequenceID).setValueEnd(""+endValue);
-				       	} catch (Exception expSequ) {
-				       		System.out.println("Error: ReadSequence setvalue");
-				       	}
-				       	*/
+				       		
+				       	GUISequenceElement.addGUISequenceElment(sequenceID, sequenceName, flightControllerIndex, eventIndex, endIndex, endValue);
 				       	
 		     }
 	   sequenceID++;
        }
-		for(int i=SequencePanel.sequenceContentList.size()-1;i>=0;i--) {
-			System.out.println(SequencePanel.sequenceContentList.get(i).getSequenceName());
-		}
+
        br.close();
        } catch(NullPointerException eNPE) { System.out.println(eNPE);}
 

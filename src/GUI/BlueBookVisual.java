@@ -130,9 +130,9 @@ public class BlueBookVisual  {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     public static int INTEGRATOR = 0; 
     public static String[] Target_Options = { "Earth", 
-    									      "Moon" ,	
-    									      "Mars", 	
-    										  "Venus"};
+    									          "Moon" ,	
+    									          "Mars", 	
+    										      "Venus"};
 
     public static String[] Axis_Option_NR = { "Time [s]",
     										  "Longitude [deg]", 

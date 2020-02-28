@@ -53,6 +53,46 @@ public class GuiComponents {
 		return slider;
 	}
 	
+	@SuppressWarnings("unchecked")
+	public static JSlider getGuiSlider(Font font, int length, int  low, int midval, int high, double factor) {
+        JSlider slider = new JSlider(JSlider.HORIZONTAL);
+        
+        slider.setSize(length,40);
+        slider.setMaximum((int) high);
+        slider.setMinimum((int) low);
+        slider.setMajorTickSpacing((int)(high-low)/18);
+        slider.setPaintTicks(true);
+        slider.setBackground(Color.WHITE);
+        slider.setForeground(Color.BLACK);
+        slider.setPaintLabels(true);
+        
+        @SuppressWarnings("rawtypes")
+		Hashtable position = new Hashtable();
+        
+        JLabel left = new JLabel("");
+        left.setText(""+low/factor);
+        left.setFont(font);
+        position.put((int) low, left);
+        
+        
+        JLabel mid = new JLabel("");
+        mid.setText(""+midval);
+        mid.setFont(font);
+        position.put(0, mid);
+        
+        
+        JLabel right = new JLabel("");
+        right.setText("+"+high/factor);
+        right.setFont(font);
+        position.put((int) high, right);
+        
+        
+        slider.setValue(0);
+        slider.setLabelTable(position);
+        
+		return slider;
+	}
+	
 	public static JSlider getGuiSliderSpeed(Font font, int length, int low, int midval, int high, Color foregroundColor, Color backgroundColor) {
         JSlider slider = new JSlider(JSlider.HORIZONTAL);
         

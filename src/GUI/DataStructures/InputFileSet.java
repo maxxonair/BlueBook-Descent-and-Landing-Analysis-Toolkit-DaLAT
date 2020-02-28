@@ -28,18 +28,13 @@ public class InputFileSet {
 		this.legend = legend;
 	}
 
-
 	public String getInputDataFileName() {
 		return inputDataFileName;
 	}
 
-
-
 	public void setInputDataFileName(String inputDataFileName) {
 		this.inputDataFileName = inputDataFileName;
 	}
-
-
 
 	public int getID() {
 		return ID;
