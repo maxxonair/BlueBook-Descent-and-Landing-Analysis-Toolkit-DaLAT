@@ -11,6 +11,8 @@ public class SpaceShip {
 	
 	Propulsion propulsion = new Propulsion();
 	AeroElements aeroElements = new AeroElements();
+	Sensors sensors = new Sensors();
+	OBC oBC = new OBC();
 	
 	double CoM  = 0;		// Center of Mass (on the center line with respect to the set zero)
 	double CoT  = 0;		// Center of thrust forces (on the center line with respect to the set zero)
@@ -111,6 +113,16 @@ public class SpaceShip {
 
 	public void setVehicleLength(double vehicleLength) {
 		this.vehicleLength = vehicleLength;
+	}
+
+
+	public Sensors getSensors() {
+		return sensors;
+	}
+
+
+	public OBC getoBC() {
+		return oBC;
 	}
 	
 	

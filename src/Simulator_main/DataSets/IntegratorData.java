@@ -45,7 +45,7 @@ public class IntegratorData {
 	
 	double[] IntegInput;
 	
-	double ControllerFrequency=1;
+	double environmentFrequency=1;
 	
 	int IntegratorType;
 	
@@ -55,25 +55,11 @@ public class IntegratorData {
 	
 	private double groundtrack=0;
 	
-	private boolean isAtmosphereNoiseModel;
-	private boolean isActuatorNoiseModel; 
+	private NoiseModel noiseModel = new NoiseModel();
 	
-	
-	
-	public boolean isActuatorNoiseModel() {
-		return isActuatorNoiseModel;
-	}
 
-	public void setActuatorNoiseModel(boolean isActuatorNoiseModel) {
-		this.isActuatorNoiseModel = isActuatorNoiseModel;
-	}
-
-	public boolean isAtmosphereNoiseModel() {
-		return isAtmosphereNoiseModel;
-	}
-
-	public void setAtmosphereNoiseModel(boolean isAtmosphereNoiseModel) {
-		this.isAtmosphereNoiseModel = isAtmosphereNoiseModel;
+	public NoiseModel getNoiseModel() {
+		return noiseModel;
 	}
 
 	public double getGroundtrack() {
@@ -362,12 +348,12 @@ public class IntegratorData {
 		this.degreeOfFreedom = degreeOfFreedom;
 	}
 
-	public double getControllerFrequency() {
-		return ControllerFrequency;
+	public double getEnvironmentFrequency() {
+		return environmentFrequency;
 	}
 
-	public void setControllerFrequency(double controllerFrequency) {
-		ControllerFrequency = controllerFrequency;
+	public void setEnvironmentFrequency(double frequency) {
+		environmentFrequency = frequency;
 	}
 	
 }
