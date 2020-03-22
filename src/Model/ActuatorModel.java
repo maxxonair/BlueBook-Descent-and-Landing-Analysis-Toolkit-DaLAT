@@ -28,7 +28,7 @@ public class ActuatorModel {
 
 		ActuatorSet actuatorSet = new ActuatorSet();
 		//double deltaPropellant = spaceShip.getMass() - currentDataSet.getxIS()[6];
-		if(integratorData.isActuatorNoiseModel()) {
+		if(integratorData.getNoiseModel().isActuatorNoiseModel()) {
 			ActuatorNoiseModel.setPrimaryThrustNoise(actuatorSet.getActuatorNoiseSet());
 			ActuatorNoiseModel.setRCSXNoise(actuatorSet.getActuatorNoiseSet());
 			ActuatorNoiseModel.setRCSYNoise(actuatorSet.getActuatorNoiseSet());

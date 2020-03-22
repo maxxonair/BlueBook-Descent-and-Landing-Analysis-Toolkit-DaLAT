@@ -2,7 +2,7 @@ package Model.DataSets;
 
 import Simulator_main.DataSets.RealTimeResultSet;
 
-public class SensorSet {
+public class SensorSet extends Object implements Cloneable {
 	
 	private RealTimeResultSet realTimeResultSet;
 	private MasterSet masterSet;
@@ -37,6 +37,10 @@ public class SensorSet {
 	} 
 
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 
 }

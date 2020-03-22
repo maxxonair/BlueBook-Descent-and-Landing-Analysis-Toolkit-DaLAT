@@ -1,40 +1,41 @@
 package utils;
 
-public class RateTransition {
-	
+import Model.DataSets.ControlCommandSet;
+
+public class CRateTransition {
 	private double t;					// Time since last transport [s]
 	
 	private double dtIN;					// Input time delta [s]	
 	private double dtOUT;				// Output time step [s]
 	
-	private ObjectFile valuePrev;		    // Previous Transport value [-]
-	private ObjectFile valueNext;			// Next Transport value [-]
+	private ControlCommandSet valuePrev;		    // Previous Transport value [-]
+	private ControlCommandSet valueNext;			// Next Transport value [-]
 	
 	//private double frequencyIN=0;		// Input Frequency[Hz]
 	//private double frequencyOUT=0;		// Output Frequency [Hz]
 	
-	public RateTransition(double frequencyIN, double frequencyOUT) {		
+	public CRateTransition(double frequencyIN, double frequencyOUT) {		
 		dtIN  = 1/frequencyIN;
 		dtOUT = 1/frequencyOUT;
 	}
 
-	public Object get(ObjectFile value) {
+	public Object get(ControlCommandSet value) {
 		t+=dtIN;
 
-			try {
-				valueNext=(ObjectFile) value.clone();
-			} catch (CloneNotSupportedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+		
+				try {
+					valueNext=(ControlCommandSet) value.clone();
+				} catch (CloneNotSupportedException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+
 
 		
-		if(t > dtOUT) { // Switching time reached -> switch next 
+		if(t >= dtOUT) { // Switching time reached -> switch next 
 			t=0;	
-			System.out.println(t);
-
 				try {
-					valuePrev=(ObjectFile) valueNext.clone();
+					valuePrev=(ControlCommandSet) valueNext.clone();
 				} catch (CloneNotSupportedException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -45,7 +46,7 @@ public class RateTransition {
 			if (valuePrev==null) {
 
 					try {
-						valuePrev=(ObjectFile) valueNext.clone();
+						valuePrev=(ControlCommandSet) valueNext.clone();
 					} catch (CloneNotSupportedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
@@ -56,5 +57,4 @@ public class RateTransition {
 			return valuePrev;
 		}
 	}
-
 }

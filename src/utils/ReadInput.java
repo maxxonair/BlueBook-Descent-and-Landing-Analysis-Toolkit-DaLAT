@@ -469,7 +469,7 @@ private static IntegratorData checkIntegratorData(String identifier, double valu
 	} else if (identifier.equals("Integ_AdBash_RelTol")) {
 		IntegInput[4] = value;	
 	} else if (identifier.equals("Integ_Frequency")) {
-		integratorData.setControllerFrequency(value);	
+		integratorData.setEnvironmentFrequency(value);	
 		integratorData.setMaxIntegTime(1/value);
 	} 
 	

@@ -545,7 +545,12 @@ e2.printStackTrace();
 
 RealTimeSimulationCore.spaceShip = spaceShip;
 //tankContent = spaceShip.getPropulsion().getPrimaryPropellant();
-RealTimeSimulationCore.controlCommandSet = controlCommandSet;
+try {
+	RealTimeSimulationCore.controlCommandSet = (ControlCommandSet) controlCommandSet.clone();
+} catch (CloneNotSupportedException e) {
+	// TODO Auto-generated catch block
+	e.printStackTrace();
+}
 
 RealTimeSimulationCore.integratorData = integratorData;
 coordinateTransformation =  new CoordinateTransformation();
@@ -744,6 +749,8 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 				return realTimeContainer;
 			//---------------------------------------
 		}
+	    
+	    
 public static double getRef_ELEVATION() {
 	return ref_ELEVATION;
 }

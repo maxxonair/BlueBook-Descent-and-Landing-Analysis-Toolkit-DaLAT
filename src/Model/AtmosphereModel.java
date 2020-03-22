@@ -131,7 +131,7 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet
       	//----------------------------------------------------------------------------------------------
 	} else { // In atmosphere conditions (if any)
 
-		if(integratorData.isAtmosphereNoiseModel()) {
+		if(integratorData.getNoiseModel().isAtmosphereNoiseModel()) {
 			AtmosphereNoiseModel.setDensityNoise(atmosphereSet, altitude);
 			AtmosphereNoiseModel.setStaticTemperatureNoise(atmosphereSet, altitude);
 		} else {

@@ -29,16 +29,18 @@ import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
 import Simulator_main.DataSets.SimulatorInputSet;
+import utils.CRateTransition;
 import utils.Quaternion;
 import utils.ReadInput;
+import utils.SRateTransition;
 
 public class LaunchRealTimeSimulation {
 	
-    public static double PI    = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;                 // PI                                       [-] 
+    public static double PI    = 3.141592653589793238462643383279;   // PI       [-] 
 	static double deg2rad 	   = PI/180.0; 					    //Convert degrees to radians
-	static double rad2deg 	   = 180/PI; 					    //Convert radians to degrees
+	static double rad2deg 	   = 180.0/PI; 					    //Convert radians to degrees
 	
-    static DecimalFormat df_X4 = new DecimalFormat("#.###");
+    static DecimalFormat decFormat = new DecimalFormat("#.###");
     
     static SensorSet sensorSet = new SensorSet();
     
@@ -73,23 +75,39 @@ public class LaunchRealTimeSimulation {
 	    	
 	    	IntegratorData integratorData = simulatorInputSet.getIntegratorData();
 	    	
+	    	// Set maximum integration Time limit
     		double tGlobal = integratorData.getMaxGlobalTime();
-    		double Frequency = integratorData.getControllerFrequency();
-    		double tIncrement = 1/Frequency; 
+    		// Frequency of the Simulation environment 
+    		// Ensure:  environmentFrequency > Sensor/Actuator Frequency
+    		double environmentFrequency = integratorData.getEnvironmentFrequency(); 
+    		double tIncrement = 1/environmentFrequency; 
 
 	    		integratorData.setDegreeOfFreedom(6);  // manual overwrite for now 
+	    	
+	    		// Set Environment model uncertainty settings 
+	    		integratorData.getNoiseModel().setAtmosphereNoiseModel(true);
+	    		//integratorData.getNoiseModel().setAerodynamicNoiseModel(true);
+	    		//integratorData.getNoiseModel().setGravityNoiseModel(true);
+	    		//integratorData.getNoiseModel().setRadiationNoiseModel(true);
 	    		
-	    		integratorData.setAtmosphereNoiseModel(true);
-	    		integratorData.setActuatorNoiseModel(true);
+	    		//integratorData.getNoiseModel().setSensorNoiseModel(true);
+	    		integratorData.getNoiseModel().setActuatorNoiseModel(true);
+	    		//--------------------------------------------------------------------------------------
+	    		// Rate Transition blocks - Spacecraft 
+	    		
+	    		SRateTransition sensorRateTransition     = new SRateTransition(environmentFrequency, 
+	    				spaceShip.getSensors().getSensorFrequency());
+	    		
+	    		CRateTransition controllerRateTransition = new CRateTransition(environmentFrequency, 
+	    				spaceShip.getoBC().getControllerFrequency());
 		    	//--------------------------------------------------------------------------------------
 	    		ControlCommandSet controlCommandSet = new ControlCommandSet(); 
-	    		//--------------------------------------------------------------------------------------
-	    		
+	    		//--------------------------------------------------------------------------------------	    		
 	    		RealTimeResultSet realTimeResultSet = new RealTimeResultSet();	    		
-	    		
+	    		//--------------------------------------------------------------------------------------	 
 	    	    ArrayList<String> steps = new ArrayList<String>();
     			RealTimeContainer realTimeContainer = new RealTimeContainer();	
-    			
+    			//--------------------------------------------------------------------------------------	 
 		        long startTime   = System.nanoTime();	
 		    	System.out.println("------------------------------------------");
 		    	System.out.println("Start SIMULATION :");
@@ -128,10 +146,21 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    	    		
 		    	    		integratorData.setGlobalTime(tIS);
 		    	   //---------------------------------------------------------------------------------------
-		    	   //				  Get Master Controller Commands
+		    	   //				    Get Master Controller Commands
 		    	   //---------------------------------------------------------------------------------------  		
-		    	    		controlCommandSet = MasterController.createMasterCommand(controlCommandSet, 
-		    	    	realTimeContainer, realTimeResultSet.getMasterSet().getSpaceShip(), sensorSet, SequenceSet, Frequency);
+
+		    	    	    ControlCommandSet intSetOut = (ControlCommandSet) controllerRateTransition.get(
+		    	    	    	MasterController.createMasterCommand(controlCommandSet, realTimeContainer, 
+		    	    	    			realTimeResultSet.getMasterSet().getSpaceShip(), sensorSet, 
+				    	    	    SequenceSet, environmentFrequency));
+		    	    	    
+		    	    	           try {
+								controlCommandSet = (ControlCommandSet) intSetOut.clone();
+							} catch (CloneNotSupportedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							}
+		    	    		
 		    	   //---------------------------------------------------------------------------------------
 		    	   //				  Start incremental integration
 		    	   //---------------------------------------------------------------------------------------	
@@ -145,6 +174,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	  	      //---------------------------------------------------------------------------------------
 	    	      //				       Create Sensor Data
 	    	      //---------------------------------------------------------------------------------------
+	    		
 	    		  sensorSet.setMasterSet(realTimeContainer.getRealTimeList().get(realTimeContainer.
 	    				  getRealTimeList().size() - 1).getMasterSet());
 	    		  sensorSet.setRealTimeResultSet(realTimeResultSet);
@@ -153,6 +183,9 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		    			//SensorModel.addAltitudeSensorUncertainty(sensorSet,  5);
 	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);  
 	    		    	   
+	    		    	   // Set Rate Transition 
+	    		    	   sensorSet = (SensorSet) sensorRateTransition.get(sensorSet);
+	    		    	   
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------
@@ -160,9 +193,8 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		    	   for(int i=0;i<realTimeContainer.getRealTimeList().size();i++) {
 	    		    		   integratorData.setGroundtrack(realTimeContainer.getRealTimeList().get(i).
 	    		    				   getIntegratorData().getGroundtrack());
-	    		    		   	steps = addStep(steps, realTimeContainer, integratorData, i);
-	    		    		   //	System.out.println(i+"|"+realTimeContainer.getRealTimeList().get(i).getGlobalTime());
-	    		    		   	
+	    		    		   	steps = addOutputTimestepData(steps, realTimeContainer, integratorData, i);
+	    		    		   //	System.out.println(i+"|"+realTimeContainer.getRealTimeList().get(i).getGlobalTime());    		   	
 	    		    	   }
 	  	      //---------------------------------------------------------------------------------------
 	  		  //				  Implement Stop Handler here: 
@@ -190,9 +222,9 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 				long endTime   = System.nanoTime();
 				long totalTime = endTime - startTime;
 				double  totalTime_sec = (double) (totalTime * 1E-9);  
-		        System.out.println("Runtime: "+df_X4.format(totalTime_sec)+" seconds.");
+		        System.out.println("Runtime: "+decFormat.format(totalTime_sec)+" seconds.");
 		  	//---------------------------------------------------------------------------------------
-		    //				  Create Result File
+		    //				 				 Create Result File
 		  	//---------------------------------------------------------------------------------------	
 	    		createWriteOut(steps);
 	    		if(isPlot) {
@@ -217,7 +249,7 @@ private static void createWriteOut(ArrayList<String> steps) {
         } catch(Exception e) {System.out.println("ERROR: Writing result file failed");System.out.println(e);};
 }
 
-private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContainer realTimeContainer, 
+private static ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTimeContainer realTimeContainer, 
 										 IntegratorData integratorData, int subIndx) {
 	RealTimeResultSet realTimeResultSet = realTimeContainer.getRealTimeList().get(subIndx);
 	MasterSet masterSet = realTimeContainer.getRealTimeList().get(subIndx).getMasterSet(); 
@@ -346,6 +378,5 @@ private static ArrayList<String> addStep(ArrayList<String> steps, RealTimeContai
   		  );
 	return steps;	
 }
-
 
 }

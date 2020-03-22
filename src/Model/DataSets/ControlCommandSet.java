@@ -1,6 +1,7 @@
 package Model.DataSets;
 
-public class ControlCommandSet {
+
+public class ControlCommandSet extends Object implements Cloneable{
 
     private double primaryThrustThrottleCmd=0;				// Main engine throttle command [-]
     private double TVC_alpha=0;
@@ -200,5 +201,9 @@ public class ControlCommandSet {
 		MomentumRCS_Z_cmd = momentumRCS_Z_cmd;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }
