@@ -26,8 +26,6 @@ public class ControlCommandSet extends Object implements Cloneable{
     private int activeSequence;
     
     
-    
-    
 	public boolean isHeatShieldEjectionCMD() {
 		return HeatShieldEjectionCMD;
 	}

@@ -3,7 +3,7 @@ package utils;
  *
  * @author leonardo
  */
-public class Quaternion {
+public class Quaternion extends Object implements Cloneable{
 
     public double x;
     public double y;
@@ -101,5 +101,11 @@ public class Quaternion {
         rotatedPoint.y = quatTmp3.y;
         rotatedPoint.z = quatTmp3.z;
     }
+    
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
     
 }

@@ -21,7 +21,6 @@ public class CRateTransition {
 
 	public Object get(ControlCommandSet value) {
 		t+=dtIN;
-
 		
 				try {
 					valueNext=(ControlCommandSet) value.clone();

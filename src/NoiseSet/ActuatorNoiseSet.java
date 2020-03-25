@@ -1,6 +1,6 @@
 package NoiseSet;
 
-public class ActuatorNoiseSet {
+public class ActuatorNoiseSet extends Object implements Cloneable {
 	
 	private double PrimaryThrustNoise=0;
 	private double RCSMomentumX=0;
@@ -43,5 +43,9 @@ public class ActuatorNoiseSet {
 		RCSMomentumZ = rCSMomentumZ;
 	}
 
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

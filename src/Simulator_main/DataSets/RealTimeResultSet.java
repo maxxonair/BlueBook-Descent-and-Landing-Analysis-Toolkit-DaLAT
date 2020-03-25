@@ -3,7 +3,7 @@ package Simulator_main.DataSets;
 import Model.DataSets.MasterSet;
 import utils.Quaternion;
 
-public class RealTimeResultSet {
+public class RealTimeResultSet extends Object implements Cloneable{
 	
 	
 	private double longitude=0;
@@ -116,7 +116,12 @@ public class RealTimeResultSet {
 	}
 
 	public void setMasterSet(MasterSet masterSet) {
-		this.masterSet = masterSet;
+		try {
+			this.masterSet = (MasterSet) masterSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public double getTime() {
@@ -140,7 +145,12 @@ public class RealTimeResultSet {
 	}
 
 	public void setQuaternion(Quaternion quaternions) {
-		this.quaternion = quaternions;
+		try {
+			this.quaternion = (Quaternion) quaternions.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public double getEulerX() {
@@ -252,4 +262,9 @@ public class RealTimeResultSet {
 		CartesianPosECEF = cartesianPosECEF;
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

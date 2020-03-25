@@ -1,6 +1,6 @@
 package Simulator_main.DataSets;
 
-public class NoiseModel {
+public class NoiseModel extends Object implements Cloneable {
 	
 	// Environment Uncertainty Model 
 	private boolean isAtmosphereNoiseModel;
@@ -65,4 +65,9 @@ public class NoiseModel {
 		this.isActuatorNoiseModel = isActuatorNoiseModel;
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

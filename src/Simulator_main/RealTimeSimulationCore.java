@@ -486,11 +486,11 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
 					double Ixx = InertiaTensor[0][0];
 					double Iyy = InertiaTensor[1][1];
 					double Izz = InertiaTensor[2][2];
-					//double Ixy = InertiaTensor[0][1];
+					// double Ixy = InertiaTensor[0][1];
 					double Ixz = InertiaTensor[0][2];
-					//  double Iyx = InertiaTensor[][];
-					//double Iyz = InertiaTensor[2][1];
-					//System.out.println(Ixx+" | "+x[7]);
+					// double Iyx = InertiaTensor[][];
+					// double Iyz = InertiaTensor[2][1];
+					// System.out.println(Ixx+" | "+x[7]);
 		    		// Angular Rates
 				// p dot:
 		    		dxdt[11] = (Izz * Lb + Ixz * Nb - (Ixz * (Iyy - Ixx - Izz) * x[11] + (Ixz*Ixz + Izz * (Izz - Iyy)) 
@@ -675,14 +675,14 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                double[] y     = interpolator.getInterpolatedState();
 	                RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
-	                 //double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
-	         	  // RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
+	                // double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
+	         	    // RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	         	    // System.out.println(stepCount);
 	                // currentGlobalTime = currentGlobalTime + val_dt;
 	         		
-	         	   // System.out.println(integratorData.getGlobalTime() + currentGlobalTime+"|"+val_dt);
-	                	//realTimeResultSet.setTime(currentGlobalTime);
-	                //realTimeResultSet.setGlobalTime(integratorData.getGlobalTime() + currentGlobalTime);
+	         	    // System.out.println(integratorData.getGlobalTime() + currentGlobalTime+"|"+val_dt);
+	                	// realTimeResultSet.setTime(currentGlobalTime);
+	                // realTimeResultSet.setGlobalTime(integratorData.getGlobalTime() + currentGlobalTime);
 	                	realTimeResultSet.setGlobalTime(currentDataSet.getGlobalTime());
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
@@ -714,12 +714,19 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	integratorData.setGroundtrack(groundtrack);
 	                //if(masterSet.getActuatorSet().getPrimaryThrust_is()>10 && masterSet.getActuatorSet().getPrimaryThrust_is()<6000){	System.out.println(masterSet.getActuatorSet().getPrimaryThrust_is()); }
 	                	RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
-	                	realTimeResultSet.setMasterSet(masterSet);
+	                	try {
+	                	realTimeResultSet.setMasterSet((MasterSet) masterSet.clone());
+	                	} catch (Exception exp) {
+	                		
+	                	}
 	                	realTimeResultSet.setIntegratorData(integratorData);
 	                	//RealTimeSimulationCore.spaceShip.getPropulsion().setMassFlowPrimary(Math.abs(ymo[14]));
 	                //	realTimeResultSet.setSpaceShip(masterSet.getSpaceShip());
-	             
-	                masterList.add(masterSet);
+	                	try {
+	                masterList.add((MasterSet) masterSet.clone());
+} 					catch (Exception exp) {
+	                		
+	                	}
 	                realTimeList.add(realTimeResultSet);
 	                
 	                

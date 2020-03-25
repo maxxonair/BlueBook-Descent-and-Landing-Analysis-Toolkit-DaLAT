@@ -1,6 +1,6 @@
 package Model.DataSets;
 
-public class ForceMomentumSet {
+public class ForceMomentumSet extends Object implements Cloneable {
 	
 	  private double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
 	  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
@@ -142,6 +142,10 @@ public class ForceMomentumSet {
 		M_Thrust_B = m_Thrust_B;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 
 }

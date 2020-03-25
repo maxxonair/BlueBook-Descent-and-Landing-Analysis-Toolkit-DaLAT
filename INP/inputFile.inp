@@ -10,7 +10,7 @@ Init_QuartW 0.99974063
 Init_QuartX 0.02277458
 Init_QuartY 0.0
 Init_QuartZ 0.0
-Init_AngRateX 5.0
+Init_AngRateX 3.0
 Init_AngRateY 0.0
 Init_AngRateZ 0.0
 Init_IXX 20000.0
@@ -47,7 +47,7 @@ Env_DragModel 3.0
 Env_ConstCD 1.4
 Env_ParModel 1.0
 Env_ParCD 0.0
-SC_SurfArea 1.72
+SC_SurfArea 1.716
 SC_ParDiam 0.0
 SC_COM 5.523
 SC_COT 0.8

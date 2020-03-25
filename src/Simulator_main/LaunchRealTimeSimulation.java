@@ -37,16 +37,13 @@ import utils.SRateTransition;
 public class LaunchRealTimeSimulation {
 	
     public static double PI    = 3.141592653589793238462643383279;   // PI       [-] 
-	static double deg2rad 	   = PI/180.0; 					    //Convert degrees to radians
-	static double rad2deg 	   = 180.0/PI; 					    //Convert radians to degrees
+	static double deg2rad 	   = PI/180.0; 					    		 //Convert degrees to radians
+	static double rad2deg 	   = 180.0/PI; 					    		 //Convert radians to degrees
 	
-    static DecimalFormat decFormat = new DecimalFormat("#.###");
-    
-    static SensorSet sensorSet = new SensorSet();
-    
+    static DecimalFormat decFormat = new DecimalFormat("#.###");    
 	static DataContainer dataContainer = new DataContainer();
 	static DataSetXY dataSet =  new DataSetXY();
-	static boolean isPlot=false;
+	static boolean isPlot=true;
 	
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -71,7 +68,7 @@ public class LaunchRealTimeSimulation {
 	    	System.out.println("READ: Create simulation input file");
 
 	    	SimulatorInputSet simulatorInputSet = ReadInput.readINP();
-	    	SpaceShip spaceShip =  simulatorInputSet.getSpaceShip();
+	    	SpaceShip spaceShip = simulatorInputSet.getSpaceShip();
 	    	
 	    	IntegratorData integratorData = simulatorInputSet.getIntegratorData();
 	    	
@@ -93,7 +90,10 @@ public class LaunchRealTimeSimulation {
 	    		//integratorData.getNoiseModel().setSensorNoiseModel(true);
 	    		integratorData.getNoiseModel().setActuatorNoiseModel(true);
 	    		//--------------------------------------------------------------------------------------
+	    		 SensorSet sensorSet = new SensorSet();
 	    		// Rate Transition blocks - Spacecraft 
+	    		spaceShip.getoBC().setControllerFrequency(10);
+	    		spaceShip.getSensors().setSensorFrequency(20);
 	    		
 	    		SRateTransition sensorRateTransition     = new SRateTransition(environmentFrequency, 
 	    				spaceShip.getSensors().getSensorFrequency());
@@ -183,9 +183,16 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		    			//SensorModel.addAltitudeSensorUncertainty(sensorSet,  5);
 	    		    	   SensorModel.addIMUGiro(sensorSet, 0.5);  
 	    		    	   
-	    		    	   // Set Rate Transition 
-	    		    	   sensorSet = (SensorSet) sensorRateTransition.get(sensorSet);
+	    		    	   // Set Rate Transition 	
 	    		    	   
+		    	    	    SensorSet intSenOut = (SensorSet) sensorRateTransition.get(sensorSet);	    		    	   
+	    	    	           try {
+	    	    	        	   		sensorSet = (SensorSet) intSenOut.clone();
+						} catch (CloneNotSupportedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+					
 			  //---------------------------------------------------------------------------------------
 			  //				  Add incremental integration result to write out file 
 			  //---------------------------------------------------------------------------------------
@@ -193,7 +200,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    		    	   for(int i=0;i<realTimeContainer.getRealTimeList().size();i++) {
 	    		    		   integratorData.setGroundtrack(realTimeContainer.getRealTimeList().get(i).
 	    		    				   getIntegratorData().getGroundtrack());
-	    		    		   	steps = addOutputTimestepData(steps, realTimeContainer, integratorData, i);
+	    		    		   	steps = addOutputTimestepData(steps, realTimeContainer, integratorData, sensorSet,  i);
 	    		    		   //	System.out.println(i+"|"+realTimeContainer.getRealTimeList().get(i).getGlobalTime());    		   	
 	    		    	   }
 	  	      //---------------------------------------------------------------------------------------
@@ -250,7 +257,7 @@ private static void createWriteOut(ArrayList<String> steps) {
 }
 
 private static ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTimeContainer realTimeContainer, 
-										 IntegratorData integratorData, int subIndx) {
+										 IntegratorData integratorData, SensorSet sensorSet, int subIndx) {
 	RealTimeResultSet realTimeResultSet = realTimeContainer.getRealTimeList().get(subIndx);
 	MasterSet masterSet = realTimeContainer.getRealTimeList().get(subIndx).getMasterSet(); 
 	AtmosphereSet atmosphereSet = masterSet.getAtmosphereSet();
@@ -262,11 +269,11 @@ private static ArrayList<String> addOutputTimestepData(ArrayList<String> steps, 
 	SpaceShip spaceShip = masterSet.getSpaceShip();
 	if(isPlot) {
 	dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
-			masterSet.getSpaceShip().getMass()));
+			sensorSet.getRealTimeResultSet().getEulerX()*180/PI ));
 	//	dataSet.addPair(new Pair(realTimeResultSet.getAltitude(), 
 	//			aerodynamicSet.getFlowzone()));
 	dataContainer.setxAxisLabel("Time");
-	dataContainer.setyAxisLabel("Noise");
+	dataContainer.setyAxisLabel("Euler 1 (Sensor)");
 	}
 	
 	Quaternion qVector = realTimeResultSet.getQuaternion();

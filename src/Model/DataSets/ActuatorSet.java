@@ -3,7 +3,7 @@ package Model.DataSets;
 import FlightElement.SpaceShip;
 import NoiseSet.ActuatorNoiseSet;
 
-public class ActuatorSet {
+public class ActuatorSet extends Object implements Cloneable {
 	
 	private double primaryThrust_is=0;
 	private double MomentumRCS_X_is=0;
@@ -61,7 +61,12 @@ public class ActuatorSet {
 
 
 	public void setActuatorNoiseSet(ActuatorNoiseSet actuatorNoiseSet) {
-		this.actuatorNoiseSet = actuatorNoiseSet;
+		try {
+			this.actuatorNoiseSet = (ActuatorNoiseSet) actuatorNoiseSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 
@@ -211,5 +216,9 @@ public class ActuatorSet {
 		MomentumRCS_Z_is = momentumRCS_Z_is;
 	}
 
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

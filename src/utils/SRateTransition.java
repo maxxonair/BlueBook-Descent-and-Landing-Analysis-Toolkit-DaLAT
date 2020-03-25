@@ -21,7 +21,6 @@ public class SRateTransition {
 
 	public Object get(SensorSet value) {
 		t+=dtIN;
-
 			try {
 				valueNext=(SensorSet) value.clone();
 			} catch (CloneNotSupportedException e) {
@@ -30,9 +29,8 @@ public class SRateTransition {
 			}
 
 		
-		if(t > dtOUT) { // Switching time reached -> switch next 
+		if(t >= dtOUT) { // Switching time reached -> switch next 
 			t=0;	
-
 				try {
 					valuePrev=(SensorSet) valueNext.clone();
 				} catch (CloneNotSupportedException e) {

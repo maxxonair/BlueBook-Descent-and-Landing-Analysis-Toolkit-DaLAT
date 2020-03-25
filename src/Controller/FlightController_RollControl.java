@@ -33,7 +33,7 @@ public class FlightController_RollControl extends FlightController {
 			   	  RCS_X_CMD = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, Kp, Ki, Kd, 1, -1);
 	   	} else { // Reduce roll angle to 0
 			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerX() ; 
-			    RCS_X_CMD = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, 0.8, 0.0001, 3, 1, -1);
+			    RCS_X_CMD   = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, 0.8, 0.0001, 3, 1, -1);
 	   	}	
 		   	 controlCommandSet.setMomentumRCS_X_cmd(RCS_X_CMD);
 		    return controlCommandSet;

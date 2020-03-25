@@ -2,7 +2,7 @@ package Model.DataSets;
 
 import NoiseSet.AtmosphereNoiseSet;
 
-public class AtmosphereSet {
+public class AtmosphereSet extends Object implements Cloneable {
 
     public   double DynamicPressure=0;
     public   double Density =0;
@@ -20,7 +20,12 @@ public class AtmosphereSet {
 		return atmosphereNoiseSet;
 	}
 	public void setAtmosphereNoiseSet(AtmosphereNoiseSet atmosphereNoiseSet) {
-		this.atmosphereNoiseSet = atmosphereNoiseSet;
+		try {
+			this.atmosphereNoiseSet = (AtmosphereNoiseSet) atmosphereNoiseSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public   double getDynamicPressure() {
 		return DynamicPressure;
@@ -71,4 +76,9 @@ public class AtmosphereSet {
 		PressureCoefficient = pressureCoefficient;
 	}
     
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import Sequence.SequenceElement;
 import Simulator_main.CoordinateTransformation;
 
-public class CurrentDataSet {
+public class CurrentDataSet extends Object implements Cloneable{
 	
 	private  double valDt=0;
 	private  double RM;
@@ -139,6 +139,10 @@ public class CurrentDataSet {
 		this.localElevation = localElevation;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 
 }

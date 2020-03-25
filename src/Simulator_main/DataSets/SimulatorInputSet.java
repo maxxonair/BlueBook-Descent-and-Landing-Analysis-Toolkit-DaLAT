@@ -34,7 +34,12 @@ public class SimulatorInputSet {
 	}
 
 	public void setControlCommandSet(ControlCommandSet controlCommandSet) {
-		this.controlCommandSet = controlCommandSet;
+		try {
+			this.controlCommandSet = (ControlCommandSet) controlCommandSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 }
