@@ -387,5 +387,71 @@ public class Mathbox{
 		
 		return quaternion;
 	}
+	
+	public static double[][] Quat2Euler(Quaternion q, int rotOrder){
+		double[][] Euler = new double[3][1];
+		switch(rotOrder) {
+	    case 312:
+	        Euler[0][0] = Math.atan2(2*(q.z*q.w-q.x*q.y),(q.w*q.w)-(q.x*q.x)+(q.y*q.y)-(q.z*q.z));
+	        Euler[1][0] = Math.asin(2*(q.x*q.w+q.y*q.z));
+	        Euler[2][0] = Math.atan2(2*(q.y*q.w-q.x*q.z),(q.w*q.w)-(q.x*q.x)-(q.y*q.y)+(q.z*q.z));
+	
+	    case 321:
+	        Euler[0][0] = Math.atan2(2*(q.x*q.y+q.z*q.w),(q.w*q.w)+(q.x*q.x)-(q.y*q.y)-(q.z*q.z));
+	        Euler[1][0] = Math.asin(2*(q.y*q.w-q.x*q.z));
+	        Euler[2][0] = Math.atan2(2*(q.x*q.w+q.z*q.y),(q.w*q.w)-(q.x*q.x)-(q.y*q.y)+(q.z*q.z));
+	
+	    case 123:
+	        Euler[0][0] = Math.atan2(2*(q.x*q.w-q.y*q.z),(q.w*q.w)-(q.x*q.x)-(q.y*q.y)+(q.z*q.z));
+	        Euler[1][0] = Math.asin(2*(q.x*q.z+q.y*q.w));
+	        Euler[2][0] = Math.atan2(2*(q.z*q.w-q.x*q.y),(q.w*q.w)+(q.x*q.x)-(q.y*q.y)-(q.z*q.z));
+	
+	    case 132:
+	        Euler[0][0] = Math.atan2(2*(q.x*q.w+q.y*q.z),(q.w*q.w)-(q.x*q.x)+(q.y*q.y)-(q.z*q.z));
+	        Euler[1][0] = Math.asin(2*(q.z*q.w-q.x*q.y));
+	        Euler[2][0] = Math.atan2(2*(q.x*q.z+q.y*q.w),(q.w*q.w)+(q.x*q.x)-(q.y*q.y)-(q.z*q.z));
+	
+	    case 231:
+	        Euler[0][0] = Math.atan2(2*(q.y*q.w-q.z*q.x),(q.w*q.w)+(q.x*q.x)-(q.y*q.y)-(q.z*q.z));
+	        Euler[1][0] = Math.asin(2*(q.x*q.y+q.z*q.w));
+	        Euler[2][0] = Math.atan2(2*(q.x*q.w-q.y*q.z),(q.w*q.w)-(q.x*q.x)+(q.y*q.y)-(q.z*q.z));
+	
+	    case 213:
+	        Euler[0][0] = Math.atan2(2*(q.x*q.z+q.y*q.w),(q.w*q.w)-(q.x*q.x)-(q.y*q.y)+(q.z*q.z));
+	        Euler[1][0] = Math.asin(2*(q.x*q.w-q.y*q.z));
+	        Euler[2][0] = Math.atan2(2*(q.x*q.y+q.z*q.w),(q.w*q.w)-(q.x*q.x)+(q.y*q.y)-(q.z*q.z));
+	
+	    case 121:
+	        Euler[0][0] = Math.atan2(q.x*q.y+q.z*q.w,q.y*q.w-q.x*q.z);
+	        Euler[1][0] = Math.acos((q.w*q.w)+(q.x*q.x)-(q.y*q.y)-(q.z*q.z));
+	        Euler[2][0] = Math.atan2(q.x*q.y-q.z*q.w,q.x*q.z+q.y*q.w);
+	
+	    case 131:
+	        Euler[0][0] = Math.atan2(q.x*q.z-q.y*q.w,q.x*q.y+q.z*q.w);
+	        Euler[1][0] = Math.acos((q.w*q.w)+(q.x*q.x)-(q.y*q.y)-(q.z*q.z));
+	        Euler[2][0] = Math.atan2(q.x*q.z+q.y*q.w,q.z*q.w-q.x*q.y);
+	
+	    case 212:
+	        Euler[0][0] = Math.atan2(q.x*q.y-q.z*q.w,q.x*q.w+q.y*q.z);
+	        Euler[1][0] = Math.acos((q.w*q.w)-(q.x*q.x)+(q.y*q.y)-(q.z*q.z));
+	        Euler[2][0] = Math.atan2(q.x*q.y+q.z*q.w,q.x*q.w-q.y*q.z);
+	
+	    case 232:
+	        Euler[0][0] = Math.atan2(q.x*q.w+q.y*q.z,q.z*q.w-q.x*q.y);
+	        Euler[1][0] = Math.acos((q.w*q.w)-(q.x*q.x)+(q.y*q.y)-(q.z*q.z));
+	        Euler[2][0] = Math.atan2(q.y*q.z-q.x*q.w,q.x*q.y+q.z*q.w);
+	
+	    case 313:
+	        Euler[0][0] = Math.atan2(q.x*q.z+q.y*q.w,q.x*q.w-q.y*q.z);
+	        Euler[1][0] = Math.acos((q.w*q.w)-(q.x*q.x)-(q.y*q.y)+(q.z*q.z));
+	        Euler[2][0] = Math.atan2(q.x*q.z-q.y*q.w,q.x*q.w+q.y*q.z);
+	
+	    case 323:
+	        Euler[0][0] = Math.atan2(q.y*q.z-q.x*q.w,q.x*q.z+q.y*q.w);
+	        Euler[1][0] = Math.acos((q.w*q.w)-(q.x*q.x)-(q.y*q.y)+(q.z*q.z));
+	        Euler[2][0] = Math.atan2(q.x*q.w+q.y*q.z,q.y*q.w-q.x*q.z);
+		}
+		return Euler;	
+	}
 
 }

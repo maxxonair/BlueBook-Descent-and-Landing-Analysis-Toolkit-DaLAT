@@ -236,11 +236,7 @@ public class WriteInput {
     private static FileWriter write_InitRAD(FileWriter fileWriter, String delimiter) throws IOException {
     	
 	String identifier = "Init_RAD";
-	int target=0;
-			try {
-				target = CenterPanelRight.getTargetIndx();
-			} catch (Exception exction) { }
-	double radius = RealTimeSimulationCore.DATA_MAIN[target][0];
+	double radius = RealTimeSimulationCore.getRm();
 	double value =0;
 	try {
 	 value = radius + Double.parseDouble(	SidePanelLeft.INPUT_ALT_Rs.getText()) ;

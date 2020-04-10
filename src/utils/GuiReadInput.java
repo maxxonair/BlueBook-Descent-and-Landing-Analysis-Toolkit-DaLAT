@@ -286,11 +286,7 @@ public class GuiReadInput {
     private static void read_InitRAD(String identifier, double value) {
     	try {
     		if(identifier.equals("Init_RAD")) {
-    			int target=0;
-    			try {
-    				target = CenterPanelRight.getTargetIndx();
-    			} catch (Exception exction) {System.out.println(exction);}
-    	double radius = RealTimeSimulationCore.DATA_MAIN[target][0];
+    	double radius = RealTimeSimulationCore.getRm();
                 	DashboardLeftPanel.INDICATOR_ALT.setText(BlueBookVisual.decf.format( value-radius));
             		SidePanelLeft.INPUT_ALT_Rs.setText(BlueBookVisual.decf.format( value-radius));
     		}

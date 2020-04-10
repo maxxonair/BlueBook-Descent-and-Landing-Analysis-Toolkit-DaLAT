@@ -43,7 +43,7 @@ public class LaunchRealTimeSimulation {
     static DecimalFormat decFormat = new DecimalFormat("#.###");    
 	static DataContainer dataContainer = new DataContainer();
 	static DataSetXY dataSet =  new DataSetXY();
-	static boolean isPlot=true;
+	static boolean isPlot=false;
 	
     public static void main(String[] args) throws IOException {
     	String timeStamp = new SimpleDateFormat("dd/MM/yy HH:mm:ss").format(Calendar.getInstance().getTime());
@@ -68,8 +68,7 @@ public class LaunchRealTimeSimulation {
 	    	System.out.println("READ: Create simulation input file");
 
 	    	SimulatorInputSet simulatorInputSet = ReadInput.readINP();
-	    	SpaceShip spaceShip = simulatorInputSet.getSpaceShip();
-	    	
+	    	SpaceShip spaceShip = simulatorInputSet.getSpaceShip();	    	
 	    	IntegratorData integratorData = simulatorInputSet.getIntegratorData();
 	    	
 	    	// Set maximum integration Time limit
@@ -277,10 +276,7 @@ private static ArrayList<String> addOutputTimestepData(ArrayList<String> steps, 
 	}
 	
 	Quaternion qVector = realTimeResultSet.getQuaternion();
-	//qVector.normalize();
-							  
-	//System.out.println(realTimeContainer.getRealTimeSet().size());
-	// integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime())
+
 	steps.add(realTimeResultSet.getGlobalTime() + " " + 
     			realTimeResultSet.getLongitude() + " " + 
     			realTimeResultSet.getLatitude() + " " + 
