@@ -21,6 +21,8 @@ This project is divided in three core modules:
 
 ![Github SIM](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/FlowChart/flowchart.png)
 
+![Github SIM](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/develop/documentation/UML_Diagram.png)
+
 2) The GUI module (GUI): The GUI BlueBook_DaLAT.jar allows to perform pre- and postprocessing and visualise results. 
 
 ![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage4.png)
