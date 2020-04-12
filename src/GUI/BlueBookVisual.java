@@ -84,11 +84,10 @@ public class BlueBookVisual  {
     public static String CASE_FileEnding   = ".case";
     public static String RESULT_FileEnding = ".res";
     public static int OS_is = 1; 
-
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Constants
     //----------------------------------------------------------------------------------------------------------------------------------------- 
-    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
+    public static double PI = 3.1415926535897932384626433832795;
     public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
     public static double G     = 1.48808E-34;
     public static int TARGET;  
@@ -96,13 +95,6 @@ public class BlueBookVisual  {
     public static int indx_target = 0;  // Target planet indx 
 	static double deg2rad = PI/180.0; 		//Convert degrees to radians
 	static double rad2deg = 180/PI; 		//Convert radians to degrees
-	
-    public static double[][] DATA_MAIN = { // RM (average radius) [m] || Gravitational Parameter [m3/s2] || Rotational speed [rad/s] || Average Collision Diameter [m]
-			{6371000,3.9860044189E14,7.2921150539E-5,1.6311e-9}, 	// Earth
-			{1737400,4903E9,2.661861E-6,320},						// Moon (Earth)
-			{3389500,4.2838372E13,7.0882711437E-5,1.6311e-9},		// Mars
-			{0,0,0,0},												// Venus
-	 };
 	
 	public static String BB_delimiter = " ";
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -118,13 +110,15 @@ public class BlueBookVisual  {
     public static DecimalFormat decAngularRate =  new DecimalFormat("##.####");
     public static DecimalFormat df_X4 		  = new DecimalFormat("#####.###");
     public static DecimalFormat df_VelVector = new DecimalFormat("#.00000000");
-    //static Font menufont              = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 12);
+    
     public static Font small_font			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
     public static Font labelfont_small       = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 9);
     //static Font labelfont_verysmall   = new Font("Verdana", Font.BOLD, 7);
     
     static Font HeadlineFont          = new Font("Georgia", Font.LAYOUT_LEFT_TO_RIGHT, 14);
     public static DecimalFormat df 	  = new DecimalFormat();
+    
+
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Variables and Container Arrays
     //-----------------------------------------------------------------------------------------------------------------------------------------
@@ -620,7 +614,7 @@ public class BlueBookVisual  {
 
 			  mercatorMap.update();
 
-      	    		String timeStamp = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss").format(Calendar.getInstance().getTime());
+      	    		String timeStamp = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss").format(Calendar.getInstance().getTime());
       	    		System.out.println("Updated "+timeStamp);
 		  }
 	  } 

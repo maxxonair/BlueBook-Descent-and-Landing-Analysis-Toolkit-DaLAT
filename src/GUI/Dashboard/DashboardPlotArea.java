@@ -99,17 +99,13 @@ public class DashboardPlotArea {
 			
 			contentPanelList.get(i).refresh();
 
-					if(i==0) {
-				//System.out.println(i);
+			if(i==0) {
 				horizontalSplitUp.add(contentPanelList.get(i).getMainPanel(), JSplitPane.LEFT);
 			} else if (i==1) {
-				//System.out.println(i);
 				horizontalSplitDown.add(contentPanelList.get(i).getMainPanel(), JSplitPane.LEFT);
 			} else if (i==2) {
-				//System.out.println(i);
 				horizontalSplitDown.add(contentPanelList.get(i).getMainPanel(), JSplitPane.RIGHT);
 			} else if (i==3) {
-				//System.out.println(i);
 				horizontalSplitUp.add(contentPanelList.get(i).getMainPanel(), JSplitPane.RIGHT);
 			}
 		}
@@ -230,6 +226,8 @@ public class DashboardPlotArea {
 				        contentPanelList.add( (new Planet3DView(resultSet)) );
 					} else if (chartSettings.get(i).type == 2) {
 				        contentPanelList.add( (new AttitudeView(Model3DFilePath)));
+					} else if (chartSettings.get(i).type == 3) {
+				        contentPanelList.add( (new ConsoleClass()) );
 					}
 				}
 		}

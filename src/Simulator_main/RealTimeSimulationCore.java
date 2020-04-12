@@ -48,7 +48,7 @@ public class RealTimeSimulationCore implements FirstOrderDifferentialEquations {
  static 		boolean is_6DOF      = true;     // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
  static 		int SixDoF_Option    = 1;  
  static     boolean FlatEarther  = false;	 // Reduced complexity (no rot. Earth/no rot. NED) for attitude equations
- static     int eulerConvention = 321;	     // Rotational order for Euler angles 
+ static     int eulerConvention  = 321;	     // Rotational order for Euler angles 
 //............................................                                       .........................................
 //
 //	                                                         Constants
@@ -75,21 +75,21 @@ public static double ref_ELEVATION = 0;
 private static double groundtrack = 0; 
 private static double phimin=0;
 private static double tetamin=0;
-//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //			Position and Velocity 
-//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 private static double[] V_NED_ECEF_spherical = {0,0,0};			// Velocity vector in NED system with respect to ECEF in spherical coordinates  [m/s]
 private static double[] V_NED_ECEF_cartesian = {0,0,0};			// Velocity vector in NED system with respect to ECEF in cartesian coordinates [m/s]
 
 private static double[] r_ECEF_cartesian = {0,0,0};				// position coordinates with respect to ECEF in cartesian coordinates [m/s]
 private static double[] r_ECEF_spherical = {0,0,0};				// position coordinates with respect to ECEF in spherical coordinates [m/s]
-//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //			Forces 
-//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 private static double[][] F_total_NED = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
-//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 // 				Attitude variables 
-//----------------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 private static Quaternion qVector = new Quaternion(1,0,0,0);
 
 private static double[][] AngularRate     = {{0},
@@ -101,15 +101,15 @@ private static double[][] AngularMomentum_B = {{0},
 											   {0},
 											   {0}};					 // Angular Momentum (Total) [Nm] (Do not touch!)
 private static CoordinateTransformation coordinateTransformation ;
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
 //				Mass and Inertia
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
 public static double[][] InertiaTensor   = {{   0    ,    0    ,   0},
 	    										{   0    ,    0    ,   0},
 	    										{   0    ,    0    ,   0}};  // Inertia Tensor []
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
 //				Main Data containers
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
 private static SpaceShip spaceShip = new SpaceShip();
 private static IntegratorData integratorData = new IntegratorData();
 private static AtmosphereSet atmosphereSet = new AtmosphereSet();
@@ -121,7 +121,7 @@ private static ActuatorSet actuatorSet = new ActuatorSet();
 private static CurrentDataSet currentDataSet = new CurrentDataSet();
 private static ErrorSet errorSet = new ErrorSet();
 private static MasterSet masterSet = new MasterSet();
-//----------------------------------------------------------------------------------------------------------------------------
+//-----------------------------------------------------------------------------------------------------------------------
     public void computeDerivatives(double t, double[] x, double[] dxdt) {
     	//-------------------------------------------------------------------------------------------------------------------
     	//
@@ -135,8 +135,8 @@ private static MasterSet masterSet = new MasterSet();
     	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
     	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
     	currentDataSet.setEulerAngle(EulerAngle);
-	coordinateTransformation.initializeTranformationMatrices(x, t, constants.getOmega(), atmosphereSet, aerodynamicSet, EulerAngle, 
-															 qVector, r_ECEF_spherical, V_NED_ECEF_spherical);
+	coordinateTransformation.initializeTranformationMatrices(x, t, constants.getOmega(), atmosphereSet, aerodynamicSet, 
+															EulerAngle, qVector, r_ECEF_spherical, V_NED_ECEF_spherical);
 	currentDataSet.setCoordinateTransformation(coordinateTransformation);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration

@@ -64,7 +64,12 @@ public class DashboardPanel {
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}
-	
+	/**
+	 * 
+	 * 
+	 * Unit Tester 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester");
 		frame.setSize(400,400);

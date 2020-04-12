@@ -1,5 +1,6 @@
 package GUI.MenuBar;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -12,6 +13,7 @@ import javax.swing.JRadioButtonMenuItem;
 
 import GUI.Dashboard.AttitudeView;
 import GUI.Dashboard.ChartSetting;
+import GUI.Dashboard.ConsoleClass;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.Dashboard.DashboardPlotPanel;
 import GUI.Dashboard.Data2DPlot;
@@ -105,7 +107,7 @@ public class WindowContentChooser {
          menuItem.add(menuPoint);
          indx++;
          
-         menuPoint = new JRadioButtonMenuItem("Multiplot area");
+         menuPoint = new JRadioButtonMenuItem("Console");
         // menuPoint.setForeground(labelColor);
          menuPoint.setFont(smallFont);
          if(DashboardPlotArea.getContentPanelList().get(windowIndx).getID()==indx) {
@@ -113,21 +115,28 @@ public class WindowContentChooser {
          }
          menuPoint.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                    	/*
-							try {
-								JPanel Content = CreateCustomChart.createContentPane();
-							  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
-							   		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
-							   	    }
-							         SpaceShip3DControlPanel.add(Content,BorderLayout.CENTER);
-							         SpaceShip3DControlPanelContent.add(Content);
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-						thirdWindowIndx=2;
-						*/
+			                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
+				               //----------------------------------------------------------
+			                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
+			                	   chartSetting.get(windowIndx).setType(3);
+			                	   DashboardPlotArea.setChartSettings(chartSetting);
+			                	   //----------------------------------------------------------
+			                	   contentPanelList.set(windowIndx, (new ConsoleClass()) );
+			                	   DashboardPlotArea.setContentPanelList(contentPanelList);                    	       
+                     } });
+         thirdWindow.add(menuPoint);
+         menuItem.add(menuPoint);
+         indx++;
+         
+         menuPoint = new JRadioButtonMenuItem("Multiplot area");
+         menuPoint.setForeground(Color.GRAY);
+         menuPoint.setFont(smallFont);
+         if(DashboardPlotArea.getContentPanelList().get(windowIndx).getID()==indx) {
+         	menuPoint.setSelected(true);
+         }
+         menuPoint.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+
                     	       
                      } });
          thirdWindow.add(menuPoint);

@@ -453,5 +453,158 @@ public class Mathbox{
 		}
 		return Euler;	
 	}
+	
+	public static Quaternion Euler2Quat(double[][] euler, int rotOrder) {
+
+		double c_theta = Math.cos(euler[1][0]/2);
+		double s_theta = Math.sin(euler[1][0]/2);
+		double c_phi =0;
+		double s_phi =0;
+		double c_psi =0;
+		double s_psi =0;
+        double c_psi_phi = 0;
+        double s_psi_phi = 0;
+        double c_psiphi  = 0;
+        double s_psiphi  = 0;
+        double c_phi_psi = 0;
+        double s_phi_psi = 0;
+		
+		Quaternion quat = new Quaternion();
+
+		switch(rotOrder) {
+		    case 312:
+		        c_phi = Math.cos(euler[0][0]/2);
+		        s_phi = Math.sin(euler[0][0]/2);
+		        c_psi = Math.cos(euler[2][0]/2);
+		        s_psi = Math.sin(euler[2][0]/2);
+
+		        quat.w = c_phi*c_theta*c_psi-s_phi*s_theta*s_psi;
+		        quat.x = c_phi*s_theta*c_psi-s_phi*c_theta*s_psi;
+		        quat.y = c_phi*c_theta*s_psi+s_phi*s_theta*c_psi;
+		        quat.z = s_phi*c_theta*c_psi+c_phi*s_theta*s_psi;
+
+		    case 321:
+		        c_phi = Math.cos(euler[0][0]/2);
+		        s_phi = Math.sin(euler[0][0]/2);
+		        c_psi = Math.cos(euler[2][0]/2);
+		        s_psi = Math.sin(euler[2][0]/2);
+
+		        quat.w = c_phi*c_theta*c_psi+s_phi*s_theta*s_psi;
+		        quat.x = c_phi*c_theta*s_psi-s_phi*s_theta*c_psi;
+		        quat.y = c_phi*s_theta*c_psi+s_phi*c_theta*s_psi;
+		        quat.z = s_phi*c_theta*c_psi-c_phi*s_theta*s_psi;
+
+		    case 123:
+		        c_phi = Math.cos(euler[0][0]/2);
+		        s_phi = Math.sin(euler[0][0]/2);
+		        c_psi = Math.cos(euler[2][0]/2);
+		        s_psi = Math.sin(euler[2][0]/2);
+
+		        quat.w = c_phi*c_theta*c_psi-s_phi*s_theta*s_psi;
+		        quat.x = s_phi*c_theta*c_psi+c_phi*s_theta*s_psi;
+		        quat.y = c_phi*s_theta*c_psi-s_phi*c_theta*s_psi;
+		        quat.z = c_phi*c_theta*s_psi+s_phi*s_theta*c_psi;
+
+		    case 132:
+		        c_phi = Math.cos(euler[0][0]/2);
+		        s_phi = Math.sin(euler[0][0]/2);
+		        c_psi = Math.cos(euler[2][0]/2);
+		        s_psi = Math.sin(euler[2][0]/2);
+
+		        quat.w = c_phi*c_theta*c_psi+s_phi*s_theta*s_psi;
+		        quat.x = s_phi*c_theta*c_psi-c_phi*s_theta*s_psi;
+		        quat.y = c_phi*c_theta*s_psi-s_phi*s_theta*c_psi;
+		        quat.z = c_phi*s_theta*c_psi+s_phi*c_theta*s_psi;
+
+		    case 231:
+		        c_phi = Math.cos(euler[0][0]/2);
+		        s_phi = Math.sin(euler[0][0]/2);
+		        c_psi = Math.cos(euler[2][0]/2);
+		        s_psi = Math.sin(euler[2][0]/2);
+
+		        quat.w = c_phi*c_theta*c_psi-s_phi*s_theta*s_psi;
+		        quat.x = c_phi*c_theta*s_psi+s_phi*s_theta*c_psi;
+		        quat.y = s_phi*c_theta*c_psi+c_phi*s_theta*s_psi;
+		        quat.z = c_phi*s_theta*c_psi-s_phi*c_theta*s_psi;
+
+		    case 213:
+		        c_phi = Math.cos(euler[0][0]/2);
+		        s_phi = Math.sin(euler[0][0]/2);
+		        c_psi = Math.cos(euler[2][0]/2);
+		        s_psi = Math.sin(euler[2][0]/2);
+
+		        quat.w = c_phi*c_theta*c_psi+s_phi*s_theta*s_psi;
+		        quat.x = c_phi*s_theta*c_psi+s_phi*c_theta*s_psi;
+		        quat.y = s_phi*c_theta*c_psi-c_phi*s_theta*s_psi;
+		        quat.z = c_phi*c_theta*s_psi-s_phi*s_theta*c_psi;
+
+		    case 121:
+		        c_phi_psi = Math.cos((euler[0][0]-euler[2][0])/2);
+		        s_phi_psi = Math.sin((euler[0][0]-euler[2][0])/2);
+		        c_psiphi = Math.cos((euler[0][0]+euler[2][0])/2);
+		        s_psiphi = Math.sin((euler[0][0]+euler[2][0])/2);
+
+		        quat.w = c_theta*c_psiphi;
+		        quat.x = c_theta*s_psiphi;
+		        quat.y = s_theta*c_phi_psi;
+		        quat.z = s_theta*s_phi_psi;
+
+		    case 131:
+		        c_psi_phi = Math.cos((euler[2][0]-euler[0][0])/2);
+		        s_psi_phi = Math.sin((euler[2][0]-euler[0][0])/2);
+		        c_psiphi = Math.cos((euler[0][0]+euler[2][0])/2);
+		        s_psiphi = Math.sin((euler[0][0]+euler[2][0])/2);
+
+		        quat.w = c_theta*c_psiphi;
+		        quat.x = c_theta*s_psiphi;
+		        quat.y = s_theta*s_psi_phi;
+		        quat.z = s_theta*c_psi_phi;
+
+		    case 212:
+		        c_psi_phi = Math.cos((euler[2][0]-euler[0][0])/2);
+		        s_psi_phi = Math.sin((euler[2][0]-euler[0][0])/2);
+		        c_psiphi = Math.cos((euler[0][0]+euler[2][0])/2);
+		        s_psiphi = Math.sin((euler[0][0]+euler[2][0])/2);
+
+		        quat.w = c_theta*c_psiphi;
+		        quat.x = s_theta*c_psi_phi;
+		        quat.y = c_theta*s_psiphi;
+		        quat.z = s_theta*s_psi_phi;
+
+		    case 232:
+		        c_phi_psi = Math.cos((euler[0][0]-euler[2][0])/2);
+		        s_phi_psi = Math.sin((euler[0][0]-euler[2][0])/2);
+		        c_psiphi = Math.cos((euler[0][0]+euler[2][0])/2);
+		        s_psiphi = Math.sin((euler[0][0]+euler[2][0])/2);
+
+		        quat.w = c_theta*c_psiphi;
+		        quat.x = s_theta*s_phi_psi;
+		        quat.y = c_theta*s_psiphi;
+		        quat.z = s_theta*c_phi_psi;
+
+		    case 313:
+		        c_phi_psi = Math.cos((euler[0][0]-euler[2][0])/2);
+		        s_phi_psi = Math.sin((euler[0][0]-euler[2][0])/2);
+		        c_psiphi = Math.cos((euler[0][0]+euler[2][0])/2);
+		        s_psiphi = Math.sin((euler[0][0]+euler[2][0])/2);
+
+		        quat.w = c_theta*c_psiphi;
+		        quat.x = s_theta*c_phi_psi;
+		        quat.y = s_theta*s_phi_psi;
+		        quat.z = c_theta*s_psiphi;
+
+		    case 323:
+		        c_psi_phi = Math.cos((euler[2][0]-euler[0][0])/2);
+		        s_psi_phi = Math.sin((euler[2][0]-euler[0][0])/2);
+		        c_psiphi = Math.cos((euler[0][0]+euler[2][0])/2);
+		        s_psiphi = Math.sin((euler[0][0]+euler[2][0])/2);
+
+		        quat.w = c_theta*c_psiphi;
+		        quat.x = s_theta*s_psi_phi;
+		        quat.y = s_theta*c_psi_phi;
+		        quat.z = c_theta*s_psiphi;
+		}
+		return quat;	
+	}
 
 }
