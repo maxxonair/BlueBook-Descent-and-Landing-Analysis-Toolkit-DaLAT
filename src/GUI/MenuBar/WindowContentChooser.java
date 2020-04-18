@@ -13,11 +13,11 @@ import javax.swing.JRadioButtonMenuItem;
 
 import GUI.Dashboard.AttitudeView;
 import GUI.Dashboard.ChartSetting;
-import GUI.Dashboard.ConsoleClass;
 import GUI.Dashboard.DashboardPlotArea;
 import GUI.Dashboard.DashboardPlotPanel;
 import GUI.Dashboard.Data2DPlot;
 import GUI.Dashboard.Planet3DView;
+import GUI.Dashboard.Console.ConsoleClass;
 
 
 public class WindowContentChooser {

@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 import javax.swing.SwingConstants;
 
 import GUI.BlueBookVisual;
+import GUI.Dashboard.Console.ConsoleClass;
 
 
 public class DashboardLeftPanel {

@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import GUI.BlueBookVisual;
+import GUI.Dashboard.Console.ConsoleClass;
 import GUI.DataStructures.InputFileSet;
 import Simulator_main.DataSets.RealTimeResultSet;
 import utils.GuiReadInput;

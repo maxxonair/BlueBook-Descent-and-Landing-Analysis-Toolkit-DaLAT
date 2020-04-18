@@ -6,10 +6,10 @@ Init_FPA 0.0
 Init_AZI 210.0
 Init_Mass 12500.0
 Init_Time 0.0
-Init_QuartW 0.99993543
-Init_QuartX -0.00761967
-Init_QuartY 0.00360733
-Init_QuartZ 0.00756401
+Init_QuartW 0.99927957
+Init_QuartX 0.03795179
+Init_QuartY 0.0
+Init_QuartZ 0.0
 Init_AngRateX 3.0
 Init_AngRateY 0.0
 Init_AngRateZ 0.0
