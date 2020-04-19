@@ -61,7 +61,7 @@ public class DashboardLeftPanel {
         // Page 4.1
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
-        mainPanel.setPreferredSize(new Dimension(385, 800));
+        mainPanel.setPreferredSize(new Dimension(385, 750));
         mainPanel.setBackground(backgroundColor);
         mainPanel.setForeground(labelColor);
 
@@ -198,9 +198,11 @@ public class DashboardLeftPanel {
       //								Console Window        
       //-----------------------------------------------------------------------------------------------
       console = new ConsoleClass();
-      console.getMainPanel().setSize(370,220);
+      console.getMainPanel().setSize(385,190);
       console.getMainPanel().setLocation(5, uy_p41 + 285 + 25 *7);
       console.setBackgroundColor(backgroundColor);
+      console.linkConPrintOut(); // Display System.out.println()
+     // console.linkConPrintErr(); // Display System.out.err()
       console.setLabelColor(labelColor);
       //-----------------------------------------------------------------------------------------------
       mainPanel.add(console.getMainPanel());
@@ -234,6 +236,10 @@ public class DashboardLeftPanel {
         label.setForeground(labelColor);
         parentPanel.add(label);
         return label;
+	}	
+
+	public ConsoleClass getConsole() {
+		return console;
 	}
 
 	public static void main(String[] args) {
@@ -251,5 +257,4 @@ public class DashboardLeftPanel {
         frame.setLocation(p);
         frame.setVisible(true);
 	}
-
 }

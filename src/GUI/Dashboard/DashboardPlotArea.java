@@ -43,11 +43,14 @@ public class DashboardPlotArea {
     private static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
     private static  int targetIndx=1;
     private static String Model3DFilePath=System.getProperty("user.dir") + "/resourcs/models3D/millenium-falcon.obj";
+
     
+    private static ConsoleClass masterConsole;
 
 
-	public DashboardPlotArea() {
+	public DashboardPlotArea(ConsoleClass console) {
 		
+		masterConsole = console;
 		
 		backgroundColor = BlueBookVisual.getBackgroundColor();
 		labelColor = BlueBookVisual.getLabelColor();
@@ -62,6 +65,7 @@ public class DashboardPlotArea {
 		
 		contentPanelList = new ArrayList<>(numberOfCharts);
 		chartSettings = initList();
+		
 		
         mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -98,7 +102,11 @@ public class DashboardPlotArea {
         splitPane2.add(horizontalSplitDown,JSplitPane.BOTTOM);
 		for(int i=0;i<contentPanelList.size();i++) {
 			
-			contentPanelList.get(i).refresh();
+			try {
+				contentPanelList.get(i).refresh();
+			} catch (NullPointerException npe) {
+				System.out.println("Error contentPanelList/refresh failed.");
+			}
 
 			if(i==0) {
 				horizontalSplitUp.add(contentPanelList.get(i).getMainPanel(), JSplitPane.LEFT);
@@ -144,12 +152,16 @@ public class DashboardPlotArea {
 		DashboardPlotArea.updateDashboardPlotArea(contentPanelList);
 	}
 
+	public static ConsoleClass getMasterConsole() {
+		return masterConsole;
+	}
+
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester");
 		frame.setSize(400,400);
 		frame.setLayout(new BorderLayout());
 
-		DashboardPlotArea dataplot = new DashboardPlotArea();
+		DashboardPlotArea dataplot = new DashboardPlotArea(new ConsoleClass());
 		frame.add(dataplot.getMainPanel(), BorderLayout.CENTER);
 		
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -182,6 +194,7 @@ public class DashboardPlotArea {
 	public static void setChartSettings(List<ChartSetting> chartSettings) {
 		DashboardPlotArea.chartSettings = chartSettings;
 		WriteInput.writeDashboradSetting(chartSettings);
+		updateDashboardPlotArea(contentPanelList);
 	}
 
 	private List<ChartSetting> initList(){
@@ -228,7 +241,9 @@ public class DashboardPlotArea {
 					} else if (chartSettings.get(i).type == 2) {
 				        contentPanelList.add( (new AttitudeView(Model3DFilePath)));
 					} else if (chartSettings.get(i).type == 3) {
-				        contentPanelList.add( (new ConsoleClass()) );
+						ConsoleClass dashboardConsole = new ConsoleClass();				
+					    dashboardConsole.setDoc(masterConsole.getDoc()); // Link output stream to main console
+				        contentPanelList.add( dashboardConsole );
 					}
 				}
 		}

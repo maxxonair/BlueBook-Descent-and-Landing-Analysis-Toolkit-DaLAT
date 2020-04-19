@@ -2,8 +2,6 @@ package GUI.Dashboard.Console;
 
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,11 +11,14 @@ import javax.swing.text.*;
 import GUI.Dashboard.DashboardPlotPanel;
 
 
-public class ConsoleClass extends DashboardPlotPanel{
+public class ConsoleClass extends DashboardPlotPanel {
 	
     private JPanel mainPanel;
     private  JTextPane textPane;
-    private  TextAreaOutputStream  taOutputStream ; 
+    private PrintStream con;
+    private DefaultStyledDocument doc;
+    
+    int maxLines = 1000;
     
     Color labelColor = new Color(77,255,195);    	// Label Color
    	Color backgroundColor = new Color(41,41,41);		// Background Color
@@ -76,7 +77,7 @@ public class ConsoleClass extends DashboardPlotPanel{
             strKey[i] += ")";
         	}
         
-        DefaultStyledDocument doc = new DefaultStyledDocument(){
+         doc = new DefaultStyledDocument(){
             /**
 			 * 
 			 */
@@ -115,7 +116,6 @@ public class ConsoleClass extends DashboardPlotPanel{
         		            numeric = false;
         		        }
         		        if(numeric) {
-    		        			System.err.println(testString);
                         setCharacterAttributes(wordL, wordR - wordL, attrList.get(4), false);
                         matchFound = true;
         		        } 
@@ -149,15 +149,10 @@ public class ConsoleClass extends DashboardPlotPanel{
 	            }
             }
         };
-        // doc.setDocumentFilter(filter); // Have a look at this to filter user inputs & implement non editable 
         
-        // Add output stream to document field
-        
-        taOutputStream = new TextAreaOutputStream(doc, ""); 
-        // Channel System.out to outputstream
-        System.setOut(new PrintStream(taOutputStream));  
-        //doc.dump(new PrintStream(taOutputStream));
-        
+        con=new PrintStream(new TextAreaOutputStream(doc, maxLines));
+
+        //System.setOut(new PrintStream(taOutputStream));  
         textPane = new JTextPane(doc);
         textPane.setBackground(backgroundColor);
         textPane.setEditable(false);
@@ -179,6 +174,44 @@ public class ConsoleClass extends DashboardPlotPanel{
 		textPane.repaint();
 	}
 	
+	
+	
+	public DefaultStyledDocument getDoc() {
+		return doc;
+	}
+
+	public void setDoc(DefaultStyledDocument doc) {
+		this.doc = doc;
+		textPane.removeAll();
+		textPane.setDocument(doc);
+		
+		this.textPane.revalidate();
+		this.textPane.repaint();
+		this.mainPanel.revalidate();
+		this.mainPanel.repaint();
+	}
+
+	@SuppressWarnings("resource")
+	public void setCON(PrintStream  con) {
+
+		this.textPane.revalidate();
+		this.textPane.repaint();
+		this.mainPanel.revalidate();
+		this.mainPanel.repaint();
+	}
+	
+	public void linkConPrintOut() {
+        System.setOut(con);
+	}
+	
+	public void linkConPrintErr() {
+        System.setErr(con);
+	}
+
+	public PrintStream getCON() {
+		return con;
+	}
+
 	@Override
 	public int getID() {
 		return ID;
@@ -195,8 +228,7 @@ public class ConsoleClass extends DashboardPlotPanel{
 	
 	@Override 
 	public void refresh() {
-		mainPanel.revalidate();
-		mainPanel.repaint();
+
 	}
 
 /**
@@ -228,65 +260,5 @@ public class ConsoleClass extends DashboardPlotPanel{
 		}
     }
     
-    public class TextAreaOutputStream extends OutputStream {
-
-    	   private final DefaultStyledDocument textArea;
-    	   private final StringBuilder sb = new StringBuilder();
-    	   private String title;
-
-    	   public TextAreaOutputStream(final DefaultStyledDocument doc, String title) {
-    	      this.textArea = doc;
-    	      this.title = title;
-    	      sb.append(title + "> ");
-    	   }
-
-    	   @Override
-    	   public void flush() {
-    	   }
-
-    	   @Override
-    	   public void close() {
-    	   }
-
-    	   @Override
-    	   public void write(int b) throws IOException {
-
-    	      if (b == '\r')
-    	         return;
-
-    	      if (b == '\n') {
-    	         final String text = sb.toString() + "\n";
-    	         SwingUtilities.invokeLater(new Runnable() {
-    	            public void run() {
-    	               boolean isFound = text.indexOf("commons.math3.exception")!=-1? true: false; 
-    	               if(isFound) {
-    	            	   /*
-    	               textArea.setSelectedTextColor(Color.red);
-    	               textArea.append("\n");
-    	               textArea.append("ERROR: Integrator FAILED. ");
-    	               textArea.append("\n");
-    	               textArea.append(text);
-    	               textArea.append("\n");
-    	               */
-    	               } else {
-    	            	   
-    	            	   //textArea.append(text); 
-    	            	   try {
-							textArea.insertString (0, text, null) ;
-							//textArea.dump(text);
-						} catch (BadLocationException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
-    	               }
-    	            }
-    	         });
-    	         sb.setLength(0);
-    	         sb.append(title + "> ");
-    	         return;
-    	      }
-
-    	      sb.append((char) b);
-    	   }
-    	}
+    
 }

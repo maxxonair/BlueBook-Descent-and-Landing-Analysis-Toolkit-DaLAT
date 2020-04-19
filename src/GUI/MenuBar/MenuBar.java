@@ -246,7 +246,7 @@ public class MenuBar {
                     } });
         
        
-        JMenuItem menuItem_Refresh = new JMenuItem("Refresh Attitude                 "); 
+        JMenuItem menuItem_Refresh = new JMenuItem("Reset Attitude                 "); 
         menuItem_Refresh.setForeground(Color.BLACK);
         menuItem_Refresh.setFont(smallFont);
         menu_SIM.add(menuItem_Refresh);
@@ -546,7 +546,6 @@ public class MenuBar {
          *  	Select window content
          * 
          */
-        
         try {
 	        for(int i=0;i<DashboardPlotArea.getContentPanelList().size();i++) {
 		        	WindowContentChooser windowChooser = new WindowContentChooser(i);

@@ -1,19 +1,20 @@
 package GUI.Dashboard.Console;
 import javax.swing.*;
 import java.awt.*;
-import java.io.IOException;
-import java.io.OutputStream;
 import java.io.PrintStream;
 
 import javax.swing.text.*;
 
-import GUI.Dashboard.Console.ConsoleClass.TextAreaOutputStream;
 
-public class Test {	
+public class EditableConsole {	
 	
     private JPanel mainPanel;
     private  JTextPane textPane;
-    private  TextAreaOutputStream  taOutputStream ; 
+    private PrintStream con;
+    private DefaultStyledDocument doc;
+    
+    int maxLines = 1000;
+    
     
     Color labelColor = new Color(77,255,195);    	// Label Color
    	Color backgroundColor = new Color(41,41,41);		// Background Color
@@ -23,16 +24,16 @@ public class Test {
     							new Color(255,0,0),
     							new Color(0,250,0),
     							new Color(0,191,255)};
-    private String[][] strKeywords = { {"complete", "protected", "SIMULATION", "Simulation", "Simulator"}, 		// Keywords
+    @SuppressWarnings("unused")
+	private String[][] strKeywords = { {"complete", "protected", "SIMULATION", "Simulation", "Simulator"}, 		// Keywords
     									   {"Read","READ","Reading", "Write", "WRITE"},							 	// File/Info Read/Write processes
     									   {"Error","ERROR","error"},							  					// Errors and warnings
     									   {"Start","start","START","Launch","LAUNCH","launch"},	  					// Process start ups 
     									   {"0","1","2","3","4","5","6","7","8","9",".0",".1",".2",".3",".4",".5",".6",".7",".8",".9","0.","1.","2.","3.","4.","5.","6.","7.","8.","9."}};								// Numbers/Numerical data 
 	 
-    private int ID=3; 
 	
 	
-    public Test () {
+    public EditableConsole () {
 		mainPanel = new JPanel();
 		mainPanel.setBackground(backgroundColor);
 		mainPanel.setLayout(new BorderLayout());
@@ -40,8 +41,13 @@ public class Test {
         final StyleContext cont = StyleContext.getDefaultStyleContext();
         final AttributeSet attr = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, Color.RED);
         final AttributeSet attrBlack = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, Color.BLACK);
-        DefaultStyledDocument doc = new DefaultStyledDocument() {
-            public void insertString (int offset, String str, AttributeSet a) throws BadLocationException {
+         doc = new DefaultStyledDocument() {
+            /**
+			 * 
+			 */
+			private static final long serialVersionUID = 1L;
+
+			public void insertString (int offset, String str, AttributeSet a) throws BadLocationException {
                 int length = getLength();
                 super.insertString(length, str, a);
 
@@ -85,9 +91,8 @@ public class Test {
         };
         
         
-        taOutputStream = new TextAreaOutputStream(doc, ""); 
+        con=new PrintStream(new TextAreaOutputStream(doc, maxLines));
         // Channel System.out to outputstream
-        System.setOut(new PrintStream(taOutputStream));  
         
         JTextPane txt = new JTextPane(doc);
         mainPanel.add(new JScrollPane(txt));
@@ -117,6 +122,42 @@ public class Test {
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}
+	
+	public DefaultStyledDocument getDoc() {
+		return doc;
+	}
+
+	public void setDoc(DefaultStyledDocument doc) {
+		this.doc = doc;
+		textPane.removeAll();
+		textPane.setDocument(doc);
+		
+		this.textPane.revalidate();
+		this.textPane.repaint();
+		this.mainPanel.revalidate();
+		this.mainPanel.repaint();
+	}
+
+	@SuppressWarnings("resource")
+	public void setCON(PrintStream  con) {
+
+		this.textPane.revalidate();
+		this.textPane.repaint();
+		this.mainPanel.revalidate();
+		this.mainPanel.repaint();
+	}
+	
+	public void linkConPrintOut() {
+        System.setOut(con);
+	}
+	
+	public void linkConPrintErr() {
+        System.setErr(con);
+	}
+
+	public PrintStream getCON() {
+		return con;
+	}
 
 	public static void main (String args[]) {
 		JFrame frame = new JFrame("Component Tester - Console ");
@@ -124,7 +165,9 @@ public class Test {
 		frame.setLayout(new BorderLayout());
 		
 		
-        Test console = new Test();
+		EditableConsole console = new EditableConsole();
+        console.linkConPrintErr();
+        console.linkConPrintOut();
         frame.add(console.getMainPanel());
         
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -142,66 +185,4 @@ public class Test {
 		}
     }
 	
-	public class TextAreaOutputStream extends OutputStream {
-
- 	   private final DefaultStyledDocument textArea;
- 	   private final StringBuilder sb = new StringBuilder();
- 	   private String title;
-
- 	   public TextAreaOutputStream(final DefaultStyledDocument doc, String title) {
- 	      this.textArea = doc;
- 	      this.title = title;
- 	      sb.append(title + "> ");
- 	   }
-
- 	   @Override
- 	   public void flush() {
- 	   }
-
- 	   @Override
- 	   public void close() {
- 	   }
-
- 	   @Override
- 	   public void write(int b) throws IOException {
-
- 	      if (b == '\r')
- 	         return;
-
- 	      if (b == '\n') {
- 	         final String text = sb.toString() + "\n";
- 	         SwingUtilities.invokeLater(new Runnable() {
- 	            public void run() {
- 	               boolean isFound = text.indexOf("commons.math3.exception")!=-1? true: false; 
- 	               if(isFound) {
- 	            	   /*
- 	               textArea.setSelectedTextColor(Color.red);
- 	               textArea.append("\n");
- 	               textArea.append("ERROR: Integrator FAILED. ");
- 	               textArea.append("\n");
- 	               textArea.append(text);
- 	               textArea.append("\n");
- 	               */
- 	               } else {
- 	            	   
- 	       
-							try {
-								textArea.insertString (0, text, null) ;
-							} catch (BadLocationException e) {
-								// TODO Auto-generated catch block
-								e.printStackTrace();
-							}
-							//textArea.dump(text);
-	
- 	               }
- 	            }
- 	         });
- 	         sb.setLength(0);
- 	         sb.append(title + "> ");
- 	         return;
- 	      }
-
- 	      sb.append((char) b);
- 	   }
- 	}
 }

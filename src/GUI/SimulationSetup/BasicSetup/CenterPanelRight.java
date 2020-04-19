@@ -99,7 +99,7 @@ public class CenterPanelRight {
 
 	     mainPanel = new JPanel();
 	    mainPanel.setLayout(new BorderLayout());
-	    mainPanel.setPreferredSize(new Dimension(960, 900));
+	    mainPanel.setPreferredSize(new Dimension(960, 700));
 	    mainPanel.setBackground(backgroundColor);
 	    mainPanel.setForeground(labelColor);
 	    mainPanel.setLayout(null);
