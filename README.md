@@ -1,7 +1,7 @@
 BlueBook Descent and Landing Analysis Toolkit
 
 
-![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage.png)
+![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/develop/documentation/INPUT_Documentation/GUIImage9.png)
 
 BlueBook Descent and Landing Analysis Tool 
 27/09/2019
