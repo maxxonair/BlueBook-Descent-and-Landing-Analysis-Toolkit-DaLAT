@@ -27,13 +27,17 @@ public class ConsoleClass extends DashboardPlotPanel {
     							new Color(255,215,0),
     							new Color(255,0,0),
     							new Color(0,250,0),
-    							new Color(0,191,255)};
+    							new Color(0,51,255),
+    							new Color(240,191,35)};
     
-    private String[][] strKeywords = { {"complete", "protected", "SIMULATION", "Simulation", "Simulator"}, 		// Keywords
-    									   {"Read","READ","Reading", "Write", "WRITE"},							 	// File/Info Read/Write processes
+    Color numericalColor = new Color(0,191,255);
+    
+    private String[][] strKeywords = { {"SIMULATION", "Simulation", "Simulator", "RUN","simulation"}, 		// Keywords
+    									   {"Read","READ","Reading", "Write", "WRITE","Writing","Action", "Update", "Updated", "complete", "completed"},							 	// File/Info Read/Write processes
     									   {"Error","ERROR","error"},							  					// Errors and warnings
     									   {"Start","start","START","Launch","LAUNCH","launch"},	  					// Process start ups 
-    									   {"0"}};								// Numbers/Numerical data 
+    									   {"Propulsion","PROP"},
+    									   {"AERO","Aerodynamic"}};								// Propulsion data 
 	 
     private int ID=3; 
     protected int type=3;
@@ -68,6 +72,8 @@ public class ConsoleClass extends DashboardPlotPanel {
         	 	AttributeSet attr = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, keywordColor[i]);
         	 	attrList.add(attr);
          }
+         AttributeSet numAttr = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, numericalColor);
+         
         final AttributeSet attrLabel = cont.addAttribute(cont.getEmptySet(), StyleConstants.Foreground, labelColor);
 
         String[] strKey = new String[strKeywords.length];
@@ -116,7 +122,7 @@ public class ConsoleClass extends DashboardPlotPanel {
         		            numeric = false;
         		        }
         		        if(numeric) {
-                        setCharacterAttributes(wordL, wordR - wordL, attrList.get(4), false);
+                        setCharacterAttributes(wordL, wordR - wordL, numAttr, false);
                         matchFound = true;
         		        } 
         		        // If no keywords found > set standard:

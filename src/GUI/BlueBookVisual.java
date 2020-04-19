@@ -614,7 +614,7 @@ public class BlueBookVisual  {
 
 			  mercatorMap.update();
 
-      	    		String timeStamp = new SimpleDateFormat("yyyy/MM/dd - HH:mm:ss").format(Calendar.getInstance().getTime());
+      	    		String timeStamp = new SimpleDateFormat("yyyy / MM / dd - HH : mm : ss").format(Calendar.getInstance().getTime());
       	    		System.out.println("Updated "+timeStamp);
 		  }
 	  } 
