@@ -6,12 +6,12 @@ Init_FPA -1.0
 Init_AZI 210.0
 Init_Mass 1250.0
 Init_Time 0.0
-Init_QuartW 0.99927957
-Init_QuartX 0.03795179
-Init_QuartY 0.0
+Init_QuartW 0.99999328
+Init_QuartX 0.0
+Init_QuartY 0.00366518
 Init_QuartZ 0.0
-Init_AngRateX 10.0
-Init_AngRateY 0.0
+Init_AngRateX 0.0
+Init_AngRateY 3.0
 Init_AngRateZ 0.0
 Init_IXX 20000.0
 Init_IXY 0.0
@@ -53,7 +53,7 @@ SC_COM 5.523
 SC_COT 0.8
 SC_COP 5.497164290295278
 SC_Height 10.243
-SC_BodyRadius 2.845
+SC_BodyRadius 0.739
 SC_MainISP 300.0
 SC_MainProp 8200.0
 SC_MainThrustMax 130075.0

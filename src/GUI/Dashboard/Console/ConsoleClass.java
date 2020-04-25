@@ -33,7 +33,7 @@ public class ConsoleClass extends DashboardPlotPanel {
     Color numericalColor = new Color(0,191,255);
     
     private String[][] strKeywords = { {"SIMULATION", "Simulation", "Simulator", "RUN","simulation"}, 		// Keywords
-    									   {"Read","READ","Reading", "Write", "WRITE","Writing","Action", "Update", "Updated", "complete", "completed"},							 	// File/Info Read/Write processes
+    									   {"Read","READ","Reading", "Write", "WRITE","Writing","Action", "Update", "Updated", "complete", "completed", "Warning", "WARNING", "warning"},							 	// File/Info Read/Write processes
     									   {"Error","ERROR","error"},							  					// Errors and warnings
     									   {"Start","start","START","Launch","LAUNCH","launch"},	  					// Process start ups 
     									   {"Propulsion","PROP"},

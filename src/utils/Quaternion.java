@@ -1,8 +1,5 @@
 package utils;
-/**
- *
- * @author leonardo
- */
+
 public class Quaternion extends Object implements Cloneable{
 
     public double x;
@@ -16,6 +13,11 @@ public class Quaternion extends Object implements Cloneable{
     private static final Quaternion quatTmp4 = new Quaternion();
             
     public Quaternion() {
+    	// Set to default 
+    	this.w=1;
+    	this.x=0;
+    	this.y=0;
+    	this.z=0;    	
     }
 
     public Quaternion(double angle, Vec3 rotationAxis) {
@@ -58,11 +60,11 @@ public class Quaternion extends Object implements Cloneable{
     }
     
     public void normalize() {
-        double sizeInv = 1 / getSize();
-        x *= sizeInv;
-        y *= sizeInv;
-        z *= sizeInv;
-        w *= sizeInv;
+        double sizeInverse = 1 / getSize();
+        x *= sizeInverse;
+        y *= sizeInverse;
+        z *= sizeInverse;
+        w *= sizeInverse;
     }
     
     public void multiply(Quaternion qb, Quaternion result) {
@@ -75,18 +77,17 @@ public class Quaternion extends Object implements Cloneable{
     }
     
     public void conjugate() {
-        //w = w;
         x = -x;
         y = -y;
         z = -z;
     }
     
     public void inverse() {
-        double sizeInv = 1 / getSize();
-        x *= sizeInv;
-        y *= -sizeInv;
-        z *= -sizeInv;
-        w *= -sizeInv;
+        double sizeInverse = 1 / getSize();
+        x *= sizeInverse;
+        y *= -sizeInverse;
+        z *= -sizeInverse;
+        w *= -sizeInverse;
     }
     
     // P' = Q.P.Q*
@@ -100,6 +101,24 @@ public class Quaternion extends Object implements Cloneable{
         rotatedPoint.x = quatTmp3.x;
         rotatedPoint.y = quatTmp3.y;
         rotatedPoint.z = quatTmp3.z;
+    }
+    
+    public double[][] getCosineMatrix(){
+    	double[][] cosineMatrix = new double[3][3];
+    	
+    	cosineMatrix[0][0] = w*w + x*x - y*y - z*z;
+    	cosineMatrix[1][0] = 2*( x*y + w*z);
+    	cosineMatrix[2][0] = 2*( x*z - w*y);
+    	
+    	cosineMatrix[0][1] = 2*( x*y - w*z);
+    	cosineMatrix[1][1] = w*w - x*x + y*y - z*z;
+    	cosineMatrix[2][1] = 2*( w*x + y*z);
+    							
+    	cosineMatrix[0][2] = 2*( w*y + x*z);
+    	cosineMatrix[1][2] = 2*( y*z - w*x);
+    	cosineMatrix[2][2] = w*w - x*x - y*y + z*z;
+    			   	
+    	return cosineMatrix;
     }
     
 	@Override

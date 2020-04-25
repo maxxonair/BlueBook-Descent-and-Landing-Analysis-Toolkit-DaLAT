@@ -196,39 +196,30 @@ public class AttitudeFx {
 
 	}
 	public void modelRotation(Quaternion q) {
-		int version =3;
-			if(version==1) {
-				Quaternion qInverse = quatTemp;
-				qInverse.conjugate();
-				matrixRotateNode(qInverse);
-
-				matrixRotateNode(q);
-				quatTemp = q;	
-			} else if (version ==2) {
-				Quaternion qInverse = quatTemp;
-				qInverse.conjugate();
-				
-				matrixRotateNode(qInverse);
-				Quaternion qRot = q;
-				qRot.conjugate();
-				matrixRotateNode(qRot);
-				quatTemp = qRot;
-			} else if (version ==3) {
-				Quaternion qInverse = quatTemp;
+				Quaternion qInverse=new Quaternion();
+				try {
+					qInverse = (Quaternion) quatTemp.clone();
+				} catch (CloneNotSupportedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				qInverse.inverse();
 				Vector4 vec = matrixRotateNode(qInverse,0);
-				Point3D point = new Point3D(vec.x, vec.y, vec.z);
-	            model.setRotationAxis(point);
-	            model.setRotate(vec.w);   
+				Point3D rotAxis = new Point3D(vec.x, vec.y, vec.z);
+				double  rotAngle =vec.w;
+	            model.setRotationAxis(rotAxis);
+	            model.setRotate(rotAngle);   
 
 	            vec = matrixRotateNode(q,0);
 	            if (vec != new Vector4(0,0,0,0)) {
-		            model.setRotationAxis(point);
-		            model.setRotate(vec.w); 
+					rotAxis = new Point3D(vec.x, vec.y, vec.z);
+					rotAngle =vec.w;
+		            model.setRotationAxis(rotAxis);
+		            model.setRotate(rotAngle); 
 		            
 					quatTemp = q;
 	            }
-			}
+			
 	}
 	
     public void matrixRotateNode(Quaternion q){

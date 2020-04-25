@@ -388,6 +388,29 @@ public class Mathbox{
 		return quaternion;
 	}
 	
+	public static EulerAngle quaternion2RollPitchYaw(Quaternion quatIN) {
+	    EulerAngle eulerAngles = new EulerAngle();
+
+	    // roll (x-axis rotation)
+	    double sinr_cosp = 2 * (quatIN.w * quatIN.x + quatIN.y * quatIN.z);
+	    double cosr_cosp = 1 - 2 * (quatIN.x * quatIN.x + quatIN.y * quatIN.y);
+	    eulerAngles.roll = Math.atan2(sinr_cosp, cosr_cosp);
+
+	    // pitch (y-axis rotation)
+	    double sinp = 2 * (quatIN.w * quatIN.y - quatIN.z * quatIN.x);
+	    if (Math.abs(sinp) >= 1)
+	    	eulerAngles.pitch = Math.copySign(PI / 2, sinp); // use 90 degrees if out of range
+	    else
+	    	eulerAngles.pitch = Math.asin(sinp);
+
+	    // yaw (z-axis rotation)
+	    double siny_cosp = 2 * (quatIN.w * quatIN.z + quatIN.x * quatIN.y);
+	    double cosy_cosp = 1 - 2 * (quatIN.y * quatIN.y + quatIN.z * quatIN.z);
+	    eulerAngles.yaw = Math.atan2(siny_cosp, cosy_cosp);
+
+	    return eulerAngles;
+	}
+	
 	public static double[][] Quat2Euler(Quaternion q, int rotOrder){
 		double[][] Euler = new double[3][1];
 		switch(rotOrder) {
@@ -605,6 +628,45 @@ public class Mathbox{
 		        quat.z = c_theta*s_psiphi;
 		}
 		return quat;	
+	}
+	
+	public Quaternion conjugateQuaternion(Quaternion quat) {
+		Quaternion resQ =  new Quaternion();
+			resQ.w =  quat.w;
+	        resQ.x = -quat.x;
+	        resQ.y = -quat.y;
+	        resQ.z = -quat.z;
+	    return resQ;
+	}
+	
+	public Quaternion multiplyQuaternion(Quaternion qIN, Quaternion rIN) {
+		Quaternion tRes = new Quaternion();
+		
+		tRes.w = (rIN.w*qIN.w - rIN.x*qIN.x - rIN.y*qIN.y - rIN.z*qIN.z);
+		tRes.x = (rIN.w*qIN.x + rIN.x*qIN.w - rIN.y*qIN.z + rIN.z*qIN.y);
+		tRes.y = (rIN.w*qIN.y + rIN.x*qIN.z + rIN.y*qIN.w - rIN.z*qIN.x);
+		tRes.z = (rIN.w*qIN.z - rIN.x*qIN.y + rIN.y*qIN.x + rIN.z*qIN.w);
+		
+		return tRes;
+	}
+	
+	public double[] rotateVectorByQuaternion(double[] vector, Quaternion quat) {
+		Quaternion intVec = new Quaternion();
+		intVec.w =0;
+		intVec.x=vector[0];
+		intVec.y=vector[1];
+		intVec.z=vector[2];
+
+		Quaternion quatConj = new Quaternion();
+		quatConj = conjugateQuaternion(quat);
+
+		Quaternion resQ = multiplyQuaternion(multiplyQuaternion(quat, intVec), quatConj);
+		
+		double[] resVec = new double[3];
+		resVec[0] = resQ.x;
+		resVec[1] = resQ.y;
+		resVec[2] = resQ.z;
+		return resVec;
 	}
 
 }

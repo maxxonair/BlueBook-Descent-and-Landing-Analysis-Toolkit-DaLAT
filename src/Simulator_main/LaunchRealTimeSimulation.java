@@ -101,7 +101,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 	    			if (tIS==0) {
 			    		System.out.println("Simulator set and running");
 			    		
-			    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
+			    		realTimeContainer = SimulationCore.launchIntegrator(
 			    												    integratorData, 
 																spaceShip,				 
 																controlCommandSet
@@ -145,7 +145,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    	   //---------------------------------------------------------------------------------------
 		    	   //				  Start incremental integration
 		    	   //---------------------------------------------------------------------------------------	
-		    	    		realTimeContainer = RealTimeSimulationCore.launchIntegrator(
+		    	    		realTimeContainer = SimulationCore.launchIntegrator(
 								integratorData, 
 								realTimeResultSet.getMasterSet().getSpaceShip(),				 
 								controlCommandSet

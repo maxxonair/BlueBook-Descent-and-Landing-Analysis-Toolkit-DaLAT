@@ -6,7 +6,7 @@ import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
 import Model.DataSets.ControlCommandSet;
-import Simulator_main.RealTimeSimulationCore;
+import Simulator_main.SimulationCore;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
@@ -276,7 +276,7 @@ public class Spacecraft extends Entity {
 	    integratorData.setAngularRate(Spacecraft.getPQR());
 		//System.out.println(controlCommandSet.getPrimaryThrustThrottleCmd());
 	    RealTimeContainer realTimeContainer = new RealTimeContainer();
-	    realTimeContainer = RealTimeSimulationCore.launchIntegrator(integratorData, spaceShip, controlCommandSet);
+	    realTimeContainer = SimulationCore.launchIntegrator(integratorData, spaceShip, controlCommandSet);
 		realTimeResultSet = realTimeContainer.getRealTimeResultSet();
 	    Spacecraft.setSCPropMass((float) (spaceShip.getPropulsion().getPrimaryPropellant()-(spaceShip.getMass()-realTimeResultSet.getSCMass())));
 		Spacecraft.setPQR(realTimeResultSet.getPQR());

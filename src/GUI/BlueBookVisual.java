@@ -91,10 +91,10 @@ public class BlueBookVisual  {
     public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
     public static double G     = 1.48808E-34;
     public static int TARGET;  
-    public static  double RM = 0; 		// Target planet radius
-    public static int indx_target = 0;  // Target planet indx 
-	static double deg2rad = PI/180.0; 		//Convert degrees to radians
-	static double rad2deg = 180/PI; 		//Convert radians to degrees
+    public static  double RM = 0; 					// Target planet radius
+    public static int indx_target = 0;  				// Target planet indx 
+	static double deg2rad = PI/180.0; 				// Convert degrees to radians
+	static double rad2deg = 180/PI; 					// Convert radians to degrees
 	
 	public static String BB_delimiter = " ";
     //-----------------------------------------------------------------------------------------------------------------------------------------
