@@ -74,7 +74,7 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 			SpaceShip spaceShip = masterSet.getSpaceShip();
 			if(isPlot) {
 			dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
-			sensorSet.getRealTimeResultSet().getEulerX()*180/PI ));
+			sensorSet.getRealTimeResultSet().getEulerAngle().pitch*180/PI ));
 			//	dataSet.addPair(new Pair(realTimeResultSet.getAltitude(), 
 			//			aerodynamicSet.getFlowzone()));
 			dataContainer.setxAxisLabel("Time");
@@ -140,9 +140,9 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 	forceMomentumSet.getM_total_NED()[0][0]+" "+
 	forceMomentumSet.getM_total_NED()[1][0]+" "+
 	forceMomentumSet.getM_total_NED()[2][0]+" "+
-	realTimeResultSet.getEulerX()+" "+
-	realTimeResultSet.getEulerY()+" "+
-	realTimeResultSet.getEulerZ()+" "+
+	realTimeResultSet.getEulerAngle().roll+" "+
+	realTimeResultSet.getEulerAngle().pitch+" "+
+	realTimeResultSet.getEulerAngle().yaw+" "+
 	realTimeResultSet.getMasterSet().getSpaceShip().getMass()+ " " +
 	realTimeResultSet.getNormalizedDeceleration()+ " " +
 	0+ " " + 

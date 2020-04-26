@@ -10,7 +10,7 @@ import Model.DataSets.ErrorSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
-import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.PrevailingDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import utils.Mathbox;
 
@@ -18,7 +18,7 @@ public class ForceModel {
 		
 	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, 
 										  AerodynamicSet aerodynamicSet, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, 
-										  SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, 
+										  SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData, 
 										  ErrorSet errorSet, boolean isAutoPilot) {
 		  double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic frame [N]
 		  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame 		   [N]

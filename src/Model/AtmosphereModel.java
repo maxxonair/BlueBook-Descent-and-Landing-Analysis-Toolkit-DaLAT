@@ -11,7 +11,7 @@ import java.util.List;
 import FlightElement.SpaceShip;
 import Model.DataSets.AtmosphereSet;
 import Noise.AtmosphereNoiseModel;
-import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.PrevailingDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import utils.Mathbox;
 
@@ -27,10 +27,8 @@ public static String DELIMITER = ",";
 double is_value = 0 ; 
 private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>(); 
 
-public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
-public static double PI    = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 
-public static double sigma = 1.6311e-9;     // Average collision diameter (<- check that again)
+public static double sigma = 1.6311e-9;     // Average collision diameter (<- TBC)
 
 
 public static void  Set_File_Paths(int TARGET) throws URISyntaxException{
@@ -117,7 +115,7 @@ public static double atm_read(int variable, double altitude) {
 	return atm_read;
 }
 
-public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
+public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData) {
 	AtmosphereSet atmosphereSet = new AtmosphereSet();
 	double altitude = currentDataSet.getxIS()[2] - currentDataSet.getRM() ; 
 	if (altitude>160000 || currentDataSet.getTARGET() == 1){ // In space conditions: 

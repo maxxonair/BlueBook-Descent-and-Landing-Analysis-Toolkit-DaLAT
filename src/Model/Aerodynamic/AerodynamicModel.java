@@ -9,18 +9,17 @@ import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.ControlCommandSet;
 import Model.DataSets.HypersonicSet;
-import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.PrevailingDataSet;
+import utils.UConst;
 import Simulator_main.DataSets.IntegratorData;
 
 public class AerodynamicModel {
-    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
-    public static double kB    = 1.380650424e-23;              // Boltzmann constant                         [SI]    
     public static double sigma = 1.6311e-9;
     
     private static int sequenceIs=-1;
     private static double lastTimeMark=0;
     
-	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
+	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
 		int dragModelSelection = integratorData.getAeroDragModel();
 		
 			   if(dragModelSelection  == 0) {  // standard model / CD = constant 
@@ -41,7 +40,7 @@ public class AerodynamicModel {
 		return new AerodynamicSet();
 	}
 	
-	private static AerodynamicSet getAerodynamicSetLauncher(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
+	private static AerodynamicSet getAerodynamicSetLauncher(AtmosphereSet atmosphereSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
 		AerodynamicSet aerodynamicSet = new AerodynamicSet();
 		//-------------------------------------------------------------------------------------------
 		if(sequenceIs!=controlCommandSet.getActiveSequence()) {
@@ -53,7 +52,7 @@ public class AerodynamicModel {
 		aerodynamicSet.setDragCoefficient(AerodynamicKitLauncher.getCD(atmosphereSet, currentDataSet));
 		aerodynamicSet.setLiftCoefficient(AerodynamicKitLauncher.getCL(currentDataSet));
 		
-		double alpha = currentDataSet.getEulerAngle()[1][0] - currentDataSet.getV_NED_ECEF_spherical()[1];
+		double alpha = currentDataSet.getEulerAngle().pitch - currentDataSet.getV_NED_ECEF_spherical()[1];
 		aerodynamicSet.setAerodynamicAngleOfAttack(alpha);
 		//-----------------------------------------------------------------------------------------------
 		aerodynamicSet.setDragForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getDragCoefficient());  		// Aerodynamic drag Force 		   [N]
@@ -84,7 +83,7 @@ public class AerodynamicModel {
 		return aerodynamicSet;
 	}
 	
-	private static AerodynamicSet getAerodynamicSetStandard(AtmosphereSet atmosphereSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
+	private static AerodynamicSet getAerodynamicSetStandard(AtmosphereSet atmosphereSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
 		if(sequenceIs!=controlCommandSet.getActiveSequence()) {
 			sequenceIs=controlCommandSet.getActiveSequence();
 			lastTimeMark = currentDataSet.getGlobalTime();
@@ -107,7 +106,7 @@ public class AerodynamicModel {
 		 *  Condition no wind! 
 		 */
 		//System.out.println(currentDataSet.getEulerAngle()[1][0]*180/PI+"|"+currentDataSet.getV_NED_ECEF_spherical()[1]*180/PI);
-		aerodynamicSet.setAerodynamicAngleOfAttack(currentDataSet.getEulerAngle()[1][0] - currentDataSet.getV_NED_ECEF_spherical()[1] );
+		aerodynamicSet.setAerodynamicAngleOfAttack(currentDataSet.getEulerAngle().pitch - currentDataSet.getV_NED_ECEF_spherical()[1] );
 		//----------------------------------------------------------------------------------------------
 		if(actuatorSet.isParachuteDeployed() && !actuatorSet.isParachuteEject()) {
 			//System.out.println(integratorData.getAeroParachuteModel()+"|"+integratorData.getConstParachuteCd());
@@ -153,14 +152,14 @@ public class AerodynamicModel {
 	//	                                      Free molecular -> transitional -> Continuum flow
 	//
 	//----------------------------------------------------------------------------------------------------------------------------
-	public static double calcDrag(AtmosphereSet atmosphereSet, CurrentDataSet currentDataSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData)
+	public static double calcDrag(AtmosphereSet atmosphereSet, PrevailingDataSet currentDataSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData)
 	{
 	double CD = 0;
 		if(atmosphereSet.getDensity()!=0) {
 				double CDC=aerodynamicSet.getCdC();
 				//System.out.println(currentDataSet.gettIS()+"|"+CDC);
 				//double Lt = read_data(file_cship,2);
-				double Kn = kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * PI * sigma * sigma * atmosphereSet.getStaticPressure() * 1 );
+				double Kn = UConst.kB * atmosphereSet.getStaticTemperature() / ( Math.sqrt(2) * UConst.PI * sigma * sigma * atmosphereSet.getStaticPressure() * 1 );
 				aerodynamicSet.setKnudsenNumber(Kn);
 				//System.out.println(Kn);
 				if(Kn<0.1){
@@ -171,14 +170,14 @@ public class AerodynamicModel {
 				if(Kn>0.1 && Kn<10){
 			//	               Transtional zone      <---------------
 				double S = currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt(2 * atmosphereSet.getGasConstant() * atmosphereSet.getStaticTemperature());
-				double Cdfm= 1.75 + Math.sqrt(PI)/(2 * S);
-				CD= CDC + ( Cdfm - CDC ) * ( 1/3 * Math.log10( Kn / Math.sin( PI / 6 ) ) * 0.5113 ) ;
+				double Cdfm= 1.75 + Math.sqrt(UConst.PI)/(2 * S);
+				CD= CDC + ( Cdfm - CDC ) * ( 1/3 * Math.log10( Kn / Math.sin( UConst.PI / 6 ) ) * 0.5113 ) ;
 				aerodynamicSet.setFlowzone(2);
 				}
 				if(Kn>10){
 			//	               Free molecular zone   <---------------
 				double S = currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt(2 * atmosphereSet.getGasConstant() * atmosphereSet.getStaticTemperature());
-				CD= 1.75 + Math.sqrt(PI)/(2 * S);
+				CD= 1.75 + Math.sqrt(UConst.PI)/(2 * S);
 				aerodynamicSet.setFlowzone(3);
 				}
 		}
@@ -186,7 +185,7 @@ public class AerodynamicModel {
 	}
 	//----------------------------------------------------------------------------------------------------------------------------
 
-	public static double getAerodynamicCoefficients(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData, CurrentDataSet currentDataSet){
+	public static double getAerodynamicCoefficients(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, IntegratorData integratorData, PrevailingDataSet currentDataSet){
 		double CdC = 1.55 ; 
 		if(integratorData.getAeroDragModel()==0) {
 			 CdC = 1.55 ; 

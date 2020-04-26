@@ -4,17 +4,17 @@ import FlightElement.SpaceShip;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.HypersonicSet;
-import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.PrevailingDataSet;
 import utils.Mathbox;
+import utils.UConst;
 
 public class HypersonicModel {
-    public static double PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
     
     public static void main(String[] args) {
     	//--------------------------------------------------------------------------
     	//				Module Tester
     	//--------------------------------------------------------------------------
-   	 double deg2rad = PI/180; 
+   	 double deg2rad = UConst.PI/180; 
     	AtmosphereSet atmosphereSet = new AtmosphereSet();
     	AerodynamicSet aerodynamicSet = new AerodynamicSet();
     	atmosphereSet.setDensity(0.001);
@@ -28,7 +28,7 @@ public class HypersonicModel {
     	aerodynamicSet.setAngleOfSideslip(0*deg2rad);
     	SpaceShip spaceShip = new SpaceShip();
     	spaceShip.getAeroElements().setHeatshieldRadius(2.3);
-    	CurrentDataSet currentDataSet = new CurrentDataSet();
+    	PrevailingDataSet currentDataSet = new PrevailingDataSet();
     	currentDataSet.settIS(0);
     	HypersonicSet hypersonicSet = hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip, currentDataSet);
     	System.out.println("CL:"+hypersonicSet.getCL());
@@ -40,7 +40,7 @@ public class HypersonicModel {
     	System.out.println("CMz:"+hypersonicSet.getCMz());
     }
     
-	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, CurrentDataSet currentDataSet) {
+	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet) {
 	int file=2;
 	int NewtonT=1;
 	System.out.println("Hypersonic model active | time: "+currentDataSet.gettIS()+" [s]");
@@ -115,7 +115,7 @@ public class HypersonicModel {
 	RN=2.4*RB;
 	RC=RB/10;
 	double ralpha=Math.asin(RB/RN);
-	 rbeta=PI/2-ralpha;
+	 rbeta=UConst.PI/2-ralpha;
 	//double h=RC*Math.sin(rbeta);
 	double d=RC*(1-Math.cos(rbeta));
 	 res=2*(RB+d)/nop;
@@ -151,7 +151,7 @@ public class HypersonicModel {
 	//--------------------------------------------------------------------------
 	//          Create Rotation Matrix (z-axis)
 	double rotationalIncrement = 1;
-	double deltaRad=rotationalIncrement/180*PI; //      Rotation by 1 degree in [rad]                                                (!)
+	double deltaRad=rotationalIncrement/180*UConst.PI; //      Rotation by 1 degree in [rad]                                                (!)
 	double[][] rotationalMatrixZ= {{Math.cos(deltaRad), -Math.sin(deltaRad), 0 } ,
 					{Math.sin(deltaRad), Math.cos(deltaRad), 0 },
 					{0,          0,          1}};
@@ -252,8 +252,8 @@ public class HypersonicModel {
 		//------------------------------------------------------------
 		double cosphi = dotProduct(Vinf,normalVector)/(getLength(normalVector)*getLength(Vinf));
 		double phi = Math.acos(cosphi);
-		double phia= PI/2 - phi;
-		double dphi= phi*180/PI;
+		double phia= UConst.PI/2 - phi;
+		double dphi= phi*180/UConst.PI;
 		//------------------------------------------------------------
 		double cppm=Cpmax*(Math.sin(phia))*(Math.sin(phia)); 
 		//------------------------------------------------------------
@@ -515,7 +515,7 @@ public class HypersonicModel {
 			//nop=100;
 			//double D=RB;
 			double res=2*(RB)/nop;
-			double dtr=PI/180;
+			double dtr=UConst.PI/180;
 			double rphi=PHI*dtr;
 			double ralpha=(90-PHI)*dtr;
 			//--------------------------------------------------------------------------

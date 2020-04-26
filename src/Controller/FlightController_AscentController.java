@@ -34,7 +34,7 @@ public class FlightController_AscentController extends FlightController {
 		 */
 		
 		double flightPathInclination = sensorSet.getRealTimeResultSet().getFpa();
-		double pitchIs = sensorSet.getRealTimeResultSet().getEulerY();
+		double pitchIs = sensorSet.getRealTimeResultSet().getEulerAngle().pitch;
 		double ctrlError;
 		
 		if(Math.toDegrees(flightPathInclination) > 5 ) {
@@ -65,7 +65,7 @@ public class FlightController_AscentController extends FlightController {
 		if(AoAControl) {
 			
 			double aoaTarget = 0;
-			double aoaIs = Math.toDegrees( sensorSet.getRealTimeResultSet().getEulerY() - sensorSet.getRealTimeResultSet().getFpa() );
+			double aoaIs = Math.toDegrees( sensorSet.getRealTimeResultSet().getEulerAngle().pitch - sensorSet.getRealTimeResultSet().getFpa() );
 			
 			ctrlError = aoaTarget - aoaIs;
 			

@@ -24,7 +24,7 @@ public class CoordinateTransformation {
 	}
 
 
-	public  void initializeTranformationMatrices(double[] x, double t, double omega, AtmosphereSet atmosphere, AerodynamicSet aerodynamicSet, double[][] euler_angle, 
+	public  void initializeTranformationMatrices(double[] x, double t, double omega, AtmosphereSet atmosphere, AerodynamicSet aerodynamicSet, 
 			Quaternion qVector, double[] r_ECEF_spherical,double[] V_NED_ECEF_spherical) {
 		//-------------------------------------------------------------------------------------------
 		//              Aerodynamic frame to North-East-Down

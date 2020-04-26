@@ -58,9 +58,11 @@ public class GuiReadInput {
 							    					   Double.parseDouble((String) tokens[50]) );
 							    resultElement.setQuaternion(quat);
 							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
-							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
-							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
+							    EulerAngle intEul = new EulerAngle();
+							    intEul.roll = Double.parseDouble((String) tokens[57]);
+							    intEul.pitch = Double.parseDouble((String) tokens[58]);
+							    intEul.yaw = Double.parseDouble((String) tokens[59]);
+							    resultElement.setEulerAngle(intEul);
 							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
 							    resultElement.setAltitude(Double.parseDouble((String) tokens[4]));
 							    resultElement.setTime(Double.parseDouble((String) tokens[0]));

@@ -35,7 +35,7 @@ public class LaunchRealTimeSimulation {
     	System.out.println("------------------------------------------");
     	System.out.println(""+timeStamp);
     	System.out.println("------------------------------------------");
-    	System.out.println("Reading :");
+    	System.out.println("Reading ... ");
     	System.out.println("------------------------------------------");
     	//------------------------------------------------------------------------------------------
     	//					Compile Integrator inputs from files:

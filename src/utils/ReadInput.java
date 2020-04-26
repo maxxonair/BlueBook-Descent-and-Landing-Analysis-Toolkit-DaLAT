@@ -24,11 +24,7 @@ public class ReadInput {
  * 		The following file path setting will be used for the Read AND the Write class
  * 
  */
-	
-    public static double PI    = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;                 // PI                                       [-] 
-	static double deg2rad 	   = PI/180.0; 					    //Convert degrees to radians
-	static double rad2deg 	   = 180/PI; 					    //Convert radians to degrees
-	
+
 	private static boolean integratorSettingFlag=false;
 	
 	private static int integratorSetting=1;
@@ -37,8 +33,8 @@ public class ReadInput {
 	public static Quaternion qVector = new Quaternion(1,0,0,0);
 	
 	static double[][] InertiaTensor   = {{   0 ,  0  ,   0},
-			  					  {   0 ,  0  ,   0},
-			  					  {   0 ,  0  ,   0}};  // Inertia Tensor []
+			  					  		 {   0 ,  0  ,   0},
+			  					  		 {   0 ,  0  ,   0}};  // Inertia Tensor []
 	
    	public static String[] IntegratorInputPath = {System.getProperty("user.dir") + "/INP/INTEG/00_DormandPrince853Integrator.inp",
    			System.getProperty("user.dir") + "/INP/INTEG/01_ClassicalRungeKuttaIntegrator.inp",
@@ -55,8 +51,8 @@ public class ReadInput {
     public static String ERROR_File 					= System.getProperty("user.dir") + "/INP/ErrorFile.inp";
 	public static String EventHandler_File			= System.getProperty("user.dir") + "/INP/eventhandler.inp";
     public static String SEQUENCE_File   			= System.getProperty("user.dir") + "/INP/sequence_1.inp";
-    public static String sequenceFile 		    = System.getProperty("user.dir") + "/INP/sequenceFile.inp";
-    public static String dashboardSettingFile 		    = System.getProperty("user.dir") + "/INP/GUI/dashboardSetting.inp";
+    public static String sequenceFile 		        = System.getProperty("user.dir") + "/INP/sequenceFile.inp";
+    public static String dashboardSettingFile 		= System.getProperty("user.dir") + "/INP/GUI/dashboardSetting.inp";
 //------------------------------------------------------	-----------------------------------------------------
 	public static void updateSequenceElements(SequenceElement NewElement, List<SequenceElement> SEQUENCE_DATA){	   
 		   if (SEQUENCE_DATA.size()==0){
@@ -85,7 +81,10 @@ public static double[] readInput() {
     FileInputStream fstream = null;
     try{
     	fstream = new FileInputStream(INPUT_FILE);
-    } catch(IOException eIO) { System.out.println(eIO);}
+    } catch(IOException eIO) {
+    	System.out.println("Error: Reading Input File produced an Error");
+    	System.out.println(eIO);
+    	}
     DataInputStream in = new DataInputStream(fstream);
     @SuppressWarnings("resource")
 	BufferedReader br = new BufferedReader(new InputStreamReader(in));
@@ -103,7 +102,7 @@ public static double[] readInput() {
 				try {
 					inputOut[k]= InitialState;
 				} catch(ArrayIndexOutOfBoundsException eIOOO) {
-					System.out.println("Array index out of bounds detected");
+					System.out.println("Error: Array index out of bounds detected");
 				}
 			}
 			//System.out.println("" +k+"   "+InitialState);
@@ -122,11 +121,14 @@ public static double[] readInput() {
 		e.printStackTrace();
 	}
 
-    } catch(NullPointerException eNPE) { System.out.println(eNPE);}
+    } catch(NullPointerException eNPE) { 
+    	System.out.println("Error: NullPointerException within Reading Input file.");
+    	System.out.println(eNPE);}
     return inputOut;
 } 
 //---------------------------------------------------------------------------------------------------
 public static List<SequenceContent> readSequenceFile() throws IOException{	
+	System.out.println("Sequence Manager: Reading Sequences started ... ");
 	List<SequenceContent> SequenceSet = new ArrayList<SequenceContent>();
 	BufferedReader br = new BufferedReader(new FileReader(sequenceFile));
    String strLine;
@@ -137,8 +139,6 @@ public static List<SequenceContent> readSequenceFile() throws IOException{
    while ((strLine = br.readLine()) != null )   {
        
        	String[] initSplit = strLine.split(fcSeparator);
-       	
-       	System.out.println("Content"+initSplit);
 
        	String[] head = initSplit[0].split(" ");
        //System.out.pri
@@ -153,6 +153,8 @@ public static List<SequenceContent> readSequenceFile() throws IOException{
        	//System.out.println(arr2[1]);
        	int endIndex    = Integer.parseInt(arr2[1].split(" ")[1]);
        	double endValue = Double.parseDouble(arr2[1].split(" ")[2]);
+       	
+       	System.out.println("Sequence Manager Added Element: SequID "+ID+ ", FCID "+flightControllerIndex+", EVID "+eventIndex);
        	
        	//System.out.println(ID+" "+sequenceName+" "+flightControllerIndex+" "+eventIndex+" "+endIndex+" "+endValue);
     	    SequenceContent sequenceContent = new SequenceContent();
@@ -211,6 +213,7 @@ public static List<SequenceContent> readSequenceFile() throws IOException{
    // Add additional sequence element to avoid reaching undefined space 
    SequenceContent sequenceContent = new SequenceContent();
    SequenceSet.add(sequenceContent);
+   System.out.println("Sequence Manager: Reading Sequences completed successfully.");
  return SequenceSet; 
 }
 //---------------------------------------------------------------------------------------------------
@@ -258,6 +261,7 @@ public static List<ChartSetting> readChartLayout(int numberOfCharts) throws IOEx
 }
 //---------------------------------------------------------------------------------------------------
 public static SimulatorInputSet readINP() throws IOException {
+	System.out.println("Input Manager: Reading Input File started ... ");
     FileInputStream fstream = null;
     integratorSettingFlag=false;
     try{
@@ -308,6 +312,7 @@ public static SimulatorInputSet readINP() throws IOException {
     		System.out.println("Error: ReadInput/readINP finilizing data package failed.");
     		System.out.println(ext);
     }
+    System.out.println("Input Manager: Reading Input File completed. ");
     return simulatorInputSet;
 }
 
@@ -323,7 +328,7 @@ private static SpaceShip checkSpaceShip(String identifier, double value, SpaceSh
 	} else if (identifier.equals("SC_Height")) {
 		spaceShip.setVehicleLength(value);
 	} else if (identifier.equals("SC_ParDiam")) {
-		spaceShip.getAeroElements().setParachuteSurfaceArea(PI*(value*value/4));
+		spaceShip.getAeroElements().setParachuteSurfaceArea(UConst.PI*(value*value/4));
 	} else if (identifier.equals("SC_BodyRadius")) {
 		spaceShip.getAeroElements().setHeatshieldRadius(value/2);
 	} else if (identifier.equals("SC_ParMass")) {
@@ -331,7 +336,7 @@ private static SpaceShip checkSpaceShip(String identifier, double value, SpaceSh
 	} else if (identifier.equals("SC_HeatShieldMass")) {
 		spaceShip.getAeroElements().setHeatShieldMass(value);
 	} else if (identifier.equals("SC_SurfArea")) {
-		spaceShip.getAeroElements().setSurfaceArea(PI*(value*value/4));
+		spaceShip.getAeroElements().setSurfaceArea(UConst.PI*(value*value/4));
 	} else if (identifier.equals("Init_IXX")) {
 		InertiaTensor[0][0] = value;
 	} else if (identifier.equals("Init_IXY")) {
@@ -393,17 +398,17 @@ private static SpaceShip checkSpaceShip(String identifier, double value, SpaceSh
 
 private static IntegratorData checkIntegratorData(String identifier, double value, IntegratorData integratorData) {
 	if(identifier.equals("Init_LONG")) {
-		integratorData.setInitLongitude(value*deg2rad);
+		integratorData.setInitLongitude(value*UConst.deg2rad);
 	} else if (identifier.equals("Init_LAT")) {
-		integratorData.setInitLatitude(value*deg2rad);
+		integratorData.setInitLatitude(value*UConst.deg2rad);
 	} else if (identifier.equals("Init_RAD")) {
 		integratorData.setInitRadius(value);
 	} else if (identifier.equals("Init_VEL")) {
 		integratorData.setInitVelocity(value);
 	} else if (identifier.equals("Init_FPA")) {
-		integratorData.setInitFpa(value*deg2rad);
+		integratorData.setInitFpa(value*UConst.deg2rad);
 	} else if (identifier.equals("Init_AZI")) {
-		integratorData.setInitAzimuth(value*deg2rad);
+		integratorData.setInitAzimuth(value*UConst.deg2rad);
 	} else if (identifier.equals("Integ_MaxTime")) {
 		integratorData.setMaxGlobalTime(value);
 		integratorData.setGlobalTime(0);
@@ -427,11 +432,11 @@ private static IntegratorData checkIntegratorData(String identifier, double valu
 	} else if (identifier.equals("Integ_DoF")) {
 		integratorData.setDegreeOfFreedom((int) value);	
 	} else if (identifier.equals("Init_AngRateX")) {
-		integratorData.setInitRotationalRateX(value*deg2rad);	
+		integratorData.setInitRotationalRateX(value*UConst.deg2rad);	
 	} else if (identifier.equals("Init_AngRateY")) {
-		integratorData.setInitRotationalRateY(value*deg2rad);	
+		integratorData.setInitRotationalRateY(value*UConst.deg2rad);	
 	} else if (identifier.equals("Init_AngRateZ")) {
-		integratorData.setInitRotationalRateZ(value*deg2rad);	
+		integratorData.setInitRotationalRateZ(value*UConst.deg2rad);	
 	} else if (identifier.equals("Init_QuartW")) {
 		qVector.w = value;	
 	} else if (identifier.equals("Init_QuartX")) {

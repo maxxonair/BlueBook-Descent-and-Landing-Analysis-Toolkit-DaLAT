@@ -36,7 +36,7 @@ public class FlightController_PitchControl extends FlightController {
 			   }
 			   RCS_Y_CMD = response;
 	   	} else { // pitch angle to 0
-			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerY() ;
+			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerAngle().pitch ;
 			   double response  = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
 			   if(Double.isNaN(response)) {
 				   response =0;

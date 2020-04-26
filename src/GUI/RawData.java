@@ -17,6 +17,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
 import Simulator_main.DataSets.RealTimeResultSet;
+import utils.EulerAngle;
 import utils.GuiReadInput;
 
 
@@ -111,9 +112,11 @@ public class RawData {
 			 							   						Double.parseDouble((String) tokens[42]),
 			 							   						Double.parseDouble((String) tokens[43])};
 							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
-							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
-							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
+							    EulerAngle intEul = new EulerAngle();
+							    intEul.roll = Double.parseDouble((String) tokens[57]);
+							    intEul.pitch = Double.parseDouble((String) tokens[58]);
+							    intEul.yaw = Double.parseDouble((String) tokens[59]);
+							    resultElement.setEulerAngle(intEul);
 							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
 							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
 							    resultElement.setFpa(Double.parseDouble((String) tokens[7]));

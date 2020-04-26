@@ -24,8 +24,8 @@ import Model.DataSets.ErrorSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
-import Simulator_main.DataSets.CurrentDataSet;
 import Simulator_main.DataSets.IntegratorData;
+import Simulator_main.DataSets.PrevailingDataSet;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
 import Simulator_main.DataSets.RotElements;
@@ -55,10 +55,6 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
 //	                                                         Constants
 //
 //----------------------------------------------------------------------------------------------------------------------------    
-private static double PI = 3.14159265358979323846264;
-//public static int[] trigger_type_translator = {0,2,3};
-static double deg2rad = PI/180.0; 		//Convert degrees to radians
-static double rad2deg = 180/PI; 		//Convert radians to degrees
 private static SimulationConstants constants = new SimulationConstants();
 //----------------------------------------------------------------------------------------------------------------------------
 //............................................                                       .........................................
@@ -93,11 +89,11 @@ private static double[][] F_total_NED = {{0},{0},{0}};						// Total force vecto
 //----------------------------------------------------------------------------------------------------------------------
 private static Quaternion q_B2IN = new Quaternion(1,0,0,0);
 
+private static EulerAngle eulerAngle = new EulerAngle();
+
 private static double[][] AngularRate     = {{0},
 											 {0},
 											 {0}};					 // Angular Velcity {P, Q, R}T [rad/s] 
-private static double[][] EulerAngle      = {{0},{0},{0}};		     // Euler Angle Vector [rad]
-private static EulerAngle eulerAngle = new EulerAngle();
 
 private static double[][] AngularMomentum_B = {{0},
 											   {0},
@@ -120,7 +116,7 @@ private static GravitySet gravitySet = new GravitySet();
 private static AerodynamicSet aerodynamicSet = new AerodynamicSet();
 private static ControlCommandSet controlCommandSet = new ControlCommandSet();
 private static ActuatorSet actuatorSet = new ActuatorSet();
-private static CurrentDataSet currentDataSet = new CurrentDataSet();
+private static PrevailingDataSet prevailingDataSet = new PrevailingDataSet();
 private static ErrorSet errorSet = new ErrorSet();
 private static MasterSet masterSet = new MasterSet();
 //-----------------------------------------------------------------------------------------------------------------------
@@ -129,17 +125,17 @@ private static MasterSet masterSet = new MasterSet();
     	//
     	//
     	//-------------------------------------------------------------------------------------------------------------------
-    	currentDataSet.setxIS(x);
-    	currentDataSet.settIS(t);
-    	currentDataSet.setGlobalTime(integratorData.getGlobalTime()+t);
-    	currentDataSet.setValDt(val_dt);
-    	currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
-    	currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
-    	currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
-    	currentDataSet.setEulerAngle(EulerAngle);
+    	prevailingDataSet.setxIS(x);
+    	prevailingDataSet.settIS(t);
+    	prevailingDataSet.setGlobalTime(integratorData.getGlobalTime()+t);
+    	prevailingDataSet.setValDt(val_dt);
+    	prevailingDataSet.setR_ECEF_spherical(r_ECEF_spherical);
+    	prevailingDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
+    	prevailingDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+    	prevailingDataSet.setEulerAngle(eulerAngle);
 	coordinateTransformation.initializeTranformationMatrices(x, t, constants.getOmega(), atmosphereSet, aerodynamicSet, 
-															EulerAngle, q_B2IN, r_ECEF_spherical, V_NED_ECEF_spherical);
-	currentDataSet.setCoordinateTransformation(coordinateTransformation);
+															 q_B2IN, r_ECEF_spherical, V_NED_ECEF_spherical);
+	prevailingDataSet.setCoordinateTransformation(coordinateTransformation);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
@@ -163,7 +159,7 @@ private static MasterSet masterSet = new MasterSet();
     	// 									    		 Force Model 
     	//-------------------------------------------------------------------------------------------------------------------
     	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
-    							 controlCommandSet, spaceShip, currentDataSet, integratorData, errorSet, false);
+    							 controlCommandSet, spaceShip, prevailingDataSet, integratorData, errorSet, false);
     	forceMomentumSet = masterSet.getForceMomentumSet();
     	gravitySet = masterSet.getGravitySet();
     	atmosphereSet = masterSet.getAtmosphereSet();
@@ -172,7 +168,7 @@ private static MasterSet masterSet = new MasterSet();
     	spaceShip = masterSet.getSpaceShip();
     //	System.out.println(spaceShip.getMass());
     //	controlCommandSet = masterSet.getControlCommandSet();
-    	if(currentDataSet.getxIS()[6]!=spaceShip.getMass()) {
+    	if(prevailingDataSet.getxIS()[6]!=spaceShip.getMass()) {
     		x[6]= spaceShip.getMass();
     	}
     	//-------------------------------------------------------------------------------------------------------------------
@@ -210,11 +206,11 @@ private static MasterSet masterSet = new MasterSet();
 	    	//--------------------------------
 	    if(spherical) {
 	    	// velocity
-	    dxdt[3] = -GravityModel.getGravity2D(currentDataSet)[0] * sin( x[4] ) + GravityModel.getGravity2D(currentDataSet)[1] * cos( x[5] ) * cos( x[4] ) + forceMomentumSet.getF_Aero_A()[0][0] / x[6] + constants.getOmega() * constants.getOmega() * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
+	    dxdt[3] = -GravityModel.getGravity2D(prevailingDataSet)[0] * sin( x[4] ) + GravityModel.getGravity2D(prevailingDataSet)[1] * cos( x[5] ) * cos( x[4] ) + forceMomentumSet.getF_Aero_A()[0][0] / x[6] + constants.getOmega() * constants.getOmega() * x[2] * cos( x[1] ) * ( sin( x[4] ) * cos( x[1] ) - cos( x[1] ) * cos( x[5] ) * sin( x[1] ) ) ;
 	    	// flight path angle 
-	    dxdt[4] = ( x[3] / x[2] - GravityModel.getGravity2D(currentDataSet)[0]/ x[3] ) * cos( x[4] ) - GravityModel.getGravity2D(currentDataSet)[1] * cos( x[5] ) * sin( x[4] ) / x[3] - forceMomentumSet.getF_Aero_A()[2][0] / ( x[3] * x[6] ) + 2 * constants.getOmega() * sin( x[5] ) * cos( x[1] ) + constants.getOmega() * constants.getOmega() * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
+	    dxdt[4] = ( x[3] / x[2] - GravityModel.getGravity2D(prevailingDataSet)[0]/ x[3] ) * cos( x[4] ) - GravityModel.getGravity2D(prevailingDataSet)[1] * cos( x[5] ) * sin( x[4] ) / x[3] - forceMomentumSet.getF_Aero_A()[2][0] / ( x[3] * x[6] ) + 2 * constants.getOmega() * sin( x[5] ) * cos( x[1] ) + constants.getOmega() * constants.getOmega() * x[2] * cos( x[1] ) * ( cos( x[4] ) * cos( x[1] ) + sin( x[4] ) * cos( x[5] ) * sin( x[1] ) ) / x[3] ;
 	    	// local azimuth
-	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - GravityModel.getGravity2D(currentDataSet)[1] * sin( x[5] ) / x[3] + forceMomentumSet.getF_Aero_A()[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * constants.getOmega() * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + constants.getOmega() * constants.getOmega() * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
+	    dxdt[5] = x[3] * sin( x[5] ) * tan( x[1] ) * cos( x[4] ) / x[2] - GravityModel.getGravity2D(prevailingDataSet)[1] * sin( x[5] ) / x[3] + forceMomentumSet.getF_Aero_A()[1][0] / ( x[3] - cos( x[4] ) * x[6] ) - 2 * constants.getOmega() * ( tan( x[4] ) * cos( x[5] ) * cos( x[1] ) - sin( x[1] ) ) + constants.getOmega() * constants.getOmega() * x[2] * sin( x[5] ) * sin( x[1] ) * cos( x[1] ) / ( x[3] * cos( x[4] ) ) ;
 
 	    	V_NED_ECEF_spherical[0]=x[3];
 	    	V_NED_ECEF_spherical[1]=x[4];
@@ -399,9 +395,8 @@ private static MasterSet masterSet = new MasterSet();
 	AngularRate[1][0] = x[12];
 	AngularRate[2][0] = x[13];
 	}
-	    EulerAngle = Mathbox.Quat2Euler(q_B2IN, eulerConvention);
 	    eulerAngle = Mathbox.quaternion2RollPitchYaw(q_B2IN);
-	    currentDataSet.setEulerAngle(EulerAngle);
+	    prevailingDataSet.setEulerAngle(eulerAngle);
 
 }
 //**********************************************************************************************
@@ -419,9 +414,9 @@ public static RealTimeContainer launchIntegrator( IntegratorData integratorData,
 //----------------------------------------------------------------------------------------------
 // Load and set constants 
 constants.initConstants(integratorData.getTargetBody());
-currentDataSet.setRM(constants.getRm());
-currentDataSet.setLt(constants.getLt());
-currentDataSet.setMu(constants.getMu());
+prevailingDataSet.setRM(constants.getRm());
+prevailingDataSet.setLt(constants.getLt());
+prevailingDataSet.setMu(constants.getMu());
 //----------------------------------------------------------------------------------------------
 //
 //Initialise Simulation: 
@@ -465,8 +460,8 @@ ref_ELEVATION =  integratorData.getRefElevation();
 //----------------------------------------------------------------------------------------------
 //Sequence Setup	
 //----------------------------------------------------------------------------------------------
-currentDataSet.setLocalElevation(integratorData.getRefElevation());
-currentDataSet.setTARGET(integratorData.getTargetBody());
+prevailingDataSet.setLocalElevation(integratorData.getRefElevation());
+prevailingDataSet.setTARGET(integratorData.getTargetBody());
 //----------------------------------------------------------------------------------------------
 //Integrator setup	
 //----------------------------------------------------------------------------------------------
@@ -533,12 +528,12 @@ double[] y = new double[dimension]; // Result vector
 	y[14] = spaceShip.getPropulsion().getPrimaryPropellantFillingLevel();
 	y[15] = spaceShip.getPropulsion().getSecondaryPropellantFillingLevel();
 
-currentDataSet.setxIS(y);
-currentDataSet.settIS(0);
-currentDataSet.setR_ECEF_spherical(r_ECEF_spherical);
-currentDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
-currentDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
-//ControllerModel.initializeFlightController(spaceShip, currentDataSet, controlCommandSet);	
+prevailingDataSet.setxIS(y);
+prevailingDataSet.settIS(0);
+prevailingDataSet.setR_ECEF_spherical(r_ECEF_spherical);
+prevailingDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
+prevailingDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
+//ControllerModel.initializeFlightController(spaceShip, prevailingDataSet, controlCommandSet);	
 @SuppressWarnings("unused")
 List<MasterSet> masterList = new ArrayList<MasterSet>();
 @SuppressWarnings("unused")
@@ -560,7 +555,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                double[] y     = interpolator.getInterpolatedState();
 	                RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	                 val_dt = interpolator.getCurrentTime()-interpolator.getPreviousTime();
-	                // double currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
+	                // double currentTime = integratorData.getGlobalTime() + prevailingDataSet.gettIS();
 	         	    // RealTimeResultSet realTimeResultSet = new RealTimeResultSet();
 	         	    // System.out.println(stepCount);
 	                // currentGlobalTime = currentGlobalTime + val_dt;
@@ -568,7 +563,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	         	    // System.out.println(integratorData.getGlobalTime() + currentGlobalTime+"|"+val_dt);
 	                	// realTimeResultSet.setTime(currentGlobalTime);
 	                // realTimeResultSet.setGlobalTime(integratorData.getGlobalTime() + currentGlobalTime);
-	                	realTimeResultSet.setGlobalTime(currentDataSet.getGlobalTime());
+	                	realTimeResultSet.setGlobalTime(prevailingDataSet.getGlobalTime());
 	                	realTimeResultSet.setLongitude(r_ECEF_spherical[0]);
 	                	realTimeResultSet.setLatitude(r_ECEF_spherical[1]);
 	                	realTimeResultSet.setRadius(r_ECEF_spherical[2]);
@@ -578,7 +573,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                	realTimeResultSet.setFpa( V_NED_ECEF_spherical[1]);
 	                	realTimeResultSet.setVelocity( V_NED_ECEF_spherical[0]);
 	                	
-	                	realTimeResultSet.setCurrentDataSet(currentDataSet);
+	                	realTimeResultSet.setCurrentDataSet(prevailingDataSet);
 	                	masterSet.getSpaceShip().setMass(y[6]);
 	                	realTimeResultSet.setSCMass(y[6]);
 	                	if(spherical) {
@@ -588,9 +583,7 @@ RealTimeContainer realTimeContainer = new RealTimeContainer();
 	                		realTimeResultSet.setNormalizedDeceleration(decel/9.80665);
 	                	}	
 	                	realTimeResultSet.setPQR(AngularRate);
-	                	realTimeResultSet.setEulerX( eulerAngle.roll);
-	                	realTimeResultSet.setEulerY( eulerAngle.pitch);
-	                	realTimeResultSet.setEulerZ( eulerAngle.yaw);
+	                	realTimeResultSet.setEulerAngle(eulerAngle);
 	                	realTimeResultSet.setQuaternion(q_B2IN);
 	                	realTimeResultSet.setCartesianPosECEF(r_ECEF_cartesian);
 	                	realTimeResultSet.setThrust_NED(F_total_NED);
