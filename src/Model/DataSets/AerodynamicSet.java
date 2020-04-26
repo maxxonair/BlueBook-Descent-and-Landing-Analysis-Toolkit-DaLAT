@@ -1,6 +1,6 @@
 package Model.DataSets;
 
-public class AerodynamicSet {
+public class AerodynamicSet extends Object implements Cloneable{
     public   int flowzone=0; 								// Flow zone continuum - transitional - free molecular flwo
     public   double DragCoefficientContinuumFlow = 0; 	    // Drag coefficient in contiuum flow;
     public   double CdC=0; 									// Continuum Flow Drag Coefficient [-]
@@ -169,5 +169,11 @@ public class AerodynamicSet {
 	}
 	public   void setCdC(double cdC) {
 		CdC = cdC;
+	}
+	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
 	}
 }

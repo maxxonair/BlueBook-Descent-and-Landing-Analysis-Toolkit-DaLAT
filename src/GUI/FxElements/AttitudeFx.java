@@ -196,122 +196,59 @@ public class AttitudeFx {
 
 	}
 	public void modelRotation(Quaternion q) {
-		int version =3;
-			if(version==1) {
-				Quaternion qInverse = quatTemp;
-				qInverse.conjugate();
-				matrixRotateNode(qInverse);
-
-				matrixRotateNode(q);
-				quatTemp = q;	
-			} else if (version ==2) {
-				Quaternion qInverse = quatTemp;
-				qInverse.conjugate();
-				
-				matrixRotateNode(qInverse);
-				Quaternion qRot = q;
-				qRot.conjugate();
-				matrixRotateNode(qRot);
-				quatTemp = qRot;
-			} else if (version ==3) {
-				Quaternion qInverse = quatTemp;
-				qInverse.inverse();
-				Vector4 vec = matrixRotateNode(qInverse,0);
-				Point3D point = new Point3D(vec.x, vec.y, vec.z);
-	            model.setRotationAxis(point);
-	            model.setRotate(vec.w);   
-
-	            vec = matrixRotateNode(q,0);
-	            if (vec != new Vector4(0,0,0,0)) {
-		            model.setRotationAxis(point);
-		            model.setRotate(vec.w); 
-		            
-					quatTemp = q;
-	            }
+			Quaternion qInverse=new Quaternion();
+			try {
+				qInverse = (Quaternion) quatTemp.clone();
+			} catch (CloneNotSupportedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-	}
-	
-    public void matrixRotateNode(Quaternion q){
-    	
-    	double a=q.w;
-    	double b=q.x;
-    	double c=q.y;
-    	double d=q.z;
+			qInverse.inverse();
+			Vector4 vec = matrixRotateNode1(qInverse);
+			Point3D rotAxis = new Point3D(vec.x, vec.y, vec.z);
+			double  rotAngle =vec.w;
+            model.setRotationAxis(rotAxis);
+            model.setRotate(rotAngle);   
 
-        // double A11=Math.cos(alf)*Math.cos(gam);
-        double A11=a*a+b*b-c*c-d*d;
-        // double A12=Math.cos(bet)*Math.sin(alf)+Math.cos(alf)*Math.sin(bet)*Math.sin(gam);
-        double A12=2*(b*c-a*d);
-        // double A13=Math.sin(alf)*Math.sin(bet)-Math.cos(alf)*Math.cos(bet)*Math.sin(gam);
-        double A13=2*(b*d+a*c);
-        
-        //double A21=-Math.cos(gam)*Math.sin(alf);
-        double A21=2*(b*c+a*d);
-        //double A22=Math.cos(alf)*Math.cos(bet)-Math.sin(alf)*Math.sin(bet)*Math.sin(gam);
-        double A22=(a*a-b*b+c*c-d*d);
-        //double A23=Math.cos(alf)*Math.sin(bet)+Math.cos(bet)*Math.sin(alf)*Math.sin(gam);
-        double A23=2*(c*d-a*b);
-        
-       // double A31=Math.sin(gam);
-        double A31=2*(b*d-a*c);
-       // double A32=-Math.cos(gam)*Math.sin(bet);
-        double A32=2*(c*d+a*b);
-       // double A33=Math.cos(bet)*Math.cos(gam);
-        double A33=(a*a-b*b-c*c+d*d);
-         
-        double dd = Math.acos((A11+A22+A33-1d)/2d);
-        if(dd!=0d){
-            double den=2d*Math.sin(dd);
-            Point3D p= new Point3D((A32-A23)/den,(A13-A31)/den,(A21-A12)/den);
-            model.setRotationAxis(p);
-            model.setRotate(Math.toDegrees(dd));                   
-        }
-    }
-    
-    
-    public Vector4 matrixRotateNode(Quaternion q, int indx){
+            vec = matrixRotateNode1(q);
+            if (vec != new Vector4(0,0,0,0)) {
+				rotAxis = new Point3D(vec.x, vec.y, vec.z);
+				rotAngle =vec.w;
+	            model.setRotationAxis(rotAxis);
+	            model.setRotate(rotAngle); 
+	            
+				quatTemp = q;
+            }			
+	}
+	    
+    public Vector4 matrixRotateNode1(Quaternion q ){
     	
     	Vector4 result = new Vector4(0,0,0,0);
     	
-    	double a=q.w;
-    	double b=q.x;
-    	double c=q.y;
-    	double d=q.z;
+    	double[][] cosMat = q.getCosineMatrix();
 
-        // double A11=Math.cos(alf)*Math.cos(gam);
-        double A11=a*a+b*b-c*c-d*d;
-        // double A12=Math.cos(bet)*Math.sin(alf)+Math.cos(alf)*Math.sin(bet)*Math.sin(gam);
-        double A12=2*(b*c-a*d);
-        // double A13=Math.sin(alf)*Math.sin(bet)-Math.cos(alf)*Math.cos(bet)*Math.sin(gam);
-        double A13=2*(b*d+a*c);
+        double A11 = cosMat[0][0];
+        double A12 = cosMat[0][1];
+        double A13 = cosMat[0][2];
         
-        //double A21=-Math.cos(gam)*Math.sin(alf);
-        double A21=2*(b*c+a*d);
-        //double A22=Math.cos(alf)*Math.cos(bet)-Math.sin(alf)*Math.sin(bet)*Math.sin(gam);
-        double A22=(a*a-b*b+c*c-d*d);
-        //double A23=Math.cos(alf)*Math.sin(bet)+Math.cos(bet)*Math.sin(alf)*Math.sin(gam);
-        double A23=2*(c*d-a*b);
+        double A21 = cosMat[1][0];
+        double A22 = cosMat[1][1];
+        double A23 = cosMat[1][2];
         
-       // double A31=Math.sin(gam);
-        double A31=2*(b*d-a*c);
-       // double A32=-Math.cos(gam)*Math.sin(bet);
-        double A32=2*(c*d+a*b);
-       // double A33=Math.cos(bet)*Math.cos(gam);
-        double A33=(a*a-b*b-c*c+d*d);
+        double A31 = cosMat[2][0];
+        double A32 = cosMat[2][1];
+        double A33 = cosMat[2][2];
          
         double dd = Math.acos((A11+A22+A33-1d)/2d);
         if(dd!=0d){
             double den=2d*Math.sin(dd);   
             result.w = Math.toDegrees(dd);
             result.x = (A32-A23)/den;
-            result.y = (A13-A31);
-            result.z = (A21-A12)/den;
-            
+            result.z = (A13-A31);
+            result.y = (A21-A12)/den;            
         }
         return result;
-    }
-	
-	
+    }	
 	
 	private   void initMouseControl(Scene scene,JFXPanel fxpanel, Camera camera) {
 		

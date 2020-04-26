@@ -1,6 +1,6 @@
 package Model.DataSets;
 
-public class GravitySet {
+public class GravitySet extends Object implements Cloneable {
 		
 	double[][] g_NED = {{0},{0},{0}};  // Gravity vector in NED frame 				[m/s�]
 		
@@ -15,5 +15,9 @@ public class GravitySet {
 		this.g_NED = g_NED;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

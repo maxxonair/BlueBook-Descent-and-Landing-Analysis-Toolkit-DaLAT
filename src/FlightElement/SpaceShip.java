@@ -125,5 +125,4 @@ public class SpaceShip {
 		return oBC;
 	}
 	
-	
 }

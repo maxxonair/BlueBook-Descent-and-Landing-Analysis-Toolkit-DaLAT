@@ -33,7 +33,7 @@ public class FlightController_DescentController extends FlightController{
 		 */
 		
 		double pitchTarget = - sensorSet.getRealTimeResultSet().getFpa();
-		double pitchIs = sensorSet.getRealTimeResultSet().getEulerY();
+		double pitchIs = sensorSet.getRealTimeResultSet().getEulerAngle().pitch;
 		double ctrlError= pitchTarget - pitchIs;
 		
 		PID pitch = new PID(0, 0, 0, -1, 1);
@@ -54,7 +54,7 @@ public class FlightController_DescentController extends FlightController{
 		 */
 		
 		double target = PI;
-		double state = sensorSet.getRealTimeResultSet().getEulerZ();
+		double state = sensorSet.getRealTimeResultSet().getEulerAngle().yaw;
 	    ctrlError= target - state;
 		
 		pitch.P = 0.05;

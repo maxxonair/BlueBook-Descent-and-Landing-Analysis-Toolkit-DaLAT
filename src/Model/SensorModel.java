@@ -42,9 +42,9 @@ public class SensorModel {
 		double variation = normVariation * magnitude;
 		double variation1 = normVariation1 * magnitude;
 		double variation2 = normVariation2 * magnitude;
-		double isEulerX = Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerX());
-		double isEulerY = Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerY());
-		double isEulerZ = Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerZ());
+		double isEulerX = Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerAngle().roll);
+		double isEulerY = Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerAngle().pitch);
+		double isEulerZ = Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerAngle().yaw);
 
 		if(Math.random()>0.5) {
 			isEulerX += variation;

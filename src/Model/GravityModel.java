@@ -3,7 +3,7 @@ package Model;
 import static java.lang.Math.*;
 
 import Model.DataSets.GravitySet;
-import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.PrevailingDataSet;
 import utils.Mathbox;
 
 
@@ -69,7 +69,7 @@ public class GravityModel  {
     	
     	return g; 
     }
-    public static double[][] getGravity3D_ECEF(CurrentDataSet currentDataSet) {
+    public static double[][] getGravity3D_ECEF(PrevailingDataSet currentDataSet) {
     	double[][] GRAVITY_VECTOR = new double[3][1]; 
     	SET_Constants(currentDataSet.getTARGET());;
 
@@ -89,7 +89,7 @@ public class GravityModel  {
     	return GRAVITY_VECTOR;
     }
     
-	public static double[] getGravity2D(CurrentDataSet currentDataSet) {
+	public static double[] getGravity2D(PrevailingDataSet currentDataSet) {
 		//------------------------------------------------------------------------------
 		//     simplified 2D atmosphere model (J2 only) 
 		//------------------------------------------------------------------------------
@@ -106,7 +106,7 @@ public class GravityModel  {
 	    return g; 
 	}
 	
-	public static GravitySet getGravitySet(CurrentDataSet currentDataSet) {
+	public static GravitySet getGravitySet(PrevailingDataSet currentDataSet) {
 		GravitySet gravitySet = new GravitySet();
 		gravitySet.setG_NED(Mathbox.Multiply_Matrices(currentDataSet.getCoordinateTransformation().getC_ECEF2NED(), 
 				getGravity3D_ECEF(currentDataSet)));

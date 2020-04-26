@@ -24,6 +24,7 @@ import javax.swing.border.Border;
 
 import GUI.BlueBookVisual;
 import GUI.FilePaths;
+import Simulator_main.DataSets.SimulationConstants;
 import utils.GuiReadInput;
 import utils.WriteInput;
 
@@ -911,8 +912,10 @@ public class SidePanelLeft {
     	double fpa_inert = Double.parseDouble(INPUT_FPA_Is.getText())*deg2rad;
     	double azi_inert = Double.parseDouble(INPUT_AZI_Is.getText())*deg2rad;
     	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg2rad;
-    	double rm = BlueBookVisual.DATA_MAIN[BlueBookVisual.indx_target][0];
-    	double omega = BlueBookVisual.DATA_MAIN[BlueBookVisual.indx_target][2];
+    	SimulationConstants constants = new SimulationConstants();
+    	constants.initConstants(BlueBookVisual.indx_target);
+    	double rm = constants.getRm();
+    	double omega = constants.getOmega();
     	double radius = Double.parseDouble(INPUT_ALT_Rs.getText())+rm;
     	double azimuth_rotFrame   = Math.atan(Math.tan(azi_inert)-omega*radius*Math.cos(lat_rotating)/(vel_inert*Math.cos(fpa_inert)*Math.cos(azi_inert)));
     	double fpa_rotFrame 	  = Math.atan(Math.tan(fpa_inert)*Math.cos(azimuth_rotFrame)/Math.cos(azi_inert));
@@ -951,8 +954,10 @@ public class SidePanelLeft {
     	double fpa_rotating = Double.parseDouble(INPUT_FPA_Rs.getText())*deg2rad;
     	double azi_rotating = Double.parseDouble(INPUT_AZI_Rs.getText())*deg2rad;
     	double lat_rotating = Double.parseDouble(INPUT_LAT_Rs.getText())*deg2rad;
-    	double rm = BlueBookVisual.DATA_MAIN[BlueBookVisual.indx_target][0];
-    	double omega = BlueBookVisual.DATA_MAIN[BlueBookVisual.indx_target][2];
+    	SimulationConstants constants = new SimulationConstants();
+    	constants.initConstants(BlueBookVisual.indx_target);
+    	double rm = constants.getRm();
+    	double omega = constants.getRm();
     	double radius = Double.parseDouble(INPUT_ALT_Rs.getText())+rm;
     	double azimuth_inertFrame = Math.atan((vel_rotating*Math.cos(fpa_rotating)*Math.sin(azi_rotating)+omega*radius+Math.cos(lat_rotating))/(vel_rotating*Math.cos(fpa_rotating)*Math.cos(azi_rotating)));
     	double fpa_inertFrame = Math.atan(Math.tan(fpa_rotating)*Math.cos(azimuth_inertFrame)/Math.cos(azi_rotating));

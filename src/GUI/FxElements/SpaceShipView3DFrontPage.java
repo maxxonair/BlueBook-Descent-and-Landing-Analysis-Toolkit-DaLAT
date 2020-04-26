@@ -175,9 +175,9 @@ public class SpaceShipView3DFrontPage {
 					                    @Override
 					                    public void run() {
 			
-					                    	double getRotx = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerX());
-					                    	double getRoty = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerY());
-					                    	double getRotz = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerZ());
+					                    	double getRotx = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerAngle().roll);
+					                    	double getRoty = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerAngle().pitch);
+					                    	double getRotz = Math.toDegrees(DashboardPlotArea.getResultSet().get(indx).getEulerAngle().yaw);
 					        				//System.out.println(getRotx+"|"+getRoty+"|"+getRotz);
 					                    	try {
 					                    	if(!Double.isNaN(getRotx)) {

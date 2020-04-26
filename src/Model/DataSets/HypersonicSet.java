@@ -1,6 +1,6 @@
 package Model.DataSets;
 
-public class HypersonicSet {
+public class HypersonicSet extends Object implements Cloneable {
 	
 	private double Cx=0;
 	private double Cy=0;
@@ -94,6 +94,10 @@ public class HypersonicSet {
 		CN = cN;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 
 }

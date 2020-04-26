@@ -5,8 +5,9 @@ import java.util.List;
 
 import Sequence.SequenceElement;
 import Simulator_main.CoordinateTransformation;
+import utils.EulerAngle;
 
-public class CurrentDataSet {
+public class PrevailingDataSet extends Object implements Cloneable{
 	
 	private  double valDt=0;
 	private  double RM;
@@ -27,8 +28,11 @@ public class CurrentDataSet {
 	private double propellantLevelIsPrimary = 0 ; 
 	private double propellantLevelIsSecondary = 0;
 	
-	public  double[][] EulerAngle      = {{0},{0},{0}};
+	public  EulerAngle eulerAngle      = new EulerAngle();
 	
+	public PrevailingDataSet() {
+		
+	}
 	
 	public double getSequenceTime() {
 		return sequenceTime;
@@ -42,11 +46,11 @@ public class CurrentDataSet {
 	public void setGlobalTime(double globalTime) {
 		this.globalTime = globalTime;
 	}
-	public  double[][] getEulerAngle() {
-		return EulerAngle;
+	public  EulerAngle getEulerAngle() {
+		return eulerAngle;
 	}
-	public  void setEulerAngle(double[][] eulerAngle) {
-		EulerAngle = eulerAngle;
+	public  void setEulerAngle(EulerAngle eulerAngle) {
+		this.eulerAngle = eulerAngle;
 	}
 	public double getPropellantLevelIsPrimary() {
 		return propellantLevelIsPrimary;
@@ -139,6 +143,10 @@ public class CurrentDataSet {
 		this.localElevation = localElevation;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 
 }

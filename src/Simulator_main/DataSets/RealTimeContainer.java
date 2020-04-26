@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-public class RealTimeContainer {
+public class RealTimeContainer extends Object implements Cloneable {
 
 	List<RealTimeResultSet> realTimeList = new ArrayList<RealTimeResultSet>();
 	private RealTimeResultSet realTimeResultSet;
@@ -27,7 +27,17 @@ public class RealTimeContainer {
 		return realTimeResultSet;
 	}
 	public void setRealTimeResultSet(RealTimeResultSet realTimeResultSet) {
-		this.realTimeResultSet = realTimeResultSet;
+		try {
+			this.realTimeResultSet = (RealTimeResultSet) realTimeResultSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

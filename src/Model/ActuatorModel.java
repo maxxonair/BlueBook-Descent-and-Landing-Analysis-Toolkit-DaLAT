@@ -5,7 +5,8 @@ import Model.DataSets.ActuatorSet;
 import Model.DataSets.ControlCommandSet;
 import Model.DataSets.PrimaryThrustChangeLog;
 import Noise.ActuatorNoiseModel;
-import Simulator_main.DataSets.CurrentDataSet;
+import Simulator_main.DataSets.PrevailingDataSet;
+import utils.UConst;
 import Simulator_main.DataSets.IntegratorData;
 
 public class ActuatorModel {
@@ -18,11 +19,10 @@ public class ActuatorModel {
 	
 	private static double currentTime;
 	
-	public static double PI    = 3.141592653589793238462643383279502884197169399375105820974944;
 	
 	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
 	
-	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, CurrentDataSet currentDataSet, IntegratorData integratorData) {
+	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData) {
 		
 	    currentTime = integratorData.getGlobalTime() + currentDataSet.gettIS();
 
@@ -76,8 +76,8 @@ public class ActuatorModel {
 		}
 		
 		
-		actuatorSet.setTVC_alpha((controlCommandSet.getTVC_alpha() * spaceShip.getPropulsion().getTvc_alpha_MAX_deg()) * PI/180);
-		actuatorSet.setTVC_beta((controlCommandSet.getTVC_beta() * spaceShip.getPropulsion().getTvc_beta_MAX_deg()) * PI/180);
+		actuatorSet.setTVC_alpha((controlCommandSet.getTVC_alpha() * spaceShip.getPropulsion().getTvc_alpha_MAX_deg()) * UConst.PI/180);
+		actuatorSet.setTVC_beta((controlCommandSet.getTVC_beta() * spaceShip.getPropulsion().getTvc_beta_MAX_deg()) * UConst.PI/180);
 		
 		
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX())) {

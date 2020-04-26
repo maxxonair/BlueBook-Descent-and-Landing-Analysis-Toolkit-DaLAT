@@ -12,8 +12,8 @@ public class TextAreaOutputStream extends OutputStream {
    private final StringBuilder sb = new StringBuilder();
    private String title;
 
-   public TextAreaOutputStream(final JTextArea textArea, String title) {
-      this.textArea = textArea;
+   public TextAreaOutputStream(final JTextArea textArea2, String title) {
+      this.textArea = textArea2;
       this.title = title;
       sb.append(title + "> ");
    }

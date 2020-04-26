@@ -2,7 +2,7 @@ package Model.DataSets;
 
 import FlightElement.SpaceShip;
 
-public class MasterSet {
+public class MasterSet extends Object implements Cloneable{
 
     public  AtmosphereSet atmosphereSet = new AtmosphereSet();
     public  ForceMomentumSet forceMomentumSet= new ForceMomentumSet();
@@ -24,13 +24,23 @@ public class MasterSet {
 		return atmosphereSet;
 	}
 	public  void setAtmosphereSet(AtmosphereSet atmosphereSet) {
-		this.atmosphereSet = atmosphereSet;
+		try {
+			this.atmosphereSet = (AtmosphereSet) atmosphereSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public  ForceMomentumSet getForceMomentumSet() {
 		return forceMomentumSet;
 	}
 	public  void setForceMomentumSet(ForceMomentumSet forceMomentumSet) {
-		this.forceMomentumSet = forceMomentumSet;
+		try {
+			this.forceMomentumSet = (ForceMomentumSet) forceMomentumSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public  GravitySet getGravitySet() {
 		return gravitySet;
@@ -42,21 +52,40 @@ public class MasterSet {
 		return aerodynamicSet;
 	}
 	public  void setAerodynamicSet(AerodynamicSet aerodynamicSet) {
-		this.aerodynamicSet = aerodynamicSet;
+		try {
+			this.aerodynamicSet = (AerodynamicSet) aerodynamicSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public  ControlCommandSet getControlCommandSet() {
 		return controlCommandSet;
 	}
 	public  void setControlCommandSet(ControlCommandSet controlCommandSet) {
-		this.controlCommandSet = controlCommandSet;
+		try {
+			this.controlCommandSet = (ControlCommandSet) controlCommandSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public  ActuatorSet getActuatorSet() {
 		return actuatorSet;
 	}
 	public  void setActuatorSet(ActuatorSet actuatorSet) {
-		this.actuatorSet = actuatorSet;
+		try {
+			this.actuatorSet = (ActuatorSet) actuatorSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
     
     
-    
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

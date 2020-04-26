@@ -23,11 +23,11 @@ import GUI.Sequence.SequencePanel;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
-import Simulator_main.RealTimeSimulationCore;
+import Simulator_main.SimulationCore;
 import Simulator_main.DataSets.RealTimeResultSet;
 
 public class GuiReadInput {
-	private static double PI    = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;                 // PI                                       [-] 
+	private static double PI    = 3.1415926535897932384626;     // PI      [-] 
 	private static boolean integratorSettingFlag=false;
 	
     public static List<RealTimeResultSet> READ_ResultSet() {
@@ -58,9 +58,11 @@ public class GuiReadInput {
 							    					   Double.parseDouble((String) tokens[50]) );
 							    resultElement.setQuaternion(quat);
 							    resultElement.setCartesianPosECEF(CartesianPosition);
-							    resultElement.setEulerX(Double.parseDouble((String) tokens[57]));
-							    resultElement.setEulerY(Double.parseDouble((String) tokens[58]));
-							    resultElement.setEulerZ(Double.parseDouble((String) tokens[59]));
+							    EulerAngle intEul = new EulerAngle();
+							    intEul.roll = Double.parseDouble((String) tokens[57]);
+							    intEul.pitch = Double.parseDouble((String) tokens[58]);
+							    intEul.yaw = Double.parseDouble((String) tokens[59]);
+							    resultElement.setEulerAngle(intEul);
 							    resultElement.setVelocity(Double.parseDouble((String) tokens[6]) );
 							    resultElement.setAltitude(Double.parseDouble((String) tokens[4]));
 							    resultElement.setTime(Double.parseDouble((String) tokens[0]));
@@ -286,11 +288,7 @@ public class GuiReadInput {
     private static void read_InitRAD(String identifier, double value) {
     	try {
     		if(identifier.equals("Init_RAD")) {
-    			int target=0;
-    			try {
-    				target = CenterPanelRight.getTargetIndx();
-    			} catch (Exception exction) {System.out.println(exction);}
-    	double radius = RealTimeSimulationCore.DATA_MAIN[target][0];
+    	double radius = SimulationCore.getRm();
                 	DashboardLeftPanel.INDICATOR_ALT.setText(BlueBookVisual.decf.format( value-radius));
             		SidePanelLeft.INPUT_ALT_Rs.setText(BlueBookVisual.decf.format( value-radius));
     		}

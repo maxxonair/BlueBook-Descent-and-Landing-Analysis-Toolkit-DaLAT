@@ -43,13 +43,11 @@ public class DashboardPanel {
         /**
          * 			Dashboard plotpanel area 
          */
-        
-	    DashboardPlotArea dashboardPlotArea = new DashboardPlotArea();
+	    DashboardLeftPanel dashboardLeftPanel = new DashboardLeftPanel();
+	    DashboardPlotArea dashboardPlotArea = new DashboardPlotArea(dashboardLeftPanel.getConsole());
 	    
 		      
-		    //-----------------------------------------------------------------------------------------
-		      
-		      DashboardLeftPanel dashboardLeftPanel = new DashboardLeftPanel();
+	    //--------------------------------------------------------------------------------------		      
 		
         JScrollPane scrollPane_P1 = new JScrollPane(dashboardLeftPanel.getMainPanel());
         scrollPane_P1.setPreferredSize(new Dimension(415, 800));
@@ -64,7 +62,12 @@ public class DashboardPanel {
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}
-	
+	/**
+	 * 
+	 * 
+	 * Unit Tester 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester");
 		frame.setSize(400,400);

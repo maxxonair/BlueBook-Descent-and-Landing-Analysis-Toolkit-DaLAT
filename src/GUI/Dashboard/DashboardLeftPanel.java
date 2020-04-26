@@ -6,18 +6,16 @@ import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.MouseInfo;
 import java.awt.Point;
-import java.io.PrintStream;
 
 import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
-import javax.swing.JTextArea;
 import javax.swing.SwingConstants;
 
 import GUI.BlueBookVisual;
-import utils.TextAreaOutputStream;
+import GUI.Dashboard.Console.ConsoleClass;
+
 
 public class DashboardLeftPanel {
 	//-------------------------------------------------------------------------------------------------------------
@@ -47,11 +45,9 @@ public class DashboardLeftPanel {
     INDICATOR_TARGET,
     INDICATOR_PRIMTANKFIL,
     INDICATOR_SECMTANKFIL;
-    public static JTextArea textArea = new JTextArea();
-    private static TextAreaOutputStream  taOutputStream = new TextAreaOutputStream(textArea, ""); 
 	//-------------------------------------------------------------------------------------------------------------
     // Content Lists 
-    
+    private ConsoleClass console;
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
     private int uy_p41 = 5 ; 
@@ -65,7 +61,7 @@ public class DashboardLeftPanel {
         // Page 4.1
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
-        mainPanel.setPreferredSize(new Dimension(385, 800));
+        mainPanel.setPreferredSize(new Dimension(385, 750));
         mainPanel.setBackground(backgroundColor);
         mainPanel.setForeground(labelColor);
 
@@ -142,7 +138,7 @@ public class DashboardLeftPanel {
        INDICATOR_TARGET.setVerticalTextPosition(JLabel.CENTER);
        INDICATOR_TARGET.setFont(targetfont);
        INDICATOR_TARGET.setBorder(BorderFactory.createEmptyBorder(1,1,1,1));
-      mainPanel.add(INDICATOR_TARGET);
+       mainPanel.add(INDICATOR_TARGET);
         
       
       JLabel LABEL_VTOUCHDOWN = new JLabel("  Touchdown velocity [m/s]");
@@ -201,42 +197,16 @@ public class DashboardLeftPanel {
       //-----------------------------------------------------------------------------------------------
       //								Console Window        
       //-----------------------------------------------------------------------------------------------
-        int console_size_x = 390;
-        int console_size_y = 270; 
-        JLabel LABEL_CONSOLE = new JLabel("Console:");
-        LABEL_CONSOLE.setLocation(5, uy_p41 + 25 *17 );
-        LABEL_CONSOLE.setSize(200, 20);
-        LABEL_CONSOLE.setBackground(backgroundColor);
-        LABEL_CONSOLE.setForeground(labelColor);
-        mainPanel.add(LABEL_CONSOLE);
-        
-        JPanel JP_EnginModel = new JPanel();
-        JP_EnginModel.setSize(console_size_x,console_size_y);
-        JP_EnginModel.setLocation(5, uy_p41 + 25 * 18);
-        JP_EnginModel.setBackground(backgroundColor);
-        JP_EnginModel.setForeground(labelColor);
-         JP_EnginModel.setBorder(BorderFactory.createEmptyBorder(1,1,1,1)); 
-        //JP_EnginModel.setBackground(Color.red);
-        taOutputStream = null; 
-        taOutputStream = new TextAreaOutputStream(textArea, ""); 
-        textArea.setForeground(labelColor);
-        textArea.setBackground(backgroundColor);
-        JScrollPane JSP_EnginModel = new JScrollPane(textArea, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, 
-        JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        JSP_EnginModel.setBackground(backgroundColor);
-        JSP_EnginModel.setForeground(labelColor);
-        JSP_EnginModel.getVerticalScrollBar().setForeground(labelColor);
-        JSP_EnginModel.getHorizontalScrollBar().setForeground(labelColor);
-        JSP_EnginModel.getHorizontalScrollBar().setBackground(backgroundColor);
-        JSP_EnginModel.getVerticalScrollBar().setBackground(backgroundColor);
-        JSP_EnginModel.setOpaque(true);
-        JSP_EnginModel.setPreferredSize(new Dimension(console_size_x-5,console_size_y-10));
-        JSP_EnginModel.setLocation(5, 5);
-        JP_EnginModel.add(JSP_EnginModel);
-        System.setOut(new PrintStream(taOutputStream));       
-        //-----------------------------------------------------------------------------------------------
-        mainPanel.add(JP_EnginModel);
-        //-----------------------------------------------------------------------------------------------
+      console = new ConsoleClass();
+      console.getMainPanel().setSize(385,190);
+      console.getMainPanel().setLocation(5, uy_p41 + 285 + 25 *7);
+      console.setBackgroundColor(backgroundColor);
+      console.linkConPrintOut(); // Display System.out.println()
+     // console.linkConPrintErr(); // Display System.out.err()
+      console.setLabelColor(labelColor);
+      //-----------------------------------------------------------------------------------------------
+      mainPanel.add(console.getMainPanel());
+      //-----------------------------------------------------------------------------------------------
 	}
 
 	public JPanel getMainPanel() {
@@ -266,8 +236,12 @@ public class DashboardLeftPanel {
         label.setForeground(labelColor);
         parentPanel.add(label);
         return label;
+	}	
+
+	public ConsoleClass getConsole() {
+		return console;
 	}
-	
+
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester - Geometry model ");
 		frame.setSize(300,800);
@@ -283,5 +257,4 @@ public class DashboardLeftPanel {
         frame.setLocation(p);
         frame.setVisible(true);
 	}
-
 }

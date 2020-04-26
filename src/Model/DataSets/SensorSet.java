@@ -10,6 +10,9 @@ public class SensorSet extends Object implements Cloneable {
 	private double globalTime=0;
 	private double controllerTime;
 	
+	public SensorSet() {
+		
+	}	
 	
 	public double getControllerTime() {
 		return controllerTime;
@@ -27,13 +30,23 @@ public class SensorSet extends Object implements Cloneable {
 		return realTimeResultSet;
 	}
 	public void setRealTimeResultSet(RealTimeResultSet realTimeResultSet) {
-		this.realTimeResultSet = realTimeResultSet;
+		try {
+			this.realTimeResultSet = (RealTimeResultSet) realTimeResultSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	public MasterSet getMasterSet() {
 		return masterSet;
 	}
 	public void setMasterSet(MasterSet masterSet) {
-		this.masterSet = masterSet;
+		try {
+			this.masterSet = (MasterSet) masterSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	} 
 
 	

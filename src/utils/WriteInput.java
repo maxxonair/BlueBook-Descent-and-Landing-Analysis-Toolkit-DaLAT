@@ -17,7 +17,7 @@ import GUI.Sequence.SequencePanel;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
-import Simulator_main.RealTimeSimulationCore;
+import Simulator_main.SimulationCore;
 
 public class WriteInput {
 
@@ -236,11 +236,7 @@ public class WriteInput {
     private static FileWriter write_InitRAD(FileWriter fileWriter, String delimiter) throws IOException {
     	
 	String identifier = "Init_RAD";
-	int target=0;
-			try {
-				target = CenterPanelRight.getTargetIndx();
-			} catch (Exception exction) { }
-	double radius = RealTimeSimulationCore.DATA_MAIN[target][0];
+	double radius = SimulationCore.getRm();
 	double value =0;
 	try {
 	 value = radius + Double.parseDouble(	SidePanelLeft.INPUT_ALT_Rs.getText()) ;

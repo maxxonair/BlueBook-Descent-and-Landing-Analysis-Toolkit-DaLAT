@@ -1,5 +1,6 @@
 package GUI.MenuBar;
 
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,14 +17,17 @@ import GUI.Dashboard.DashboardPlotArea;
 import GUI.Dashboard.DashboardPlotPanel;
 import GUI.Dashboard.Data2DPlot;
 import GUI.Dashboard.Planet3DView;
-
+import GUI.Dashboard.Console.ConsoleClass;
 
 public class WindowContentChooser {
 	
 	private int windowIndx;
 	private JMenu menuItem;
 	
+	private JRadioButtonMenuItem consoleItem;
+	
 	Font smallFont			  = new Font("Verdana", Font.LAYOUT_LEFT_TO_RIGHT, 10);
+	
 	
 	public WindowContentChooser(int windowIndx) {
 		this.windowIndx = windowIndx;
@@ -46,6 +50,7 @@ public class WindowContentChooser {
         menuPoint.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
 	                	  // System.out.println("Action: "+windowIndx);
+                	   	   System.out.println("Chart panel added to field "+windowIndx);
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
 		               //----------------------------------------------------------
 	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
@@ -67,7 +72,7 @@ public class WindowContentChooser {
          }
          menuPoint.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                    	
+                    		System.out.println("Planetary environment added to field "+windowIndx);
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
 		                	  //----------------------------------------------------------
 	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
@@ -90,7 +95,7 @@ public class WindowContentChooser {
          }
          menuPoint.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-
+                    		System.out.println("Attitude environment added to field "+windowIndx);
 	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
 	                	  //----------------------------------------------------------
 	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
@@ -105,29 +110,39 @@ public class WindowContentChooser {
          menuItem.add(menuPoint);
          indx++;
          
+         consoleItem = new JRadioButtonMenuItem("Console");
+        	 	consoleItem.setForeground(Color.BLACK);
+         consoleItem.setFont(smallFont);
+         if(DashboardPlotArea.getContentPanelList().get(windowIndx).getID()==indx) {
+        	 	consoleItem.setSelected(true);
+         }
+         consoleItem.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                    				System.out.println("Console added to field "+windowIndx);
+                    				List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
+				               //----------------------------------------------------------
+			                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
+			                	   chartSetting.get(windowIndx).setType(3);
+			                	   DashboardPlotArea.setChartSettings(chartSetting);
+			                	   //---------------------------------------------------------- 
+							   ConsoleClass dashboardConsole = new ConsoleClass();	
+							   dashboardConsole.setDoc(DashboardPlotArea.getMasterConsole().getDoc()); // Link output stream to main console
+			                	   contentPanelList.set(windowIndx, dashboardConsole );
+			                	   DashboardPlotArea.setContentPanelList(contentPanelList);
+                     } });
+         thirdWindow.add(consoleItem);
+         menuItem.add(consoleItem);
+         indx++;
+         
          menuPoint = new JRadioButtonMenuItem("Multiplot area");
-        // menuPoint.setForeground(labelColor);
+         menuPoint.setForeground(Color.GRAY);
          menuPoint.setFont(smallFont);
          if(DashboardPlotArea.getContentPanelList().get(windowIndx).getID()==indx) {
          	menuPoint.setSelected(true);
          }
          menuPoint.addActionListener(new ActionListener() {
                     public void actionPerformed(ActionEvent e) {
-                    	/*
-							try {
-								JPanel Content = CreateCustomChart.createContentPane();
-							  	   for(int i=0;i<SpaceShip3DControlPanelContent.size();i++) {
-							   		  SpaceShip3DControlPanel.remove((Component) SpaceShip3DControlPanelContent.get(i));
-							   	    }
-							         SpaceShip3DControlPanel.add(Content,BorderLayout.CENTER);
-							         SpaceShip3DControlPanelContent.add(Content);
-							} catch (IOException e1) {
-								// TODO Auto-generated catch block
-								e1.printStackTrace();
-							}
-						SplitPane_Page1_Charts_vertical.setDividerLocation(500);
-						thirdWindowIndx=2;
-						*/
+
                     	       
                      } });
          thirdWindow.add(menuPoint);
@@ -143,7 +158,6 @@ public class WindowContentChooser {
 	public JMenu getMenuItem() {
 		return menuItem;
 	}
-	
-	
+
 
 }

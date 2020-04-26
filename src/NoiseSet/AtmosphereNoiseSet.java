@@ -1,6 +1,6 @@
 package NoiseSet;
 
-public class AtmosphereNoiseSet {
+public class AtmosphereNoiseSet extends Object implements Cloneable{
 
 	private double densityNoise=0;
 	private double staticTemperatureNoise=0;
@@ -46,5 +46,9 @@ public class AtmosphereNoiseSet {
 		this.gammaNoise = gammaNoise;
 	}
 	
-	
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }

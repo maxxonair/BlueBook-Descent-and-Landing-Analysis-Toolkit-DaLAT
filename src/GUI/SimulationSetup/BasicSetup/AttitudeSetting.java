@@ -85,7 +85,7 @@ public class AttitudeSetting {
 		mainPanel.add(InitialAttitudePanel);
 		
 		
-	      JLabel LABEL_Quarternions =  newLabel("Quarternion Representation");
+	      JLabel LABEL_Quarternions =  newLabel("Initial Attitude: ");
 	      LABEL_Quarternions.setLocation(2, 2);
 	      LABEL_Quarternions.setSize(150, 20);
 	      InitialAttitudePanel.add(LABEL_Quarternions);

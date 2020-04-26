@@ -1,9 +1,10 @@
 package Simulator_main.DataSets;
 
 import Model.DataSets.MasterSet;
+import utils.EulerAngle;
 import utils.Quaternion;
 
-public class RealTimeResultSet {
+public class RealTimeResultSet extends Object implements Cloneable{
 	
 	
 	private double longitude=0;
@@ -16,10 +17,6 @@ public class RealTimeResultSet {
 	private double  azi=0;
 	
 	private double SCMass =0;
-	
-	private double eulerX=0;
-	private double eulerY=0;
-	private double eulerZ=0;
 	
 	private Quaternion quaternion;
 	
@@ -40,7 +37,7 @@ public class RealTimeResultSet {
 	
 	private IntegratorData integratorData;
 	
-	private CurrentDataSet currentDataSet;
+	private PrevailingDataSet prevailingDataSet;
 		
 	
 	private double normalizedDeceleration=0;
@@ -52,8 +49,17 @@ public class RealTimeResultSet {
 	private double primTankfillingLevelPerc;
 	private double secTankfillingLevelPerc;
 	
-
+	private EulerAngle eulerAngle = new EulerAngle();
 	
+
+	public EulerAngle getEulerAngle() {
+		return eulerAngle;
+	}
+
+	public void setEulerAngle(EulerAngle eulerAngle) {
+		this.eulerAngle = eulerAngle;
+	}
+
 	public double getPrimTankfillingLevelPerc() {
 		return primTankfillingLevelPerc;
 	}
@@ -86,12 +92,12 @@ public class RealTimeResultSet {
 		this.globalTime = globalTime;
 	}
 
-	public CurrentDataSet getCurrentDataSet() {
-		return currentDataSet;
+	public PrevailingDataSet getCurrentDataSet() {
+		return prevailingDataSet;
 	}
 
-	public void setCurrentDataSet(CurrentDataSet currentDataSet) {
-		this.currentDataSet = currentDataSet;
+	public void setCurrentDataSet(PrevailingDataSet prevailingDataSet) {
+		this.prevailingDataSet = prevailingDataSet;
 	}
 
 	public IntegratorData getIntegratorData() {
@@ -116,7 +122,12 @@ public class RealTimeResultSet {
 	}
 
 	public void setMasterSet(MasterSet masterSet) {
-		this.masterSet = masterSet;
+		try {
+			this.masterSet = (MasterSet) masterSet.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	public double getTime() {
@@ -140,32 +151,14 @@ public class RealTimeResultSet {
 	}
 
 	public void setQuaternion(Quaternion quaternions) {
-		this.quaternion = quaternions;
+		try {
+			this.quaternion = (Quaternion) quaternions.clone();
+		} catch (CloneNotSupportedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
-	public double getEulerX() {
-		return eulerX;
-	}
-
-	public void setEulerX(double eulerX) {
-		this.eulerX = eulerX;
-	}
-
-	public double getEulerY() {
-		return eulerY;
-	}
-
-	public void setEulerY(double eulerY) {
-		this.eulerY = eulerY;
-	}
-
-	public double getEulerZ() {
-		return eulerZ;
-	}
-
-	public void setEulerZ(double eulerZ) {
-		this.eulerZ = eulerZ;
-	}
 
 	public double getSCMass() {
 		return SCMass;
@@ -252,4 +245,9 @@ public class RealTimeResultSet {
 		CartesianPosECEF = cartesianPosECEF;
 	}
 
+	@Override
+	public Object clone() throws CloneNotSupportedException {
+
+	    return super.clone();
+	}
 }
