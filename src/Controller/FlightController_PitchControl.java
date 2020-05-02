@@ -27,7 +27,7 @@ public class FlightController_PitchControl extends FlightController {
 		 * 
 		 * 
 		 */
-	   	if(Math.toDegrees(sensorSet.getRealTimeResultSet().getPQR()[0][0]) > 5) { 
+	   	if(Math.toDegrees( sensorSet.getRealTimeResultSet().getPQR()[1][0] ) > 5) { 
 			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getPQR()[1][0];
 			   double response = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, Kp, Ki, Kd, 1, -1);
 			   if(Double.isNaN(response)) {

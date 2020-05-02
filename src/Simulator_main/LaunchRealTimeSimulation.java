@@ -23,9 +23,6 @@ import utils.SRateTransition;
 
 public class LaunchRealTimeSimulation {
 	
-    public static double PI    = 3.141592653589793238462643383279;   // PI       [-] 
-	static double deg2rad 	   = PI/180.0; 					    		 //Convert degrees to radians
-	static double rad2deg 	   = 180.0/PI; 					    		 //Convert radians to degrees
 	
     static DecimalFormat decFormat = new DecimalFormat("#.###");    
 	static boolean isPlot=false;

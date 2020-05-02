@@ -93,7 +93,7 @@ private static EulerAngle eulerAngle = new EulerAngle();
 
 private static double[][] AngularRate     = {{0},
 											 {0},
-											 {0}};					 // Angular Velcity {P, Q, R}T [rad/s] 
+											 {0}};					 // Angular Velocity {P, Q, R}T [rad/s] 
 
 private static double[][] AngularMomentum_B = {{0},
 											   {0},
