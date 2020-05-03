@@ -10,8 +10,8 @@ Init_QuartW 0.98094383
 Init_QuartX -0.00744765
 Init_QuartY 0.19414315
 Init_QuartZ -0.001474
-Init_AngRateX 10.0
-Init_AngRateY 0.0
+Init_AngRateX 0.0
+Init_AngRateY 10.0
 Init_AngRateZ 0.0
 Init_IXX 2000.0
 Init_IXY 0.0
@@ -25,7 +25,7 @@ Init_IZZ 2000.0
 Integ_MaxTime 180.0
 Integ_Integrator 1.0
 Integ_VelVector 0.0
-Integ_Frequency 5.0
+Integ_Frequency 3.0
 Integ_DoF 6.0
 Integ_853_MinStep 0.1
 Integ_853_MaxStep 0.0
@@ -47,13 +47,13 @@ Env_DragModel 3.0
 Env_ConstCD 1.4
 Env_ParModel 1.0
 Env_ParCD 0.0
-SC_SurfArea 25.428
+SC_SurfArea 20.484
 SC_ParDiam 0.0
 SC_COM 5.523
 SC_COT 0.8
-SC_COP 5.497164290295278
+SC_COP 5.4589550048706945
 SC_Height 10.243
-SC_BodyRadius 2.845
+SC_BodyRadius 2.5535
 SC_MainISP 300.0
 SC_MainProp 8200.0
 SC_MainThrustMax 130075.0
@@ -61,7 +61,7 @@ SC_MainThrustMin 4500.0
 SC_MainISPModel 1.0
 SC_MainISPMin 265.0
 SC_RCSMomX 400.0
-SC_RCSMomY 200.0
+SC_RCSMomY 400.0
 SC_RCSMomZ 100.0
 SC_RCSThrustX 100.0
 SC_RCSThrustY 300.0

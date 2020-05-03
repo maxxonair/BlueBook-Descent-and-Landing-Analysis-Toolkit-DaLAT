@@ -23,10 +23,12 @@ public class ActuatorModel {
 	// Modelling Paramters - to be moved 
 	//-------------------------------------------------------------------------------
 	// Minimum executable Torque CMD - due to pulse width modulation minimum pulse time restriction
-	private static double minRCS_Torque_CMD = 0.02;
+	private static double minRCS_Torque_CMD = 0.01;
 	// Parameter to jump from 0 to minTorque when cmd torque is below minmum torque. Value of 0.6 sets 
 	// the jump to 60 percent minTorque
-	private static double minRCS_Torque_Cap_jump=0.6;
+	private static double minRCS_Torque_Cap_jump=0.7;
+	private static boolean isRCS_ISP_PWM_model=true;
+	private static boolean isRCS_Thrust_PWM_model=true;
 	//-------------------------------------------------------------------------------
 	
 	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
@@ -98,7 +100,7 @@ public class ActuatorModel {
 			 double cmdMin = minRCS_Torque_CMD;  // M	inimum Torque cmd 
 			 double momentumCMD=controlCommandSet.getMomentumRCS_X_cmd();
 			 // Minimum Pulse width check 
-			 if(momentumCMD<cmdMin) {
+			 if(Math.abs(momentumCMD)<cmdMin && isRCS_Thrust_PWM_model) {
 				 // If torque cmd is larger than 60 percent of the minimum achievable torque, minimum torque is commanded 
 				 if(Math.abs(momentumCMD)/cmdMin > minRCS_Torque_Cap_jump) {
 					 momentumCMD=cmdMin*Math.abs(momentumCMD)/momentumCMD;
@@ -128,7 +130,7 @@ public class ActuatorModel {
 			 double momentumCMD=controlCommandSet.getMomentumRCS_Y_cmd();
 			 // Minimum Pulse width check
 			 
-			 if(momentumCMD<cmdMin) {
+			 if(Math.abs(momentumCMD)<cmdMin && isRCS_Thrust_PWM_model) {
 				 // If torque cmd is larger than 60 percent of the minimum achievable torque, minimum torque is commanded 
 				 if(Math.abs(momentumCMD)/cmdMin > minRCS_Torque_Cap_jump) {
 					 momentumCMD=cmdMin*Math.abs(momentumCMD)/momentumCMD;
@@ -159,7 +161,7 @@ public class ActuatorModel {
 			 double cmdMin = minRCS_Torque_CMD;
 			 double momentumCMD=controlCommandSet.getMomentumRCS_Z_cmd();
 			 // Minimum Pulse width check 
-			 if(momentumCMD<cmdMin) {
+			 if(Math.abs(momentumCMD)<cmdMin && isRCS_Thrust_PWM_model) {
 				 // If torque cmd is larger than 60 percent of the minimum achievable torque, minimum torque is commanded 
 				 if(Math.abs(momentumCMD)/cmdMin > minRCS_Torque_Cap_jump) {
 					 momentumCMD=cmdMin*Math.abs(momentumCMD)/momentumCMD;
@@ -247,7 +249,11 @@ public class ActuatorModel {
 		 		double n =  ISP_min ; 
 		 		IspOut = Double.valueOf(m * TorqueCMD + n); 
 		 }	
-		 return IspOut;
+		 if(isRCS_ISP_PWM_model) {
+			 return IspOut;
+		 } else {
+			 return ISP_nominal;
+		 }
 	 }
 	  
 	 	private static  PrimaryThrustChangeLog updatePrimaryThrustChangeLog(double CMD, IntegratorData integratorData) {

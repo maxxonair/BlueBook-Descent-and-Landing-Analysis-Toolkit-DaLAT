@@ -6,9 +6,9 @@ import Model.DataSets.SensorSet;
 
 public class FlightController_PitchControl extends FlightController {
 	
-	private double Kp=0.8;		// Proportional Coefficient
+	private double Kp=9.8;		// Proportional Coefficient
 	private double Ki=0.0001;		// Integrative Coefficient
-	private double Kd=3;		// Derivative Coefficient
+	private double Kd=5;		// Derivative Coefficient
 	
 	PID pitch;
 	
