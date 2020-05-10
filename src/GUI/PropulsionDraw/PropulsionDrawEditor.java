@@ -224,6 +224,7 @@ public class PropulsionDrawEditor {
     if(isExit) { frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);}
     else { frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);}
     frame.setVisible(true);
+    /*
     try {
    	BufferedImage myIcon = ImageIO.read(new File(partsCatalogue.getList().get(0).getLogoFilePath())); 
    	frame.setIconImage(myIcon);
@@ -237,7 +238,7 @@ public class PropulsionDrawEditor {
     } catch(Exception e) {
    	 System.err.println("Taskbar icon could not be created");
     }
-   
+   */
     frame.addComponentListener(new ComponentAdapter() 
     {  
             public void componentResized(ComponentEvent evt) {
@@ -333,7 +334,14 @@ public JPanel getPropulsionDrawArea() {
     	    Canvas.setSize(new Dimension(500, 500));
     	    Canvas.setBorder(new LineBorder(Color.BLACK, 1));
     	    Canvas.setOpaque(false);
-    	    Canvas.setLayout(null);
+    	   // Canvas.setLayout(null);
+    	    
+    	    
+    	   // JScrollPane scrollPaneCanvas = new JScrollPane();
+    	  //  scrollPaneCanvas.setPreferredSize(new Dimension(450, 110));
+    	    //scrollPaneCanvas.add((JPanel) Canvas);
+    	    
+    	    
     	    splitPaneVertical.add(Canvas,  JSplitPane.RIGHT);
     	    
     	    mainPanel.addComponentListener(new ComponentAdapter() 

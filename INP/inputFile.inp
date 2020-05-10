@@ -47,13 +47,13 @@ Env_DragModel 3.0
 Env_ConstCD 1.4
 Env_ParModel 1.0
 Env_ParCD 0.0
-SC_SurfArea 20.484
+SC_SurfArea 18.996
 SC_ParDiam 0.0
 SC_COM 5.523
 SC_COT 0.8
-SC_COP 5.4589550048706945
-SC_Height 10.243
-SC_BodyRadius 2.5535
+SC_COP 6.903749873572333
+SC_Height 12.538
+SC_BodyRadius 2.459
 SC_MainISP 300.0
 SC_MainProp 8200.0
 SC_MainThrustMax 130075.0

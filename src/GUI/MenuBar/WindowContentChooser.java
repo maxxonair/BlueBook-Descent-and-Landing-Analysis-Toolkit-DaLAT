@@ -11,6 +11,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JMenu;
 import javax.swing.JRadioButtonMenuItem;
 
+import GUI.BlueBookPlot.main.BlueBookPlot;
 import GUI.Dashboard.AttitudeView;
 import GUI.Dashboard.ChartSetting;
 import GUI.Dashboard.DashboardPlotArea;
@@ -132,6 +133,30 @@ public class WindowContentChooser {
                      } });
          thirdWindow.add(consoleItem);
          menuItem.add(consoleItem);
+         indx++;
+         
+         menuPoint = new JRadioButtonMenuItem("BlueBookPlot");
+        // menuPoint.setForeground(labelColor);
+         menuPoint.setFont(smallFont);
+         if(DashboardPlotArea.getContentPanelList().get(windowIndx).getID()==indx) {
+         	menuPoint.setSelected(true);
+         }
+         menuPoint.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                    		System.out.println("BlueBookPlot Module added to field "+windowIndx);
+	                	   List<DashboardPlotPanel> contentPanelList = DashboardPlotArea.getContentPanelList();
+	                	  //----------------------------------------------------------
+	                	   List<ChartSetting> chartSetting = DashboardPlotArea.getChartSettings();
+	                	   int chartTypeID=4;
+	                	   chartSetting.get(windowIndx).setType(chartTypeID);
+	                	   DashboardPlotArea.setChartSettings(chartSetting);
+	                	   //----------------------------------------------------------
+	                	   contentPanelList.set(windowIndx, (new BlueBookPlot()) );
+	                	   DashboardPlotArea.setContentPanelList(contentPanelList);
+                    	       
+                     } });
+         thirdWindow.add(menuPoint);
+         menuItem.add(menuPoint);
          indx++;
          
          menuPoint = new JRadioButtonMenuItem("Multiplot area");
