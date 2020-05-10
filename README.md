@@ -1,7 +1,7 @@
 BlueBook Descent and Landing Analysis Toolkit
 
 
-![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/develop/documentation/INPUT_Documentation/GUIImage9.png)
+![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/develop/documentation/INPUT_Documentation/GUIImage10.png)
 
 BlueBook Descent and Landing Analysis Tool 
 27/09/2019
@@ -27,7 +27,7 @@ This project is divided in three core modules:
 
 ![Github GUI](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage4.png)
 
-![Github GUI2](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage3.png)
+![Github GUI2](https://raw.githubusercontent.com/maxxonair/BlueBook-Descent-and-Landing-Analysis-Toolkit-DaLAT/master/documentation/INPUT_Documentation/GUIImage9.png)
 
 The images show a quick preview of the user interface dashboard. The chart area on the right hand side is adjustable. The user can select from a variety of 2D charts and 3D content. Currently there are two 3D windows implemented. The first image shows the target body view in the upper right corner. This window also shows the computed trajectory and the respective position of the spacecraft on the trajectory that corresponds to the selected position on the graph in the lower left corner (Note this only works if time is selected as the x-value). The second 3D content (in the lower right corner) shows the attitude of the spacecraft with respect to the local North-East-Down system.
 
