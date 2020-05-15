@@ -39,12 +39,11 @@ public class LaunchRealTimeSimulation {
     	//------------------------------------------------------------------------------------------   	
     	List<SequenceContent> SequenceSet = ReadInput.readSequenceFile();    	
     	//------------------------------------------------------------------------------------------
-	//double[] inputOut = ReadInput.readInput();
-	//------------------------------------------------------------------------------------------
-	//					Compile Integrator inputs from files:
-	//------------------------------------------------------------------------------------------
+		//double[] inputOut = ReadInput.readInput();
+		//------------------------------------------------------------------------------------------
+		//					Compile Integrator inputs from files:
+		//------------------------------------------------------------------------------------------
 	    	System.out.println("Read: Create simulation input file");
-
 	    	SimulatorInputSet simulatorInputSet = ReadInput.readINP();
 	    	SpaceShip spaceShip = simulatorInputSet.getSpaceShip();	    	
 	    	IntegratorData integratorData = simulatorInputSet.getIntegratorData();
@@ -60,12 +59,12 @@ public class LaunchRealTimeSimulation {
 	    		integratorData.setDegreeOfFreedom(6);  // manual override for now 
 	    	
 	    		// Set Environment model uncertainty settings 
-	    		integratorData.getNoiseModel().setAtmosphereNoiseModel(true);
-	    		//integratorData.getNoiseModel().setAerodynamicNoiseModel(true); // TBD
+	    		integratorData.getNoiseModel().setAtmosphereNoiseModel(false);
+	    		integratorData.getNoiseModel().setAerodynamicNoiseModel(false); 
 	    		//integratorData.getNoiseModel().setGravityNoiseModel(true);		 // TBD
-	    		//integratorData.getNoiseModel().setRadiationNoiseModel(true);   // TBD
+	    		//integratorData.getNoiseModel().setRadiationNoiseModel(true);   	 // TBD
 	    		
-	    		//integratorData.getNoiseModel().setSensorNoiseModel(true);      // TBD
+	    		//integratorData.getNoiseModel().setSensorNoiseModel(true);      	 // TBD
 	    		integratorData.getNoiseModel().setActuatorNoiseModel(true);
 	    		//--------------------------------------------------------------------------------------
 	    		 SensorSet sensorSet = new SensorSet();

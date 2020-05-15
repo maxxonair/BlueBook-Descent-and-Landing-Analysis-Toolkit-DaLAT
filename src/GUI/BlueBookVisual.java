@@ -74,7 +74,7 @@ public class BlueBookVisual  {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
-	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.3 ALPHA";
+	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - Mark 1 v1.1";
 	static boolean darkTheme = true; 
 	static boolean isSplashAnimation = true;
     static int x_init = 1350;

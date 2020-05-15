@@ -43,11 +43,6 @@ public class CenterPanelRight {
 	    
 	    private int verticalSizer = 10 ; 
 	    private int INPUT_width = 110;
-	    
-	    	private double PI = 3.141592653589793238462643383279502884197169399375105820974944592307816406;
-		double deg2rad = PI/180.0; 		//Convert degrees to radians
-		double rad2deg = 180/PI;
-
 		//-------------------------------------------------------------------------------------------------------------
 		// Formatting valules (Fonts, Borders, decimalLayouts etc):
 	    static DecimalFormat decQuarternion =  new DecimalFormat("#.########");

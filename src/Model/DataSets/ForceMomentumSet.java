@@ -2,26 +2,26 @@ package Model.DataSets;
 
 public class ForceMomentumSet extends Object implements Cloneable {
 	
-	  private double[][] F_Aero_A      = {{0},{0},{0}};						// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
-	  double[][] F_Aero_NED    = {{0},{0},{0}};						// Aerodynamic Force with respect to NED frame [N]
-	  double[][] F_Thrust_B    = {{0},{0},{0}};						// Thrust Force in body fixed system     [N]
-	  double[][] F_Thrust_NED  = {{0},{0},{0}};						// Thrust Force in NED frame    		 [N]
-	  double[][] F_Gravity_G   = {{0},{0},{0}};						// Gravity Force in ECEF coordinates     [N]
-	  double[][] F_Gravity_NED = {{0},{0},{0}};						// Gravity Force in NED Frame            [N]
-	  double[][] F_total_NED   = {{0},{0},{0}};						// Total force vector in NED coordinates [N]
+	  double[][] F_Aero_A      = {{0},{0},{0}};			// Aerodynamic Force with respect to Aerodynamic coordinate frame [N]
+	  double[][] F_Aero_NED    = {{0},{0},{0}};			// Aerodynamic Force with respect to NED frame [N]
+	  double[][] F_Thrust_B    = {{0},{0},{0}};			// Thrust Force in body fixed system     [N]
+	  double[][] F_Thrust_NED  = {{0},{0},{0}};			// Thrust Force in NED frame    		 [N]
+	  double[][] F_Gravity_G   = {{0},{0},{0}};			// Gravity Force in ECEF coordinates     [N]
+	  double[][] F_Gravity_NED = {{0},{0},{0}};			// Gravity Force in NED Frame            [N]
+	  double[][] F_total_NED   = {{0},{0},{0}};			// Total force vector in NED coordinates [N]
 	
-	  double[][] M_Aero_NED      = {{0},{0},{0}};
-	  double[][] M_Thrust_NED    = {{0},{0},{0}};
-	  double[][] M_total_NED     = {{0},{0},{0}};
+	  double[][] M_Aero_NED      = {{0},{0},{0}};		// Angular Momentum by Aerodynamic Forces NED Frame [Nm]		
+	  double[][] M_Thrust_NED    = {{0},{0},{0}};		// Angular Momentum by RCS NED Frame 				[Nm]
+	  double[][] M_total_NED     = {{0},{0},{0}};		// Angular Momentum total NED Frame 				[Nm]
 	
-	  double[][] M_Aero_A      = {{0},{0},{0}};
-	  double[][] M_Aero_B      = {{0},{0},{0}};
-	  double[][] M_Thrust_B    = {{0},{0},{0}};
+	  double[][] M_Aero_A      = {{0},{0},{0}};			// Angular Momentum by Aerodynamic Forces Aerodynamic Frame [Nm]
+	  double[][] M_Aero_B      = {{0},{0},{0}};			// Angular Momentum by Aerodynamic Forces Body Frame 		[Nm]
+	  double[][] M_Thrust_B    = {{0},{0},{0}};			// Angular Momentum by RCS Forces Body Frame 				[Nm]
 	  
-	  double thrustTotal =0;
-	  double RCSThrustX=0;
-	  double RCSThrustY=0;
-	  double RCSThrustZ=0;
+	  double thrustTotal 	   = 0 ;					// Total Thrust force magnitude 		[N]
+	  double RCSThrustX		   = 0 ;					// RCS thrust force x direction B Frame [N]
+	  double RCSThrustY		   = 0 ;					// RCS thrust force y direction B Frame [N]
+	  double RCSThrustZ		   = 0 ;					// RCS thrust force z direction B Frame [N]
 	  
 	  
 	 

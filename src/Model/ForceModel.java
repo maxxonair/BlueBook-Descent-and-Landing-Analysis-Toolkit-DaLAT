@@ -10,11 +10,14 @@ import Model.DataSets.ErrorSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
+import Noise.RandomWalker;
 import Simulator_main.DataSets.PrevailingDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import utils.Mathbox;
 
 public class ForceModel {
+	
+	private static double genRCSMomentumNoise=0;							// General, uniform (all axes) momentum noise by RCS torque [Nm]
 		
 	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, 
 										  AerodynamicSet aerodynamicSet, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet, 
@@ -37,6 +40,7 @@ public class ForceModel {
 		  //double[][] M_Aero_B      = {{0},{0},{0}};
 		  double[][] M_Thrust_B    = {{0},{0},{0}};
 		  
+		  
 		  MasterSet masterSet = new MasterSet();
     	//-------------------------------------------------------------------------------------------------------------------
     	//								    	Gravitational environment
@@ -49,11 +53,11 @@ public class ForceModel {
 	    	    	F_Gravity_NED[1][0] = currentDataSet.getxIS()[6]*gravitySet.getG_NED()[1][0];
 	    	    	F_Gravity_NED[2][0] = currentDataSet.getxIS()[6]*gravitySet.getG_NED()[2][0];
 	    	    	
-	    	    	forceMomentumSet.setF_Gravity_NED(F_Gravity_NED);
+	    forceMomentumSet.setF_Gravity_NED(F_Gravity_NED);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Atmosphere
     	//-------------------------------------------------------------------------------------------------------------------
-	atmosphereSet = AtmosphereModel.getAtmosphereSet(spaceShip, currentDataSet, integratorData);
+	    atmosphereSet = AtmosphereModel.getAtmosphereSet(spaceShip, currentDataSet, integratorData);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									           Aerodynamic
     	//-------------------------------------------------------------------------------------------------------------------  
@@ -77,49 +81,65 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet, integratorData);
-    
-    spaceShip = actuatorSet.getSpaceShip();
+	    actuatorSet = ActuatorModel.getActuatorSet(controlCommandSet, spaceShip, currentDataSet, integratorData);
+	    
+	    spaceShip = actuatorSet.getSpaceShip();
         
-    forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
+	    forceMomentumSet.setThrustTotal(actuatorSet.getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 					    Force Definition - Thrust Forces | Body fixed Frame |
+    	// 					    Force/Torque Definition - Thrust Forces | Body fixed Frame |
     	//-------------------------------------------------------------------------------------------------------------------    
-    double tvcMomentum = forceMomentumSet.getThrustTotal() * Math.sin(actuatorSet.getTVC_alpha()) * ( spaceShip.getCoM() - spaceShip.getCoT() );
+	    double tvcMomentum = forceMomentumSet.getThrustTotal() * Math.sin(actuatorSet.getTVC_alpha()) * ( spaceShip.getCoM() - spaceShip.getCoT() );
 
-    		F_Thrust_B[0][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha()) * Math.cos(actuatorSet.getTVC_beta());  
-	   	F_Thrust_B[1][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha()) * Math.sin(actuatorSet.getTVC_beta());   
+    	// Thrust Forces from Main Propulsion System:
+    	F_Thrust_B[0][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha()) * Math.cos(actuatorSet.getTVC_beta()) ;  
+	   	F_Thrust_B[1][0] =  forceMomentumSet.getThrustTotal() * Math.cos(actuatorSet.getTVC_alpha()) * Math.sin(actuatorSet.getTVC_beta()) ;   
 	   	F_Thrust_B[2][0] =  forceMomentumSet.getThrustTotal() * Math.sin(actuatorSet.getTVC_alpha());  
+	   	// Thrust Forces from RCS TBD:
+    	F_Thrust_B[0][0] =  F_Thrust_B[0][0] ;  
+	   	F_Thrust_B[1][0] =  F_Thrust_B[1][0] ;   
+	   	F_Thrust_B[2][0] =  F_Thrust_B[2][0] ;     	
 	   	
-	   	M_Thrust_B[0][0] =  actuatorSet.getMomentumRCS_X_is();
-	    M_Thrust_B[1][0] =  actuatorSet.getMomentumRCS_Y_is() + tvcMomentum;
-	   	M_Thrust_B[2][0] =  actuatorSet.getMomentumRCS_Z_is();
+	   	// Torque from RCS:
+	   	if(actuatorSet.getMomentumRCS_X_is() != 0 || actuatorSet.getMomentumRCS_Y_is() != 0 || actuatorSet.getMomentumRCS_Z_is()  != 0) {
+	   		// If a momentum for any axis is commanded => add momentum noise
+	   		genRCSMomentumNoise = RandomWalker.randomWalker1D(genRCSMomentumNoise,0.01,-0.01, 0.0005, 0.01);
+	   	}
+	   	M_Thrust_B[0][0] =  actuatorSet.getMomentumRCS_X_is() + genRCSMomentumNoise;
+	    M_Thrust_B[1][0] =  actuatorSet.getMomentumRCS_Y_is() + genRCSMomentumNoise;
+	   	M_Thrust_B[2][0] =  actuatorSet.getMomentumRCS_Z_is() + genRCSMomentumNoise;
+	   	// Torque from TVC
+	   	M_Thrust_B[0][0] =  M_Thrust_B[0][0] ;
+	    M_Thrust_B[1][0] =  M_Thrust_B[1][0] + tvcMomentum;
+	   	M_Thrust_B[2][0] =  M_Thrust_B[2][0] ;
 	   	
 	   	M_total_B = Mathbox.Addup_Matrices(M_Thrust_B , M_Aero_B);
 
-	   	if(Math.abs(M_total_B[0][0])>0) {
-	   		
-	   		forceMomentumSet.setRCSThrustX(spaceShip.getPropulsion().getSecondaryThrust_RCS_X()*Math.abs(controlCommandSet.getMomentumRCS_X_cmd()) );
+	   	// Set RCS Thrust for propellant consumption
+	   	// Number of thrusters to produce force free torque manoeuver:
+	   	int nrThrusterTrq = 4; // [-] TBD 
+	   	if(Math.abs(M_total_B[0][0])>0) {	   		
+	   		forceMomentumSet.setRCSThrustX( nrThrusterTrq  * spaceShip.getPropulsion().getSecondaryThrust_RCS_X()*Math.abs(controlCommandSet.getMomentumRCS_X_cmd()) );
 	   	} else {
 	   		forceMomentumSet.setRCSThrustX(0);
 	   	}
 	   	if(Math.abs(M_total_B[1][0])>0) {
 	   		
-	   		forceMomentumSet.setRCSThrustY( spaceShip.getPropulsion().getSecondaryThrust_RCS_Y()*Math.abs(controlCommandSet.getMomentumRCS_Y_cmd())  );
+	   		forceMomentumSet.setRCSThrustY( nrThrusterTrq  * spaceShip.getPropulsion().getSecondaryThrust_RCS_Y()*Math.abs(controlCommandSet.getMomentumRCS_Y_cmd())  );
 	   	} else {
 	   		forceMomentumSet.setRCSThrustY(0);
 	   	}
 	   	if(Math.abs(M_total_B[2][0])>0) {
-	   		forceMomentumSet.setRCSThrustZ(spaceShip.getPropulsion().getSecondaryThrust_RCS_Z()*Math.abs(controlCommandSet.getMomentumRCS_Z_cmd()));
+	   		forceMomentumSet.setRCSThrustZ( nrThrusterTrq  * spaceShip.getPropulsion().getSecondaryThrust_RCS_Z()*Math.abs(controlCommandSet.getMomentumRCS_Z_cmd()));
 	   	} else {
 	   		forceMomentumSet.setRCSThrustZ(0);
 	   	}
-	   	
+	   	//-------------------------------------------------------------------------------------------------------------------
 	   	forceMomentumSet.setF_Thrust_B(F_Thrust_B);
 	   	forceMomentumSet.setM_Thrust_B(M_Thrust_B);
 	   	forceMomentumSet.setM_total_NED(M_total_B);
     	//-------------------------------------------------------------------------------------------------------------------
-    	// 									           Finalize Force Setup -> Transfrom vectors to NED  
+    	// 				Finalize Force Setup -> Transform vectors to NED  
     	//------------------------------------------------------------------------------------------------------------------- 
     	F_Aero_NED   	= Mathbox.Multiply_Matrices(currentDataSet.getCoordinateTransformation().getC_A2NED(), F_Aero_A) ; 
     	forceMomentumSet.setF_Aero_NED(F_Aero_NED);

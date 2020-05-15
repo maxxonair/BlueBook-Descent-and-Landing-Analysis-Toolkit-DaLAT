@@ -23,8 +23,8 @@ import GUI.Sequence.SequencePanel;
 import GUI.SimulationSetup.BasicSetup.AttitudeSetting;
 import GUI.SimulationSetup.BasicSetup.CenterPanelRight;
 import GUI.SimulationSetup.BasicSetup.SidePanelLeft;
-import Simulator_main.SimulationCore;
 import Simulator_main.DataSets.RealTimeResultSet;
+import Simulator_main.DataSets.SimulationConstants;
 
 public class GuiReadInput {
 	private static double PI    = 3.1415926535897932384626;     // PI      [-] 
@@ -155,14 +155,15 @@ public class GuiReadInput {
     integratorSettings.add(new double[4]);	// GragBul
     integratorSettings.add(new double[5]);	// AdBash
     double[][] inertiaTensor = new double[3][3];
+    int targetIndx = -1 ;
+    double initRadius = -1;
         FileInputStream fstream = null;
         try{
         fstream = new FileInputStream(FilePaths.inputFile);
         } catch(IOException eIO) { System.out.println(eIO);}
         
-        
         DataInputStream in = new DataInputStream(fstream);
-    		BufferedReader br = new BufferedReader(new InputStreamReader(in));
+        BufferedReader br = new BufferedReader(new InputStreamReader(in));
         String strLine;
         
         try {
@@ -176,7 +177,7 @@ public class GuiReadInput {
     				    	} catch (java.lang.NumberFormatException eNFE) {  }
     				    	read_InitLONG( identifier, value);
     				    	read_InitLAT( identifier, value);
-    				    	read_InitRAD( identifier, value);
+    		   initRadius = read_InitRAD( identifier, value, initRadius);
     				    	read_InitVEL( identifier, value);
     				    	read_InitFPA( identifier, value);
     				    	read_InitAZI( identifier, value);
@@ -189,41 +190,41 @@ public class GuiReadInput {
     				    	read_InitAngRateY( identifier, value);
     				    	read_InitAngRateZ( identifier, value);
     				    	read_InitTime( identifier, value);
-    				    inertiaTensor = read_Init_IXX( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IXY( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IXZ( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IYX( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IYY( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IYZ( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IZX( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IZY( identifier, value, inertiaTensor);
-    				    inertiaTensor = read_Init_IZZ( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IXX( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IXY( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IXZ( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IYX( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IYY( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IYZ( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IZX( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IZY( identifier, value, inertiaTensor);
+		    inertiaTensor = read_Init_IZZ( identifier, value, inertiaTensor);
     				    	
     				    	read_IntegMaxTime( identifier, value);
     				    	read_IntegIntegrator( identifier, value);
     				    	read_IntegFrequency( identifier, value);
     				    	read_IntegVelVector( identifier, value);
     				    	read_IntegDoF( identifier, value);
-        				integratorSettings = read_Integ_853_MinStep( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_853_MaxStep( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_853_AbsTol( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_853_RelTol( identifier, value, integratorSettings);
-    				    	
-    				    	integratorSettings = read_Integ_RungKut_Step( identifier, value, integratorSettings);
-    				    	
-    				    	integratorSettings = read_Integ_GraBul_MinStep( identifier, value, integratorSettings);   				    	
-    				    integratorSettings = read_Integ_GraBul_MaxStep( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_GraBul_AbsTol( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_GraBul_RelTol( identifier, value, integratorSettings);
-    				    	
-    				    	integratorSettings = read_Integ_AdBash_Steps( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_AdBash_MinStep( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_AdBash_MaxStep( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_AdBash_AbsTol( identifier, value, integratorSettings);
-    				    	integratorSettings = read_Integ_AdBash_RelTol( identifier, value, integratorSettings);
+	    integratorSettings = read_Integ_853_MinStep( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_853_MaxStep( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_853_AbsTol( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_853_RelTol( identifier, value, integratorSettings);
+    	
+    	integratorSettings = read_Integ_RungKut_Step( identifier, value, integratorSettings);
+    	
+    	integratorSettings = read_Integ_GraBul_MinStep( identifier, value, integratorSettings);   				    	
+        integratorSettings = read_Integ_GraBul_MaxStep( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_GraBul_AbsTol( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_GraBul_RelTol( identifier, value, integratorSettings);
+    	
+    	integratorSettings = read_Integ_AdBash_Steps( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_AdBash_MinStep( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_AdBash_MaxStep( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_AdBash_AbsTol( identifier, value, integratorSettings);
+    	integratorSettings = read_Integ_AdBash_RelTol( identifier, value, integratorSettings);
     				    
     				    	read_EnvRefElev( identifier, value);
-    				    	read_EnvCenterBody( identifier, value);
+    		   targetIndx = read_EnvCenterBody( identifier, value, targetIndx);
     				    	read_Env_DragModel( identifier, value);
     				    	read_Env_ConstCD( identifier, value);
     				    	
@@ -260,6 +261,7 @@ public class GuiReadInput {
         if(integratorSettingFlag) {
         		read_SetIntegratorSettings( integratorSettings,  SidePanelLeft.Integrator_chooser.getSelectedIndex());
         }
+        set_InitALT(initRadius, targetIndx);		// Set altitude with initial radius and target index 
         passOverInertiaTensor(inertiaTensor);
         } catch(NullPointerException eNPE) { System.out.println(eNPE); System.out.println("Error: GuiReadInput/readINP failed.");} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -285,14 +287,23 @@ public class GuiReadInput {
     	} catch(Exception exp) {}
     }
     
-    private static void read_InitRAD(String identifier, double value) {
+    private static double read_InitRAD(String identifier, double value, double initRad) {
     	try {
     		if(identifier.equals("Init_RAD")) {
-    	double radius = SimulationCore.getRm();
-                	DashboardLeftPanel.INDICATOR_ALT.setText(BlueBookVisual.decf.format( value-radius));
-            		SidePanelLeft.INPUT_ALT_Rs.setText(BlueBookVisual.decf.format( value-radius));
+    			initRad =value;
     		}
     	} catch(Exception exp) {}
+    	return initRad;
+    }
+    
+    private static void set_InitALT(double value, int targetIndx) {
+    	if(value != -1 && targetIndx != -1) {
+			SimulationConstants constants = new SimulationConstants();
+			constants.initConstants(targetIndx);
+			double radius = constants.getRm();
+	    	DashboardLeftPanel.INDICATOR_ALT.setText(BlueBookVisual.decf.format( value-radius));
+			SidePanelLeft.INPUT_ALT_Rs.setText(BlueBookVisual.decf.format( value-radius));
+    	}
     }
     
     private static void read_InitVEL(String identifier, double value) {
@@ -381,13 +392,14 @@ public class GuiReadInput {
     	} catch(Exception exp) {}
     }
     
-    private static void read_EnvCenterBody(String identifier, double value) {
+    private static int read_EnvCenterBody(String identifier, double value, int targetIndx) {
     	try {
     		if(identifier.equals("Env_CenterBody")) {
     			int Target_indx = (int) value;
 
     			DashboardLeftPanel.INDICATOR_TARGET.setText(BlueBookVisual.Target_Options[Target_indx]);
     			CenterPanelRight.setTargetIndx(Target_indx);
+    			targetIndx = Target_indx;
     			BlueBookVisual.indx_target = Target_indx;
     	        if(Target_indx==0) {
     	        	DashboardLeftPanel.INDICATOR_TARGET.setBorder(BlueBookVisual.Earth_border);
@@ -400,6 +412,7 @@ public class GuiReadInput {
     	        }
     		}
     	} catch(Exception exp) {}
+    	return targetIndx;
     }
     
     private static void read_IntegFrequency(String identifier, double value) {
