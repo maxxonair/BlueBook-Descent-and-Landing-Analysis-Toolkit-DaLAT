@@ -1,51 +1,57 @@
 package Noise;
 
-import Model.DataSets.AerodynamicSet;
 import NoiseSet.AerodynamicNoiseSet;
 
 public class AerodynamicNoiseModel {
 	
-	private static double dragCoeffNoise 	  = 0;
-	private static double liftCoeffNoise 	  = 0;
-	private static double sideforceCoeffNoise = 0;
+	private  double dragCoeffNoise 	  = 1;  // Noise = 1 -> no noise
+	private  double liftCoeffNoise 	  = 1;
+	private  double sideforceCoeffNoise = 1;
 	
-	private static double parachuteCoeffNoise = 0;
+	private  double parachuteCoeffNoise = 1;
 	
-	private static double variation = 0.02;
+	private  double variation = 0.025;
+	private double stepSize = 0.0001;
+	private double randomStepSizeVariation = 0.0007;
 	
-	public AerodynamicNoiseModel() {}
+	private  AerodynamicNoiseSet aerodynamicNoiseSet = new AerodynamicNoiseSet();
 	
-	public static void setDragCoeffNoise(AerodynamicSet aerodynamicSet, AerodynamicNoiseSet aerodynamicNoiseSet) {
+	public AerodynamicNoiseModel(AerodynamicNoiseSet aerodynamicNoiseSet) {
+		this.aerodynamicNoiseSet = aerodynamicNoiseSet;
+	}
+	
+	public  void setDragCoeffNoise() {
 		double maxVariation =  1 + variation;
 		double minVariation =  1 - variation;
-		dragCoeffNoise = RandomWalker.randomWalker1D(dragCoeffNoise,maxVariation,-minVariation, 0.001, 0.01);
+		dragCoeffNoise = RandomWalker.randomWalker1D(dragCoeffNoise,maxVariation,minVariation, stepSize, randomStepSizeVariation);
 		aerodynamicNoiseSet.setDragCoeffNoise(dragCoeffNoise);	
-		aerodynamicSet.setAerodynamicNoiseSet(aerodynamicNoiseSet);
 	}
 	
-	public static void setLiftCoeffNoise(AerodynamicSet aerodynamicSet, AerodynamicNoiseSet aerodynamicNoiseSet) {
+	public  void setLiftCoeffNoise() {
 		double maxVariation =  1 + variation;
 		double minVariation =  1 - variation;
-		liftCoeffNoise = RandomWalker.randomWalker1D(liftCoeffNoise,maxVariation,-minVariation, 0.001, 0.01);
+		liftCoeffNoise = RandomWalker.randomWalker1D(liftCoeffNoise,maxVariation,minVariation, stepSize, randomStepSizeVariation);
 		aerodynamicNoiseSet.setLiftCoeffNoise(liftCoeffNoise);	
-		aerodynamicSet.setAerodynamicNoiseSet(aerodynamicNoiseSet);
 	}
 	
-	public static void setsideforceCoeffNoise(AerodynamicSet aerodynamicSet, AerodynamicNoiseSet aerodynamicNoiseSet) {
+	public  void setsideforceCoeffNoise() {
 		double maxVariation =  1 + variation;
 		double minVariation =  1 - variation;
-		sideforceCoeffNoise = RandomWalker.randomWalker1D(sideforceCoeffNoise,maxVariation,-minVariation, 0.001, 0.01);
+		sideforceCoeffNoise = RandomWalker.randomWalker1D(sideforceCoeffNoise,maxVariation,minVariation, stepSize, randomStepSizeVariation);
 		aerodynamicNoiseSet.setSideCoeffNoise(sideforceCoeffNoise);	
-		aerodynamicSet.setAerodynamicNoiseSet(aerodynamicNoiseSet);
 	}
 	
 	
-	public static void setParachuteCoeffNoise(AerodynamicSet aerodynamicSet, AerodynamicNoiseSet aerodynamicNoiseSet) {
+	public  void setParachuteCoeffNoise() {
 		double maxVariation =  1 + variation;
 		double minVariation =  1 - variation;  
-		parachuteCoeffNoise = RandomWalker.randomWalker1D(parachuteCoeffNoise,maxVariation,-minVariation, 0.001, 0.01);
+		parachuteCoeffNoise = RandomWalker.randomWalker1D(parachuteCoeffNoise,maxVariation,minVariation, stepSize, randomStepSizeVariation);
 		aerodynamicNoiseSet.setParachuteDragCoeffNoise(parachuteCoeffNoise);	
-		aerodynamicSet.setAerodynamicNoiseSet(aerodynamicNoiseSet);
 	}
+
+	public  AerodynamicNoiseSet getAerodynamicNoiseSet() {
+		return aerodynamicNoiseSet;
+	}
+	
 	 
 }

@@ -9,6 +9,7 @@ import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.ControlCommandSet;
 import Model.DataSets.HypersonicSet;
+import Noise.AerodynamicNoiseModel;
 import NoiseSet.AerodynamicNoiseSet;
 import Simulator_main.DataSets.PrevailingDataSet;
 import utils.UConst;
@@ -20,18 +21,25 @@ public class AerodynamicModel {
     private static int sequenceIs=-1;
     private static double lastTimeMark=0;
     
-    private static AerodynamicNoiseSet aerodynamicNoiseSet = new AerodynamicNoiseSet();
+    private static AerodynamicNoiseModel aerodynamicNoiseModel = new AerodynamicNoiseModel(new AerodynamicNoiseSet());
     
 	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData, ActuatorSet actuatorSet, ControlCommandSet controlCommandSet) {
 		int dragModelSelection = integratorData.getAeroDragModel();
 		
+		// Update Aerodynamic Noise Model:
+		aerodynamicNoiseModel.setDragCoeffNoise();
+		aerodynamicNoiseModel.setLiftCoeffNoise();
+		aerodynamicNoiseModel.setsideforceCoeffNoise();
+		aerodynamicNoiseModel.setParachuteCoeffNoise();
+		
+		// Get Aerodynamic Set
 			   if(dragModelSelection  == 0) {  // standard model / CD = constant 
 			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
 		} else if (dragModelSelection == 1) {  // standard model / CD from panel method (valid in hypersonics only)
 			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
 		} else if (dragModelSelection == 2) { // launcher model 
 			return getAerodynamicSetLauncher( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
-		} else if (dragModelSelection == 3) {  // AeroModel off
+		} else if (dragModelSelection == 3) {  // AeroModel off -> No AERODYNAMIC FORCES
 			return getAerodynamicSetVoid() ;
 		} else { 							  // fallback standard model 
 			return getAerodynamicSetStandard( atmosphereSet,  spaceShip,  currentDataSet,  integratorData,  actuatorSet,  controlCommandSet);
@@ -56,8 +64,8 @@ public class AerodynamicModel {
 		double CLNoise = 1;
 		//double CyNoise = 1;
 		if(integratorData.getNoiseModel().isAerodynamicNoiseModel()) {
-			 CDNoise = aerodynamicNoiseSet.getDragCoeffNoise();
-			 CLNoise = aerodynamicNoiseSet.getLiftCoeffNoise();
+			 CDNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getDragCoeffNoise();
+			 CLNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getLiftCoeffNoise();
 			 //CyNoise = aerodynamicNoiseSet.getSideCoeffNoise();
 		}
 		aerodynamicSet.setDragCoefficient(AerodynamicKitLauncher.getCD(atmosphereSet, currentDataSet) * CDNoise);
@@ -108,9 +116,10 @@ public class AerodynamicModel {
 		
 		double CDNoise = 1;
 		if(integratorData.getNoiseModel().isAerodynamicNoiseModel()) {
-			 CDNoise = aerodynamicNoiseSet.getDragCoeffNoise();
+			 CDNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getDragCoeffNoise();
 		}
-		aerodynamicSet.setDragCoefficient(calcDrag(atmosphereSet, currentDataSet, aerodynamicSet, spaceShip, integratorData) * CDNoise); 		    	// Lift coefficient                [-]
+		double cD_nominal = calcDrag(atmosphereSet, currentDataSet, aerodynamicSet, spaceShip, integratorData);
+		aerodynamicSet.setDragCoefficient( cD_nominal * CDNoise); 		    	// Drag coefficient                [-]
 		//-----------------------------------------------------------------------------------------------
 		aerodynamicSet.setDragForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getDragCoefficient() );  														  // Aerodynamic drag Force 		   [N]
 		aerodynamicSet.setLiftForce(atmosphereSet.getDynamicPressure() * spaceShip.getAeroElements().getSurfaceArea() * aerodynamicSet.getLiftCoefficient() * cos( aerodynamicSet.getAerodynamicBankAngle() ) );         // Aerodynamic lift Force 		   [N]
@@ -125,7 +134,7 @@ public class AerodynamicModel {
 		
 		double ParachuteNoise = 1;
 		if(integratorData.getNoiseModel().isAerodynamicNoiseModel()) {
-			ParachuteNoise = aerodynamicNoiseSet.getParachuteDragCoeffNoise();
+			ParachuteNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getParachuteDragCoeffNoise();
 		}
 		
 		if(actuatorSet.isParachuteDeployed() && !actuatorSet.isParachuteEject()) {
@@ -211,9 +220,9 @@ public class AerodynamicModel {
 		double CLNoise = 1;
 		double CyNoise = 1;
 		if(integratorData.getNoiseModel().isAerodynamicNoiseModel()) {
-			 CDNoise = aerodynamicNoiseSet.getDragCoeffNoise();
-			 CLNoise = aerodynamicNoiseSet.getLiftCoeffNoise();
-			 CyNoise = aerodynamicNoiseSet.getSideCoeffNoise();
+			 CDNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getDragCoeffNoise();
+			 CLNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getLiftCoeffNoise();
+			 CyNoise = aerodynamicNoiseModel.getAerodynamicNoiseSet().getSideCoeffNoise();
 		}
 		if(integratorData.getAeroDragModel()==0) {
 			 CdC = 1.55 ; 

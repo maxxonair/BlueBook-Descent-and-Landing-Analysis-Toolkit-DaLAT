@@ -148,6 +148,9 @@ public class GuiReadInput {
     public static void readINP() {
     	GeometryFrame.getCanvas().readElementList();
     	
+    	// Clear Input file indicator>
+    	//BlueBookVisual.getDashboardPanel().getDashboardLeftPanel().getInputIndicator().clearDocument();
+    	
     List<double[]> integratorSettings = new ArrayList<>();
     integratorSettingFlag =false;
     integratorSettings.add(new double[4]);	// 853
@@ -171,10 +174,15 @@ public class GuiReadInput {
     		    	String[] tokens = strLine.split(" ");
     		    	String identifier ="";
     		    	double value=0;
+
     				    	try {
     				    		identifier = tokens[0];
     				    		value = Double.parseDouble(tokens[1]);
     				    	} catch (java.lang.NumberFormatException eNFE) {  }
+    				    	
+    	    		    	// Add Input File line to Indicator 
+    	    		    	BlueBookVisual.getDashboardPanel().getDashboardLeftPanel().getInputIndicator().addContentString(strLine);
+    	    		    	
     				    	read_InitLONG( identifier, value);
     				    	read_InitLAT( identifier, value);
     		   initRadius = read_InitRAD( identifier, value, initRadius);
@@ -269,7 +277,7 @@ public class GuiReadInput {
 		}
     }
     
-    private static void read_InitLONG(String identifier, double value) {
+	private static void read_InitLONG(String identifier, double value) {
     	try {
     		if(identifier.equals("Init_LONG")) {
              	DashboardLeftPanel.INDICATOR_LONG.setText(BlueBookVisual.decf.format(value));

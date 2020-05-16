@@ -59,8 +59,8 @@ public class LaunchRealTimeSimulation {
 	    		integratorData.setDegreeOfFreedom(6);  // manual override for now 
 	    	
 	    		// Set Environment model uncertainty settings 
-	    		integratorData.getNoiseModel().setAtmosphereNoiseModel(false);
-	    		integratorData.getNoiseModel().setAerodynamicNoiseModel(false); 
+	    		integratorData.getNoiseModel().setAtmosphereNoiseModel(true);
+	    		integratorData.getNoiseModel().setAerodynamicNoiseModel(true); 
 	    		//integratorData.getNoiseModel().setGravityNoiseModel(true);		 // TBD
 	    		//integratorData.getNoiseModel().setRadiationNoiseModel(true);   	 // TBD
 	    		
