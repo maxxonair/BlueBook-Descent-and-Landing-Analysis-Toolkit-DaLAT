@@ -110,6 +110,7 @@ public class GuiReadInput {
     public static void readSequenceFile() throws IOException{
     	SequencePanel.resetSequenceContentList();
 		BufferedReader br = new BufferedReader(new FileReader(FilePaths.sequenceFile));
+    	BlueBookVisual.getDashboardPanel().getDashboardLeftPanel().getSequenceIndicator().clearDocument();
        String strLine;
        String fcSeparator="\\|FlightControllerElements\\|";
        String validationString = "FlightControllerElements";
@@ -119,6 +120,8 @@ public class GuiReadInput {
        try {
        while ((strLine = br.readLine()) != null )   {
 		       if( strLine.contains(validationString) ) {		// Check for valid input line - skip empty lines 
+		    	   BlueBookVisual.getDashboardPanel().getDashboardLeftPanel().getSequenceIndicator().addContentString(strLine);
+		    	   
 				       	String[] initSplit = strLine.split(fcSeparator);
 			
 				       	String[] head = initSplit[0].split(" ");
@@ -149,7 +152,7 @@ public class GuiReadInput {
     	GeometryFrame.getCanvas().readElementList();
     	
     	// Clear Input file indicator>
-    	//BlueBookVisual.getDashboardPanel().getDashboardLeftPanel().getInputIndicator().clearDocument();
+    	BlueBookVisual.getDashboardPanel().getDashboardLeftPanel().getInputIndicator().clearDocument();
     	
     List<double[]> integratorSettings = new ArrayList<>();
     integratorSettingFlag =false;

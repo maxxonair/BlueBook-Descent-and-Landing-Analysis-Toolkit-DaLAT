@@ -355,7 +355,7 @@ public class BlueBookVisual  {
       JTabbedPane TabPane_SimulationSetup = (JTabbedPane) new JTabbedPane();
       TabPane_SimulationSetup.setPreferredSize(new Dimension(extx_main, exty_main));
       TabPane_SimulationSetup.setBackground(backgroundColor);
-      TabPane_SimulationSetup.setForeground(labelColor);
+      TabPane_SimulationSetup.setForeground(Color.BLACK);
 			//---------------------------------------------------------------------------------------
 			/**			Create Setup panel:
 			 * comprising:

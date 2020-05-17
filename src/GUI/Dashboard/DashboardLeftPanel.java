@@ -51,6 +51,7 @@ public class DashboardLeftPanel {
     // Content Lists 
     private ConsoleClass console;
     private IndicatorConsole inputIndicator;
+    private IndicatorConsole sequenceIndicator;
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
     private int uy_p41 = 5 ; 
@@ -212,23 +213,35 @@ public class DashboardLeftPanel {
       //-----------------------------------------------------------------------------------------------
       //								Input Files indicator     
       //-----------------------------------------------------------------------------------------------
+      
+      int inputIndicatorSizeY = 545;
+      
       JTabbedPane TabPane_InputExcept = (JTabbedPane) new JTabbedPane();
-      TabPane_InputExcept.setSize(new Dimension(385, 545));
+      TabPane_InputExcept.setSize(new Dimension(385, inputIndicatorSizeY));
       TabPane_InputExcept.setLocation(5, uy_p41 + 285 + 25 *15);
-      TabPane_InputExcept.setBackground(labelColor);
-      TabPane_InputExcept.setForeground(labelColor);
+      TabPane_InputExcept.setBackground(backgroundColor);
+      TabPane_InputExcept.setForeground(Color.BLACK);
       
       
       inputIndicator = new IndicatorConsole();
-      inputIndicator.getMainPanel().setSize(385,545);
+      inputIndicator.getMainPanel().setSize(385,inputIndicatorSizeY);
       //inputIndicator.getMainPanel().setLocation(5, uy_p41 + 285 + 25 *15);
       inputIndicator.setBackgroundColor(backgroundColor);
 
      // console.linkConPrintErr(); // Display System.out.err()
       inputIndicator.setLabelColor(labelColor);
+      
+      sequenceIndicator = new IndicatorConsole();
+      sequenceIndicator.getMainPanel().setSize(385,inputIndicatorSizeY);
+      //inputIndicator.getMainPanel().setLocation(5, uy_p41 + 285 + 25 *15);
+      sequenceIndicator.setBackgroundColor(backgroundColor);
+
+     // console.linkConPrintErr(); // Display System.out.err()
+      sequenceIndicator.setLabelColor(labelColor);
       //-----------------------------------------------------------------------------------------------
       
       TabPane_InputExcept.addTab("Input" , null, inputIndicator.getMainPanel(), null);
+      TabPane_InputExcept.addTab("Sequence" , null, sequenceIndicator.getMainPanel(), null);
       mainPanel.add(TabPane_InputExcept);
       
 		TabPane_InputExcept.setSelectedIndex(0);
@@ -243,6 +256,10 @@ public class DashboardLeftPanel {
 	
 	
 	
+	public IndicatorConsole getSequenceIndicator() {
+		return sequenceIndicator;
+	}
+
 	public IndicatorConsole getInputIndicator() {
 		return inputIndicator;
 	}
