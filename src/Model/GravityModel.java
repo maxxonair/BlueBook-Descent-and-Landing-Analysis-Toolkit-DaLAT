@@ -2,8 +2,8 @@ package Model;
 
 import static java.lang.Math.*;
 
+import FlightElement.SpaceShip;
 import Model.DataSets.GravitySet;
-import Simulator_main.DataSets.PrevailingDataSet;
 import utils.Mathbox;
 
 
@@ -69,17 +69,17 @@ public class GravityModel  {
     	
     	return g; 
     }
-    public static double[][] getGravity3D_ECEF(PrevailingDataSet currentDataSet) {
+    public static double[][] getGravity3D_ECEF(SpaceShip spaceShip) {
     	double[][] GRAVITY_VECTOR = new double[3][1]; 
-    	SET_Constants(currentDataSet.getTARGET());;
+    	SET_Constants(spaceShip.getTarget().getTARGET());;
 
-    	double x = currentDataSet.getR_ECEF_cartesian()[0];
-    	double y = currentDataSet.getR_ECEF_cartesian()[1];
-    	double z = currentDataSet.getR_ECEF_cartesian()[2];
+    	double x = spaceShip.getState().getR_ECEF_cartesian()[0];
+    	double y = spaceShip.getState().getR_ECEF_cartesian()[1];
+    	double z = spaceShip.getState().getR_ECEF_cartesian()[2];
     	
-    	double r = currentDataSet.getR_ECEF_spherical()[2];
-    	double rm = currentDataSet.getRM();
-    	double mu = currentDataSet.getMu();
+    	double r = spaceShip.getState().getR_ECEF_spherical()[2];
+    	double rm = spaceShip.getTarget().getRM();
+    	double mu = spaceShip.getTarget().getMu();
     	
     	 double Q = 1 + 3*J2/2*(rm/r)*(rm/r) * (1-5*(z*z)/(r*r)) + 5*J3/2*(rm/r)*(rm/r)*(rm/r)*(3-7*z*z/(r*r))*z/r - 35*J4/8*(rm/r)*(rm/r)*(rm/r)*(rm/r)*(9*z*z*z*z/(r*r*r*r)-6*z*z/(r*r)+3/7);
     	 GRAVITY_VECTOR[0][0] = -mu*x/(r*r*r)*Q;
@@ -89,16 +89,16 @@ public class GravityModel  {
     	return GRAVITY_VECTOR;
     }
     
-	public static double[] getGravity2D(PrevailingDataSet currentDataSet) {
+	public static double[] getGravity2D(SpaceShip spaceShip) {
 		//------------------------------------------------------------------------------
 		//     simplified 2D atmosphere model (J2 only) 
 		//------------------------------------------------------------------------------
 		double[] g = {0.0,0.0};
 		double gr, gn;
-		double rm = currentDataSet.getRM();
-		double mu = currentDataSet.getMu();
-		int TARGET = currentDataSet.getTARGET();
-		double[] x = currentDataSet.getxIS();
+		double rm = spaceShip.getTarget().getRM();
+		double mu = spaceShip.getTarget().getMu();
+		int TARGET = spaceShip.getTarget().getTARGET();
+		double[] x = spaceShip.getState().getxIS();
 	    	gr = get_gr( x[2],  x[1],  rm,  mu, TARGET);
 	    	gn = get_gn( x[2],  x[1],  rm,  mu, TARGET); 
 	    g[0]=gr;
@@ -106,10 +106,10 @@ public class GravityModel  {
 	    return g; 
 	}
 	
-	public static GravitySet getGravitySet(PrevailingDataSet currentDataSet) {
+	public static GravitySet getGravitySet(SpaceShip spaceShip) {
 		GravitySet gravitySet = new GravitySet();
-		gravitySet.setG_NED(Mathbox.Multiply_Matrices(currentDataSet.getCoordinateTransformation().getC_ECEF2NED(), 
-				getGravity3D_ECEF(currentDataSet)));
+		gravitySet.setG_NED(Mathbox.Multiply_Matrices(spaceShip.getState().getCoordinateTransformation().getC_ECEF2NED(), 
+				getGravity3D_ECEF(spaceShip)));
 		return gravitySet;
 	}
     

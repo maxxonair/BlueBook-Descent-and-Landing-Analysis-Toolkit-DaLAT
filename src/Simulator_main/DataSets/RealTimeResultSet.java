@@ -36,8 +36,6 @@ public class RealTimeResultSet extends Object implements Cloneable{
 	private MasterSet masterSet; 
 	
 	private IntegratorData integratorData;
-	
-	private PrevailingDataSet prevailingDataSet;
 		
 	
 	private double normalizedDeceleration=0;
@@ -90,14 +88,6 @@ public class RealTimeResultSet extends Object implements Cloneable{
 
 	public void setGlobalTime(double globalTime) {
 		this.globalTime = globalTime;
-	}
-
-	public PrevailingDataSet getCurrentDataSet() {
-		return prevailingDataSet;
-	}
-
-	public void setCurrentDataSet(PrevailingDataSet prevailingDataSet) {
-		this.prevailingDataSet = prevailingDataSet;
 	}
 
 	public IntegratorData getIntegratorData() {

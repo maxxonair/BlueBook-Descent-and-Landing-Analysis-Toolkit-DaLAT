@@ -10,10 +10,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import FlightElement.SpaceShip;
+import FlightElement.GNCModel.SequenceContent;
+import FlightElement.GNCModel.SequenceElement;
 import GUI.FilePaths;
 import GUI.Dashboard.ChartSetting;
-import Sequence.SequenceContent;
-import Sequence.SequenceElement;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.SimulatorInputSet;
 
@@ -305,7 +305,7 @@ public static SimulatorInputSet readINP() throws IOException {
 			integratorData.setIntegInput(IntegInput);	// !!! Must be called BEFORE .setIntegratorType !!!
 			integratorData.setIntegratorType(integratorSetting);
 	    }
-	    spaceShip.setInertiaTensorMatrix(InertiaTensor);
+	    spaceShip.getProperties().getMassAndInertia().setInertiaTensorMatrix(InertiaTensor);
 	    simulatorInputSet.setSpaceShip(spaceShip);
 	    simulatorInputSet.setIntegratorData(integratorData);
     } catch (Exception ext) {
@@ -318,25 +318,25 @@ public static SimulatorInputSet readINP() throws IOException {
 
 private static SpaceShip checkSpaceShip(String identifier, double value, SpaceShip spaceShip) {
 	if(identifier.equals("Init_Mass")) {
-		spaceShip.setMass(value);
+		spaceShip.getProperties().getMassAndInertia().setMass(value);
 	} else if (identifier.equals("SC_COM")) {
-		spaceShip.setCoM(value);
+		spaceShip.getProperties().getMassAndInertia().setCoM(value);
 	} else if (identifier.equals("SC_COT")) {
-		spaceShip.setCoT(value);
+		spaceShip.getProperties().getGeometry().setCoT(value);
 	} else if (identifier.equals("SC_COP")) {
 		spaceShip.setCoP(value);
 	} else if (identifier.equals("SC_Height")) {
-		spaceShip.setVehicleLength(value);
+		spaceShip.getProperties().getGeometry().setVehicleLength(value);
 	} else if (identifier.equals("SC_ParDiam")) {
-		spaceShip.getAeroElements().setParachuteSurfaceArea(UConst.PI*(value*value/4));
+		spaceShip.getProperties().getAeroElements().setParachuteSurfaceArea(UConst.PI*(value*value/4));
 	} else if (identifier.equals("SC_BodyRadius")) {
-		spaceShip.getAeroElements().setHeatshieldRadius(value/2);
+		spaceShip.getProperties().getAeroElements().setHeatshieldRadius(value/2);
 	} else if (identifier.equals("SC_ParMass")) {
-    		spaceShip.getAeroElements().setParachuteMass(value);
+    		spaceShip.getProperties().getAeroElements().setParachuteMass(value);
 	} else if (identifier.equals("SC_HeatShieldMass")) {
-		spaceShip.getAeroElements().setHeatShieldMass(value);
+		spaceShip.getProperties().getAeroElements().setHeatShieldMass(value);
 	} else if (identifier.equals("SC_SurfArea")) {
-		spaceShip.getAeroElements().setSurfaceArea(UConst.PI*(value*value/4));
+		spaceShip.getProperties().getAeroElements().setSurfaceArea(UConst.PI*(value*value/4));
 	} else if (identifier.equals("Init_IXX")) {
 		InertiaTensor[0][0] = value;
 	} else if (identifier.equals("Init_IXY")) {
@@ -356,41 +356,41 @@ private static SpaceShip checkSpaceShip(String identifier, double value, SpaceSh
 	} else if (identifier.equals("Init_IZZ")) {
 		InertiaTensor[2][2] = value;
 	} else if (identifier.equals("SC_MainISP")) {
-		spaceShip.getPropulsion().setPrimaryISPMax(value);
+		spaceShip.getProperties().getPropulsion().setPrimaryISPMax(value);
 	} else if (identifier.equals("SC_MainProp")) {
-		spaceShip.getPropulsion().setPrimaryPropellant(value);
+		spaceShip.getProperties().getPropulsion().setPrimaryPropellant(value);
 	} else if (identifier.equals("SC_MainThrustMax")) {
-		spaceShip.getPropulsion().setPrimaryThrustMax(value);
+		spaceShip.getProperties().getPropulsion().setPrimaryThrustMax(value);
 	} else if (identifier.equals("SC_MainThrustMin")) {
-		spaceShip.getPropulsion().setPrimaryThrustMin(value);
+		spaceShip.getProperties().getPropulsion().setPrimaryThrustMin(value);
 	} else if (identifier.equals("SC_RCSMomX")) {
-		spaceShip.getPropulsion().setRCSMomentumX(value);
+		spaceShip.getProperties().getPropulsion().setRCSMomentumX(value);
 	} else if (identifier.equals("SC_RCSMomY")) {
-		spaceShip.getPropulsion().setRCSMomentumY(value);
+		spaceShip.getProperties().getPropulsion().setRCSMomentumY(value);
 	} else if (identifier.equals("SC_RCSMomZ")) {
-		spaceShip.getPropulsion().setRCSMomentumZ(value);
+		spaceShip.getProperties().getPropulsion().setRCSMomentumZ(value);
 	} else if (identifier.equals("SC_RCSProp")) {
-		spaceShip.getPropulsion().setSecondaryPropellant(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryPropellant(value);
 	} else if (identifier.equals("SC_RCSISPX")) {
-		spaceShip.getPropulsion().setSecondaryISP_RCS_X(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryISP_RCS_X(value);
 	} else if (identifier.equals("SC_RCSISPY")) {
-		spaceShip.getPropulsion().setSecondaryISP_RCS_Y(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryISP_RCS_Y(value);
 	} else if (identifier.equals("SC_RCSISPZ")) {
-		spaceShip.getPropulsion().setSecondaryISP_RCS_Z(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryISP_RCS_Z(value);
 	} else if (identifier.equals("SC_RCSThrustX")) {
-		spaceShip.getPropulsion().setSecondaryThrust_RCS_X(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryThrust_RCS_X(value);
 	} else if (identifier.equals("SC_RCSThrustY")) {
-		spaceShip.getPropulsion().setSecondaryThrust_RCS_Y(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryThrust_RCS_Y(value);
 	} else if (identifier.equals("SC_RCSThrustZ")) {
-		spaceShip.getPropulsion().setSecondaryThrust_RCS_Z(value);
+		spaceShip.getProperties().getPropulsion().setSecondaryThrust_RCS_Z(value);
 	} else if (identifier.equals("SC_MainISPModel")) {
     		if((int) value ==1) {
-    			spaceShip.getPropulsion().setIsPrimaryThrottleModel(true);
+    			spaceShip.getProperties().getPropulsion().setIsPrimaryThrottleModel(true);
     		} else {
-    			spaceShip.getPropulsion().setIsPrimaryThrottleModel(false);	
+    			spaceShip.getProperties().getPropulsion().setIsPrimaryThrottleModel(false);	
     		}
 	} else if (identifier.equals("SC_MainISPMin")) {
-		spaceShip.getPropulsion().setPrimaryISPMin(value);
+		spaceShip.getProperties().getPropulsion().setPrimaryISPMin(value);
 	} 
 	
 	return spaceShip;

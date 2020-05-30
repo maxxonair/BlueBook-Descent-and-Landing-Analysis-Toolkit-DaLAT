@@ -1,6 +1,6 @@
 package utils;
 
-import Model.DataSets.ControlCommandSet;
+import FlightElement.GNCModel.ControlCommandSet;
 
 public class CRateTransition {
 	private double t;					// Time since last transport [s]

@@ -1,24 +1,23 @@
 package FlightElement;
 
+import FlightElement.ForceTorqueModel.ForceTorqueModel;
+import FlightElement.GNCModel.GNCModel;
+import FlightElement.Properties.Properties;
+import FlightElement.State.State;
+import FlightElement.Target.Target;
+
 public class SpaceShip {
 
 	private int SpaceShipID;
-	private double Mass;
-	private double[][] InertiaTensorMatrix   = {{      0    ,    0    ,   0},
-												{      0    ,    0    ,   0},
-												{      0    ,    0    ,   0}};
+	private Properties properties = new Properties();
+	private State state = new State();
+	private Target target = new Target();
+	private ForceTorqueModel forceTorqueModel = new ForceTorqueModel();
+	private GNCModel gNCModel = new GNCModel();
 	
 	
-	Propulsion propulsion = new Propulsion();
-	AeroElements aeroElements = new AeroElements();
-	Sensors sensors = new Sensors();
-	OBC oBC = new OBC();
-	
-	double CoM  = 0;		// Center of Mass (on the center line with respect to the set zero)
-	double CoT  = 0;		// Center of thrust forces (on the center line with respect to the set zero)
 	double CoP  = 0;    // Center of (aerodynamic) Pressure; 
 	
-	double vehicleLength = 0;  // Vehicle length [m]
 	
 
 	public double getCoP() {
@@ -46,83 +45,30 @@ public class SpaceShip {
 	}
 
 
-	public double getMass() {
-		return Mass;
+	public Properties getProperties() {
+		return properties;
 	}
 
 
-	public void setMass(double mass) {
-		Mass = mass;
+	public State getState() {
+		return state;
 	}
 
 
-	public double[][] getInertiaTensorMatrix() {
-		return InertiaTensorMatrix;
+	public Target getTarget() {
+		return target;
 	}
 
 
-	public void setInertiaTensorMatrix(double[][] inertiaTensorMatrix) {
-		InertiaTensorMatrix = inertiaTensorMatrix;
+	public ForceTorqueModel getForceTorqueModel() {
+		return forceTorqueModel;
 	}
 
 
-	public Propulsion getPropulsion() {
-		return propulsion;
+	public GNCModel getgNCModel() {
+		return gNCModel;
 	}
-
-
-	public void setPropulsion(Propulsion propulsion) {
-		this.propulsion = propulsion;
-	}
-
-
-	public AeroElements getAeroElements() {
-		return aeroElements;
-	}
-
-
-	public void setAeroElements(AeroElements aeroElements) {
-		this.aeroElements = aeroElements;
-	}
-
-
-	public double getCoM() {
-		return CoM;
-	}
-
-
-	public void setCoM(double coM) {
-		CoM = coM;
-	}
-
-
-	public double getCoT() {
-		return CoT;
-	}
-
-
-	public void setCoT(double coPr) {
-		CoT = coPr;
-	}
-
-
-	public double getVehicleLength() {
-		return vehicleLength;
-	}
-
-
-	public void setVehicleLength(double vehicleLength) {
-		this.vehicleLength = vehicleLength;
-	}
-
-
-	public Sensors getSensors() {
-		return sensors;
-	}
-
-
-	public OBC getoBC() {
-		return oBC;
-	}
+	
+	
 	
 }

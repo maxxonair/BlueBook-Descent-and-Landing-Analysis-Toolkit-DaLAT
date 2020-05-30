@@ -4,7 +4,6 @@ import FlightElement.SpaceShip;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
 import Model.DataSets.HypersonicSet;
-import Simulator_main.DataSets.PrevailingDataSet;
 import utils.Mathbox;
 import utils.UConst;
 
@@ -27,10 +26,9 @@ public class HypersonicModel {
     	aerodynamicSet.setAerodynamicAngleOfAttack(45*deg2rad);
     	aerodynamicSet.setAngleOfSideslip(0*deg2rad);
     	SpaceShip spaceShip = new SpaceShip();
-    	spaceShip.getAeroElements().setHeatshieldRadius(2.3);
-    	PrevailingDataSet currentDataSet = new PrevailingDataSet();
-    	currentDataSet.settIS(0);
-    	HypersonicSet hypersonicSet = hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip, currentDataSet);
+    	spaceShip.getProperties().getAeroElements().setHeatshieldRadius(2.3);
+    	spaceShip.getState().settIS(0);
+    	HypersonicSet hypersonicSet = hypersonicFlowModel(atmosphereSet, aerodynamicSet, spaceShip);
     	System.out.println("CL:"+hypersonicSet.getCL());
     	System.out.println("CY:"+hypersonicSet.getCY());
     	System.out.println("CD:"+hypersonicSet.getCD());
@@ -40,17 +38,17 @@ public class HypersonicModel {
     	System.out.println("CMz:"+hypersonicSet.getCMz());
     }
     
-	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet) {
+	public static HypersonicSet hypersonicFlowModel(AtmosphereSet atmosphereSet, AerodynamicSet aerodynamicSet, SpaceShip spaceShip) {
 	int file=2;
 	int NewtonT=1;
-	System.out.println("Hypersonic model active | time: "+currentDataSet.gettIS()+" [s]");
+	System.out.println("Hypersonic model active | time: "+spaceShip.getState().gettIS()+" [s]");
 	HypersonicSet hypersonicSet = new HypersonicSet();
 	//--------------------------------------------------------------------------
 	//                          NewAero Code of 3D 
 	//            Aerodynamic Properties of Axisymmetric Blunt Bodies
 	//--------------------------------------------------------------------------
 	//
-	double RB=spaceShip.getAeroElements().getHeatshieldRadius();                          // Heatshield Base Radius
+	double RB=spaceShip.getProperties().getAeroElements().getHeatshieldRadius();                          // Heatshield Base Radius
 	 int  nop=100; //(!)
 	 //--------------------------------------------------------------------------
 	double R     = atmosphereSet.getGasConstant(); 

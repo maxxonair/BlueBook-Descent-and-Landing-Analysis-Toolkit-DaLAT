@@ -1,6 +1,8 @@
 package Model.DataSets;
 
 import FlightElement.SpaceShip;
+import FlightElement.ForceTorqueModel.ActuatorSet;
+import FlightElement.GNCModel.ControlCommandSet;
 
 public class MasterSet extends Object implements Cloneable{
 

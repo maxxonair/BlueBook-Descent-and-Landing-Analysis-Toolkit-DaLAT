@@ -8,11 +8,11 @@ import java.util.Calendar;
 import java.util.List;
 
 import FlightElement.SpaceShip;
-import Model.SensorModel;
-import Model.DataSets.ControlCommandSet;
+import FlightElement.GNCModel.ControlCommandSet;
+import FlightElement.GNCModel.MasterController;
+import FlightElement.GNCModel.SequenceContent;
+import FlightElement.SensorModel.SensorModel;
 import Model.DataSets.SensorSet;
-import Sequence.MasterController;
-import Sequence.SequenceContent;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
@@ -69,14 +69,14 @@ public class LaunchRealTimeSimulation {
 	    		//--------------------------------------------------------------------------------------
 	    		 SensorSet sensorSet = new SensorSet();
 	    		// Rate Transition blocks - Spacecraft 
-	    		spaceShip.getoBC().setControllerFrequency(10);
-	    		spaceShip.getSensors().setSensorFrequency(20);
+	    		spaceShip.getProperties().getoBC().setControllerFrequency(10);
+	    		spaceShip.getProperties().getSensors().setSensorFrequency(20);
 	    		// Sensor Rate Transition 
 	    		SRateTransition sensorRateTransition     = new SRateTransition(environmentFrequency, 
-	    				spaceShip.getSensors().getSensorFrequency());
+	    				spaceShip.getProperties().getSensors().getSensorFrequency());
 	    		// Controller Rate Transition 
 	    		CRateTransition controllerRateTransition = new CRateTransition(environmentFrequency, 
-	    				spaceShip.getoBC().getControllerFrequency());
+	    				spaceShip.getProperties().getoBC().getControllerFrequency());
 		    	//--------------------------------------------------------------------------------------
 	    		ControlCommandSet controlCommandSet = new ControlCommandSet(); 
 	    		//--------------------------------------------------------------------------------------	    		
@@ -147,7 +147,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 								controlCommandSet
 		    																			);	
 	    			}
-	  	      //---------------------------------------------------------------------------------------
+	    		  //---------------------------------------------------------------------------------------
 	    	      //				       Create Sensor Data
 	    	      //---------------------------------------------------------------------------------------	    		
 	    		  sensorSet.setMasterSet(realTimeContainer.getRealTimeList().get(realTimeContainer.
@@ -190,12 +190,12 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		        double primaryDeltaVIncrement =realTimeContainer.getRealTimeList().
 		        		get(realTimeContainer.getRealTimeList().size()-1).getMasterSet().
 		        		getActuatorSet().getPrimaryISP_is()*9.80665*Math.abs(realTimeContainer.
-		        				getRealTimeResultSet().getMasterSet().getSpaceShip().getPropulsion().getMassFlowPrimary())/
+		        				getRealTimeResultSet().getMasterSet().getSpaceShip().getProperties().getPropulsion().getMassFlowPrimary())/
 		        		realTimeContainer.getRealTimeResultSet().getSCMass()*tIncrement;
 		         
 		        
-		       realTimeContainer.getRealTimeResultSet().getMasterSet().getSpaceShip().getPropulsion().setAccumulatedDeltaVPrimary(
-		    	   realTimeContainer.getRealTimeResultSet().getMasterSet().getSpaceShip().getPropulsion().getAccumulatedDeltaVPrimary()+primaryDeltaVIncrement);
+		       realTimeContainer.getRealTimeResultSet().getMasterSet().getSpaceShip().getProperties().getPropulsion().setAccumulatedDeltaVPrimary(
+		    	   realTimeContainer.getRealTimeResultSet().getMasterSet().getSpaceShip().getProperties().getPropulsion().getAccumulatedDeltaVPrimary()+primaryDeltaVIncrement);
 	    		}
 		  	//---------------------------------------------------------------------------------------
 		  	//				  Generate total time to integrate the problem

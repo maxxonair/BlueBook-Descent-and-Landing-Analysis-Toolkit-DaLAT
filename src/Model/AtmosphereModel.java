@@ -11,7 +11,6 @@ import java.util.List;
 import FlightElement.SpaceShip;
 import Model.DataSets.AtmosphereSet;
 import Noise.AtmosphereNoiseModel;
-import Simulator_main.DataSets.PrevailingDataSet;
 import Simulator_main.DataSets.IntegratorData;
 import utils.Mathbox;
 
@@ -115,10 +114,10 @@ public static double atm_read(int variable, double altitude) {
 	return atm_read;
 }
 
-public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData) {
+public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, IntegratorData integratorData) {
 	AtmosphereSet atmosphereSet = new AtmosphereSet();
-	double altitude = currentDataSet.getxIS()[2] - currentDataSet.getRM() ; 
-	if (altitude>160000 || currentDataSet.getTARGET() == 1){ // In space conditions: 
+	double altitude = spaceShip.getState().getxIS()[2] - spaceShip.getTarget().getRM() ; 
+	if (altitude>160000 || spaceShip.getTarget().getTARGET() == 1){ // In space conditions: 
 		// Set atmosphere properties to zero: 
 		atmosphereSet.setDensity(0);  						    // Density 							[kg/m3]
 		atmosphereSet.setDynamicPressure(0);  					// Dynamic pressure 				[Pa]
@@ -143,12 +142,12 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, PrevailingData
 		double gamma = AtmosphereModel.atm_read(4, altitude);
 		double gasConstant = AtmosphereModel.atm_read(3, altitude );
 		atmosphereSet.setDensity(density);        													 // density                         [kg/m3]
-		atmosphereSet.setDynamicPressure(0.5 * atmosphereSet.getDensity() * ( currentDataSet.getV_NED_ECEF_spherical()[0] * currentDataSet.getV_NED_ECEF_spherical()[0]));     // Dynamic pressure                [Pa]
+		atmosphereSet.setDynamicPressure(0.5 * atmosphereSet.getDensity() * ( spaceShip.getState().getV_NED_ECEF_spherical()[0] * spaceShip.getState().getV_NED_ECEF_spherical()[0]));     // Dynamic pressure                [Pa]
 		atmosphereSet.setStaticTemperature(staticTemperature); 
 		atmosphereSet.setGamma(gamma) ;              	        										// Heat capacity ratio			   [-]
 		atmosphereSet.setGasConstant(gasConstant);                       								// Gas Constant                    [J/kgK]
 		atmosphereSet.setStaticPressure(density*gasConstant*staticTemperature);   																			// Ambient pressure 			   [Pa]
-		atmosphereSet.setMach(currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt( staticTemperature * gamma * gasConstant));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
+		atmosphereSet.setMach(spaceShip.getState().getV_NED_ECEF_spherical()[0] / Math.sqrt( staticTemperature * gamma * gasConstant));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
         // Continous/Transition/Free molecular flow [-]
 	}
 return atmosphereSet; 

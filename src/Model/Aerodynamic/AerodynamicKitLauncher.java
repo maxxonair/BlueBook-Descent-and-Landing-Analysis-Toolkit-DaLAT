@@ -1,7 +1,7 @@
 package Model.Aerodynamic;
 
+import FlightElement.SpaceShip;
 import Model.DataSets.AtmosphereSet;
-import Simulator_main.DataSets.PrevailingDataSet;
 
 public class AerodynamicKitLauncher {
 	/**
@@ -27,11 +27,11 @@ public class AerodynamicKitLauncher {
 		
 	}
 	
-	public static double getCD(AtmosphereSet atmosphereSet, PrevailingDataSet currentDataSet) {
+	public static double getCD(AtmosphereSet atmosphereSet, SpaceShip spaceShip) {
 		double CD=0;
 		// input alpha, Ma 
 		double Ma = atmosphereSet.Mach;
-		double alpha = Math.toDegrees(currentDataSet.getEulerAngle().pitch - currentDataSet.getV_NED_ECEF_spherical()[1]);
+		double alpha = Math.toDegrees(spaceShip.getState().getEulerAngle().pitch - spaceShip.getState().getV_NED_ECEF_spherical()[1]);
 		if(alpha>20) {
 			/**
 			 * recommended range up to 10 degrees
@@ -80,17 +80,18 @@ public class AerodynamicKitLauncher {
 		return 0.0009*alpha*alpha - 0.0196*alpha + 1.814;
 	}
 	
-	public static double getCL(PrevailingDataSet currentDataSet) {
-		double alpha = Math.toDegrees(currentDataSet.getEulerAngle().pitch - currentDataSet.getV_NED_ECEF_spherical()[1]);
+	public static double getCL(SpaceShip spaceShip) {
+		double alpha = Math.toDegrees(spaceShip.getState().getEulerAngle().pitch - spaceShip.getState().getV_NED_ECEF_spherical()[1]);
 		return 0.003*alpha*alpha + 0.0288*alpha + 0.0046;
 	}
 	
-	public static double getCoP(double GeomLength, PrevailingDataSet currentDataSet) {
+	public static double getCoP(SpaceShip spaceShip) {
 		/**
 		 * 
 		 *  CoP estimation based on approximations made in aforementioned publication
 		 */		
-		double alpha = Math.toDegrees(currentDataSet.getEulerAngle().pitch - currentDataSet.getV_NED_ECEF_spherical()[1]);
+		double GeomLength = spaceShip.getProperties().getGeometry().getVehicleLength() ;
+		double alpha = Math.toDegrees(spaceShip.getState().getEulerAngle().pitch - spaceShip.getState().getV_NED_ECEF_spherical()[1]);
 		//System.out.println(alpha);
 		if(alpha <= 2 && alpha >= 0) {
 			return (-19.329*alpha + 100.0)/100 * GeomLength;	

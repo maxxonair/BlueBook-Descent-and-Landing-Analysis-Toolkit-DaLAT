@@ -1,7 +1,7 @@
 package Simulator_main.DataSets;
 
 import FlightElement.SpaceShip;
-import Model.DataSets.ControlCommandSet;
+import FlightElement.GNCModel.ControlCommandSet;
 
 public class SimulatorInputSet {
 	

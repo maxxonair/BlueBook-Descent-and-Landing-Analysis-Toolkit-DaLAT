@@ -46,7 +46,7 @@ MEOP [Pa]|2200000
 Mean Temp. [K]|230
 Propellant Capacity [kg]|271.3
 Filling Level [kg]|0.0
-Box_54*&^{}|He1|4|241|134|899c82f8-16bb-4cb9-84d0-b5fcb6af1510|0.0
+Box_54*&^{}|He1|4|515|86|899c82f8-16bb-4cb9-84d0-b5fcb6af1510|0.0
 Name|He1
 Description|
 System mass [kg]|0.0
@@ -58,7 +58,7 @@ MEOP [Pa]|0.0
 Mean Temp. [K]|0.0
 Propellant Capacity [kg]|0.0
 Filling Level [kg]|0.0
-Box_54*&^{}|He2|4|406|85|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c|0.0
+Box_54*&^{}|He2|4|554|1|3cdd1527-8ab9-4cf9-98f4-ae1701e89a6c|0.0
 Name|He2
 Description|
 System mass [kg]|0.0
@@ -110,7 +110,7 @@ Box_54*&^{}|AV_MMH|6|506|438|44407990-31c2-4965-8e82-3430cdbe64c4|0.0
 Name|AV_MMH
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|ME 2|0|591|582|3f69e377-7e7f-4c6a-bdb5-d736d8342713|0.0
+Box_54*&^{}|ME 2|0|422|549|3f69e377-7e7f-4c6a-bdb5-d736d8342713|0.0
 Name|ME 2
 Description|
 System mass [kg]|120
@@ -165,7 +165,7 @@ O/F [-]|0.0
 Momentum [Nm]|0.0
 Max. Pulse Time [ms]|0.0
 Min. Pulse Time [ms]|0.0
-Box_54*&^{}|RCS X|3|874|572|02dd12fc-cabf-495f-aa3e-b40f9029d789|0.0
+Box_54*&^{}|RCS X|3|557|357|02dd12fc-cabf-495f-aa3e-b40f9029d789|0.0
 Name|RCS X
 Description|
 System mass [kg]|0.0
@@ -273,6 +273,22 @@ Description|
 System mass [kg]|0.0
 Box_54*&^{}|PT10|14|582|428|120ffc90-db05-4cd3-a430-6ee8ba09612d|0.0
 Name|PT10
+Description|
+System mass [kg]|0.0
+Box_54*&^{}|Tank|4|50|50|85284813-3a35-45f6-9a6d-3bdc8381446d|0.0
+Name|Tank
+Description|
+System mass [kg]|0.0
+Propellant [-]|null
+Volume [litre]|0.0
+Current Pressure [Pa]|0.0
+Operating Pressure [Pa]|0.0
+MEOP [Pa]|0.0
+Mean Temp. [K]|0.0
+Propellant Capacity [kg]|0.0
+Filling Level [kg]|0.0
+Box_54*&^{}|Filter|5|50|50|972d7e37-ee50-4189-9937-10ea8d8c4ec3|0.0
+Name|Filter
 Description|
 System mass [kg]|0.0
 Relation_74*&^{}|1da3bcef-bc2b-49f1-a8bc-868f2efb730b|e5696e60-1b23-4510-bc90-766cc1088ec1

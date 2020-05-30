@@ -5,7 +5,7 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.util.vector.Vector3f;
 
 import FlightElement.SpaceShip;
-import Model.DataSets.ControlCommandSet;
+import FlightElement.GNCModel.ControlCommandSet;
 import Simulator_main.SimulationCore;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;

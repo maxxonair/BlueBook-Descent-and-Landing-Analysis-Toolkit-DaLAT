@@ -5,10 +5,10 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 
 import FlightElement.SpaceShip;
-import Model.DataSets.ActuatorSet;
+import FlightElement.ForceTorqueModel.ActuatorSet;
+import FlightElement.GNCModel.ControlCommandSet;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
-import Model.DataSets.ControlCommandSet;
 import Model.DataSets.ForceMomentumSet;
 import Model.DataSets.GravitySet;
 import Model.DataSets.MasterSet;
@@ -143,7 +143,7 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 	realTimeResultSet.getEulerAngle().roll+" "+
 	realTimeResultSet.getEulerAngle().pitch+" "+
 	realTimeResultSet.getEulerAngle().yaw+" "+
-	realTimeResultSet.getMasterSet().getSpaceShip().getMass()+ " " +
+	realTimeResultSet.getMasterSet().getSpaceShip().getProperties().getMassAndInertia().getMass()+ " " +
 	realTimeResultSet.getNormalizedDeceleration()+ " " +
 	0+ " " + 
 	realTimeResultSet.getVelocity()*Math.cos(realTimeResultSet.getFpa())+" "+
@@ -157,7 +157,7 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 	(controlCommandSet.getPrimaryThrustThrottleCmd()*100)+ " "+ 
 	(actuatorSet.getPrimaryThrust_is())+" "+
 	(actuatorSet.getPrimaryThrust_is()/realTimeResultSet.getSCMass())+" "+
-	realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getPrimaryPropellantFillingLevel()/realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getPrimaryPropellant()*100+" "+ 
+	realTimeResultSet.getMasterSet().getSpaceShip().getProperties().getPropulsion().getPrimaryPropellantFillingLevel()/realTimeResultSet.getMasterSet().getSpaceShip().getProperties().getPropulsion().getPrimaryPropellant()*100+" "+ 
 	actuatorSet.getPrimaryISP_is()+" "+
 	controlCommandSet.getMomentumRCS_X_cmd()+" "+
 	controlCommandSet.getMomentumRCS_Y_cmd()+" "+
@@ -165,7 +165,7 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 	actuatorSet.getMomentumRCS_X_is()+" "+
 	actuatorSet.getMomentumRCS_Y_is()+" "+
 	actuatorSet.getMomentumRCS_Z_is()+" "+
-	realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getSecondaryPropellantFillingLevel()/realTimeResultSet.getMasterSet().getSpaceShip().getPropulsion().getSecondaryPropellant()*100+" "+
+	realTimeResultSet.getMasterSet().getSpaceShip().getProperties().getPropulsion().getSecondaryPropellantFillingLevel()/realTimeResultSet.getMasterSet().getSpaceShip().getProperties().getPropulsion().getSecondaryPropellant()*100+" "+
 	controlCommandSet.getTVC_alpha()+" "+
 	controlCommandSet.getTVC_beta()+" "+
 	actuatorSet.getTVC_alpha()+" "+
@@ -176,14 +176,14 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 	0+" "+
 	0+" "+
 	0+" "+
-	spaceShip.getPropulsion().getMassFlowPrimary()+" "+
-	(spaceShip.getPropulsion().getPrimaryPropellant()-spaceShip.getPropulsion().getPrimaryPropellantFillingLevel())+" "+
-	(spaceShip.getPropulsion().getSecondaryPropellant()-spaceShip.getPropulsion().getSecondaryPropellantFillingLevel())+" "+
+	spaceShip.getProperties().getPropulsion().getMassFlowPrimary()+" "+
+	(spaceShip.getProperties().getPropulsion().getPrimaryPropellant()-spaceShip.getProperties().getPropulsion().getPrimaryPropellantFillingLevel())+" "+
+	(spaceShip.getProperties().getPropulsion().getSecondaryPropellant()-spaceShip.getProperties().getPropulsion().getSecondaryPropellantFillingLevel())+" "+
 	0+" "+
 	0+" "+
 	0+" "+
 	0+" "+
-	spaceShip.getPropulsion().getAccumulatedDeltaVPrimary()+" "
+	spaceShip.getProperties().getPropulsion().getAccumulatedDeltaVPrimary()+" "
 	);
 	return steps;	
 }
