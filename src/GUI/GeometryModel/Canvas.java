@@ -346,8 +346,10 @@ public class Canvas extends JPanel {
 	        			maxDiameter=e.getDiameter1();
 	        		} else {
 	        			maxDiameter=e.getDiameter2();} 
-	        	} else if (e.getDiameter1() > maxDiameter){
+	        	} else if (e.getDiameter1() > e.getDiameter2() && e.getDiameter1() > maxDiameter){
 	        		maxDiameter = e.getDiameter1();
+	        	} else if (e.getDiameter1() < e.getDiameter2() && e.getDiameter2() > maxDiameter){
+	        		maxDiameter = e.getDiameter2();
 	        	}
 	        	/**
 	        	 *  CoP calc 

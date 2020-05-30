@@ -121,11 +121,11 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, PrevailingData
 	if (altitude>160000 || currentDataSet.getTARGET() == 1){ // In space conditions: 
 		// Set atmosphere properties to zero: 
 		atmosphereSet.setDensity(0);  						    // Density 							[kg/m3]
-		atmosphereSet.setDynamicPressure(0);  					// Dynamic pressure 					[Pa]
-    		atmosphereSet.setStaticTemperature(0); 					// Temperature 						[K]
-    		atmosphereSet.setGamma(0);  							    // Heat capacity ratio 				[-]
-    		atmosphereSet.setGasConstant(0);	 					    // Gas constant 						[J/kgK]
-    		atmosphereSet.setMach(0); 	  							// Mach number 						[-]
+		atmosphereSet.setDynamicPressure(0);  					// Dynamic pressure 				[Pa]
+    		atmosphereSet.setStaticTemperature(0); 				// Temperature 						[K]
+    		atmosphereSet.setGamma(0);  						// Heat capacity ratio 				[-]
+    		atmosphereSet.setGasConstant(0);	 				// Gas constant 					[J/kgK]
+    		atmosphereSet.setMach(0); 	  						// Mach number 						[-]
       	//----------------------------------------------------------------------------------------------
 	} else { // In atmosphere conditions (if any)
 
@@ -149,7 +149,7 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, PrevailingData
 		atmosphereSet.setGasConstant(gasConstant);                       								// Gas Constant                    [J/kgK]
 		atmosphereSet.setStaticPressure(density*gasConstant*staticTemperature);   																			// Ambient pressure 			   [Pa]
 		atmosphereSet.setMach(currentDataSet.getV_NED_ECEF_spherical()[0] / Math.sqrt( staticTemperature * gamma * gasConstant));                   		 			// Mach number                     [-]   		             						// Parachute Drag coefficient      [-]
-        	// Continous/Transition/Free molecular flow [-]
+        // Continous/Transition/Free molecular flow [-]
 	}
 return atmosphereSet; 
 }

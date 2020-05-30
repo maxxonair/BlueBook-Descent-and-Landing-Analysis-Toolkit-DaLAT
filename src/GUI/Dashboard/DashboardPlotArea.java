@@ -12,6 +12,7 @@ import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
 import GUI.BlueBookVisual;
+import GUI.BlueBookPlot.main.BlueBookPlot;
 import GUI.Dashboard.Console.ConsoleClass;
 import GUI.DataStructures.InputFileSet;
 import Simulator_main.DataSets.RealTimeResultSet;
@@ -244,6 +245,8 @@ public class DashboardPlotArea {
 						ConsoleClass dashboardConsole = new ConsoleClass();				
 					    dashboardConsole.setDoc(masterConsole.getDoc()); // Link output stream to main console
 				        contentPanelList.add( dashboardConsole );
+					} else if (chartSettings.get(i).type == 4) {			
+				        contentPanelList.add( new BlueBookPlot() );
 					}
 				}
 		}

@@ -6,9 +6,9 @@ import Model.DataSets.SensorSet;
 
 public class FlightController_PitchControl extends FlightController {
 	
-	private double Kp=0.8;		// Proportional Coefficient
+	private double Kp=9.8;		// Proportional Coefficient
 	private double Ki=0.0001;		// Integrative Coefficient
-	private double Kd=3;		// Derivative Coefficient
+	private double Kd=5;		// Derivative Coefficient
 	
 	PID pitch;
 	
@@ -27,7 +27,7 @@ public class FlightController_PitchControl extends FlightController {
 		 * 
 		 * 
 		 */
-	   	if(Math.toDegrees(sensorSet.getRealTimeResultSet().getPQR()[0][0]) > 5) { 
+	   	if(Math.toDegrees( sensorSet.getRealTimeResultSet().getPQR()[1][0] ) > 5) { 
 			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getPQR()[1][0];
 			   double response = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, Kp, Ki, Kd, 1, -1);
 			   if(Double.isNaN(response)) {

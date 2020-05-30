@@ -45,11 +45,11 @@ public class SimulationCore implements FirstOrderDifferentialEquations {
  static boolean ISP_Throttle_model = false; 
  static boolean stophandler_ON     = true; 
 
- static 	    boolean spherical    = false;	 // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
- static 		boolean is_6DOF      = true;     // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
- static 		int SixDoF_Option    = 1;  
- static     boolean FlatEarther  = false;	 // Reduced complexity (no rot. Earth/no rot. NED) for attitude equations
- static     int eulerConvention  = 321;	     // Rotational order for Euler angles 
+ static boolean spherical    = false;	 // If true -> using spherical coordinates in EoM for velocity vector, else -> cartesian coordinates
+ static boolean is_6DOF      = true;     // Switch 3DOF to 6DOF: If true -> 6ODF, if false -> 3DOF 
+ static int SixDoF_Option    = 1;  
+ static boolean FlatEarther  = false;	 // Reduced complexity (no rot. Earth/no rot. NED) for attitude equations
+ static int eulerConvention  = 321;	     // Rotational order for Euler angles 
 //............................................                                       .........................................
 //
 //	                                                         Constants
@@ -93,7 +93,7 @@ private static EulerAngle eulerAngle = new EulerAngle();
 
 private static double[][] AngularRate     = {{0},
 											 {0},
-											 {0}};					 // Angular Velcity {P, Q, R}T [rad/s] 
+											 {0}};					 // Angular Velocity {P, Q, R}T [rad/s] 
 
 private static double[][] AngularMomentum_B = {{0},
 											   {0},
@@ -133,13 +133,13 @@ private static MasterSet masterSet = new MasterSet();
     	prevailingDataSet.setR_ECEF_cartesian(r_ECEF_cartesian);
     	prevailingDataSet.setV_NED_ECEF_spherical(V_NED_ECEF_spherical);
     	prevailingDataSet.setEulerAngle(eulerAngle);
-	coordinateTransformation.initializeTranformationMatrices(x, t, constants.getOmega(), atmosphereSet, aerodynamicSet, 
+    	coordinateTransformation.initializeTranformationMatrices(x, t, constants.getOmega(), atmosphereSet, aerodynamicSet, 
 															 q_B2IN, r_ECEF_spherical, V_NED_ECEF_spherical);
-	prevailingDataSet.setCoordinateTransformation(coordinateTransformation);
+		prevailingDataSet.setCoordinateTransformation(coordinateTransformation);
     	//-------------------------------------------------------------------------------------------------------------------
     	// 										Delta-v integration
     	//-------------------------------------------------------------------------------------------------------------------
-	double g0 = 9.81 ;  // Gravitational acceleration (Earth) for ISP equations only! 
+		double g0 = 9.81 ;  // Gravitational acceleration (Earth) for ISP equations only! 
     	acc_deltav = acc_deltav + actuatorSet.getPrimaryISP_is()*g0*Math.log(mminus/x[6]);
     	mminus=x[6];
     	//-------------------------------------------------------------------------------------------------------------------
@@ -148,7 +148,7 @@ private static MasterSet masterSet = new MasterSet();
     	double r=constants.getRm();  // <-- reference radius for projection. Current projection set for mean radius 
     	double phi=x[0];
     	double theta = x[1];
-    double dphi = Math.abs(phi-phimin);
+    	double dphi = Math.abs(phi-phimin);
     	double dtheta = Math.abs(theta-tetamin); 
     	double ds = r*Math.sqrt(LandingCurve.squared(dphi) + LandingCurve.squared(dtheta));
     	//System.out.println(ds);
@@ -160,12 +160,12 @@ private static MasterSet masterSet = new MasterSet();
     	//-------------------------------------------------------------------------------------------------------------------
     	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet,actuatorSet, 
     							 controlCommandSet, spaceShip, prevailingDataSet, integratorData, errorSet, false);
-    	forceMomentumSet = masterSet.getForceMomentumSet();
-    	gravitySet = masterSet.getGravitySet();
-    	atmosphereSet = masterSet.getAtmosphereSet();
-    	aerodynamicSet = masterSet.getAerodynamicSet();
-    	actuatorSet = masterSet.getActuatorSet();
-    	spaceShip = masterSet.getSpaceShip();
+    	forceMomentumSet 	= masterSet.getForceMomentumSet();
+    	gravitySet 			= masterSet.getGravitySet();
+    	atmosphereSet 		= masterSet.getAtmosphereSet();
+    	aerodynamicSet 		= masterSet.getAerodynamicSet();
+    	actuatorSet 		= masterSet.getActuatorSet();
+    	spaceShip 			= masterSet.getSpaceShip();
     //	System.out.println(spaceShip.getMass());
     //	controlCommandSet = masterSet.getControlCommandSet();
     	if(prevailingDataSet.getxIS()[6]!=spaceShip.getMass()) {

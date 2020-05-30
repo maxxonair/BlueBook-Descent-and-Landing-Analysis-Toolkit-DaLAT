@@ -110,7 +110,7 @@ Box_54*&^{}|AV_MMH|6|506|438|44407990-31c2-4965-8e82-3430cdbe64c4|0.0
 Name|AV_MMH
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|ME 2|0|409|540|3f69e377-7e7f-4c6a-bdb5-d736d8342713|0.0
+Box_54*&^{}|ME 2|0|591|582|3f69e377-7e7f-4c6a-bdb5-d736d8342713|0.0
 Name|ME 2
 Description|
 System mass [kg]|120
@@ -129,7 +129,7 @@ Box_54*&^{}|FD_MON|8|19|309|d0b9c357-356c-418e-83fd-3e07c329683a|0.0
 Name|FD_MON
 Description|
 System mass [kg]|0.0
-Box_54*&^{}|FD_He1|8|242|1|fb080a26-63fb-4a16-a24f-6435bf1e4ed1|0.0
+Box_54*&^{}|FD_He1|8|665|278|fb080a26-63fb-4a16-a24f-6435bf1e4ed1|0.0
 Name|FD_He1
 Description|
 System mass [kg]|0.0

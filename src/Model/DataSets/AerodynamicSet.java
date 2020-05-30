@@ -1,5 +1,7 @@
 package Model.DataSets;
 
+import NoiseSet.AerodynamicNoiseSet;
+
 public class AerodynamicSet extends Object implements Cloneable{
     public   int flowzone=0; 								// Flow zone continuum - transitional - free molecular flwo
     public   double DragCoefficientContinuumFlow = 0; 	    // Drag coefficient in contiuum flow;
@@ -28,9 +30,17 @@ public class AerodynamicSet extends Object implements Cloneable{
     public double DragForceParachute=0;
     
     private double KnudsenNumber=0;
+    
+    private AerodynamicNoiseSet aerodynamicNoiseSet;
 
     
-    
+	public AerodynamicNoiseSet getAerodynamicNoiseSet() {
+		return aerodynamicNoiseSet;
+	}
+	public void setAerodynamicNoiseSet(AerodynamicNoiseSet aerodynamicNoiseSet) {
+		this.aerodynamicNoiseSet = aerodynamicNoiseSet;
+	}
+	
 	public double getCMx() {
 		return CMx;
 	}

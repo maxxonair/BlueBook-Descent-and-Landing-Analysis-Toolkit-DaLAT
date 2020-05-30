@@ -20,18 +20,23 @@ public class Propulsion {
 	private double secondaryThrust_AUX;
 	private double secondaryPropellant;
 	
+	// Thruster with pulse-width-modulation minimum achievable on-time [ms]
+	private double secondaryMinOnTime_X=-1;		
+	private double secondaryMinOnTime_Y=-1;
+	private double secondaryMinOnTime_Z=-1;
+	// Reaction Control System Torque
 	private double RCSMomentumX;
 	private double RCSMomentumY;
 	private double RCSMomentumZ;
-	
+	// Tank filling level for primary and secondary propulsion systems
 	private double primaryPropellantFillingLevel;
 	private double secondaryPropellantFillingLevel; 
-	
+	// Accumulated delta-v for primary and secondary propulsion sytem
 	private double accumulatedDeltaVPrimary=0;
 	private double accumulatedDeltaVSecondary=0;
-	
+	// Propellant mass flow rate primary propulsion system
 	private double massFlowPrimary=0;
-	
+	// Thrust Vector Control - maximum achievable control angles
     private  double tvc_alpha_MAX_deg = 5;
     private  double tvc_beta_MAX_deg  = 5;
 	

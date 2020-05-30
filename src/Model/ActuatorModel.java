@@ -20,6 +20,17 @@ public class ActuatorModel {
 	private static double currentTime;
 	
 	
+	// Modelling Paramters - to be moved 
+	//-------------------------------------------------------------------------------
+	// Minimum executable Torque CMD - due to pulse width modulation minimum pulse time restriction
+	private static double minRCS_Torque_CMD = 0.01;
+	// Parameter to jump from 0 to minTorque when cmd torque is below minmum torque. Value of 0.6 sets 
+	// the jump to 60 percent minTorque
+	private static double minRCS_Torque_Cap_jump=0.7;
+	private static boolean isRCS_ISP_PWM_model=true;
+	private static boolean isRCS_Thrust_PWM_model=true;
+	//-------------------------------------------------------------------------------
+	
 	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
 	
 	public static ActuatorSet getActuatorSet(ControlCommandSet controlCommandSet, SpaceShip spaceShip, PrevailingDataSet currentDataSet, IntegratorData integratorData) {
@@ -75,42 +86,112 @@ public class ActuatorModel {
 			actuatorSet.setPrimaryThrust_is(0);
 		}
 		
-		
+		/*
+		 * 		TVC Angle Action  
+		 */
 		actuatorSet.setTVC_alpha((controlCommandSet.getTVC_alpha() * spaceShip.getPropulsion().getTvc_alpha_MAX_deg()) * UConst.PI/180);
 		actuatorSet.setTVC_beta((controlCommandSet.getTVC_beta() * spaceShip.getPropulsion().getTvc_beta_MAX_deg()) * UConst.PI/180);
 		
-		
+		/*
+		 * 		RCS Torque Command B-X axis 
+		 */
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX())) {
-			double momentumNominal = controlCommandSet.getMomentumRCS_X_cmd()*spaceShip.getPropulsion().getRCSMomentumX(); 
-			double momentumIs = momentumNominal + actuatorSet.getActuatorNoiseSet().getRCSMomentumX()*momentumNominal; 
-		actuatorSet.setMomentumRCS_X_is(momentumIs);
-		actuatorSet.setRCS_X_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_X());
+			
+			 double cmdMin = minRCS_Torque_CMD;  // M	inimum Torque cmd 
+			 double momentumCMD=controlCommandSet.getMomentumRCS_X_cmd();
+			 // Minimum Pulse width check 
+			 if(Math.abs(momentumCMD)<cmdMin && isRCS_Thrust_PWM_model) {
+				 // If torque cmd is larger than 60 percent of the minimum achievable torque, minimum torque is commanded 
+				 if(Math.abs(momentumCMD)/cmdMin > minRCS_Torque_Cap_jump) {
+					 momentumCMD=cmdMin*Math.abs(momentumCMD)/momentumCMD;
+				 } else {
+					 momentumCMD=0;
+				 }
+			 } 
+			 
+			double ISP=spaceShip.getPropulsion().getSecondaryISP_RCS_X();
+			double momentumNominal = momentumCMD*spaceShip.getPropulsion().getRCSMomentumX(); 
+			double momentumNoise = actuatorSet.getActuatorNoiseSet().getRCSMomentumX()*momentumNominal;
+			double momentumIs = momentumNominal + momentumNoise; 
+			actuatorSet.setMomentumRCS_X_is(momentumIs);
+			actuatorSet.setRCS_X_ISP(ISP);
+			
 		} else {
 			actuatorSet.setMomentumRCS_X_is(0);	
 			actuatorSet.setRCS_X_ISP(0);	
-			System.out.println("ERROR: Roll control failed - reset RCS X");
+			System.out.println("ERROR: Roll control failed - reset RCS X axis cmd");
 		}
+		
+		/*
+		 * 		RCS Torque Command B-Y axis
+		 */
 		if(!Double.isNaN(controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY())) {
-			double momentumNominal = controlCommandSet.getMomentumRCS_Y_cmd()*spaceShip.getPropulsion().getRCSMomentumY(); 
-			double momentumIs = momentumNominal + actuatorSet.getActuatorNoiseSet().getRCSMomentumY()*momentumNominal; 
-		actuatorSet.setMomentumRCS_Y_is(momentumIs);
-		actuatorSet.setRCS_Y_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_Y());
+			 double cmdMin = minRCS_Torque_CMD;
+			 double momentumCMD=controlCommandSet.getMomentumRCS_Y_cmd();
+			 // Minimum Pulse width check
+			 
+			 if(Math.abs(momentumCMD)<cmdMin && isRCS_Thrust_PWM_model) {
+				 // If torque cmd is larger than 60 percent of the minimum achievable torque, minimum torque is commanded 
+				 if(Math.abs(momentumCMD)/cmdMin > minRCS_Torque_Cap_jump) {
+					 momentumCMD=cmdMin*Math.abs(momentumCMD)/momentumCMD;
+				 } else {
+					 momentumCMD=0;
+				 }
+			 } 
+			 
+			 double nominalISP =spaceShip.getPropulsion().getSecondaryISP_RCS_Y();
+			double ISP = PulseWidthModulationModel_get_ISP(nominalISP, momentumCMD);
+			actuatorSet.setRCS_Y_ISP(ISP);
+			double momentumNominal = momentumCMD*spaceShip.getPropulsion().getRCSMomentumY(); 
+			double momentumNoise   = actuatorSet.getActuatorNoiseSet().getRCSMomentumY()*momentumNominal;
+			double momentumIs      = momentumNominal + momentumNoise; 
+			actuatorSet.setMomentumRCS_Y_is(momentumIs);
+				
 		} else {
-		actuatorSet.setMomentumRCS_Y_is(0);
-		actuatorSet.setRCS_Y_ISP(0);
-		System.out.println("ERROR: Pitch control failed - reset RCS Y");
+			actuatorSet.setMomentumRCS_Y_is(0);
+			actuatorSet.setRCS_Y_ISP(0);
+			System.out.println("ERROR: Pitch control failed - reset RCS Y axis cmd");
 		}
 		
-		double momentumNominal = controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumZ(); 
-		double momentumIs = momentumNominal + actuatorSet.getActuatorNoiseSet().getRCSMomentumZ()*momentumNominal; 
-		actuatorSet.setMomentumRCS_Z_is(momentumIs);
-		actuatorSet.setRCS_Z_ISP(spaceShip.getPropulsion().getSecondaryISP_RCS_Z());
+		/*
+		 * 		RCS Torque Command B-Z axis 
+		 */
+		if(!Double.isNaN(controlCommandSet.getMomentumRCS_Z_cmd()*spaceShip.getPropulsion().getRCSMomentumZ())) {
+			
+			 double cmdMin = minRCS_Torque_CMD;
+			 double momentumCMD=controlCommandSet.getMomentumRCS_Z_cmd();
+			 // Minimum Pulse width check 
+			 if(Math.abs(momentumCMD)<cmdMin && isRCS_Thrust_PWM_model) {
+				 // If torque cmd is larger than 60 percent of the minimum achievable torque, minimum torque is commanded 
+				 if(Math.abs(momentumCMD)/cmdMin > minRCS_Torque_Cap_jump) {
+					 momentumCMD=cmdMin*Math.abs(momentumCMD)/momentumCMD;
+				 } else {
+					 momentumCMD=0;
+				 }
+			 } 
+			double ISP=spaceShip.getPropulsion().getSecondaryISP_RCS_Z();
+			double momentumNominal = momentumCMD*spaceShip.getPropulsion().getRCSMomentumZ(); 
+			double momentumNoise = actuatorSet.getActuatorNoiseSet().getRCSMomentumZ()*momentumNominal;
+			double momentumIs = momentumNominal + momentumNoise; 
+			actuatorSet.setMomentumRCS_Z_is(momentumIs);
+			actuatorSet.setRCS_Z_ISP(ISP);
+			
+		} else {
+			actuatorSet.setMomentumRCS_Z_is(0);
+			actuatorSet.setRCS_Z_ISP(0);
+			System.out.println("ERROR: Yaw control failed - reset RCS Z axis cmd");
+		}
 		
-		
+		/*
+		 * 		Parachute Deployment 
+		 */
 		if(controlCommandSet.isParachuteDeployedCMD()) {
 			actuatorSet.setParachuteDeployed(true);
 		}
 		
+		/*
+		 * 		Parachute Ejection
+		 */
 		if(controlCommandSet.isParachuteEjectCMD()) {
 			if(parachuteEjectionMark) {
 				spaceShip.setMass(spaceShip.getMass() - spaceShip.getAeroElements().getParachuteMass());
@@ -120,6 +201,9 @@ public class ActuatorModel {
 			actuatorSet.setParachuteEject(true);
 		}
 		
+		/*
+		 * 		Heat Shield Ejection 
+		 */
 		if(controlCommandSet.isHeatShieldEjectionCMD()) {
 			if(heatshieldEjectionMark) {
 				spaceShip.setMass(spaceShip.getMass() - spaceShip.getAeroElements().getHeatShieldMass());
@@ -132,7 +216,8 @@ public class ActuatorModel {
 		return actuatorSet;
 	}
 
-	 public static double ThrottleMODEL_get_ISP(SpaceShip spaceShip, double Throttle_CMD) {
+	 private static double ThrottleMODEL_get_ISP(SpaceShip spaceShip, double Throttle_CMD) {
+		 // Simulates the effect of decaying ISP during main engine throttle
 		 	double IspOut=0;
 		 	if(Throttle_CMD>1 || Throttle_CMD<0) {
 		 		System.out.println("ERROR: ISP model - throttle command out of range" );
@@ -151,6 +236,26 @@ public class ActuatorModel {
 		 	return IspOut; 
 		 }
 	 
+	 private static double PulseWidthModulationModel_get_ISP(double ISP_nominal, double TorqueCMD) {
+		 // Simulates the reduced ISP during RCS pulse width modulation with short pulses
+		 double IspOut =0;
+		 double ISP_max = ISP_nominal;
+		 double ISP_min = 0.8*ISP_max;		// Rough approximation 
+		 if(TorqueCMD > 1 || TorqueCMD < -1) {
+			 	System.out.println("Error: PulseWidthModulationModel failed. CMD out of range.");
+			 	IspOut =0;
+		 } else {
+		 		double m = (ISP_max - ISP_min);
+		 		double n =  ISP_min ; 
+		 		IspOut = Double.valueOf(m * TorqueCMD + n); 
+		 }	
+		 if(isRCS_ISP_PWM_model) {
+			 return IspOut;
+		 } else {
+			 return ISP_nominal;
+		 }
+	 }
+	  
 	 	private static  PrimaryThrustChangeLog updatePrimaryThrustChangeLog(double CMD, IntegratorData integratorData) {
 	 		if(CMD!=primaryThrustChangeLog.getCMD_NEW()) {
 	 			primaryThrustChangeLog.setTimeStamp(currentTime);
@@ -175,6 +280,7 @@ public class ActuatorModel {
 	 	}
 	 
 		private static double getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel, double CMDThrustLevel, double OldThrustLevel) {
+			// Simulates the delay between ignition and full thrust during the main engine start-up
 			if(timeSinceCMD<timeToThrustLevel) {
 				double y=0;
 				double x=0;

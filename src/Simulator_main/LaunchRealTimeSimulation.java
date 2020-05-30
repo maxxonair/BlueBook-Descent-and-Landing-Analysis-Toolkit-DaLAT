@@ -23,9 +23,6 @@ import utils.SRateTransition;
 
 public class LaunchRealTimeSimulation {
 	
-    public static double PI    = 3.141592653589793238462643383279;   // PI       [-] 
-	static double deg2rad 	   = PI/180.0; 					    		 //Convert degrees to radians
-	static double rad2deg 	   = 180.0/PI; 					    		 //Convert radians to degrees
 	
     static DecimalFormat decFormat = new DecimalFormat("#.###");    
 	static boolean isPlot=false;
@@ -42,12 +39,11 @@ public class LaunchRealTimeSimulation {
     	//------------------------------------------------------------------------------------------   	
     	List<SequenceContent> SequenceSet = ReadInput.readSequenceFile();    	
     	//------------------------------------------------------------------------------------------
-	//double[] inputOut = ReadInput.readInput();
-	//------------------------------------------------------------------------------------------
-	//					Compile Integrator inputs from files:
-	//------------------------------------------------------------------------------------------
+		//double[] inputOut = ReadInput.readInput();
+		//------------------------------------------------------------------------------------------
+		//					Compile Integrator inputs from files:
+		//------------------------------------------------------------------------------------------
 	    	System.out.println("Read: Create simulation input file");
-
 	    	SimulatorInputSet simulatorInputSet = ReadInput.readINP();
 	    	SpaceShip spaceShip = simulatorInputSet.getSpaceShip();	    	
 	    	IntegratorData integratorData = simulatorInputSet.getIntegratorData();
@@ -64,11 +60,11 @@ public class LaunchRealTimeSimulation {
 	    	
 	    		// Set Environment model uncertainty settings 
 	    		integratorData.getNoiseModel().setAtmosphereNoiseModel(true);
-	    		//integratorData.getNoiseModel().setAerodynamicNoiseModel(true); // TBD
+	    		integratorData.getNoiseModel().setAerodynamicNoiseModel(true); 
 	    		//integratorData.getNoiseModel().setGravityNoiseModel(true);		 // TBD
-	    		//integratorData.getNoiseModel().setRadiationNoiseModel(true);   // TBD
+	    		//integratorData.getNoiseModel().setRadiationNoiseModel(true);   	 // TBD
 	    		
-	    		//integratorData.getNoiseModel().setSensorNoiseModel(true);      // TBD
+	    		//integratorData.getNoiseModel().setSensorNoiseModel(true);      	 // TBD
 	    		integratorData.getNoiseModel().setActuatorNoiseModel(true);
 	    		//--------------------------------------------------------------------------------------
 	    		 SensorSet sensorSet = new SensorSet();

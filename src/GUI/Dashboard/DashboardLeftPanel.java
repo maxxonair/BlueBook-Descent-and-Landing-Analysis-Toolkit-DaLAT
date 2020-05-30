@@ -11,10 +11,12 @@ import javax.swing.BorderFactory;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
+import javax.swing.JTabbedPane;
 import javax.swing.SwingConstants;
 
 import GUI.BlueBookVisual;
 import GUI.Dashboard.Console.ConsoleClass;
+import GUI.Dashboard.Console.IndicatorConsole;
 
 
 public class DashboardLeftPanel {
@@ -48,6 +50,8 @@ public class DashboardLeftPanel {
 	//-------------------------------------------------------------------------------------------------------------
     // Content Lists 
     private ConsoleClass console;
+    private IndicatorConsole inputIndicator;
+    private IndicatorConsole sequenceIndicator;
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
     private int uy_p41 = 5 ; 
@@ -61,7 +65,7 @@ public class DashboardLeftPanel {
         // Page 4.1
         mainPanel = new JPanel();
         mainPanel.setLayout(null);
-        mainPanel.setPreferredSize(new Dimension(385, 750));
+        mainPanel.setPreferredSize(new Dimension(385, 1250));
         mainPanel.setBackground(backgroundColor);
         mainPanel.setForeground(labelColor);
 
@@ -207,12 +211,59 @@ public class DashboardLeftPanel {
       //-----------------------------------------------------------------------------------------------
       mainPanel.add(console.getMainPanel());
       //-----------------------------------------------------------------------------------------------
+      //								Input Files indicator     
+      //-----------------------------------------------------------------------------------------------
+      
+      int inputIndicatorSizeY = 545;
+      
+      JTabbedPane TabPane_InputExcept = (JTabbedPane) new JTabbedPane();
+      TabPane_InputExcept.setSize(new Dimension(385, inputIndicatorSizeY));
+      TabPane_InputExcept.setLocation(5, uy_p41 + 285 + 25 *15);
+      TabPane_InputExcept.setBackground(backgroundColor);
+      TabPane_InputExcept.setForeground(Color.BLACK);
+      
+      
+      inputIndicator = new IndicatorConsole();
+      inputIndicator.getMainPanel().setSize(385,inputIndicatorSizeY);
+      //inputIndicator.getMainPanel().setLocation(5, uy_p41 + 285 + 25 *15);
+      inputIndicator.setBackgroundColor(backgroundColor);
+
+     // console.linkConPrintErr(); // Display System.out.err()
+      inputIndicator.setLabelColor(labelColor);
+      
+      sequenceIndicator = new IndicatorConsole();
+      sequenceIndicator.getMainPanel().setSize(385,inputIndicatorSizeY);
+      //inputIndicator.getMainPanel().setLocation(5, uy_p41 + 285 + 25 *15);
+      sequenceIndicator.setBackgroundColor(backgroundColor);
+
+     // console.linkConPrintErr(); // Display System.out.err()
+      sequenceIndicator.setLabelColor(labelColor);
+      //-----------------------------------------------------------------------------------------------
+      
+      TabPane_InputExcept.addTab("Input" , null, inputIndicator.getMainPanel(), null);
+      TabPane_InputExcept.addTab("Sequence" , null, sequenceIndicator.getMainPanel(), null);
+      mainPanel.add(TabPane_InputExcept);
+      
+		TabPane_InputExcept.setSelectedIndex(0);
+      //-----------------------------------------------------------------------------------------------
+      
+      
 	}
 
 	public JPanel getMainPanel() {
 		return mainPanel;
 	}
 	
+	
+	
+	public IndicatorConsole getSequenceIndicator() {
+		return sequenceIndicator;
+	}
+
+	public IndicatorConsole getInputIndicator() {
+		return inputIndicator;
+	}
+
 	private JLabel createIndicator(int colIndx) {
         JLabel label = new JLabel();
         label.setLocation(2, uy_p41 + 25 * colIndx + y_ext_vel*2);
@@ -244,7 +295,7 @@ public class DashboardLeftPanel {
 
 	public static void main(String[] args) {
 		JFrame frame = new JFrame("Component Tester - Geometry model ");
-		frame.setSize(300,800);
+		frame.setSize(380,800);
 		frame.setLayout(new BorderLayout());
 
 		DashboardLeftPanel panel = new DashboardLeftPanel();

@@ -7,9 +7,9 @@ import Model.DataSets.SensorSet;
 
 public class FlightController_RollControl extends FlightController {
 
-	private double Kp=0.8;		// Proportional Coefficient
-	private double Ki=0.0001;		// Integrative Coefficient
-	private double Kd=3;		// Derivative Coefficient
+	private double Kp=5;		// Proportional Coefficient
+	private double Ki=0;		// Integrative Coefficient
+	private double Kd=0;		// Derivative Coefficient
 	public FlightController_RollControl() {
 		
 	}
@@ -27,17 +27,16 @@ public class FlightController_RollControl extends FlightController {
 				   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerX() ; 
 				    RCS_X_CMD = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, 0.8, 0.0001, 3, 1, -1);
 		   	}
-		   	*/
+		*/
 	   	if(Math.toDegrees(sensorSet.getRealTimeResultSet().getPQR()[0][0]) > 5) { // Fast reduce rotational rate
 			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getPQR()[0][0];
 			   	  RCS_X_CMD = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, Kp, Ki, Kd, 1, -1);
 	   	} else { // Reduce roll angle to 0
-			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerAngle().roll ; 
-			    RCS_X_CMD   = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, 0.8, 0.0001, 3, 1, -1);
+			   double CTRL_ERROR =  Math.toDegrees(sensorSet.getRealTimeResultSet().getEulerAngle().roll) ; 
+			    RCS_X_CMD   = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, 0.5, 0.001, 2.5, 1, -1);
 	   	}	
 		   	 controlCommandSet.setMomentumRCS_X_cmd(RCS_X_CMD);
 		    return controlCommandSet;
-
 	}
 
 	public double getKp() {

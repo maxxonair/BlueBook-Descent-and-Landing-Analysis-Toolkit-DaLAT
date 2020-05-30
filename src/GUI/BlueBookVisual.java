@@ -74,7 +74,7 @@ public class BlueBookVisual  {
     //-----------------------------------------------------------------------------------------------------------------------------------------
     //												Main Container Frame Elements
     //-----------------------------------------------------------------------------------------------------------------------------------------
-	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - V0.3 ALPHA";
+	public static String PROJECT_TITLE = "  BlueBook Descent and Landing Analysis Toolkit - Mark 1 v1.1";
 	static boolean darkTheme = true; 
 	static boolean isSplashAnimation = true;
     static int x_init = 1350;
@@ -171,10 +171,10 @@ public class BlueBookVisual  {
     										  "Velocity u NED/ECEF [m/s]",
     										  "Velocity v NED/ECEF [m/s]",
     										  "Velocity w NED/ECEF [m/s]",
-    										  "Quaternion q1",
-    										  "Quaternion q2",
-    										  "Quaternion q3",
-    										  "Quaternion q4",
+    										  "Quaternion qw",
+    										  "Quaternion qx",
+    										  "Quaternion qy",
+    										  "Quaternion qz",
     										  "Angular Rate x B2NED [deg/s]",
     										  "Angular Rate y B2NED [deg/s]",
     										  "Angular Rate z B2NED [deg/s]",
@@ -251,7 +251,14 @@ public class BlueBookVisual  {
     	public static MercatorMap mercatorMap;
     	public static PolarMap polarMap;
     	private static RawData rawData;
-
+    	
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    //												GUI Panels
+    //-----------------------------------------------------------------------------------------------------------------------------------------    	
+    	 static DashboardPanel dashboardPanel;
+    //-----------------------------------------------------------------------------------------------------------------------------------------
+    //												Content Lists
+    //----------------------------------------------------------------------------------------------------------------------------------------- 
     public static  List<RealTimeResultSet> resultSet = new ArrayList<RealTimeResultSet>();
     static List<InputFileSet> analysisFile = new ArrayList<InputFileSet>();
 	//-----------------------------------------------------------------------------
@@ -330,9 +337,9 @@ public class BlueBookVisual  {
          * 			Initialize Dashboard Panel
          */
         
-        DashboardPanel dashboardPanel = new DashboardPanel();
+        dashboardPanel = new DashboardPanel();
         
-        
+
         /**
          * 
          *  			Setup main menu bar 
@@ -348,7 +355,7 @@ public class BlueBookVisual  {
       JTabbedPane TabPane_SimulationSetup = (JTabbedPane) new JTabbedPane();
       TabPane_SimulationSetup.setPreferredSize(new Dimension(extx_main, exty_main));
       TabPane_SimulationSetup.setBackground(backgroundColor);
-      TabPane_SimulationSetup.setForeground(labelColor);
+      TabPane_SimulationSetup.setForeground(Color.BLACK);
 			//---------------------------------------------------------------------------------------
 			/**			Create Setup panel:
 			 * comprising:
@@ -593,7 +600,14 @@ public class BlueBookVisual  {
 
         return resizedImg;
     }
+    
+    
    
+	public static DashboardPanel getDashboardPanel() {
+		return dashboardPanel;
+	}
+
+
 	public static void update(boolean fullImport){
 		  try {
 			GuiReadInput.readINP();

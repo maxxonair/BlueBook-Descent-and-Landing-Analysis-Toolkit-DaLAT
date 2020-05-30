@@ -27,7 +27,8 @@ public class DashboardPanel {
 	
 	//-------------------------------------------------------------------------------------------------------------
     // Content Lists 
-
+	    DashboardLeftPanel dashboardLeftPanel ;
+	    DashboardPlotArea dashboardPlotArea ;
     //-------------------------------------------------------------------------------------------------------------
     // Class Values:
 	
@@ -43,8 +44,8 @@ public class DashboardPanel {
         /**
          * 			Dashboard plotpanel area 
          */
-	    DashboardLeftPanel dashboardLeftPanel = new DashboardLeftPanel();
-	    DashboardPlotArea dashboardPlotArea = new DashboardPlotArea(dashboardLeftPanel.getConsole());
+	     dashboardLeftPanel = new DashboardLeftPanel();
+	     dashboardPlotArea = new DashboardPlotArea(dashboardLeftPanel.getConsole());
 	    
 		      
 	    //--------------------------------------------------------------------------------------		      
@@ -58,6 +59,16 @@ public class DashboardPanel {
         mainPanel.add(dashboardPlotArea.getMainPanel(), BorderLayout.CENTER);
 		
 	}
+
+	public DashboardLeftPanel getDashboardLeftPanel() {
+		return dashboardLeftPanel;
+	}
+
+
+	public DashboardPlotArea getDashboardPlotArea() {
+		return dashboardPlotArea;
+	}
+
 
 	public JPanel getMainPanel() {
 		return mainPanel;
