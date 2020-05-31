@@ -3,8 +3,6 @@ package FlightElement.GNCModel.Controller;
 import java.io.IOException;
 
 import FlightElement.SpaceShip;
-import FlightElement.GNCModel.ControlCommandSet;
-import Model.DataSets.SensorSet;
 
 public class FlightController_ExternalController extends FlightController{
 	
@@ -15,8 +13,7 @@ public class FlightController_ExternalController extends FlightController{
 	}
 	
 	@Override
-	public ControlCommandSet getCommand(ControlCommandSet controlCommandSet, 
-			SensorSet sensorSet, SpaceShip spaceShip, double CtrlFrequency) {
+	public void setCommand(SpaceShip spaceShip) {
 		
 		try {
 			//Process p = Runtime.getRuntime().exec("python "+pythonScript);
@@ -30,8 +27,7 @@ public class FlightController_ExternalController extends FlightController{
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
-		return controlCommandSet;
+
 	}
 
 }

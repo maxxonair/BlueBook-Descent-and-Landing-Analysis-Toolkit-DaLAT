@@ -32,7 +32,9 @@ public class ActuatorSet extends Object implements Cloneable {
     private SpaceShip spaceShip;
     
     
-    
+    public ActuatorSet(SpaceShip spaceShip) {
+    	this.spaceShip = spaceShip;
+    }
         
     
 	public boolean isHeatShieldEject() {
@@ -42,16 +44,6 @@ public class ActuatorSet extends Object implements Cloneable {
 
 	public void setHeatShieldEject(boolean heatShieldEject) {
 		HeatShieldEject = heatShieldEject;
-	}
-
-
-	public SpaceShip getSpaceShip() {
-		return spaceShip;
-	}
-
-
-	public void setSpaceShip(SpaceShip spaceShip) {
-		this.spaceShip = spaceShip;
 	}
 
 

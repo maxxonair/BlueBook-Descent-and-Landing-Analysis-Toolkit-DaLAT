@@ -2,6 +2,7 @@ package FlightElement.State;
 
 import Simulator_main.CoordinateTransformation;
 import utils.EulerAngle;
+import utils.Quaternion;
 
 public class State {
 	
@@ -21,10 +22,35 @@ public class State {
 	
 	private  double localElevation=0;
 	
+	private double initLatitude;
+	private double initLongitude;
+	private double initRadius;
+	
+	private double initVelocity;
+	private double initFpa;
+	private double initAzimuth;
+	
+	private double initRotationalRateX;
+	private double initRotationalRateY;
+	private double initRotationalRateZ;
+	
+	private Quaternion initialQuaternion;
+	
 	
 	public State() {
 		
 	}
+
+	public Quaternion getInitialQuaternion() {
+		return initialQuaternion;
+	}
+
+
+
+	public void setInitialQuaternion(Quaternion initialQuaternion) {
+		this.initialQuaternion = initialQuaternion;
+	}
+
 
 
 	public double[] getxIS() {
@@ -144,6 +170,96 @@ public class State {
 
 	public void setValDt(double valDt) {
 		this.valDt = valDt;
+	}
+
+
+	public double getInitLatitude() {
+		return initLatitude;
+	}
+
+
+	public void setInitLatitude(double initLatitude) {
+		this.initLatitude = initLatitude;
+	}
+
+
+	public double getInitLongitude() {
+		return initLongitude;
+	}
+
+
+	public void setInitLongitude(double initLongitude) {
+		this.initLongitude = initLongitude;
+	}
+
+
+	public double getInitRadius() {
+		return initRadius;
+	}
+
+
+	public void setInitRadius(double initRadius) {
+		this.initRadius = initRadius;
+	}
+
+
+	public double getInitVelocity() {
+		return initVelocity;
+	}
+
+
+	public void setInitVelocity(double initVelocity) {
+		this.initVelocity = initVelocity;
+	}
+
+
+	public double getInitFpa() {
+		return initFpa;
+	}
+
+
+	public void setInitFpa(double initFpa) {
+		this.initFpa = initFpa;
+	}
+
+
+	public double getInitAzimuth() {
+		return initAzimuth;
+	}
+
+
+	public void setInitAzimuth(double initAzimuth) {
+		this.initAzimuth = initAzimuth;
+	}
+
+
+	public double getInitRotationalRateX() {
+		return initRotationalRateX;
+	}
+
+
+	public void setInitRotationalRateX(double initRotationalRateX) {
+		this.initRotationalRateX = initRotationalRateX;
+	}
+
+
+	public double getInitRotationalRateY() {
+		return initRotationalRateY;
+	}
+
+
+	public void setInitRotationalRateY(double initRotationalRateY) {
+		this.initRotationalRateY = initRotationalRateY;
+	}
+
+
+	public double getInitRotationalRateZ() {
+		return initRotationalRateZ;
+	}
+
+
+	public void setInitRotationalRateZ(double initRotationalRateZ) {
+		this.initRotationalRateZ = initRotationalRateZ;
 	}
 	
 	

@@ -29,8 +29,13 @@ public class ActuatorModel {
 	//-------------------------------------------------------------------------------
 	
 	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
+	private SpaceShip spaceShip;
 	
-	public static ActuatorSet getActuatorSet(SpaceShip spaceShip, IntegratorData integratorData) {
+	public ActuatorModel(SpaceShip spaceShip) {
+		this.spaceShip = spaceShip; 
+	}
+	
+	public ActuatorSet getActuatorSet(IntegratorData integratorData) {
 		
 	    currentTime = integratorData.getGlobalTime() + spaceShip.getState().gettIS();
 
@@ -209,7 +214,6 @@ public class ActuatorModel {
 			actuatorSet.setHeatShieldEject(true);
 		}
 
-		actuatorSet.setSpaceShip(spaceShip);
 		return actuatorSet;
 	}
 

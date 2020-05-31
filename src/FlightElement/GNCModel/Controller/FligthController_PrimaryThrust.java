@@ -1,8 +1,6 @@
 package FlightElement.GNCModel.Controller;
 
 import FlightElement.SpaceShip;
-import FlightElement.GNCModel.ControlCommandSet;
-import Model.DataSets.SensorSet;
 
 public class FligthController_PrimaryThrust extends FlightController {
 
@@ -10,10 +8,8 @@ public class FligthController_PrimaryThrust extends FlightController {
 		
 	}
 	@Override
-	public ControlCommandSet getCommand(ControlCommandSet controlCommandSet, 
-			SensorSet sensorSet, SpaceShip spaceShip, double CtrlFrequency) {
+	public void setCommand(SpaceShip spaceShip) {
 		
-		controlCommandSet.setPrimaryThrustThrottleCmd(1);
-		return controlCommandSet;
+		spaceShip.getgNCModel().getControlCommandSet().setPrimaryThrustThrottleCmd(1);
 	}
 }

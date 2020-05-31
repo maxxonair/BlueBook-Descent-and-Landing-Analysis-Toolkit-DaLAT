@@ -1,13 +1,32 @@
 package FlightElement.SensorModel;
 
-import Model.DataSets.SensorSet;
 import utils.Quaternion;
 
 public class SensorModel {
+	
+	SensorSet sensorSet = new SensorSet();
+	
+	public SensorModel() {
+		
+	}
+	
 
 	
-	
-	public static SensorSet addVelocitySensorUncertainty(SensorSet sensorSet, double magnitude) {
+	public SensorSet getSensorSet() {
+		return sensorSet;
+	}
+
+
+
+
+	public void setSensorSet(SensorSet sensorSet) {
+		this.sensorSet = sensorSet;
+	}
+
+
+
+
+	public SensorSet addVelocitySensorUncertainty(double magnitude) {
 	
 		double normVariation = Math.random();
 		double variation = normVariation * magnitude;
@@ -21,7 +40,7 @@ public class SensorModel {
 	}
 	
 	
-	public static SensorSet addAltitudeSensorUncertainty(SensorSet sensorSet, double magnitude) {
+	public SensorSet addAltitudeSensorUncertainty(double magnitude) {
 		
 		double normVariation = Math.random();
 		double variation = normVariation * magnitude;
@@ -34,7 +53,7 @@ public class SensorModel {
 		return sensorSet;
 	}
 	
-	public static SensorSet addIMUGiro(SensorSet sensorSet, double magnitude) {
+	public SensorSet addIMUGiro(double magnitude) {
 		
 		double normVariation = Math.random();
 		double normVariation1 = Math.random();

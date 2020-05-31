@@ -1,24 +1,42 @@
 package FlightElement;
 
+import java.util.UUID;
+
 import FlightElement.ForceTorqueModel.ForceTorqueModel;
 import FlightElement.GNCModel.GNCModel;
 import FlightElement.Properties.Properties;
+import FlightElement.SensorModel.SensorModel;
 import FlightElement.State.State;
 import FlightElement.Target.Target;
 
 public class SpaceShip {
 
-	private int SpaceShipID;
-	private Properties properties = new Properties();
-	private State state = new State();
-	private Target target = new Target();
-	private ForceTorqueModel forceTorqueModel = new ForceTorqueModel();
-	private GNCModel gNCModel = new GNCModel();
+	private String SpaceShipID;
+	private Properties properties;
+	private State state ;
+	private Target target ;
+	private ForceTorqueModel forceTorqueModel;
+	private GNCModel gNCModel ;
+	private SensorModel sensorModel ;
 	
 	
-	double CoP  = 0;    // Center of (aerodynamic) Pressure; 
 	
+	double CoP  = 0;    // Center of (aerodynamic) Pressure; 	
 	
+	public SpaceShip() {
+		super();
+		
+		SpaceShipID = UUID.randomUUID().toString();
+		
+	
+		properties = new Properties();
+		state = new State();
+		target = new Target();
+		forceTorqueModel = new ForceTorqueModel(this);
+		gNCModel = new GNCModel(this);
+		sensorModel = new SensorModel();
+		
+	}
 
 	public double getCoP() {
 		return CoP;
@@ -30,17 +48,12 @@ public class SpaceShip {
 	}
 
 
-	public SpaceShip() {
-		super();
-	}
-
-
-	public int getSpaceShipID() {
+	public String getSpaceShipID() {
 		return SpaceShipID;
 	}
 
 
-	public void setSpaceShipID(int spaceShipID) {
+	public void setSpaceShipID(String spaceShipID) {
 		SpaceShipID = spaceShipID;
 	}
 
@@ -67,6 +80,11 @@ public class SpaceShip {
 
 	public GNCModel getgNCModel() {
 		return gNCModel;
+	}
+
+
+	public SensorModel getSensorModel() {
+		return sensorModel;
 	}
 	
 	

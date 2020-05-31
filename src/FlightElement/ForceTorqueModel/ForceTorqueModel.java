@@ -1,12 +1,15 @@
 package FlightElement.ForceTorqueModel;
 
+import FlightElement.SpaceShip;
+
 public class ForceTorqueModel {
 	
-	ActuatorModel actuatorModel = new ActuatorModel();
-	ActuatorSet actuatorSet = new ActuatorSet();
+	private ActuatorModel actuatorModel;
+	private ActuatorSet actuatorSet;
 	
-	public ForceTorqueModel() {
-		
+	public ForceTorqueModel(SpaceShip spaceShip) {
+		 actuatorModel = new ActuatorModel(spaceShip);
+		 actuatorSet = new ActuatorSet();
 	}
 
 	public ActuatorModel getActuatorModel() {

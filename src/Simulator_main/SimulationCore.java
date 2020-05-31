@@ -31,7 +31,6 @@ import utils.Mathbox;
 import utils.Quaternion;
 import utils.EulerAngle;
 import FlightElement.SpaceShip;
-import FlightElement.GNCModel.ControlCommandSet;
 import FlightElement.GNCModel.Controller.LandingCurve;
 
 public class SimulationCore implements FirstOrderDifferentialEquations {
@@ -402,9 +401,7 @@ private static MasterSet masterSet = new MasterSet();
     
 */    
 //**********************************************************************************************
-public static RealTimeContainer launchIntegrator( IntegratorData integratorData, 
-	    										 	  SpaceShip spaceShip ,
-	    										 	  ControlCommandSet controlCommandSet){
+public static RealTimeContainer launchIntegrator( IntegratorData integratorData,SpaceShip spaceShip){
 //----------------------------------------------------------------------------------------------
 //				Prepare integration 
 //----------------------------------------------------------------------------------------------
@@ -436,15 +433,15 @@ spherical = false;
 
 InertiaTensor = spaceShip.getProperties().getMassAndInertia().getInertiaTensorMatrix();
 
-q_B2IN      = integratorData.getInitialQuaternion();
+q_B2IN      = spaceShip.getState().getInitialQuaternion();
 
 
 spaceShip.getForceTorqueModel().getActuatorSet().setPrimaryISP_is(spaceShip.getProperties().getPropulsion().getPrimaryISPMax());
  mminus	  	  = spaceShip.getProperties().getMassAndInertia().getMass()   ;
- vminus		  = integratorData.getInitVelocity()  ;
+ vminus		  = spaceShip.getState().getInitVelocity()  ;
 
-phimin=integratorData.getInitLongitude();
-tetamin=integratorData.getInitLatitude();
+phimin=spaceShip.getState().getInitLongitude();
+tetamin=spaceShip.getState().getInitLatitude();
 groundtrack=integratorData.getGroundtrack();
 ref_ELEVATION =  integratorData.getRefElevation();
 //----------------------------------------------------------------------------------------------
@@ -473,13 +470,13 @@ int dimension = 16;
 double[] y = new double[dimension]; // Result vector
 
  // double[] y = new double[13]; // Result vector
-	V_NED_ECEF_spherical[0]= integratorData.getInitVelocity();
-	V_NED_ECEF_spherical[1]= integratorData.getInitFpa();
-	V_NED_ECEF_spherical[2]= integratorData.getInitAzimuth();
+	V_NED_ECEF_spherical[0]= spaceShip.getState().getInitVelocity();
+	V_NED_ECEF_spherical[1]= spaceShip.getState().getInitFpa();
+	V_NED_ECEF_spherical[2]= spaceShip.getState().getInitAzimuth();
 // Position 
-  y[0] = integratorData.getInitLongitude();
-  y[1] = integratorData.getInitLatitude();
-  y[2] = integratorData.getInitRadius();
+  y[0] = spaceShip.getState().getInitLongitude();
+  y[1] = spaceShip.getState().getInitLatitude();
+  y[2] = spaceShip.getState().getInitRadius();
   r_ECEF_spherical[0] = y[0];
   r_ECEF_spherical[1] = y[1];
   r_ECEF_spherical[2] = y[2];
@@ -487,16 +484,16 @@ double[] y = new double[dimension]; // Result vector
 // Velocity
 	        if(spherical) {
 	        	
-	        y[3] = integratorData.getInitVelocity();
-	        y[4] = integratorData.getInitFpa();
-	        y[5] = integratorData.getInitAzimuth();
-    	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
-    	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
-    	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
+	        y[3] = spaceShip.getState().getInitVelocity();
+	        y[4] = spaceShip.getState().getInitFpa();
+	        y[5] = spaceShip.getState().getInitAzimuth();
+    	V_NED_ECEF_spherical[0]=spaceShip.getState().getInitVelocity();
+    	V_NED_ECEF_spherical[1]=spaceShip.getState().getInitFpa();
+    	V_NED_ECEF_spherical[2]=spaceShip.getState().getInitAzimuth();
 	        } else {
-	        	V_NED_ECEF_spherical[0]=integratorData.getInitVelocity();
-	        	V_NED_ECEF_spherical[1]=integratorData.getInitFpa();
-	        	V_NED_ECEF_spherical[2]=integratorData.getInitAzimuth();
+	        	V_NED_ECEF_spherical[0]=spaceShip.getState().getInitVelocity();
+	        	V_NED_ECEF_spherical[1]=spaceShip.getState().getInitFpa();
+	        	V_NED_ECEF_spherical[2]=spaceShip.getState().getInitAzimuth();
 	        	V_NED_ECEF_cartesian = Mathbox.Spherical2Cartesian_Velocity(V_NED_ECEF_spherical);
 		        y[3] = V_NED_ECEF_cartesian[0];
 		        y[4] = V_NED_ECEF_cartesian[1];
@@ -507,13 +504,13 @@ double[] y = new double[dimension]; // Result vector
 // S/C Mass        
     y[6] = spaceShip.getProperties().getMassAndInertia().getMass();
 	// Attitude and Rotational Motion
-	y[7]  = integratorData.getInitialQuaternion().w;
-	y[8]  = integratorData.getInitialQuaternion().x;
-	y[9]  = integratorData.getInitialQuaternion().y;
-	y[10] = integratorData.getInitialQuaternion().z;
-	y[11] = integratorData.getInitRotationalRateX();
-	y[12] = integratorData.getInitRotationalRateY();
-	y[13] = integratorData.getInitRotationalRateZ();
+	y[7]  = spaceShip.getState().getInitialQuaternion().w;
+	y[8]  = spaceShip.getState().getInitialQuaternion().x;
+	y[9]  = spaceShip.getState().getInitialQuaternion().y;
+	y[10] = spaceShip.getState().getInitialQuaternion().z;
+	y[11] = spaceShip.getState().getInitRotationalRateX();
+	y[12] = spaceShip.getState().getInitRotationalRateY();
+	y[13] = spaceShip.getState().getInitRotationalRateZ();
 	
 	y[14] = spaceShip.getState().getPropulsion().getPropellantLevelIsPrimary();
 	y[15] = spaceShip.getState().getPropulsion().getPropellantLevelIsSecondary();

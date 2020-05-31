@@ -1,8 +1,6 @@
 package FlightElement.GNCModel.Controller;
 
 import FlightElement.SpaceShip;
-import FlightElement.GNCModel.ControlCommandSet;
-import Model.DataSets.SensorSet;
 
 public class FlightController {
 
@@ -10,10 +8,8 @@ public class FlightController {
 	private double Ki=0.0001;		// Integrative Coefficient
 	private double Kd=3;		// Derivative Coefficient
 
-	public ControlCommandSet getCommand(ControlCommandSet controlCommandSet, 
-			SensorSet sensorSet, SpaceShip spaceShip, double CtrlFrequency) {
+	public void setCommand( SpaceShip spaceShip) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 	public double getKp() {

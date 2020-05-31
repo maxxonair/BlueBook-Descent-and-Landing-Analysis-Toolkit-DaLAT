@@ -1,12 +1,10 @@
 package FlightElement.GNCModel.Controller;
 
 import FlightElement.SpaceShip;
-import FlightElement.GNCModel.ControlCommandSet;
-import Model.DataSets.SensorSet;
+import utils.UConst;
 
 public class FlightController_AscentController extends FlightController {
 	
-	 public static double PI    = 3.1415926535897932384626433832795028841971693993751058209749445;
 	PID pitch;
 	
 	public FlightController_AscentController() {
@@ -14,13 +12,12 @@ public class FlightController_AscentController extends FlightController {
 	}
 	
 	@Override
-	public ControlCommandSet getCommand(ControlCommandSet controlCommandSet, 
-			SensorSet sensorSet, SpaceShip spaceShip, double CtrlFrequency) {
+	public void setCommand(SpaceShip spaceShip) {
 		//-------------------------------------------------------------------------------------------
 		// 			Set primary Propulsion to full thrust:
 		//-------------------------------------------------------------------------------------------
 		
-		controlCommandSet.setPrimaryThrustThrottleCmd(1); // Full Thrust
+		spaceShip.getgNCModel().getControlCommandSet().setPrimaryThrustThrottleCmd(1); // Full Thrust
 		
 		//-------------------------------------------------------------------------------------------
 		// 			Pitch over via Y axis control;
@@ -33,8 +30,8 @@ public class FlightController_AscentController extends FlightController {
 		 *  Ends at a flight path inclination of 5 degrees
 		 */
 		
-		double flightPathInclination = sensorSet.getRealTimeResultSet().getFpa();
-		double pitchIs = sensorSet.getRealTimeResultSet().getEulerAngle().pitch;
+		double flightPathInclination = spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getFpa();
+		double pitchIs = spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getEulerAngle().pitch;
 		double ctrlError;
 		
 		if(Math.toDegrees(flightPathInclination) > 5 ) {
@@ -51,11 +48,11 @@ public class FlightController_AscentController extends FlightController {
 		 * 		that(t) = A * sqrt(t) ;
 		 */
 		double tMECO = 175; //[s]
-		double thetaMECO  = 20*PI/180 ; //[rad]
+		double thetaMECO  = 20*UConst.PI/180 ; //[rad]
 		double A = thetaMECO / Math.sqrt(tMECO);
-		double t = sensorSet.getGlobalTime() -5;
+		double t = spaceShip.getSensorModel().getSensorSet().getGlobalTime() -5;
 		double theta = A * Math.sqrt(t);
-		double pitchTarget = PI/2 - theta;
+		double pitchTarget = UConst.PI/2 - theta;
 		ctrlError = pitchTarget - pitchIs;
 		//System.out.println(t+"|"+(Math.toDegrees(ctrlError)));
 		//-----------------------------------
@@ -65,7 +62,7 @@ public class FlightController_AscentController extends FlightController {
 		if(AoAControl) {
 			
 			double aoaTarget = 0;
-			double aoaIs = Math.toDegrees( sensorSet.getRealTimeResultSet().getEulerAngle().pitch - sensorSet.getRealTimeResultSet().getFpa() );
+			double aoaIs = Math.toDegrees( spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getEulerAngle().pitch - spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getFpa() );
 			
 			ctrlError = aoaTarget - aoaIs;
 			
@@ -74,9 +71,9 @@ public class FlightController_AscentController extends FlightController {
 			pitch.P = 0.1;
 			pitch.I = 0.01;
 			pitch.D = 0.2;
-			double Ycmd =  - PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+			double Ycmd =  - PID_01.PID_001(ctrlError,1/spaceShip.getProperties().getoBC().getControllerFrequency(), pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
 			//System.out.println(ctrlError+"|"+Ycmd);
-			controlCommandSet.setTVC_alpha(Ycmd);
+			spaceShip.getgNCModel().getControlCommandSet().setTVC_alpha(Ycmd);
 			
 		} else {
 			if(isTVC) {
@@ -87,16 +84,16 @@ public class FlightController_AscentController extends FlightController {
 				pitch.P = 0.001;
 				pitch.I = 0.0001;
 				pitch.D = 0.8;
-				double Ycmd =   PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+				double Ycmd =   PID_01.PID_001(ctrlError,1/spaceShip.getProperties().getoBC().getControllerFrequency(), pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
 				//System.out.println(ctrlError+"|"+Ycmd);
-				controlCommandSet.setTVC_alpha(Ycmd);
+				spaceShip.getgNCModel().getControlCommandSet().setTVC_alpha(Ycmd);
 			} else {
 				/**
 				 * 
 				 * Pitch controlled by RCS (thruster MY)
 				 */
-				double Ycmd = - PID_01.PID_001(ctrlError,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
-				controlCommandSet.setMomentumRCS_Y_cmd(Ycmd);
+				double Ycmd = - PID_01.PID_001(ctrlError,1/spaceShip.getProperties().getoBC().getControllerFrequency(), pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+				spaceShip.getgNCModel().getControlCommandSet().setMomentumRCS_Y_cmd(Ycmd);
 			}
 		}
 		//-------------------------------------------------------------------------------------------
@@ -115,7 +112,6 @@ public class FlightController_AscentController extends FlightController {
 	   	 
 	   	 */
 	    //-------------------------------------------------------------------------------------------
-		return controlCommandSet;
 	}
 
 }

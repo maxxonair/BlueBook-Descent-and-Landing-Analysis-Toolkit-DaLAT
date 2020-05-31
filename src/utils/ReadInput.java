@@ -177,7 +177,7 @@ public static List<SequenceContent> readSequenceFile() throws IOException{
     	    } else if (flightControllerIndex==6) { // ascent controller
     	    	sequenceContent.addAscentController();
     	    } else if (flightControllerIndex==7) {
-    	    	sequenceContent.addDescentController();
+    	    	// Empty spot
     	    } else if (flightControllerIndex==8) { // external Controller
     	    	String scriptName=""; // INSERT SCRIPT NAME method ->TBD!
     	    	sequenceContent.addExternalControl(scriptName);
@@ -300,7 +300,7 @@ public static SimulatorInputSet readINP() throws IOException {
      * 				Finalize data package
      */
     try {
-	    integratorData.setInitialQuaternion(qVector);
+    	spaceShip.getState().setInitialQuaternion(qVector);
 	    if(integratorSettingFlag) {
 			integratorData.setIntegInput(IntegInput);	// !!! Must be called BEFORE .setIntegratorType !!!
 			integratorData.setIntegratorType(integratorSetting);
@@ -317,7 +317,25 @@ public static SimulatorInputSet readINP() throws IOException {
 }
 
 private static SpaceShip checkSpaceShip(String identifier, double value, SpaceShip spaceShip) {
-	if(identifier.equals("Init_Mass")) {
+	if(identifier.equals("Init_LONG")) {
+		spaceShip.getState().setInitLongitude(value*UConst.deg2rad);
+	} else if (identifier.equals("Init_LAT")) {
+		spaceShip.getState().setInitLatitude(value*UConst.deg2rad);
+	} else if (identifier.equals("Init_RAD")) {
+		spaceShip.getState().setInitRadius(value);
+	} else if (identifier.equals("Init_VEL")) {
+		spaceShip.getState().setInitVelocity(value);
+	} else if (identifier.equals("Init_FPA")) {
+		spaceShip.getState().setInitFpa(value*UConst.deg2rad);
+	} else if (identifier.equals("Init_AZI")) {
+		spaceShip.getState().setInitAzimuth(value*UConst.deg2rad);
+	} else if (identifier.equals("Init_AngRateX")) {
+		spaceShip.getState().setInitRotationalRateX(value*UConst.deg2rad);	
+	} else if (identifier.equals("Init_AngRateY")) {
+		spaceShip.getState().setInitRotationalRateY(value*UConst.deg2rad);	
+	} else if (identifier.equals("Init_AngRateZ")) {
+		spaceShip.getState().setInitRotationalRateZ(value*UConst.deg2rad);	
+	} else if(identifier.equals("Init_Mass")) {
 		spaceShip.getProperties().getMassAndInertia().setMass(value);
 	} else if (identifier.equals("SC_COM")) {
 		spaceShip.getProperties().getMassAndInertia().setCoM(value);
@@ -397,19 +415,7 @@ private static SpaceShip checkSpaceShip(String identifier, double value, SpaceSh
 }
 
 private static IntegratorData checkIntegratorData(String identifier, double value, IntegratorData integratorData) {
-	if(identifier.equals("Init_LONG")) {
-		integratorData.setInitLongitude(value*UConst.deg2rad);
-	} else if (identifier.equals("Init_LAT")) {
-		integratorData.setInitLatitude(value*UConst.deg2rad);
-	} else if (identifier.equals("Init_RAD")) {
-		integratorData.setInitRadius(value);
-	} else if (identifier.equals("Init_VEL")) {
-		integratorData.setInitVelocity(value);
-	} else if (identifier.equals("Init_FPA")) {
-		integratorData.setInitFpa(value*UConst.deg2rad);
-	} else if (identifier.equals("Init_AZI")) {
-		integratorData.setInitAzimuth(value*UConst.deg2rad);
-	} else if (identifier.equals("Integ_MaxTime")) {
+			if (identifier.equals("Integ_MaxTime")) {
 		integratorData.setMaxGlobalTime(value);
 		integratorData.setGlobalTime(0);
 	} else if (identifier.equals("Integ_Integrator")) {
@@ -431,12 +437,6 @@ private static IntegratorData checkIntegratorData(String identifier, double valu
 		integratorData.setConstParachuteCd( value);	
 	} else if (identifier.equals("Integ_DoF")) {
 		integratorData.setDegreeOfFreedom((int) value);	
-	} else if (identifier.equals("Init_AngRateX")) {
-		integratorData.setInitRotationalRateX(value*UConst.deg2rad);	
-	} else if (identifier.equals("Init_AngRateY")) {
-		integratorData.setInitRotationalRateY(value*UConst.deg2rad);	
-	} else if (identifier.equals("Init_AngRateZ")) {
-		integratorData.setInitRotationalRateZ(value*UConst.deg2rad);	
 	} else if (identifier.equals("Init_QuartW")) {
 		qVector.w = value;	
 	} else if (identifier.equals("Init_QuartX")) {

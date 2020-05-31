@@ -1,8 +1,6 @@
 package FlightElement.GNCModel.Controller;
 
 import FlightElement.SpaceShip;
-import FlightElement.GNCModel.ControlCommandSet;
-import Model.DataSets.SensorSet;
 
 public class FlightController_PitchControl extends FlightController {
 	
@@ -17,8 +15,7 @@ public class FlightController_PitchControl extends FlightController {
 	}
 	
 	@Override
-	public ControlCommandSet getCommand(ControlCommandSet controlCommandSet, 
-			SensorSet sensorSet, SpaceShip spaceShip, double CtrlFrequency) {
+	public void setCommand( SpaceShip spaceShip) {
 
 		double RCS_Y_CMD =0;
 		/**
@@ -27,26 +24,25 @@ public class FlightController_PitchControl extends FlightController {
 		 * 
 		 * 
 		 */
-	   	if(Math.toDegrees( sensorSet.getRealTimeResultSet().getPQR()[1][0] ) > 5) { 
-			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getPQR()[1][0];
-			   double response = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, Kp, Ki, Kd, 1, -1);
+	   	if(Math.toDegrees( spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getPQR()[1][0] ) > 5) { 
+			   double CTRL_ERROR =  spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getPQR()[1][0];
+			   double response = -  PID_01.PID_001(CTRL_ERROR,1/spaceShip.getProperties().getoBC().getControllerFrequency(), Kp, Ki, Kd, 1, -1);
 			   if(Double.isNaN(response)) {
 				   response =0;
 				   System.err.println("Cntrl error > returned NaN");
 			   }
 			   RCS_Y_CMD = response;
 	   	} else { // pitch angle to 0
-			   double CTRL_ERROR =  sensorSet.getRealTimeResultSet().getEulerAngle().pitch ;
-			   double response  = -  PID_01.PID_001(CTRL_ERROR,1/CtrlFrequency, pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
+			   double CTRL_ERROR =  spaceShip.getSensorModel().getSensorSet().getRealTimeResultSet().getEulerAngle().pitch ;
+			   double response  = -  PID_01.PID_001(CTRL_ERROR,1/spaceShip.getProperties().getoBC().getControllerFrequency(), pitch.P , pitch.I , pitch.D , pitch.max, pitch.min);
 			   if(Double.isNaN(response)) {
 				   response =0;
 				   System.err.println("Cntrl error > returned NaN");
 			   }
 			   RCS_Y_CMD = response;
 	   	}	
-		   	 controlCommandSet.setMomentumRCS_Y_cmd(RCS_Y_CMD);
+	   	spaceShip.getgNCModel().getControlCommandSet().setMomentumRCS_Y_cmd(RCS_Y_CMD);
 		
-		return controlCommandSet;	
 	}
 	
 	public double getKp() {

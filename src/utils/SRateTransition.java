@@ -1,6 +1,6 @@
 package utils;
 
-import Model.DataSets.SensorSet;
+import FlightElement.SensorModel.SensorSet;
 
 public class SRateTransition {
 	private double t;					// Time since last transport [s]

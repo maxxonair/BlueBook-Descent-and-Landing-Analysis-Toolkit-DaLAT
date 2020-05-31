@@ -3,24 +3,34 @@ package FlightElement.Properties;
 import java.util.ArrayList;
 import java.util.List;
 
+import FlightElement.GNCModel.SequenceContent;
 import FlightElement.GNCModel.SequenceElement;
 
 public class Sequence {
 	
-	private  List<SequenceElement> SEQUENCE_DATA_main 					 = new ArrayList<SequenceElement>(); 
+	private  List<SequenceElement> sequenceData 					 = new ArrayList<SequenceElement>(); 
+	
+	List<SequenceContent> sequenceSet = new ArrayList<SequenceContent>();
 	
 	public Sequence() {
 		
 	}
 
-	public List<SequenceElement> getSEQUENCE_DATA_main() {
-		return SEQUENCE_DATA_main;
+	public List<SequenceContent> getSequenceSet() {
+		return sequenceSet;
 	}
 
-	public void setSEQUENCE_DATA_main(List<SequenceElement> sEQUENCE_DATA_main) {
-		SEQUENCE_DATA_main = sEQUENCE_DATA_main;
+	public void setSequenceSet(List<SequenceContent> SequenceSet) {
+		sequenceSet = SequenceSet;
 	}
-	
+
+	public List<SequenceElement> getSequenceData() {
+		return sequenceData;
+	}
+
+	public void setSequenceData(List<SequenceElement> sequenceData) {
+		this.sequenceData = sequenceData;
+	}
 	
 
 }

@@ -1,9 +1,6 @@
 package Model;
 
 import FlightElement.SpaceShip;
-import FlightElement.ForceTorqueModel.ActuatorModel;
-import FlightElement.ForceTorqueModel.ActuatorSet;
-import FlightElement.GNCModel.ControlCommandSet;
 import Model.Aerodynamic.AerodynamicModel;
 import Model.DataSets.AerodynamicSet;
 import Model.DataSets.AtmosphereSet;
@@ -79,10 +76,10 @@ public class ForceModel {
     	//-------------------------------------------------------------------------------------------------------------------
     	//					SpaceShip Force Management  - 	Sequence management and Flight controller 
     	//-------------------------------------------------------------------------------------------------------------------
-	    spaceShip.getForceTorqueModel().setActuatorSet( ActuatorModel.getActuatorSet(spaceShip, integratorData) );
+	    spaceShip.getForceTorqueModel().setActuatorSet( spaceShip.getForceTorqueModel().getActuatorModel().getActuatorSet(integratorData) );
 	    
 	    
-	    spaceShip = spaceShip.getForceTorqueModel().getActuatorSet().getSpaceShip();
+	    //spaceShip = spaceShip.getForceTorqueModel().getActuatorSet().getSpaceShip();
         
 	    forceMomentumSet.setThrustTotal(spaceShip.getForceTorqueModel().getActuatorSet().getPrimaryThrust_is());
     	//-------------------------------------------------------------------------------------------------------------------

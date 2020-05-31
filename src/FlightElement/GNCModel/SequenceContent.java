@@ -6,7 +6,6 @@ import java.util.List;
 
 import FlightElement.GNCModel.Controller.FlightController;
 import FlightElement.GNCModel.Controller.FlightController_AscentController;
-import FlightElement.GNCModel.Controller.FlightController_DescentController;
 import FlightElement.GNCModel.Controller.FlightController_ExternalController;
 import FlightElement.GNCModel.Controller.FlightController_PitchControl;
 import FlightElement.GNCModel.Controller.FlightController_RollControl;
@@ -15,7 +14,7 @@ import FlightElement.GNCModel.Controller.FligthController_PrimaryThrust;
 import FlightElement.GNCModel.Events.HeatShieldEjection;
 import FlightElement.GNCModel.Events.ParachuteDeployment;
 import FlightElement.GNCModel.Events.ParachuteSeparation;
-import Model.DataSets.SensorSet;
+import FlightElement.SensorModel.SensorSet;
 
 public class SequenceContent {
 	
@@ -65,10 +64,6 @@ public class SequenceContent {
 		controllerSets.add(ascentController);
 	}
 	
-	public void addDescentController() {
-		FlightController_DescentController descentController = new FlightController_DescentController();
-		controllerSets.add(descentController);
-	}
 	
 	public void addYawControl() {
 		FlightController_YawControl flightController_YawControl = new FlightController_YawControl();

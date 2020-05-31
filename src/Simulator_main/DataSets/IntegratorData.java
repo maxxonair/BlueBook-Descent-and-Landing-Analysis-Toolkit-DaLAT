@@ -10,24 +10,10 @@ import org.apache.commons.math3.ode.nonstiff.DormandPrince853Integrator;
 import org.apache.commons.math3.ode.nonstiff.GraggBulirschStoerIntegrator;
 
 import Simulator_main.StopCondition;
-import utils.Quaternion;
 
 public class IntegratorData {
 	
-	private int targetBody;
-	
-	private double initLatitude;
-	private double initLongitude;
-	private double initRadius;
-	
-	private double initVelocity;
-	private double initFpa;
-	private double initAzimuth;
-	
-	private double initRotationalRateX;
-	private double initRotationalRateY;
-	private double initRotationalRateZ;
-	
+	private int targetBody;	
 	
 	private double maxIntegTime;
 	private double integTimeStep;
@@ -70,7 +56,6 @@ public class IntegratorData {
 		this.groundtrack = groundtrack;
 	}
 	
-	private Quaternion initialQuaternion;
 
 	private double[][] angularRate = {	{1},
 	{0},
@@ -95,15 +80,6 @@ public class IntegratorData {
 		this.angularRate = angularRate;
 	}
 	
-
-
-	public Quaternion getInitialQuaternion() {
-		return initialQuaternion;
-	}
-
-	public void setInitialQuaternion(Quaternion initialQuaternion) {
-		this.initialQuaternion = initialQuaternion;
-	}
 
 	public int getAeroParachuteModel() {
 		return AeroParachuteModel;
@@ -137,36 +113,6 @@ public class IntegratorData {
 	
 	public double[] getIntegInput() {
 		return IntegInput;
-	}
-
-
-	public double getInitRotationalRateX() {
-		return initRotationalRateX;
-	}
-
-
-	public void setInitRotationalRateX(double initRotationalRateX) {
-		this.initRotationalRateX = initRotationalRateX;
-	}
-
-
-	public double getInitRotationalRateY() {
-		return initRotationalRateY;
-	}
-
-
-	public void setInitRotationalRateY(double initRotationalRateY) {
-		this.initRotationalRateY = initRotationalRateY;
-	}
-
-
-	public double getInitRotationalRateZ() {
-		return initRotationalRateZ;
-	}
-
-
-	public void setInitRotationalRateZ(double initRotationalRateZ) {
-		this.initRotationalRateZ = initRotationalRateZ;
 	}
 
 
@@ -226,66 +172,6 @@ public class IntegratorData {
 	
 	public IntegratorData() {
 		super();
-	}
-
-
-	public double getInitLatitude() {
-		return initLatitude;
-	}
-
-
-	public void setInitLatitude(double initLatitude) {
-		this.initLatitude = initLatitude;
-	}
-
-
-	public double getInitLongitude() {
-		return initLongitude;
-	}
-
-
-	public void setInitLongitude(double initLongitude) {
-		this.initLongitude = initLongitude;
-	}
-
-
-	public double getInitRadius() {
-		return initRadius;
-	}
-
-
-	public void setInitRadius(double initRadius) {
-		this.initRadius = initRadius;
-	}
-
-
-	public double getInitVelocity() {
-		return initVelocity;
-	}
-
-
-	public void setInitVelocity(double initVelocity) {
-		this.initVelocity = initVelocity;
-	}
-
-
-	public double getInitFpa() {
-		return initFpa;
-	}
-
-
-	public void setInitFpa(double initFpa) {
-		this.initFpa = initFpa;
-	}
-
-
-	public double getInitAzimuth() {
-		return initAzimuth;
-	}
-
-
-	public void setInitAzimuth(double initAzimuth) {
-		this.initAzimuth = initAzimuth;
 	}
 
 
