@@ -1,7 +1,7 @@
 package Simulator_main;
 
-import Model.DataSets.AerodynamicSet;
-import Model.DataSets.AtmosphereSet;
+import Simulation.Model.DataSets.AerodynamicSet;
+import Simulation.Model.DataSets.AtmosphereSet;
 import utils.Mathbox;
 import utils.Quaternion;
 

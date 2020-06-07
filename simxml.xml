@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<project default="create_run_jar" name="Create Runnable Jar for Project BlueBook_DaLAT">
+    <!--this file was created by Eclipse Runnable JAR Export Wizard-->
+    <!--ANT 1.7 is required                                        -->
+    <!--define folder properties-->
+    <property name="dir.buildfile" value="."/>
+    <property name="dir.workspace" value="/Users/x/eclipse-workspace"/>
+    <property name="dir.jarfile" value="${dir.buildfile}"/>
+    <target name="create_run_jar">
+        <jar destfile="${dir.jarfile}/SIM.jar" filesetmanifest="mergewithoutmain">
+            <manifest>
+                <attribute name="Main-Class" value="Simulator_main.Simulation"/>
+                <attribute name="Class-Path" value="."/>
+            </manifest>
+            <fileset dir="${dir.jarfile}/bin"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jcommon-1.0.23.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jfreechart-1.0.19.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-javadoc.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-test-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6-tests.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-io-2.6.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/slick-util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/lwjgl_util.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/lwjgl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/lwjgl-glfw.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-javadoc.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-test-sources.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-tests.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1-tools.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/commons-math3-3.6.1.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jars/PNGDecoder.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="${dir.jarfile}/lib/jimObjModelImporterJFX.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.jupiter.api_5.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.jupiter.engine_5.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.jupiter.migrationsupport_5.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.jupiter.params_5.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.platform.commons_1.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.platform.engine_1.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.platform.launcher_1.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.platform.runner_1.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.platform.suite.api_1.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit.vintage.engine_5.6.0.v20200203-2009.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.opentest4j_1.2.0.v20190826-0900.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.apiguardian_1.1.0.v20190826-0900.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.junit_4.13.0.v20200204-1500.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="/Users/x/.p2/pool/plugins/org.hamcrest.core_1.3.0.v20180420-1519.jar"/>
+        </jar>
+    </target>
+</project>

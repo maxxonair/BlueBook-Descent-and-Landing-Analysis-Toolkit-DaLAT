@@ -252,6 +252,7 @@ public class MercatorMap {
 		         	xyseries10.add(x,y);
 		           }
            in.close();
+           br.close();
         ResultSet_MercatorMap.addSeries(xyseries10); 
                   } catch(NullPointerException eNPI) { System.out.print(eNPI); }
         return ResultSet_MercatorMap;          

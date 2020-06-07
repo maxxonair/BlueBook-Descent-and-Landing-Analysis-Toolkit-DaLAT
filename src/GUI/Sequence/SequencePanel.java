@@ -95,7 +95,7 @@ public class SequencePanel {
 		    SequenceControlBar.setLayout(null); 
 		    SequenceLeftPanel.add(SequenceControlBar);
 		    
-		    JLabel SequenceTitle = new JLabel("Sequence Setup");
+		    JLabel SequenceTitle = new JLabel("Mode Management");
 		    SequenceTitle.setLocation(2, 2);
 		    SequenceTitle.setBackground(backgroundColor);
 		    SequenceTitle.setForeground(labelColor);

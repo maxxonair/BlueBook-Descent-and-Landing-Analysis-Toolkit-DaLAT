@@ -1,6 +1,6 @@
 package FlightElement.SensorModel;
 
-import Model.DataSets.MasterSet;
+import Simulation.Model.DataSets.MasterSet;
 import Simulator_main.DataSets.RealTimeResultSet;
 
 public class SensorSet extends Object implements Cloneable {

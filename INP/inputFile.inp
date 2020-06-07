@@ -6,11 +6,11 @@ Init_FPA -16.0
 Init_AZI 210.0
 Init_Mass 1250.0
 Init_Time 0.0
-Init_QuartW 0.98094383
-Init_QuartX -0.00744765
-Init_QuartY 0.19414315
-Init_QuartZ -0.001474
-Init_AngRateX 0.0
+Init_QuartW 0.99144486
+Init_QuartX 0.0
+Init_QuartY 0.13052619
+Init_QuartZ 0.0
+Init_AngRateX 10.0
 Init_AngRateY 0.0
 Init_AngRateZ 0.0
 Init_IXX 2000.0
@@ -25,7 +25,7 @@ Init_IZZ 2000.0
 Integ_MaxTime 360.0
 Integ_Integrator 1.0
 Integ_VelVector 0.0
-Integ_Frequency 1.0
+Integ_Frequency 5.0
 Integ_DoF 6.0
 Integ_853_MinStep 0.1
 Integ_853_MaxStep 0.0

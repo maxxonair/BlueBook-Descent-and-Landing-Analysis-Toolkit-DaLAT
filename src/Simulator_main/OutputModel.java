@@ -8,19 +8,19 @@ import FlightElement.SpaceShip;
 import FlightElement.ForceTorqueModel.ActuatorSet;
 import FlightElement.GNCModel.ControlCommandSet;
 import FlightElement.SensorModel.SensorSet;
-import Model.DataSets.AerodynamicSet;
-import Model.DataSets.AtmosphereSet;
-import Model.DataSets.ForceMomentumSet;
-import Model.DataSets.GravitySet;
-import Model.DataSets.MasterSet;
-import Plotter.DataContainer;
-import Plotter.DataSetXY;
-import Plotter.Pair;
-import Plotter.PlotXY;
+import Simulation.Model.DataSets.AerodynamicSet;
+import Simulation.Model.DataSets.AtmosphereSet;
+import Simulation.Model.DataSets.ForceMomentumSet;
+import Simulation.Model.DataSets.GravitySet;
+import Simulation.Model.DataSets.MasterSet;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
 import utils.Quaternion;
+import utils.Plotter.DataContainer;
+import utils.Plotter.DataSetXY;
+import utils.Plotter.Pair;
+import utils.Plotter.PlotXY;
 
 public class OutputModel {
 	

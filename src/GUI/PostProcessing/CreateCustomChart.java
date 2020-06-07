@@ -580,6 +580,7 @@ public class CreateCustomChart {
 				         	xyseries10.add(xx , yy);
 			           }
  in.close();
+ br.close();
         } catch (NullPointerException eNPE) { 
       	 // System.out.println(eNPE);
       	  }

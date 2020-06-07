@@ -1,8 +1,8 @@
 package FlightElement.ForceTorqueModel;
 
 import FlightElement.SpaceShip;
-import Model.DataSets.PrimaryThrustChangeLog;
-import Noise.ActuatorNoiseModel;
+import Simulation.Model.DataSets.PrimaryThrustChangeLog;
+import Simulation.Noise.ActuatorNoiseModel;
 import utils.UConst;
 import Simulator_main.DataSets.IntegratorData;
 

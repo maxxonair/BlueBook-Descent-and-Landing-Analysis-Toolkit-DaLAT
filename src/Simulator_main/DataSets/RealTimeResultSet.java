@@ -1,6 +1,6 @@
 package Simulator_main.DataSets;
 
-import Model.DataSets.MasterSet;
+import Simulation.Model.DataSets.MasterSet;
 import utils.EulerAngle;
 import utils.Quaternion;
 

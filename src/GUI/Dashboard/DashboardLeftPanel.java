@@ -241,7 +241,7 @@ public class DashboardLeftPanel {
       //-----------------------------------------------------------------------------------------------
       
       TabPane_InputExcept.addTab("Input" , null, inputIndicator.getMainPanel(), null);
-      TabPane_InputExcept.addTab("Sequence" , null, sequenceIndicator.getMainPanel(), null);
+      TabPane_InputExcept.addTab("Mode Management" , null, sequenceIndicator.getMainPanel(), null);
       mainPanel.add(TabPane_InputExcept);
       
 		TabPane_InputExcept.setSelectedIndex(0);

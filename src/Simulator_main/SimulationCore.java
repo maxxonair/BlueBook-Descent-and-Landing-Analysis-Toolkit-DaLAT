@@ -13,15 +13,16 @@ import org.apache.commons.math3.ode.FirstOrderDifferentialEquations;
 import org.apache.commons.math3.ode.FirstOrderIntegrator;
 import org.apache.commons.math3.ode.sampling.StepHandler;
 import org.apache.commons.math3.ode.sampling.StepInterpolator;
-import Model.ForceModel;
-import Model.GravityModel;
-import Model.AtmosphereModel;
-import Model.DataSets.AerodynamicSet;
-import Model.DataSets.AtmosphereSet;
-import Model.DataSets.ErrorSet;
-import Model.DataSets.ForceMomentumSet;
-import Model.DataSets.GravitySet;
-import Model.DataSets.MasterSet;
+
+import Simulation.Model.Atmosphere.AtmosphereModel;
+import Simulation.Model.DataSets.AerodynamicSet;
+import Simulation.Model.DataSets.AtmosphereSet;
+import Simulation.Model.DataSets.ErrorSet;
+import Simulation.Model.DataSets.ForceMomentumSet;
+import Simulation.Model.DataSets.GravitySet;
+import Simulation.Model.DataSets.MasterSet;
+import Simulation.Model.ForceTorque.EnvironmentForceTorqueModel;
+import Simulation.Model.Gravity.GravityModel;
 import Simulator_main.DataSets.IntegratorData;
 import Simulator_main.DataSets.RealTimeContainer;
 import Simulator_main.DataSets.RealTimeResultSet;
@@ -152,7 +153,7 @@ private static MasterSet masterSet = new MasterSet();
     	//-------------------------------------------------------------------------------------------------------------------
     	// 									    		 Force Model 
     	//-------------------------------------------------------------------------------------------------------------------
-    	masterSet = ForceModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet, 
+    	masterSet = EnvironmentForceTorqueModel.FORCE_MANAGER(forceMomentumSet, gravitySet, atmosphereSet, aerodynamicSet, 
     							  spaceShip, integratorData, errorSet, false);
     	forceMomentumSet 	= masterSet.getForceMomentumSet();
     	gravitySet 			= masterSet.getGravitySet();

@@ -19,7 +19,6 @@ import java.util.UUID;
 import javax.swing.ImageIcon;
 import javax.swing.JPanel;
 
-import GUI.PropulsionDraw.Relationship;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.ComponentMetaFile;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.MainEngineMetaFile;
 import GUI.PropulsionDraw.ComponentMetaFileTypes.MetaDataLine;

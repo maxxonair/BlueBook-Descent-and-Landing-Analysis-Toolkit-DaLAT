@@ -1,7 +1,7 @@
 package FlightElement.ForceTorqueModel;
 
 import FlightElement.SpaceShip;
-import NoiseSet.ActuatorNoiseSet;
+import Simulation.NoiseSet.ActuatorNoiseSet;
 
 public class ActuatorSet extends Object implements Cloneable {
 	

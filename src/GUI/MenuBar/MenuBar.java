@@ -216,23 +216,30 @@ public class MenuBar {
         menuItem_SimSettings.addActionListener(new ActionListener() {
                    public void actionPerformed(ActionEvent e) {
              		  System.out.println("Action: RUN SIMULATION");
-      				try {
-      					String line;
-      					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
-      					InputStream in = proc.getInputStream();
-      					InputStream err = proc.getErrorStream();
-      					System.out.println(in);
-      					System.out.println(err);
-      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
-      					  while ((line = input.readLine()) != null) {
-      					    System.out.println(line);
-      					  }
-      					  //UPDATE_Page01();
-      				} catch ( IOException e1) {
-      					// TODO Auto-generated catch block
-      					e1.printStackTrace();
-      					System.out.println("Error:  " + e1);
-      				} 
+             		  Thread simulationThread = new Thread() { 
+             			  
+             			  public void run() {
+				      				try {
+				      					String line;
+				      					Process proc = Runtime.getRuntime().exec("java -jar SIM.jar");
+				      					InputStream in = proc.getInputStream();
+				      					InputStream err = proc.getErrorStream();
+				      					System.out.println(in);
+				      					System.out.println(err);
+				      					 BufferedReader input = new BufferedReader(new InputStreamReader(proc.getInputStream()));
+				      					  while ((line = input.readLine()) != null) {
+				      					    System.out.println(line);
+				      					  }
+				      					  //UPDATE_Page01();
+				      				} catch ( IOException e1) {
+				      					// TODO Auto-generated catch block
+				      					e1.printStackTrace();
+				      					System.out.println("Error:  " + e1);
+				      				} 
+             			  }
+             		  };
+             		  
+             		  simulationThread.start();
                     } });
         JMenuItem menuItem_Update = new JMenuItem("Update Data                 "); 
         menuItem_Update.setForeground(Color.BLACK);

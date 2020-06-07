@@ -2,7 +2,7 @@ package FlightElement;
 
 import java.util.UUID;
 
-import FlightElement.ForceTorqueModel.ForceTorqueModel;
+import FlightElement.ForceTorqueModel.SpaceshipForceTorqueModel;
 import FlightElement.GNCModel.GNCModel;
 import FlightElement.Properties.Properties;
 import FlightElement.SensorModel.SensorModel;
@@ -15,7 +15,7 @@ public class SpaceShip {
 	private Properties properties;
 	private State state ;
 	private Target target ;
-	private ForceTorqueModel forceTorqueModel;
+	private SpaceshipForceTorqueModel forceTorqueModel;
 	private GNCModel gNCModel ;
 	private SensorModel sensorModel ;
 	
@@ -32,7 +32,7 @@ public class SpaceShip {
 		properties = new Properties();
 		state = new State();
 		target = new Target();
-		forceTorqueModel = new ForceTorqueModel(this);
+		forceTorqueModel = new SpaceshipForceTorqueModel(this);
 		gNCModel = new GNCModel(this);
 		sensorModel = new SensorModel();
 		
@@ -73,7 +73,7 @@ public class SpaceShip {
 	}
 
 
-	public ForceTorqueModel getForceTorqueModel() {
+	public SpaceshipForceTorqueModel getForceTorqueModel() {
 		return forceTorqueModel;
 	}
 

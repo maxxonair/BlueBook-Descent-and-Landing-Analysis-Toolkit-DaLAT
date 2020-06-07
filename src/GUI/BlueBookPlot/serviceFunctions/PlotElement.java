@@ -350,6 +350,7 @@ public class PlotElement {
 							            	 xySeries.add(xx , yy);
 						           }
 			 in.close();
+			 br.close();
 			 XYSeriesCollection.addSeries(xySeries); 
 			        } catch (NullPointerException | NumberFormatException eNPE) { 
 			      	  System.err.println("ERROR: Error occurred during file import. PlotElement>>addDataset failed.");

@@ -4,13 +4,19 @@ import FlightElement.SpaceShip;
 
 public class GNCModel {
 	
-	ControlCommandSet controlCommandSet;
-	MasterController masterController ;
+	private ControlCommandSet controlCommandSet;
+	private MasterController masterController ;
+	
+	private int activeSequence = 0;
+	
+	double CTRLfrequencyIN;
+	double CTRLfrequencyOUT;
 	
 	
 	public GNCModel(SpaceShip spaceShip) {
-		masterController = new MasterController();
+		masterController = new MasterController(spaceShip);
 		controlCommandSet = new ControlCommandSet();
+		
 	}
 
 	public ControlCommandSet getControlCommandSet() {
@@ -25,4 +31,28 @@ public class GNCModel {
 		this.controlCommandSet = controlCommandSet;
 	}
 
+	public int getActiveSequence() {
+		return activeSequence;
+	}
+
+	public void setActiveSequence(int activeSequence) {
+		this.activeSequence = activeSequence;
+	}
+
+	public double getCTRLfrequencyIN() {
+		return CTRLfrequencyIN;
+	}
+
+	public void setCTRLfrequencyIN(double cTRLfrequencyIN) {
+		CTRLfrequencyIN = cTRLfrequencyIN;
+	}
+
+	public double getCTRLfrequencyOUT() {
+		return CTRLfrequencyOUT;
+	}
+
+	public void setCTRLfrequencyOUT(double cTRLfrequencyOUT) {
+		CTRLfrequencyOUT = cTRLfrequencyOUT;
+	}
+	
 }

@@ -92,6 +92,7 @@ public class PolarMap {
 		         	xyseries10.add(x,y);
 		           }
            in.close();
+           br.close();
            ResultSet_PolarMap.addSeries(xyseries10); 
                   } catch(NullPointerException eNPI) { System.out.print(eNPI); }
         return ResultSet_PolarMap;          
