@@ -401,7 +401,7 @@ public class BlueBookVisual  {
 	      }
 	      
 	     	TabPane_SimulationSetup.addTab("Basic Setup" , icon_setup2, basicSetupMain.getMainPanel(), null);
-	     	TabPane_SimulationSetup.addTab("Sequence Setup" , icon_setup2, sequencePanel.getMainPanel(), null);
+	     	TabPane_SimulationSetup.addTab("Mode Sequence Setup" , icon_setup2, sequencePanel.getMainPanel(), null);
 	     	TabPane_SimulationSetup.addTab("Aerodynamic Setup" , icon_aerodynamic, aeroSetup.getMainPanel(), null);
 	     	TabPane_SimulationSetup.addTab("Gravity Setup" , icon_setup2, gravityPanel.getMainPanel(), null);
 	     	TabPane_SimulationSetup.addTab("Noise and Error Model Setup" , null, noiseErrorPanel.getMainPanel(), null);

@@ -1,15 +1,5 @@
-/Controller/
 /DateTime/
+/Experimental/
 /FlightElement/
 /GUI/
-/Model/
 /Simulator_main/
-/VisualEngine/
-/utils/
-/Sequence/
-/Simulation/
-/Noise/
-/NoiseSet/
-/Experimental/
-/NeuralNetwork/
-/Plotter/

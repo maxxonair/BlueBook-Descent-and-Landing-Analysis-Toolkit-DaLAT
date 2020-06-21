@@ -63,15 +63,16 @@ public   void createWriteOut(ArrayList<String> steps) {
 	
 public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTimeContainer realTimeContainer, 
 			IntegratorData integratorData, SensorSet sensorSet, int subIndx) {
+	
 			RealTimeResultSet realTimeResultSet = realTimeContainer.getRealTimeList().get(subIndx);
 			MasterSet masterSet = realTimeContainer.getRealTimeList().get(subIndx).getMasterSet(); 
+			SpaceShip spaceShip = masterSet.getSpaceShip();
 			AtmosphereSet atmosphereSet = masterSet.getAtmosphereSet();
 			AerodynamicSet aerodynamicSet = masterSet.getAerodynamicSet();
 			GravitySet gravitySet = masterSet.getGravitySet();
-			ControlCommandSet controlCommandSet = masterSet.getControlCommandSet();
+			ControlCommandSet controlCommandSet = spaceShip.getgNCModel().getControlCommandSet();
 			ForceMomentumSet forceMomentumSet = masterSet.getForceMomentumSet();
 			ActuatorSet actuatorSet = masterSet.getActuatorSet();
-			SpaceShip spaceShip = masterSet.getSpaceShip();
 			if(isPlot) {
 			dataSet.addPair(new Pair((integratorData.getGlobalTime()+realTimeContainer.getRealTimeList().get(subIndx).getTime()), 
 			sensorSet.getRealTimeResultSet().getEulerAngle().pitch*180/PI ));
@@ -150,7 +151,7 @@ public  ArrayList<String> addOutputTimestepData(ArrayList<String> steps, RealTim
 	realTimeResultSet.getVelocity()*Math.sin(realTimeResultSet.getFpa())+" "+
 	//realTimeContainer.getRealTimeList().get(subIndx).getIntegratorData().getGroundtrack()/1000+" "+ 
 	realTimeResultSet.getGroundtrack()/1000+" "+ 
-	controlCommandSet.getActiveSequence()+" "+
+	spaceShip.getgNCModel().getActiveSequence()+" "+
 	sensorSet.getControllerTime()+" "+
 	aerodynamicSet.getDragCoefficientParachute()+" "+
 	aerodynamicSet.getDragForceParachute()+" "+

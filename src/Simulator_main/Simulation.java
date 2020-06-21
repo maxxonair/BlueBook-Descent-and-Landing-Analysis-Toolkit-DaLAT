@@ -17,25 +17,31 @@ import utils.SRateTransition;
 
 public class Simulation {
 	
+	String simVersionID = "1.01";
+	
 	 // Standard decimal format for numerical output:
      private DecimalFormat decFormat = new DecimalFormat("#.###"); 
      // Decimal format for percentual progress output:
-     private DecimalFormat decProg = new DecimalFormat("#.#");
+     private DecimalFormat decProg = new DecimalFormat("#");
+     private DecimalFormat decProgTime = new DecimalFormat("#.###");
     	
      // Show custom plot for debugging:
 	 private boolean isPlot=false;
 	 // Include progress report (sim time & progress percentage):
-	 private boolean isProgressReport = true;
+	 private boolean isProgressReport;
+	 private double progressStep ;
 	
 	
-	public Simulation(boolean isProgressReport) {
+	public Simulation(boolean isProgressReport, double progressStep) {
 		this.isProgressReport = isProgressReport; 
+		this.progressStep = progressStep;
 	}
 	
     public void launchSimulation() {
     	String timeStamp = new SimpleDateFormat("dd / MM / yy   HH : mm : ss").format(Calendar.getInstance().getTime());
     	System.out.println("------------------------------------------");
     	System.out.println(""+timeStamp);
+    	System.out.println("Simulation Core ID "+simVersionID);
     	System.out.println("------------------------------------------");
     	System.out.println("Reading ... ");
     	System.out.println("------------------------------------------");
@@ -44,6 +50,11 @@ public class Simulation {
 		//------------------------------------------------------------------------------------------
 		//					Compile Integrator inputs from files:
 		//------------------------------------------------------------------------------------------
+    	// Init progress counter variables 
+    	double progressStepCounter =0;
+    	double tMO =0;
+    	
+    	
 	    	System.out.println("Read: Create simulation input file");
 	    	SimulatorInputSet simulatorInputSet = new SimulatorInputSet();
 			try {
@@ -108,9 +119,14 @@ public class Simulation {
 for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
 		    	// Progress Write Out: 
 				if(isProgressReport) {
-				double progressTime = tIS;
-				double progressPerc = tIS/tGlobal * 100;
-				System.out.println("Simulation time: "+progressTime+" , Progress: "+decProg.format(progressPerc)+" %" );
+					double progressTime = tIS;
+					double progressPerc =  tIS/tGlobal * 100;
+					progressStepCounter += progressPerc - tMO;
+						if(progressStepCounter > progressStep) {
+							System.out.println("Progress: "+decProg.format(progressPerc)+" percent ,Simulation time: "+decProgTime.format(progressTime)+" [s]" );
+							progressStepCounter = 0;
+						}
+						tMO = progressPerc;
 				}
 	    		//---------------------------------------------------------------------------------------
 	    		//				  6 Degree of Freedom - Universal RealTime module
@@ -219,7 +235,7 @@ for(double tIS=0;tIS<tGlobal;tIS+=tIncrement) {
     
     public static void main(String[] args) {
     	// Execute Simulation:
-    	Simulation simulation = new Simulation(false);
+    	Simulation simulation = new Simulation(true, 2.0);
     	simulation.launchSimulation();
     }
 
