@@ -18,7 +18,8 @@ public class AerodynamicModel {
     private static int sequenceIs=-1;
     private static double lastTimeMark=0;
     
-    private static AerodynamicNoiseModel aerodynamicNoiseModel = new AerodynamicNoiseModel(new AerodynamicNoiseSet());
+    private static long noiseSeed = 5;
+    private static AerodynamicNoiseModel aerodynamicNoiseModel = new AerodynamicNoiseModel(new AerodynamicNoiseSet(),noiseSeed);
     
 	public static AerodynamicSet getAerodynamicSet(AtmosphereSet atmosphereSet, SpaceShip spaceShip, IntegratorData integratorData) {
 		int dragModelSelection = integratorData.getAeroDragModel();

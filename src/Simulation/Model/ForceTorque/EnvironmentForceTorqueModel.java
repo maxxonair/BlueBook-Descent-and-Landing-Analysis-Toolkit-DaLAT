@@ -17,7 +17,8 @@ import utils.Mathbox;
 public class EnvironmentForceTorqueModel {
 	
 	private static double genRCSMomentumNoise=0;							// General, uniform (all axes) momentum noise by RCS torque [Nm]
-		
+	private static RandomWalker walker = new RandomWalker(5);
+	
 	public static MasterSet FORCE_MANAGER(ForceMomentumSet forceMomentumSet, GravitySet gravitySet, AtmosphereSet atmosphereSet, 
 										  AerodynamicSet aerodynamicSet, SpaceShip spaceShip, 
 										  IntegratorData integratorData, ErrorSet errorSet, boolean isAutoPilot) {
@@ -101,7 +102,7 @@ public class EnvironmentForceTorqueModel {
 	   	// Torque from RCS:
 	   	if(spaceShip.getForceTorqueModel().getActuatorSet().getMomentumRCS_X_is() != 0 || spaceShip.getForceTorqueModel().getActuatorSet().getMomentumRCS_Y_is() != 0 || spaceShip.getForceTorqueModel().getActuatorSet().getMomentumRCS_Z_is()  != 0) {
 	   		// If a momentum for any axis is commanded => add momentum noise
-	   		genRCSMomentumNoise = RandomWalker.randomWalker1D(genRCSMomentumNoise,0.01,-0.01, 0.0005, 0.01);
+	   		genRCSMomentumNoise = walker.randomWalker1D(genRCSMomentumNoise,0.01,-0.01, 0.0005, 0.01);
 	   	}
 	   	M_Thrust_B[0][0] =  spaceShip.getForceTorqueModel().getActuatorSet().getMomentumRCS_X_is() + genRCSMomentumNoise;
 	    M_Thrust_B[1][0] =  spaceShip.getForceTorqueModel().getActuatorSet().getMomentumRCS_Y_is() + genRCSMomentumNoise;

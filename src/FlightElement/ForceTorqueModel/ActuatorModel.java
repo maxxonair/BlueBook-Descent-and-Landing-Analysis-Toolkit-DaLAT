@@ -11,28 +11,31 @@ public class ActuatorModel {
 	private static boolean heatshieldEjectionMark=true;
 	
 	//private static double propTime=0;
-	private static boolean isTransient=false; 
-	private static double transientTime = 1.2;
+	private  boolean isTransient=false; 
+	private  double transientTime = 1.2;
 	
-	private static double currentTime;
+	private  double currentTime;
 	
 	
 	// Modelling Paramters - to be moved 
 	//-------------------------------------------------------------------------------
 	// Minimum executable Torque CMD - due to pulse width modulation minimum pulse time restriction
-	private static double minRCS_Torque_CMD = 0.01;
+	private  double minRCS_Torque_CMD = 0.01;
 	// Parameter to jump from 0 to minTorque when cmd torque is below minmum torque. Value of 0.6 sets 
 	// the jump to 60 percent minTorque
-	private static double minRCS_Torque_Cap_jump=0.7;
-	private static boolean isRCS_ISP_PWM_model=true;
-	private static boolean isRCS_Thrust_PWM_model=true;
+	private  double minRCS_Torque_Cap_jump=0.7;
+	private  boolean isRCS_ISP_PWM_model=true;
+	private  boolean isRCS_Thrust_PWM_model=true;
 	//-------------------------------------------------------------------------------
+	private ActuatorNoiseModel actuatorNoiseModel;
+	private long noiseSeed = 7785;
 	
 	static PrimaryThrustChangeLog primaryThrustChangeLog = new PrimaryThrustChangeLog();
 	private SpaceShip spaceShip;
 	
 	public ActuatorModel(SpaceShip spaceShip) {
 		this.spaceShip = spaceShip; 
+		actuatorNoiseModel = new ActuatorNoiseModel(noiseSeed);
 	}
 	
 	public ActuatorSet getActuatorSet(IntegratorData integratorData) {
@@ -42,10 +45,10 @@ public class ActuatorModel {
 		ActuatorSet actuatorSet = new ActuatorSet();
 		//double deltaPropellant = spaceShip.getMass() - currentDataSet.getxIS()[6];
 		if(integratorData.getNoiseModel().isActuatorNoiseModel()) {
-			ActuatorNoiseModel.setPrimaryThrustNoise(actuatorSet.getActuatorNoiseSet());
-			ActuatorNoiseModel.setRCSXNoise(actuatorSet.getActuatorNoiseSet());
-			ActuatorNoiseModel.setRCSYNoise(actuatorSet.getActuatorNoiseSet());
-			ActuatorNoiseModel.setRCSZNoise(actuatorSet.getActuatorNoiseSet());
+			actuatorNoiseModel.setPrimaryThrustNoise(actuatorSet.getActuatorNoiseSet());
+			actuatorNoiseModel.setRCSXNoise(actuatorSet.getActuatorNoiseSet());
+			actuatorNoiseModel.setRCSYNoise(actuatorSet.getActuatorNoiseSet());
+			actuatorNoiseModel.setRCSZNoise(actuatorSet.getActuatorNoiseSet());
 		} else {
 			actuatorSet.getActuatorNoiseSet().setPrimaryThrustNoise(0);
 			actuatorSet.getActuatorNoiseSet().setRCSMomentumX(0);
@@ -217,7 +220,7 @@ public class ActuatorModel {
 		return actuatorSet;
 	}
 
-	 private static double ThrottleMODEL_get_ISP(SpaceShip spaceShip, double Throttle_CMD) {
+	 private  double ThrottleMODEL_get_ISP(SpaceShip spaceShip, double Throttle_CMD) {
 		 // Simulates the effect of decaying ISP during main engine throttle
 		 	double IspOut=0;
 		 	if(Throttle_CMD>1 || Throttle_CMD<0) {
@@ -237,7 +240,7 @@ public class ActuatorModel {
 		 	return IspOut; 
 		 }
 	 
-	 private static double PulseWidthModulationModel_get_ISP(double ISP_nominal, double TorqueCMD) {
+	 private  double PulseWidthModulationModel_get_ISP(double ISP_nominal, double TorqueCMD) {
 		 // Simulates the reduced ISP during RCS pulse width modulation with short pulses
 		 double IspOut =0;
 		 double ISP_max = ISP_nominal;
@@ -257,7 +260,7 @@ public class ActuatorModel {
 		 }
 	 }
 	  
-	 	private static  PrimaryThrustChangeLog updatePrimaryThrustChangeLog(double CMD, IntegratorData integratorData) {
+	 	private   PrimaryThrustChangeLog updatePrimaryThrustChangeLog(double CMD, IntegratorData integratorData) {
 	 		if(CMD!=primaryThrustChangeLog.getCMD_NEW()) {
 	 			primaryThrustChangeLog.setTimeStamp(currentTime);
 	 			primaryThrustChangeLog.setCMD_OLD(primaryThrustChangeLog.getCMD_NEW());
@@ -269,7 +272,7 @@ public class ActuatorModel {
 	 		return primaryThrustChangeLog;
 	 	}
 	 	
-	 	private static boolean isTransientTime(IntegratorData integratorData, PrimaryThrustChangeLog primaryThrustChangeLog) {
+	 	private  boolean isTransientTime(IntegratorData integratorData, PrimaryThrustChangeLog primaryThrustChangeLog) {
 	 		primaryThrustChangeLog.setPropTime( currentTime - primaryThrustChangeLog.getTimeStamp() );	
 	 		if(primaryThrustChangeLog.getPropTime() < transientTime) {
 	 			isTransient=true;
@@ -280,7 +283,7 @@ public class ActuatorModel {
 	 		}
 	 	}
 	 
-		private static double getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel, double CMDThrustLevel, double OldThrustLevel) {
+		private  double getMainEngineResponseDelay(double timeSinceCMD, double timeToThrustLevel, double CMDThrustLevel, double OldThrustLevel) {
 			// Simulates the delay between ignition and full thrust during the main engine start-up
 			if(timeSinceCMD<timeToThrustLevel) {
 				double y=0;

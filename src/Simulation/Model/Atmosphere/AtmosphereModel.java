@@ -29,6 +29,10 @@ private static List<atm_dataset> ATM_DATA = new ArrayList<atm_dataset>();
 
 public static double sigma = 1.6311e-9;     // Average collision diameter (<- TBC)
 
+private static long noiseSeed = 5567;
+
+private static AtmosphereNoiseModel atmoshpereNoiseModl = new AtmosphereNoiseModel(noiseSeed);
+
 
 public static void  Set_File_Paths(int TARGET) throws URISyntaxException{
 	String dir = System.getProperty("user.dir");
@@ -129,8 +133,8 @@ public static AtmosphereSet getAtmosphereSet(SpaceShip spaceShip, IntegratorData
 	} else { // In atmosphere conditions (if any)
 
 		if(integratorData.getNoiseModel().isAtmosphereNoiseModel()) {
-			AtmosphereNoiseModel.setDensityNoise(atmosphereSet, altitude);
-			AtmosphereNoiseModel.setStaticTemperatureNoise(atmosphereSet, altitude);
+			atmoshpereNoiseModl.setDensityNoise(atmosphereSet, altitude);
+			atmoshpereNoiseModl.setStaticTemperatureNoise(atmosphereSet, altitude);
 		} else {
 			atmosphereSet.getAtmosphereNoiseSet().setDensityNoise(0);
 			atmosphereSet.getAtmosphereNoiseSet().setStaticTemperatureNoise(0);

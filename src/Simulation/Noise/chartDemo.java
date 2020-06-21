@@ -33,10 +33,11 @@ public class chartDemo extends Application {
         series2.setName("Setting 2");
         series3.setName("Setting 3");
         series4.setName("Setting 4");
+        RandomWalker walker = new RandomWalker(5);
          	double currentValue =0.0;
 			for(int i=0; i<100;i++) {
 				//double value = (1 + PerlinNoise.PerlinNoise1D(i, 0, 1))/2;
-				double value = RandomWalker.randomWalker1D(currentValue,0.1,-0.1, 0.002, 0.00000, 0.4);
+				double value = walker.randomWalker1D(currentValue,0.1,-0.1, 0.002, 0.00000, 0.4);
 				currentValue = value;
 				series1.getData().add(new XYChart.Data(i, value));
 				//System.out.println(i+"|"+value);
@@ -44,14 +45,14 @@ public class chartDemo extends Application {
 			 currentValue =0.0;
 			for(int i=0; i<100;i++) {
 				//double value = Math.random();
-				double value = RandomWalker.randomWalker1D(currentValue,0.1,-0.1, 0.001, 0.0);
+				double value = walker.randomWalker1D(currentValue,0.1,-0.1, 0.001, 0.0);
 				currentValue = value;
 				series2.getData().add(new XYChart.Data(i, value));
 				//System.out.println(i+"|"+value);
 			}
 			 currentValue =0.0;
 			for(int i=0; i<100;i++) {
-				double value = RandomWalker.randomWalker1D(currentValue,0.1,-0.1, 0.002, 0.00000, 0.6);
+				double value = walker.randomWalker1D(currentValue,0.1,-0.1, 0.002, 0.00000, 0.6);
 				currentValue = value;
 				series3.getData().add(new XYChart.Data(i, value));
 				//System.out.println(i+"|"+value);

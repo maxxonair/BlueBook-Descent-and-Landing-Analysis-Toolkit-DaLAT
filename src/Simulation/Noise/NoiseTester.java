@@ -37,9 +37,10 @@ public class NoiseTester {
 	    double mu = 0;
 	    double sigma=0;
 	    double sumSigma=0;
-	    
+	    RandomWalker walker = new RandomWalker(5);
 				for(int i=0; i<500;i++) {
-					double value = RandomWalker.randomWalker1D(currentValue,0.1,-0.1, 0.002, 0.00000, 0.0, 0);
+					
+					double value = walker.randomWalker1D(currentValue,0.1,-0.1, 0.002, 0.00000, 0.0, 0);
 					currentValue = value;
 					set2.addPair(new Pair(i, value));
 					
